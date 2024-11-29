@@ -209,8 +209,8 @@ const UserDropdown = ({ setShowLoginModal, setShowSignupModal }) => {
 
 const Navbar = () => {
   const [isClient, setIsClient] = useState(false);
-  const [isSelectLoaded, setIsSelectLoaded] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  // const [isSelectLoaded, setIsSelectLoaded] = useState(false);
+  // const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -270,13 +270,6 @@ const Navbar = () => {
     e.preventDefault();
     console.log('Signup attempt with:', formData);
   };
-
-
-
-
-
-
-
 
 
   const customStyles = {
