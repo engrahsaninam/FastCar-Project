@@ -4,6 +4,8 @@ import { ChevronDown, X, Heart, User, Menu, Bookmark, Clock, ShoppingCart } from
 import logo from '@/assets/logo.png'
 import english from '@/assets/english.png'
 import cestina from '@/assets/cestina.svg'
+import LoginModal from './Login';
+import SignupModal from './Signup';
 // Language state management
 const languages = [
   { id: 'cs', name: 'Čeština', flag: cestina.src },
@@ -81,20 +83,20 @@ const DesktopLanguageSelector = ({ selectedLang, onSelectLang }) => {
 
   return (
     <div className="relative hidden lg:block">
-      <button 
+      <button
         className="p-2 hover:opacity-80 transition-opacity flex items-center"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <img 
-          src={selectedLanguage?.flag} 
-          alt={`${selectedLanguage?.name} Flag`} 
+        <img
+          src={selectedLanguage?.flag}
+          alt={`${selectedLanguage?.name} Flag`}
           className="w-[22px] h-[22px] rounded-full object-cover"
         />
       </button>
 
       {isOpen && (
-        <div 
+        <div
           className="absolute right-[-30px] top-[calc(100%+8px)] w-[180px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-[#E5E7EB] py-2 z-[90]"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -106,16 +108,15 @@ const DesktopLanguageSelector = ({ selectedLang, onSelectLang }) => {
                 onSelectLang(lang.id);
                 setIsOpen(false);
               }}
-              className={`flex items-center w-full px-4 h-10 ${
-                selectedLang === lang.id 
-                  ? 'text-[#EF4444]' 
+              className={`flex items-center w-full px-4 h-10 ${selectedLang === lang.id
+                  ? 'text-[#EF4444]'
                   : 'text-[#1A1A1A] hover:text-[#EF4444]'
-              } hover:bg-[#F9FAFB] transition-colors`}
+                } hover:bg-[#F9FAFB] transition-colors`}
             >
-              <img 
-                src={lang.flag} 
-                alt={`${lang.name} Flag`} 
-                className="w-[22px] h-[22px] rounded-full" 
+              <img
+                src={lang.flag}
+                alt={`${lang.name} Flag`}
+                className="w-[22px] h-[22px] rounded-full"
               />
               <span className="ml-3 text-[15px] leading-5 font-medium">
                 {lang.name}
@@ -128,7 +129,7 @@ const DesktopLanguageSelector = ({ selectedLang, onSelectLang }) => {
   );
 };
 
-const AuthDropdown = ({ onClose, isMobile, selectedLang, onSelectLang }) => {
+const AuthDropdown = ({ onClose, isMobile, selectedLang, onSelectLang, setShowLoginModal, setShowSignupModal }) => {
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
   const selectedLanguage = languages.find(lang => lang.id === selectedLang);
 
@@ -162,15 +163,27 @@ const AuthDropdown = ({ onClose, isMobile, selectedLang, onSelectLang }) => {
           {/* Bottom Section */}
           <div className="mt-auto">
             <div className="px-5 py-4 border-t border-[#E5E7EB]">
-              <button className="w-full h-[48px] bg-[#EF4444] hover:bg-[#D93C0B] text-white rounded-[8px] text-[15px] font-medium flex items-center justify-center transition-all duration-200">
+              <button
+                onClick={() => {
+                  onClose();
+                  setShowLoginModal(true);
+                }}
+                className="w-full h-[48px] bg-[#EF4444] hover:bg-[#D93C0B] text-white rounded-[8px] text-[15px] font-medium flex items-center justify-center transition-all duration-200"
+              >
                 <User className="w-[22px] h-[22px] mr-2" strokeWidth={1.5} />
                 Login
               </button>
               <p className="text-[15px] text-center mt-4 text-[#6B7280]">
                 Don't have an account?
-                <a href="#" className="text-[#EF4444] font-medium ml-1 hover:underline">
+                <button
+                  onClick={() => {
+                    onClose();
+                    setShowSignupModal(true);
+                  }}
+                  className="text-[#EF4444] font-medium ml-1 hover:underline"
+                >
                   Register
-                </a>
+                </button>
               </p>
             </div>
 
@@ -259,9 +272,9 @@ const navigationLinks = [
 
 const ServicesDropdown = ({ isOpen }) => {
   if (!isOpen) return null;
-  
+
   const services = navigationLinks.find(link => link.id === 'services').items;
-  
+
   return (
     <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
       {services.map(service => (
@@ -288,9 +301,9 @@ const NavLink = ({ link }) => {
           className="px-1 py-6 text-[15px] font-medium text-[#6B7280] hover:text-[#EF4444] transition-colors inline-flex items-center group"
         >
           {link.label}
-          <ChevronDown 
-            className={`ml-1 w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
-            strokeWidth={1.5} 
+          <ChevronDown
+            className={`ml-1 w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+            strokeWidth={1.5}
           />
         </button>
         <ServicesDropdown isOpen={isDropdownOpen} />
@@ -329,6 +342,41 @@ const CarvagoNav = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedLang, setSelectedLang] = useState('en');
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    surname: '',
+    phone: '',
+    country: '',
+    postalCode: '',
+    agreeToTerms: false,
+    countryCode: '+34'
+  });
+
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    console.log('Login attempt with:', { email, password });
+  };
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    console.log('Signup attempt with:', formData);
+  };
+
+  const handleInputChange = (e, field) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.type === 'checkbox' ? e.target.checked : e.target.value
+    }));
+  };
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -344,134 +392,166 @@ const CarvagoNav = () => {
   };
 
   return (
-    <header className="relative top-0 left-0 right-0 z-50 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-      <nav className="max-w-[1440px] mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu className="w-5 h-5" strokeWidth={1.5} />
-            <span className="text-sm font-medium ml-2">Menu</span>
-          </button>
-
-          {/* Logo */}
-          <a href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:ml-0 transition-all">
-            <img src={logo.src} alt="" className="object-contain size-24" />
-          </a>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {navigationLinks.map(link => (
-              <NavLink key={link.id} link={link} />
-            ))}
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center space-x-1">
-            <button className="p-2 text-[#1A1A1A] hover:text-[#EF4444] transition-colors">
-              <Heart className="w-[22px] h-[22px]" strokeWidth={1.5} />
+    <>
+      <header className="relative top-0 left-0 right-0 z-50 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+        <nav className="max-w-[1440px] mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-5 h-5" strokeWidth={1.5} />
+              <span className="text-sm font-medium ml-2">Menu</span>
             </button>
 
-            <DesktopLanguageSelector
-              selectedLang={selectedLang}
-              onSelectLang={setSelectedLang}
-            />
+            {/* Logo */}
+            <a href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:ml-0 transition-all">
+              <img src={logo.src} alt="" className="object-contain size-24" />
+            </a>
 
-            {/* Login Button */}
-            <div className="relative">
-              <button
-                onClick={() => setIsLoginOpen(!isLoginOpen)}
-                className="p-2 inline-flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors group"
-              >
-                <User className="w-[22px] h-[22px]" strokeWidth={1.5} />
-                <span className="hidden lg:inline ml-2 text-[15px] font-medium">Login</span>
-                <ChevronDown className="hidden lg:inline ml-1 w-4 h-4" strokeWidth={1.5} />
-              </button>
-
-              {isLoginOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 bg-black/20 z-60 lg:hidden"
-                    onClick={closeAll}
-                  />
-                  <AuthDropdown
-                    onClose={closeAll}
-                    isMobile={isMobile}
-                    selectedLang={selectedLang}
-                    onSelectLang={setSelectedLang}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[60] bg-white">
-          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
-            <img src={logo.src} alt="" className="object-contain size-24" />
-            <button onClick={closeAll} className="text-gray-400 hover:text-gray-600 transition-colors">
-              <X className="w-[22px] h-[22px]" strokeWidth={1.5} />
-            </button>
-          </div>
-
-          <nav className="px-4 py-2">
-            <div className="space-y-1">
-              <a href="/" className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors">
-                Home
-              </a>
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-8">
               {navigationLinks.map(link => (
-                <div key={link.id}>
-                  {link.type === 'dropdown' ? (
-                    <>
-                      <button 
-                        onClick={() => setIsServicesOpen(!isServicesOpen)}
-                        className="w-full flex items-center justify-between px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
-                      >
-                        {link.label}
-                        <ChevronDown 
-                          className={`w-5 h-5 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
-                          strokeWidth={1.5} 
-                        />
-                      </button>
-                      {isServicesOpen && (
-                        <div className="pl-6 py-2 space-y-2 bg-gray-50">
-                          {link.items.map(item => (
-                            <a
-                              key={item.id}
-                              href={item.href}
-                              className="block px-3 py-2 text-[#6B7280] text-[15px] font-medium hover:text-[#EF4444] transition-colors"
-                            >
-                              {item.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <a
-                      href={link.href}
-                      className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
-                    >
-                      {link.label}
-                      {link.badge && (
-                        <span className={`ml-2 px-2 py-0.5 text-[11px] font-medium ${link.badge.color} text-white rounded-full`}>
-                          {link.badge.text}
-                        </span>
-                      )}
-                    </a>
-                  )}
-                </div>
+                <NavLink key={link.id} link={link} />
               ))}
             </div>
-          </nav>
-        </div>
-      )}
-    </header>
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-1">
+              <button className="p-2 text-[#1A1A1A] hover:text-[#EF4444] transition-colors">
+                <Heart className="w-[22px] h-[22px]" strokeWidth={1.5} />
+              </button>
+
+              <DesktopLanguageSelector
+                selectedLang={selectedLang}
+                onSelectLang={setSelectedLang}
+              />
+
+              {/* Login Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsLoginOpen(!isLoginOpen)}
+                  className="p-2 inline-flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors group"
+                >
+                  <User className="w-[22px] h-[22px]" strokeWidth={1.5} />
+                  <span className="hidden lg:inline ml-2 text-[15px] font-medium">Login</span>
+                  <ChevronDown className="hidden lg:inline ml-1 w-4 h-4" strokeWidth={1.5} />
+                </button>
+
+                {isLoginOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 bg-black/20 z-60 lg:hidden"
+                      onClick={closeAll}
+                    />
+                    <AuthDropdown
+                      onClose={closeAll}
+                      isMobile={isMobile}
+                      selectedLang={selectedLang}
+                      onSelectLang={setSelectedLang}
+                      setShowLoginModal={setShowLoginModal}
+                      setShowSignupModal={setShowSignupModal}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-[60] bg-white">
+            <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
+              <img src={logo.src} alt="" className="object-contain size-24" />
+              <button onClick={closeAll} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X className="w-[22px] h-[22px]" strokeWidth={1.5} />
+              </button>
+            </div>
+
+            <nav className="px-4 py-2">
+              <div className="space-y-1">
+                <a href="/" className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors">
+                  Home
+                </a>
+                {navigationLinks.map(link => (
+                  <div key={link.id}>
+                    {link.type === 'dropdown' ? (
+                      <>
+                        <button
+                          onClick={() => setIsServicesOpen(!isServicesOpen)}
+                          className="w-full flex items-center justify-between px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
+                        >
+                          {link.label}
+                          <ChevronDown
+                            className={`w-5 h-5 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+                            strokeWidth={1.5}
+                          />
+                        </button>
+                        {isServicesOpen && (
+                          <div className="pl-6 py-2 space-y-2 bg-gray-50">
+                            {link.items.map(item => (
+                              <a
+                                key={item.id}
+                                href={item.href}
+                                className="block px-3 py-2 text-[#6B7280] text-[15px] font-medium hover:text-[#EF4444] transition-colors"
+                              >
+                                {item.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
+                      >
+                        {link.label}
+                        {link.badge && (
+                          <span className={`ml-2 px-2 py-0.5 text-[11px] font-medium ${link.badge.color} text-white rounded-full`}>
+                            {link.badge.text}
+                          </span>
+                        )}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <LoginModal
+      showLoginModal={showLoginModal}
+      setShowLoginModal={setShowLoginModal}
+      setShowSignupModal={setShowSignupModal}
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+      showPassword={showPassword}
+      setShowPassword={setShowPassword}
+      handleLogin={handleLogin}
+    />
+
+    <SignupModal
+      showSignupModal={showSignupModal}
+      setShowSignupModal={setShowSignupModal}
+      setShowLoginModal={setShowLoginModal}
+      showForm={showForm}
+      setShowForm={setShowForm}
+      formData={formData}
+      handleInputChange={handleInputChange}
+      showPassword={showPassword}
+      setShowPassword={setShowPassword}
+      handleSignup={handleSignup}
+    />
+
+    </>
+
   );
 };
 
