@@ -1,0 +1,24 @@
+[MYSQL]
+SQL_HOST = 127.0.0.1
+SQL_USER = username
+SQL_PWD = password
+DB_NAME = eucars
+
+
+[PROXY_ADDR]
+USER = user
+PASSWORD = password
+ADDRESS = 127.0.0.1:80
+
+
+[PROXY_IP]
+USER = user
+PASSWORD = password
+ADDRESS = 127.0.0.1:80,
+
+
+[RUNNING]
+PROXY_TYPE = PROXY_ADDR
+RETRY_TIMES = 3
+WORKERS = 50
+IMAGE_WORKERS = 50
