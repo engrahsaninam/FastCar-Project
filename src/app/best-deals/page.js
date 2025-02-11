@@ -1,6 +1,6 @@
 'use client';
 
-import AppBar from '@/components/AppBar2'
+import AppBar from '@/components/AppBar'
 import BestDealsPage from '@/components/bestdealss/bestdealspage'
 import React, { Suspense } from 'react'
 

@@ -1,7 +1,8 @@
+
 "use client";
-import React, { useState, useEffect , useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronDown, Plus, Clock, Bookmark, Sliders, TrendingDown, X, Trash2, ChevronRight } from 'lucide-react';
+import { ChevronDown, Plus, Clock, Bookmark, Sliders, TrendingDown, X, Trash2, ChevronRight, Search, Check, } from 'lucide-react';
 
 
 const colorOptions = [
@@ -407,6 +408,20 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
       return fuelType || null;
     }).filter(Boolean);
   });
+  // Add this with your other state declarations
+  const [isMakeModelOpen, setIsMakeModelOpen] = useState(false);
+  // Add to your existing states
+  const [makeModelFilters, setMakeModelFilters] = useState(() => {
+    const makeModelParam = searchParams.get('makeModel')?.split(',').filter(Boolean) || [];
+    return makeModelParam.map(param => {
+      const [make, model] = param.split('-');
+      return {
+        id: `${make}-${model}`,
+        make,
+        model
+      };
+    });
+  });
 
 
   useEffect(() => {
@@ -442,6 +457,12 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     if (selectedColors.length > 0) params.set('colors', selectedColors.join(','));
     if (is4x4) params.set('is4x4', 'true');
 
+    // Add to your existing useEffect params section
+    if (makeModelFilters.length > 0) {
+      params.set('makeModel', makeModelFilters.map(f => f.id).join(','));
+    }
+
+
     // Construct the new URL
     const newPath = `/cars${params.toString() ? `?${params.toString()}` : ''}`;
 
@@ -471,6 +492,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     selectedColors,
     is4x4,
     selectedFeatures,
+    makeModelFilters, // Add this line
     router
   ]);
 
@@ -495,7 +517,10 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     selectedVehicleTypes.length > 0 ||
     is4x4 ||
     selectedColors.length > 0 ||
+    selectedFeatures.length > 0 ||
+    makeModelFilters.length > 0 || // Add this line
     selectedFeatures.length > 0
+
   );
 
   // Update resetFilters
@@ -520,6 +545,8 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     setIs4x4(false);
     setSelectedColors([]); // Add this line
     setSelectedFeatures([]); // Added setSelectedFeatures
+    setMakeModelFilters([]);
+
   };
 
 
@@ -533,6 +560,277 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     { id: 'light', label: 'Light truck', value: 'light' },
     // Add more vehicle types...
   ];
+
+  // Sample data remains the same
+  const makes = [
+    { id: 'audi', name: 'Audi', popular: true },
+    { id: 'bmw', name: 'BMW', popular: true },
+    { id: 'mercedes', name: 'Mercedes-Benz', popular: true },
+    { id: 'volkswagen', name: 'Volkswagen', popular: true },
+    { id: 'toyota', name: 'Toyota', popular: false },
+    { id: 'honda', name: 'Honda', popular: false },
+    { id: 'ford', name: 'Ford', popular: false },
+    { id: 'hyundai', name: 'Hyundai', popular: false }
+  ];
+
+  const models = {
+    audi: [
+      { id: 'all', name: 'All Models', popular: true },
+      { id: 'a3', name: 'A3', popular: true },
+      { id: 'a4', name: 'A4', popular: true },
+      { id: 'a6', name: 'A6', popular: true },
+      { id: 'q5', name: 'Q5', popular: true },
+      { id: 'q7', name: 'Q7', popular: false }
+    ],
+    bmw: [
+      { id: 'all', name: 'All Models', popular: true },
+      { id: '3-series', name: '3 Series', popular: true },
+      { id: '5-series', name: '5 Series', popular: true },
+      { id: 'x3', name: 'X3', popular: true },
+      { id: 'x5', name: 'X5', popular: true }
+    ]
+  };
+
+  const MakeModelSelection = ({ selectedFilters, onRemoveFilter }) => {
+    if (selectedFilters.length === 0) return null;
+
+    return (
+      <div className="mt-3 flex flex-wrap gap-2">
+        {selectedFilters.map(filter => (
+          <div
+            key={filter.id}
+            className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg text-sm"
+          >
+            <span className="font-medium text-red-500">
+              {filter.make} {filter.model !== 'all' ? filter.model : '(All)'}
+            </span>
+            <button
+              onClick={() => onRemoveFilter(filter.id)}
+              className="text-red-400 hover:text-red-600"
+            >
+              <X size={14} strokeWidth={2.5} />
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const MakeModelPopup = ({ isOpen, onClose, onSelect, selectedFilters = [] }) => {
+    const [selectedMake, setSelectedMake] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedModels, setSelectedModels] = useState([]);
+
+    useEffect(() => {
+      if (isOpen) {
+        setSelectedMake(null);
+        setSearchTerm('');
+        setSelectedModels([]);
+      }
+    }, [isOpen]);
+
+    const handleMakeSelect = (make) => {
+      setSelectedMake(make);
+      setSearchTerm('');
+    };
+
+    const handleModelToggle = (model) => {
+      setSelectedModels(prev => {
+        const modelKey = `${selectedMake.id}-${model.id}`;
+        if (model.id === 'all') {
+          if (prev.includes(modelKey)) {
+            return prev.filter(id => !id.startsWith(selectedMake.id));
+          }
+          return [...prev.filter(id => !id.startsWith(selectedMake.id)), modelKey];
+        }
+        const withoutAll = prev.filter(id => id !== `${selectedMake.id}-all`);
+        if (prev.includes(modelKey)) {
+          return withoutAll.filter(id => id !== modelKey);
+        }
+        return [...withoutAll, modelKey];
+      });
+    };
+
+    const filteredMakes = makes.filter(make =>
+      make.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const popularMakes = filteredMakes.filter(make => make.popular);
+    const otherMakes = filteredMakes.filter(make => !make.popular);
+    const currentModels = selectedMake ? models[selectedMake.id] || [] : [];
+    const popularModels = currentModels.filter(model => model.popular);
+    const otherModels = currentModels.filter(model => !model.popular && model.id !== 'all');
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        <div className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+            <h2 className="text-lg font-semibold">
+              {selectedMake ? `Select ${selectedMake.name} Model` : 'Select Make'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="p-4 border-b flex-shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={selectedMake ? "Search models..." : "Search makes..."}
+                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {!selectedMake ? (
+              <div className="space-y-6">
+                {popularMakes.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR MAKES</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {popularMakes.map(make => (
+                        <button
+                          key={make.id}
+                          onClick={() => handleMakeSelect(make)}
+                          className="flex items-center justify-between p-3 text-left border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-all group"
+                        >
+                          <span className="font-medium">{make.name}</span>
+                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {otherMakes.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 mb-3">OTHER MAKES</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {otherMakes.map(make => (
+                        <button
+                          key={make.id}
+                          onClick={() => handleMakeSelect(make)}
+                          className="flex items-center justify-between p-3 text-left border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-all group"
+                        >
+                          <span className="font-medium">{make.name}</span>
+                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {popularModels.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR MODELS</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {popularModels.map(model => (
+                        <button
+                          key={model.id}
+                          onClick={() => handleModelToggle(model)}
+                          className={`flex items-center justify-between p-3 text-left border-2 rounded-lg transition-all
+                        ${selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
+                            }`}
+                        >
+                          <span className="font-medium">{model.name}</span>
+                          {selectedModels.includes(`${selectedMake.id}-${model.id}`) && (
+                            <Check className="w-5 h-5 text-red-400" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {otherModels.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 mb-3">OTHER MODELS</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {otherModels.map(model => (
+                        <button
+                          key={model.id}
+                          onClick={() => handleModelToggle(model)}
+                          className={`flex items-center justify-between p-3 text-left border-2 rounded-lg transition-all
+                        ${selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
+                            }`}
+                        >
+                          <span className="font-medium">{model.name}</span>
+                          {selectedModels.includes(`${selectedMake.id}-${model.id}`) && (
+                            <Check className="w-5 h-5 text-red-400" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t bg-gray-50 rounded-b-xl flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => {
+                  if (selectedMake) {
+                    setSelectedMake(null);
+                  } else {
+                    onClose();
+                  }
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              >
+                {selectedMake ? 'Back' : 'Cancel'}
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedModels.length > 0) {
+                    const filters = selectedModels.map(id => {
+                      const [make, model] = id.split('-');
+                      return {
+                        id,
+                        make: makes.find(m => m.id === make)?.name,
+                        model: models[make]?.find(m => m.id === model)?.name || model
+                      };
+                    });
+                    onSelect(filters);
+                    onClose();
+                  }
+                }}
+                disabled={selectedModels.length === 0}
+                className={`px-6 py-2 rounded-lg font-medium transition-all
+              ${selectedModels.length > 0
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+              >
+                Apply ({selectedModels.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Create the Features section component:
   const FeaturesSection = () => {
@@ -660,17 +958,47 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         return (
           <div className="space-y-6">
             {/* Make and Model Section */}
+            {/* Make and Model Section */}
             <div>
               <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">MAKE AND MODEL</h2>
-              <button className="w-full flex items-center justify-between px-4 py-2.5 border-2 border-gray-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+              <button
+                onClick={() => setIsMakeModelOpen(true)}
+                className="w-full flex items-center justify-between px-4 py-2.5 border-2 border-gray-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+              >
                 <div className="flex items-center">
                   <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
                   <span className="font-medium">Add a car</span>
                 </div>
                 <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
               </button>
-            </div>
 
+              {/* Show selected make/model filters */}
+              <MakeModelSelection
+                selectedFilters={makeModelFilters}
+                onRemoveFilter={(filterId) => {
+                  setMakeModelFilters(prev => prev.filter(f => f.id !== filterId));
+                }}
+              />
+
+              {/* Popup */}
+              <MakeModelPopup
+                isOpen={isMakeModelOpen}
+                onClose={() => setIsMakeModelOpen(false)}
+                selectedFilters={makeModelFilters}
+                onSelect={(selected) => {
+                  setMakeModelFilters(prev => {
+                    // Combine existing filters with new ones, removing duplicates
+                    const combined = [...prev];
+                    selected.forEach(filter => {
+                      if (!combined.some(f => f.id === filter.id)) {
+                        combined.push(filter);
+                      }
+                    });
+                    return combined;
+                  });
+                }}
+              />
+            </div>
             {/* Price Section */}
             <div>
               <div className="flex justify-between items-center mb-3">

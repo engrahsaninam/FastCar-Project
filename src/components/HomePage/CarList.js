@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
-import { MapPin, Heart, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Heart, ExternalLink, Filter, Search, ChevronRight, Share2, ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CarListings = () => {
   const [activeCategory, setActiveCategory] = useState("Sedan");
-  
-  const categories = ["Sedan", "SUV", "Luxury", "Sports", "Trucks"];
-  
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('price-asc');
+  const [favorites, setFavorites] = useState(new Set());
+
+  // Categories with icons and counts
+  const categories = [
+    { id: "Sedan", label: "Sedan", count: 234 },
+    { id: "SUV", label: "SUV", count: 156 },
+    { id: "Luxury", label: "Luxury", count: 89 },
+    { id: "Sports", label: "Sports", count: 67 },
+    { id: "Trucks", label: "Trucks", count: 45 }
+  ];
+
   const cars = [
     {
       id: 1,
@@ -363,87 +374,159 @@ const CarListings = () => {
       watchers: 52
     }
   ];
-
   // Filter cars based on active category
   const filteredCars = cars.filter(car => car.category === activeCategory);
 
-  return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-16">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
-        <h2 className="text-3xl font-medium text-gray-800 mb-4 sm:mb-0">
-          The most searched cars
-        </h2>
+  const toggleFavorite = (id, e) => {
+    e.preventDefault(); // Prevent the card click event from firing
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(id)) {
+        newFavorites.delete(id);
+      } else {
+        newFavorites.add(id);
+      }
+      return newFavorites;
+    });
+  };
+
+  const CarCard = ({ car }) => (
+        <Link href={`/cars/car?id=1`} className="block group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
+      {/* Image Container */}
+      <div className="relative aspect-[16/10] overflow-hidden rounded-t-2xl">
+        <Image
+          src={car.image}
+          alt={car.model}
+          fill
+          className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all
-                ${category === activeCategory 
-                  ? 'bg-emerald-500 text-white shadow-sm' 
-                  : 'bg-white text-gray-600 hover:bg-gray-100 shadow-sm'}`}
-            >
-              {category}
-            </button>
-          ))}
+        {/* Top badges */}
+        <div className="absolute top-4 left-4 flex gap-2">
+          <span className="px-3 py-1 bg-red-500 text-white text-xs font-medium rounded-full">
+            {car.category}
+          </span>
+        </div>
+        
+        {/* Actions */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button 
+            onClick={(e) => toggleFavorite(car.id, e)}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              favorites.has(car.id)
+                ? 'bg-red-500 text-white'
+                : 'bg-white/90 hover:bg-white text-gray-700'
+            }`}
+          >
+            <Heart className="w-4 h-4" fill={favorites.has(car.id) ? "currentColor" : "none"} />
+          </button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className="p-2 rounded-full bg-white/90 hover:bg-white text-gray-700 transition-all duration-200"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredCars.map((car) => (
-          <div 
-            key={car.id}
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
-          >
-            <Link  href={`/cars/car`}>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl">
-                <img
-                  src={car.image}
-                  alt={car.model}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              
-              <div className="p-5">
-                <div className="mb-3">
-                  <h3 className="text-2xl font-bold text-gray-800">{car.price}</h3>
-                  <p className="text-sm font-medium text-gray-600 mt-1">{car.model}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <div className="bg-gray-50 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 text-center">
-                    {car.mileage}
-                  </div>
-                  <div className="bg-gray-50 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 text-center">
-                    {car.fuelType}
-                  </div>
-                  <div className="bg-gray-50 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 text-center">
-                    {car.efficiency}
-                  </div>
-                  <div className="bg-gray-50 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 text-center">
-                    {car.transmission}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-red-500" />
-                    <span className="text-sm font-medium text-gray-600">{car.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <Heart className="w-4 h-4 text-red-500" />
-                      <span className="text-sm font-medium text-gray-600">{car.watchers} Watchers</span>
-                    </div>
-                    
-                    
-                  </div>
-                </div>
-              </div>
-            </Link>
+
+      {/* Content */}
+      <div className="p-6">
+        <div className="mb-4">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{car.price}</h3>
+            <span className="px-2 py-1 bg-red-50 text-red-600 text-xs font-medium rounded">
+              {car.transmission}
+            </span>
           </div>
+          <p className="text-base font-medium text-gray-900">{car.model}</p>
+        </div>
+
+        {/* Specs Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          {[
+            { label: "Mileage", value: car.mileage },
+            { label: "Fuel Type", value: car.fuelType },
+            { label: "Efficiency", value: car.efficiency },
+            { label: "Watchers", value: `${car.watchers} people` }
+          ].map((spec, index) => (
+            <div key={index} className="px-3 py-2 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-500 mb-1">{spec.label}</p>
+              <p className="text-sm font-medium text-gray-900">{spec.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2 text-gray-500">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">{car.location}</span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Find your perfect car
+          </h1>
+          <p className="text-gray-500 mt-2">
+            {filteredCars.length} vehicles available
+          </p>
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative">
+            <select 
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="appearance-none bg-white pl-4 pr-10 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="newest">Newest First</option>
+              <option value="popular">Most Popular</option>
+            </select>
+            <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          </div>
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="flex overflow-x-auto gap-3 pb-4 mb-8 scrollbar-hide">
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            onClick={() => setActiveCategory(category.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+              category.id === activeCategory
+                ? 'bg-red-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <span className="text-sm font-medium">{category.label}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${
+              category.id === activeCategory
+                ? 'bg-red-400 text-white'
+                : 'bg-gray-100 text-gray-600'
+            }`}>
+              {category.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredCars.map((car) => (
+          <CarCard key={car.id} car={car} />
         ))}
       </div>
     </div>

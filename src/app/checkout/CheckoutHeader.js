@@ -1,110 +1,266 @@
-"use client";
+import React from "react";
+import { Timer, CalendarDays, ArrowUpRight, Phone } from "lucide-react";
 
-import React from 'react';
-import { ChevronLeft, Phone } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-
-const CheckoutHeader = ({ carData }) => {
-    const router = useRouter();
-
-    const handleStepClick = (stepId) => {
-        const element = document.getElementById(stepId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
-    const steps = [
-        { number: 1, label: 'Payment method', id: 'payment-method' },
-        { number: 2, label: 'Car condition check', id: 'car-condition' },
-        { number: 3, label: 'Delivery', id: 'delivery' },
-        { number: 4, label: 'Payment', id: 'payment' }
-    ];
-
-    return (
-        <div className="w-full">
-            {/* Upper Header */}
-            <div className="border-b bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4 sm:gap-0">
-                        {/* Left side with back button and logo */}
-                        <div className="flex items-center gap-4 w-full sm:w-auto">
-                            <button 
-                                onClick={() => router.back()}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                                <ChevronLeft className="h-5 w-5" />
-                            </button>
-                            <Link href="/" className="text-red-500 hover:text-red-700">Fast.</Link>
-                        </div>
-
-                        {/* Right side with contact info */}
-                        <div className="flex items-center w-full sm:w-auto">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 bg-red-50 rounded-lg p-3 sm:p-4 w-full sm:w-auto">
-                                <div>
-                                    <div className="text-sm text-gray-600">Do you need advice?</div>
-                                    <a href="tel:+420246034700" className="text-red-500 font-medium">+420 246 034 700</a>
-                                </div>
-                                <div className="text-sm text-gray-500">Mo–Su 8 am-8 pm</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Car Section */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-4">
-                        <div className="relative w-full sm:w-32 h-48 sm:h-20 rounded-lg overflow-hidden">
-                            <img 
-                                src={carData?.image}
-                                alt={carData?.name}
-                                className="object-cover w-full h-full"
-                            />
-                        </div>
-                        <div className="w-full">
-                            <div className="flex flex-wrap items-center text-sm text-gray-600 mb-2 sm:mb-1">
-                                <span>Buy a car</span>
-                                <ChevronLeft className="h-4 w-4 mx-1" />
-                                <span className="font-medium text-gray-900">{carData?.name}</span>
-                            </div>
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
-                                <span>{carData?.mileage} km</span>
-                                <span>{carData?.year}</span>
-                                <div className="flex flex-wrap">
-                                    <span className="text-gray-400">The usual delivery time is </span>
-                                    <span className="mx-1">{carData?.deliveryTime} working days. </span>
-                                    <span className="text-gray-400">We will let you know the exact date during the order process.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+const CarHeader = () => {
+  const steps = [
+    { id: 1, label: "Payment method", isActive: true },
+    { id: 2, label: "Car condition check", isActive: false },
+    { id: 3, label: "Delivery", isActive: false },
+    { id: 4, label: "Payment", isActive: false },
+  ];
+  return (
+    <div className="w-full font-sans">
+      {/* Mobile Design */}
+      <div className="lg:hidden">
+        <div className="border border-gray-100 rounded-lg bg-white shadow-sm">
+          <div className="p-4 flex gap-3">
+            <div className="w-[86px] h-[64px] flex-shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=800&q=60"
+                alt="Cupra Formentor"
+                className="w-full h-full object-cover rounded"
+              />
             </div>
-
-            {/* Progress Steps */}
-            <div className="bg-white border-b overflow-x-auto">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center gap-4 sm:gap-8 min-w-max">
-                        {steps.map((step, index) => (
-                            <button 
-                                key={step.number}
-                                onClick={() => handleStepClick(step.id)}
-                                className="flex items-center gap-2 cursor-pointer"
-                            >
-                                <div className={`flex items-center justify-center w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 
-                                    ${index === 0 ? 'bg-red-500 border-red-500 text-white' : 'border-gray-300 text-gray-400'}`}>
-                                    {step.number}
-                                </div>
-                                <span className={`font-medium text-sm sm:text-base ${index === 0 ? 'text-red-500' : 'text-gray-400'}`}>
-                                    {step.label}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between">
+                <h2 className="text-[15px] text-[#111827] font-medium leading-snug pr-2">
+                  Cupra Formentor 2.0 TDI 4Drive DSG 110 kW
+                </h2>
+                <ArrowUpRight
+                  size={16}
+                  className="text-red-500 flex-shrink-0"
+                />
+              </div>
+              <div className="flex items-center gap-4 mt-1.5">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <Timer size={14} className="text-gray-500" />
+                  </div>
+                  <span className="text-[13px] text-gray-500">30 353 km</span>
                 </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <CalendarDays size={14} className="text-gray-500" />
+                  </div>
+                  <span className="text-[13px] text-gray-500">05/2023</span>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div className="px-4 pb-4">
+            <div className="flex items-start gap-2 text-[13px] text-red-500">
+              <Timer size={16} className="text-red-500 mt-0.5 flex-shrink-0" />
+              <span>
+                The usual delivery time is 20 working days. We will let you know
+                the exact date during the order process.
+              </span>
+            </div>
+          </div>
         </div>
-    );
+
+        <div className="mt-4 bg-white border border-gray-100 rounded-lg shadow-sm">
+          <div className="p-4">
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Phone size={18} className="text-red-500" />
+              </div>
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="text-[13px] text-gray-600">
+                  Do you need advice?
+                </div>
+                <div className="text-[15px] text-red-500 font-medium">
+                  +420 246 034 700
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Design */}
+      <div className="hidden lg:block bg-white">
+        <div className="max-w-[92%]  mx-auto py-4">
+          <div className="flex items-stretch justify-between gap-4">
+            <div className="bg-white border border-gray-100 rounded-lg shadow-sm flex-1">
+              <div className="p-4 h-full flex flex-col">
+                <div className="flex gap-3">
+                  <div className="w-[86px] h-[64px] flex-shrink-0">
+                    <img
+                      src="https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=800&q=60"
+                      alt="Cupra Formentor"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <h2 className="text-[15px] text-[#111827] font-medium leading-snug pr-2">
+                        Cupra Formentor 2.0 TDI 4Drive DSG 110 kW
+                      </h2>
+                      <ArrowUpRight
+                        size={16}
+                        className="text-red-500 flex-shrink-0"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4 mt-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          <Timer size={14} className="text-gray-500" />
+                        </div>
+                        <span className="text-[13px] text-gray-500">
+                          30 353 km
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          <CalendarDays size={14} className="text-gray-500" />
+                        </div>
+                        <span className="text-[13px] text-gray-500">
+                          05/2023
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-start gap-2 text-[13px] text-red-500">
+                      <Timer
+                        size={16}
+                        className="text-red-500 mt-0.5 flex-shrink-0"
+                      />
+                      <span>
+                        The usual delivery time is 20 working days. We will let
+                        you know the exact date during the order process.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-lg shadow-sm w-[280px]">
+              <div className="p-4 h-full flex items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Phone size={18} className="text-red-500" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] text-gray-600">
+                      Do you need advice?
+                    </div>
+                    <div className="text-[15px] text-red-500 font-medium">
+                      +420 246 034 700
+                    </div>
+                    <div className="text-[13px] text-gray-500 mt-0.5">
+                      Mo-Su 8 am-8 pm
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-full bg-white border-bottom border-gray-200 mb-4">
+        <div className=" hidden md:block max-w-[92%] mx-auto py-4">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <React.Fragment key={step.id}>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`
+                  w-7 h-7 rounded-full flex items-center justify-center text-[15px] font-medium
+                  ${
+                    step.isActive
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-500"
+                  }
+                `}
+                  >
+                    {step.id}
+                  </div>
+                  <span
+                    className={`
+                  text-[15px] whitespace-nowrap
+                  ${
+                    step.isActive ? "text-red-500 font-medium" : "text-gray-600"
+                  }
+                `}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+
+                {index < steps.length - 1 && (
+                  <div className="w-5 h-5 flex items-center justify-center text-gray-400">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="flex-shrink-0"
+                    >
+                      <path
+                        d="M9 18L15 12L9 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+        <div className="md:hidden w-full bg-gray-50 py-4">
+      <div className="max-w-[92%] mx-auto">
+        <div className="flex items-center justify-between">
+          {steps.map((step, index) => (
+            <React.Fragment key={step.id}>
+              <div className="flex flex-col items-center gap-1">
+                <div
+                  className={`
+                    w-7 h-7 rounded-full flex items-center justify-center text-[15px] font-medium
+                    ${
+                      step.isActive
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 text-gray-500"
+                    }
+                  `}
+                >
+                  {step.id}
+                </div>
+                <span
+                  className={`
+                    text-xs text-center hidden sm:block
+                    ${
+                      step.isActive ? "text-red-500 font-medium" : "text-gray-600"
+                    }
+                  `}
+                >
+                  {step.label}
+                </span>
+              </div>
+              {index < steps.length - 1 && (
+                <div className="flex-1 h-[2px] bg-gray-200 mx-2">
+                  <div 
+                    className={`h-full ${
+                      step.isActive ? "bg-red-500" : "bg-gray-200"
+                    }`}
+                    style={{
+                      width: step.isActive ? "100%" : "0%"
+                    }}
+                  />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+  );
 };
 
-export default CheckoutHeader;
+export default CarHeader;

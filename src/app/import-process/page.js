@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Clock, EuroIcon, FileCheck, Truck, ClipboardCheck, PhoneCall } from 'lucide-react';
-import AppBar from '@/components/AppBar2';
+import AppBar from '@/components/AppBar';
 import Footer from '@/components/HomePage/Footer';
 
 const ImportProcessPage = () => {

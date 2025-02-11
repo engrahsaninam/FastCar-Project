@@ -1,7 +1,7 @@
 "use client"
-import AppBar from '@/components/AppBar2'
+import AppBar from '@/components/AppBar'
 import React from 'react'
-import RefundPolicyPage from '../safepurchase/RefundPolicySafe'
+import RefundPolicyPage from '../safe-purchase/RefundPolicySafe'
 import Footer from '@/components/HomePage/Footer'
 
 const refund = () => {

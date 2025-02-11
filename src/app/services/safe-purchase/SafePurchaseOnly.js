@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Shield, CreditCard, Clock, CheckCircle, AlertTriangle, HelpCircle } from "lucide-react";
 
@@ -7,7 +6,7 @@ const SafePurchasePage = () => {
     {
       icon: <Shield className="w-12 h-12 text-red-500" />,
       title: "Secure Transactions",
-      description: "All payments are encrypted using industry-standard SSL technology",
+      description: "All payments are encrypted using industry-standard SSL technology and 3D-Secure Payments",
     },
     {
       icon: <CreditCard className="w-12 h-12 text-red-500" />,
@@ -16,8 +15,8 @@ const SafePurchasePage = () => {
     },
     {
       icon: <Clock className="w-12 h-12 text-red-500" />,
-      title: "30-Day Guarantee",
-      description: "Full refund available within 30 days of purchase",
+      title: "Incident Management",
+      description: "Customer Support for Post-Purchase Assistance during working hours.",
     },
   ];
 
@@ -28,7 +27,8 @@ const SafePurchasePage = () => {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4">Safe Purchase Program</h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Shop with confidence knowing your payments and information are protected by industry-leading security.
+          Shop with confidence knowing your payments and information are
+          protected by industry-leading security.
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ const SafePurchasePage = () => {
               <ul className="space-y-4">
                 <li className="flex items-center">
                   <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
-                  <span>Sharing account credentials</span>
+                  <span>Account credentials shared with third parties</span>
                 </li>
                 <li className="flex items-center">
                   <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
@@ -108,7 +108,7 @@ const SafePurchasePage = () => {
             <HelpCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-4">Need Help?</h2>
             <p className="text-gray-600 mb-6">
-              Our support team is available 24/7 to assist you with any questions about our safe purchase program.
+              Our support team is here to help with any questions related to our safe purchase program. Feel free to reach out at any time.
             </p>
             <button className="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition-colors duration-300">
               Contact Support

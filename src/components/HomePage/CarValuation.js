@@ -14,12 +14,12 @@ const CarValuationForm = () => {
           <div className="flex-1">
             <div className="relative">
               {/* Vertical Line */}
-              <div className="absolute left-4 top-10 w-0.5 h-[calc(100%-4rem)] bg-emerald-500" />
+              <div className="absolute left-4 top-10 w-0.5 h-[calc(100%-4rem)] bg-red-500" />
 
               {/* Steps */}
               <div className="space-y-12">
                 <div className="flex gap-8">
-                  <div className="relative z-10 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <div className="relative z-10 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
                     <div className="w-2.5 h-2.5 rounded-full bg-white" />
                   </div>
                   <div>
@@ -31,7 +31,7 @@ const CarValuationForm = () => {
                 </div>
 
                 <div className="flex gap-8">
-                  <div className="relative z-10 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <div className="relative z-10 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
                     <div className="w-2.5 h-2.5 rounded-full bg-white" />
                   </div>
                   <div>
@@ -43,7 +43,7 @@ const CarValuationForm = () => {
                 </div>
 
                 <div className="flex gap-8">
-                  <div className="relative z-10 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <div className="relative z-10 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
                     <div className="w-2.5 h-2.5 rounded-full bg-white" />
                   </div>
                   <div>
@@ -73,7 +73,7 @@ const CarValuationForm = () => {
 
               {/* Toggle Buttons */}
               <div className="grid grid-cols-2 gap-2 mb-4">
-                <button className="py-2 px-3 bg-emerald-500 text-white rounded text-xs font-medium hover:bg-emerald-600 transition-colors">
+                <button className="py-2 px-3 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors">
                   License Plate
                 </button>
                 <button className="py-2 px-3 bg-gray-100 text-gray-700 rounded text-xs font-medium hover:bg-gray-200 transition-colors">

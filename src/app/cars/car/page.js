@@ -2,10 +2,13 @@
 
 import { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
+import Footer from "@/components/HomePage/Footer";
 
 // Dynamically import AppBar and CarDetailPage to improve performance by lazy loading
-const DynamicAppBar = dynamic(() => import("@/components/AppBar2"), { ssr: false });
+const DynamicAppBar = dynamic(() => import("@/components/AppBar"), { ssr: false });
 const DynamicCarDetailPage = dynamic(() => import("@/components/Cars/CarDetailPage"), { ssr: false });
+// const DynamicFooter = dynamic(() => import("@/components/HomePage/Footer"), { ssr: false });
+
 
 export default function CarPage() {
   const [showAppBar, setShowAppBar] = useState(true);
@@ -54,6 +57,10 @@ export default function CarPage() {
       <Suspense fallback={<div>Loading Car Details...</div>}>
         <DynamicCarDetailPage />
       </Suspense>
+
+      {/* <Suspense fallback={<div>Loading Car Details...</div>}>
+        <DynamicFooter/>
+      </Suspense> */}
     </div>
   );
 }

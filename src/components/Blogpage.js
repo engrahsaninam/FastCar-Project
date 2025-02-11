@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import AppBar from '@/components/AppBar2';
+import AppBar from '@/components/AppBar';
 
 const BlogPage = () => {
   const blogPosts = [

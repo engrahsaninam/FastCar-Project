@@ -10,7 +10,7 @@ const DreamCarBanner = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-[#2C3E50] mb-4">
             Buy your dream car easier than you think
           </h1>
-          <p className="text-[#7F8C8D] mb-8">
+          <p className="text-[#7e7e7e] mb-8">
             Lorem ipsum dolor sit amet consectetur adipiscing elit. Ut et massa mi.
             Aliquam in hendrerit urna.
           </p>

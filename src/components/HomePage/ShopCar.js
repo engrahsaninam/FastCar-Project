@@ -1,8 +1,21 @@
+"use client";
 import React, { useState } from 'react';
-import { ChevronDown, CarIcon } from 'lucide-react';
+import { 
+  ChevronLeft, ChevronRight, Search, Filter, 
+  CarIcon, Heart, Calendar, Tag, CircleDollarSign
+} from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import Link from 'next/link';
+import Image from 'next/image';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const CarBrowseOptions = () => {
-  const [activeView, setActiveView] = useState('brands');
+  const [activeTab, setActiveTab] = useState('brands');
+  const [favorites, setFavorites] = useState(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
 
   const brands = [
     { name: 'Toyota', logo: '/toyota.svg', cars: '933 cars' },
@@ -64,143 +77,222 @@ const CarBrowseOptions = () => {
     { year: '2013', count: '167 cars' }
   ];
 
-  const renderContent = () => {
-    switch (activeView) {
+  const getCardIcon = (type) => {
+    switch (type) {
       case 'brands':
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-6">
-            {brands.map((brand) => (
-              <a
-                href={`#${brand.name.toLowerCase()}`}
-                key={brand.name}
-                className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors duration-200"
-              >
-                <div className="w-8 h-8">
-                  <CarIcon className="w-full h-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{brand.name}</span>
-                  <span className="text-sm text-gray-500">{brand.cars}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        );
-
+        return CarIcon;
       case 'types':
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-6">
-            {types.map((type) => (
-              <a
-                href={`#${type.name.toLowerCase()}`}
-                key={type.name}
-                className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors duration-200"
-              >
-                <div className="w-8 h-8">
-                  <CarIcon className="w-full h-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{type.name}</span>
-                  <span className="text-sm text-gray-500">{type.count}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        );
-
+        return Tag;
       case 'models':
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-6">
-            {popularModels.map((model) => (
-              <a
-                href={`#${model.name.toLowerCase().replace(' ', '-')}`}
-                key={model.name}
-                className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors duration-200"
-              >
-                <div className="w-8 h-8">
-                  <CarIcon className="w-full h-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{model.name}</span>
-                  <span className="text-sm text-gray-500">{model.count}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        );
-
+        return CircleDollarSign;
       case 'years':
-        return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-6">
-            {years.map((yearData) => (
-              <a
-                href={`#${yearData.year}`}
-                key={yearData.year}
-                className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors duration-200"
-              >
-                <div className="w-8 h-8">
-                  <CarIcon className="w-full h-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{yearData.year}</span>
-                  <span className="text-sm text-gray-500">{yearData.count}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        );
-
+        return Calendar;
       default:
-        return null;
+        return CarIcon;
     }
   };
 
+  const getCardData = () => {
+    switch (activeTab) {
+      case 'brands':
+        return brands.map(item => ({
+          ...item,
+          title: item.name,
+          subtitle: item.cars,
+          // Brand links should select all models for that brand
+          link: `/cars?makeModel=${item.name.toLowerCase()}-all`
+        }));
+      case 'types':
+        return types.map(item => ({
+          ...item,
+          title: item.name,
+          subtitle: item.count,
+          // Vehicle type links
+          link: `/cars?vehicleTypes=${item.name.toLowerCase().replace(' ', '-')}`
+        }));
+      case 'models':
+        return popularModels.map(item => ({
+          ...item,
+          title: item.name,
+          subtitle: item.count,
+          // Model links need to extract make and model
+          link: (() => {
+            const [make, model] = item.name.split(' ');
+            return `/cars?makeModel=${make.toLowerCase()}-${model.toLowerCase()}`;
+          })()
+        }));
+      case 'years':
+        return years.map(item => ({
+          ...item,
+          title: item.year,
+          subtitle: item.count,
+          // Year links
+          link: `/cars?regFrom=${item.year}&regTo=${item.year}`
+        }));
+      default:
+        return [];
+    }
+  };
+  
+  const UnifiedCard = ({ item }) => {
+    const [favorites, setFavorites] = React.useState(new Set());
+    const isFavorite = favorites.has(item.title);
+  
+    return (
+      <Link
+        href={item.link}
+        className="block group"
+      >
+        <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 relative flex flex-col h-full overflow-hidden">
+          {/* Image Container */}
+          <div className="relative h-48 w-full">
+            <img
+              src="https://carvago.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffamily.dffa1dd7.webp&w=640&q=75"
+              alt={item.title}
+              className="w-full h-full object-contain"
+            />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setFavorites(prev => {
+                  const next = new Set(prev);
+                  if (isFavorite) {
+                    next.delete(item.title);
+                  } else {
+                    next.add(item.title);
+                  }
+                  return next;
+                });
+              }}
+              className="absolute top-3 right-3 hover:scale-110 transition-transform bg-white p-2 rounded-full shadow-sm"
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-300'
+                }`}
+              />
+            </button>
+          </div>
+  
+          {/* Content Container */}
+          <div className="p-4">
+            <h3 className="text-base font-semibold text-gray-900 break-words">
+              {item.title}
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">{item.subtitle}</p>
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 pt-20">
-      <div className="flex flex-col space-y-6">
-        <div className="flex sm:flex-row w-full flex-col justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-          <h1 className="text-2xl font-semibold text-gray-900">
+    <div className="bg-gray-50">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-8 py-6 sm:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">
             Shop cars your way
           </h1>
-          <div className="grid grid-cols-2 lg:grid-cols-4 space-x-1 border border-gray-400 p-1 rounded-lg">
-            <button
-              onClick={() => setActiveView('brands')}
-              className={`px-4 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-                activeView === 'brands' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-none">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-[280px] pl-9 pr-4 py-2 rounded-full border border-gray-200 
+                         text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            <button 
+              className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors flex-shrink-0"
             >
-              Browse by Brands
-            </button>
-            <button
-              onClick={() => setActiveView('types')}
-              className={`px-4 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-                activeView === 'types' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Browse by Type
-            </button>
-            <button
-              onClick={() => setActiveView('models')}
-              className={`px-4 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-                activeView === 'models' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Popular Models
-            </button>
-            <button
-              onClick={() => setActiveView('years')}
-              className={`px-4 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-                activeView === 'years' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Browse by Year
+              <Filter className="w-4 h-4 text-gray-600" />
             </button>
           </div>
         </div>
 
-        {renderContent()}
+        <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+          <div className="flex gap-6 min-w-max">
+            {['Brands', 'Types', 'Models', 'Years'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab.toLowerCase())}
+                className={`relative pb-3 text-sm font-medium transition-colors ${
+                  activeTab === tab.toLowerCase()
+                    ? 'text-red-500' 
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                {tab}
+                {activeTab === tab.toLowerCase() && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        
+        <div className="relative px-0 sm:px-8">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center h-full">
+            <button className="swiper-prev mt-6 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+          
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={12}
+            slidesPerView="auto"
+            navigation={{
+              prevEl: '.swiper-prev',
+              nextEl: '.swiper-next',
+            }}
+            pagination={{
+              enabled: true,
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            breakpoints={{
+              320: {
+                slidesPerView: 2.1,
+                spaceBetween: 8,
+              },
+              480: {
+                slidesPerView: 2.5,
+                spaceBetween: 12,
+              },
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 16,
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              }
+            }}
+            className="!pb-12"
+          >
+            {getCardData().map((item) => (
+              <SwiperSlide key={item.title} className="h-auto">
+                <UnifiedCard item={item} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center h-full">
+            <button className="swiper-next mt-6 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

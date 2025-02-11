@@ -1,25 +1,19 @@
-// app/cars/page.js
 "use client";
-
 import { useState, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import AppBar from '@/components/AppBar2';
-
+import AppBar from '@/components/AppBar';
 // Dynamically import components with suspense
 const Body = dynamic(() => import("@/components/Cars/Body"), {
   loading: () => <BodySkeleton />,
   ssr: false
 });
-
 const CarFilterUI = dynamic(() => import("@/components/Cars/CarListings"), {
   loading: () => <FilterSkeleton />,
   ssr: false
 });
-
 const Footer = dynamic(() => import("@/components/HomePage/Footer"), {
   ssr: true
 });
-
 // Loading skeletons
 const BodySkeleton = () => (
   <div className="animate-pulse">
@@ -31,7 +25,6 @@ const BodySkeleton = () => (
     </div>
   </div>
 );
-
 const FilterSkeleton = () => (
   <div className="animate-pulse p-4">
     <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -42,10 +35,8 @@ const FilterSkeleton = () => (
     </div>
   </div>
 );
-
 export default function Cars() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-
   return (
     <Suspense fallback={<BodySkeleton />}>
       {/* Main Container */}

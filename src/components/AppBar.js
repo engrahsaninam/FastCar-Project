@@ -1,762 +1,478 @@
-'use client';
+"use client";
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, X, Heart, User, Menu, Bookmark, Clock, ShoppingCart } from 'lucide-react';
+import logo from '@/assets/logo.png'
+import english from '@/assets/english.png'
+import cestina from '@/assets/cestina.svg'
+// Language state management
+const languages = [
+  { id: 'cs', name: 'Čeština', flag: cestina.src },
+  { id: 'en', name: 'English', flag: english.src }
+];
 
-import React, { useState, useEffect } from 'react';
-import { CircleUser, ChevronDown, BookmarkIcon, Clock, Heart, ShoppingCart, X, Eye, EyeOff, Menu } from 'lucide-react';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
 
-
-// Dynamically import React Select with no SSR
-const Select = dynamic(() => import('react-select'), {
-  ssr: false,
-  loading: () => null
-});
-const ServicesDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  let timeoutId;
-
-  // Detect mobile device
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Handle mouse/touch interactions
-  const handleInteractionStart = () => {
-    if (!isMobile) {
-      clearTimeout(timeoutId);
-      setIsOpen(true);
-    }
-  };
-
-  const handleInteractionEnd = () => {
-    if (!isMobile) {
-      timeoutId = setTimeout(() => {
-        setIsOpen(false);
-      }, 100);
-    }
-  };
-
-  // Toggle for mobile
-  const handleClick = (e) => {
-    if (isMobile) {
-      e.preventDefault();
-      setIsOpen(!isOpen);
-    }
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMobile && isOpen && !event.target.closest('.services-dropdown')) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [isMobile, isOpen]);
+const MobileLanguageSelector = ({ isOpen, onClose, selectedLang, onSelectLang }) => {
+  if (!isOpen) return null;
 
   return (
-    <div 
-      className="relative inline-block text-left services-dropdown" 
-      onMouseEnter={handleInteractionStart}
-      onMouseLeave={handleInteractionEnd}
-      onTouchStart={handleInteractionStart}
-      onTouchEnd={handleInteractionEnd}
-    >
-      {/* Dropdown Button */}
-      <button
-        onClick={handleClick}
-          className="inline-flex justify-center w-full md:text-white text-gray-700 hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-      >
-        Services
-        <svg
-          className={`-mr-1 ml-2 h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
+    <>
+      <div
+        className="fixed inset-0 bg-black/20 z-[80]"
+        onClick={onClose}
+      />
 
-      {/* Dropdown Menu */}
-      <div 
-        className={`absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 ${
-          isOpen 
-            ? 'opacity-100 translate-y-0 visible' 
-            : 'opacity-0 -translate-y-2 invisible'
-        }`}
-      >
-        <div className="py-1">
-          <Link
-            href="/services_page/safepurchase"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => isMobile && setIsOpen(false)}
+      <div className="fixed bottom-0 left-0 right-0 z-[81] bg-white rounded-t-[16px] transform transition-transform duration-200 ease-out">
+        <div className="flex items-center justify-between px-5 h-14 border-b border-[#E5E7EB]">
+          <h2 className="text-[18px] font-medium text-[#1A1A1A]">Language</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1 transition-colors"
           >
-            Safe Purchase
-          </Link>
-          <Link
-            href="/services_page/inspect"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => isMobile && setIsOpen(false)}
-          >
-            Inspect Car
-          </Link>
-          <Link
-            href="/services_page/fnance"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => isMobile && setIsOpen(false)}
-          >
-            Car Financing
-          </Link>
+            <X className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+        </div>
+        <div className="px-5 py-2">
+          {languages.map((lang) => (
+            <button
+              key={lang.id}
+              onClick={() => {
+                onSelectLang(lang.id);
+                onClose();
+              }}
+              className={`flex items-center w-full h-14 ${selectedLang === lang.id ? 'text-[#EF4444]' : 'text-[#6B7280] hover:text-[#EF4444]'
+                } transition-colors`}
+            >
+              <img src={lang.flag} alt={`${lang.name} Flag`} className="w-[22px] h-[22px] rounded-full" />
+              <span className="ml-[14px] text-[15px] leading-5 font-medium">
+                {lang.name}
+              </span>
+              {selectedLang === lang.id && (
+                <div className="ml-auto">
+                  <div className="w-4 h-4 rounded-full bg-[#EF4444] flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                  </div>
+                </div>
+              )}
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+    </>
   );
 };
-const UserDropdown = ({ setShowLoginModal, setShowSignupModal }) => {
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  let hideDropdownTimeout;
+
+const DesktopLanguageSelector = ({ selectedLang, onSelectLang }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const timeoutRef = useRef(null);
+  const selectedLanguage = languages.find(lang => lang.id === selectedLang);
 
   const handleMouseEnter = () => {
-    clearTimeout(hideDropdownTimeout);
-    setIsDropdownVisible(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsOpen(true);
   };
 
   const handleMouseLeave = () => {
-    hideDropdownTimeout = setTimeout(() => {
-      setIsDropdownVisible(false);
-    }, 200);
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 150); // Small delay before closing
   };
 
-  useEffect(() => {
-    return () => clearTimeout(hideDropdownTimeout);
-  }, []);
-
   return (
-    <div
-      className="hidden md:flex relative text-left"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className="flex items-center cursor-pointer">
-        <CircleUser className="h-6 w-6 text-white" />
-        <ChevronDown className="text-white" />
-      </div>
+    <div className="relative hidden lg:block">
+      <button 
+        className="p-2 hover:opacity-80 transition-opacity flex items-center"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <img 
+          src={selectedLanguage?.flag} 
+          alt={`${selectedLanguage?.name} Flag`} 
+          className="w-[22px] h-[22px] rounded-full object-cover"
+        />
+      </button>
 
-      {isDropdownVisible && (
-        <div className="absolute right-0 mt-6 w-64 bg-white rounded-md shadow-lg py-2 z-20">
-          <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-            <BookmarkIcon className="h-4 w-4 mr-3 text-gray-500" />
-            <span>Saved searches</span>
-          </button>
-
-          <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-            <Clock className="h-4 w-4 mr-3 text-gray-500" />
-            <span>Last searches</span>
-          </button>
-
-          <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-            <Heart className="h-4 w-4 mr-3 text-gray-500" />
-            <span>Favorite cars</span>
-          </button>
-
-          <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-            <ShoppingCart className="h-4 w-4 mr-3 text-gray-500" />
-            <span>Orders in progress</span>
-          </button>
-
-          <div className="px-4 py-3 border-t border-gray-100">
+      {isOpen && (
+        <div 
+          className="absolute right-[-30px] top-[calc(100%+8px)] w-[180px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-[#E5E7EB] py-2 z-[90]"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {languages.map((lang) => (
             <button
-              onClick={() => setShowLoginModal(true)}
-              className="w-full mb-2 px-4 py-2 text-white bg-[#EF4444] rounded-md hover:bg-[[#D93C0B]] transition-colors"
+              key={lang.id}
+              onClick={() => {
+                onSelectLang(lang.id);
+                setIsOpen(false);
+              }}
+              className={`flex items-center w-full px-4 h-10 ${
+                selectedLang === lang.id 
+                  ? 'text-[#EF4444]' 
+                  : 'text-[#1A1A1A] hover:text-[#EF4444]'
+              } hover:bg-[#F9FAFB] transition-colors`}
             >
-              Login
+              <img 
+                src={lang.flag} 
+                alt={`${lang.name} Flag`} 
+                className="w-[22px] h-[22px] rounded-full" 
+              />
+              <span className="ml-3 text-[15px] leading-5 font-medium">
+                {lang.name}
+              </span>
             </button>
-
-            <div className="text-sm text-gray-500 text-center">
-              Don't have an account?
-              <button
-                onClick={() => setShowSignupModal(true)}
-                className="text-blue-600 hover:text-blue-700 ml-1"
-              >
-                Register
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-const Navbar = () => {
-  const [isClient, setIsClient] = useState(false);
-  // const [isSelectLoaded, setIsSelectLoaded] = useState(false);
-  // const [mounted, setMounted] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    surname: '',
-    phone: '',
-    country: '',
-    postalCode: '',
-    agreeToTerms: false
-  });
-  const [showForm, setShowForm] = useState(false);
-
-
-  useEffect(() => {
-    setIsClient(true);
-    setMounted(true);
-    setIsSelectLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    if (isClient) {
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }
-  }, [isClient]);
-
-
-  useEffect(() => {
-    if (showLoginModal || showSignupModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [showLoginModal, showSignupModal]);
-
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log('Login attempt with:', { email, password });
-  };
-
-
-  const handleSignup = (e) => {
-    e.preventDefault();
-    console.log('Signup attempt with:', formData);
-  };
-
-
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      borderRadius: '9999px',
-      padding: '2px 4px',
-      minWidth: '80px',
-      backgroundColor: 'transparent',
-      border: 'none',
-      boxShadow: 'none',
-    }),
-    option: (provided) => ({
-      ...provided,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '8px 12px',
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      color: isScrolled ? 'black' : 'white',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      backgroundColor: 'white',
-      border: '1px solid #e5e7eb',
-    }),
-  };
-
-  const languageOptions = [
-    { value: 'EN', label: 'English', flag: '/flags/en.png' },
-    { value: 'ES', label: 'Español', flag: '/flags/es.png' },
-  ];
-
-  const LoginModal = () => (
-    <div
-      className={`fixed inset-0 flex z-50 items-center justify-center ${showLoginModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        } transition-opacity duration-300`}
-    >
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={() => setShowLoginModal(false)}
-      />
-
-      <div
-        className={`relative bg-red-50/85 rounded-lg w-full max-w-md transform transition-all duration-300 ${showLoginModal ? 'scale-100' : 'scale-95'
-          }`}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="px-8 pt-8 pb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-red-600">Welcome back</h2>
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="text-gray-400 hover:text-gray-500 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div className="text-sm text-gray-600">
-              Don't have an account yet?{' '}
-              <button
-                onClick={() => {
-                  setShowLoginModal(false);
-                  setShowSignupModal(true);
-                }}
-                className="text-red-500 hover:text-red-600 font-semibold"
-              >
-                Register here
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-2">
-              <button className="flex items-center justify-center px-4 py-2.5 border border-red-400 rounded-lg hover:bg-red-50 transition-colors">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium text-gray-600">Google</span>
-              </button>
-              <button className="flex items-center justify-center px-4 py-2.5 border border-red-400 rounded-lg hover:bg-red-50 transition-colors">
-                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-6 h-6 mr-2" />
-                <span className="text-sm font-medium text-gray-600">Facebook</span>
-              </button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 text-gray-500 bg-red-50/85">or via e-mail</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <div className="mt-1">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    className="w-full px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="mt-1 relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="w-full px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <Link href="/forgot-password" className="text-red-500 text-sm font-medium">
-                  Forgot your password?
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full px-4 py-3 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-              >
-                Login
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-
-  const SignupModal = () => (
-    <div
-      className={`fixed inset-0 flex z-50 items-center justify-center ${showSignupModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        } transition-opacity duration-300`}
-    >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={() => setShowSignupModal(false)}
-      />
-
-      {/* Modal */}
-      <div
-        className={`relative bg-red-50/85 rounded-lg w-full max-w-md max-h-[90vh] transform transition-all duration-300 ${showSignupModal ? 'scale-100' : 'scale-95'
-          }`}
-      >
-        <div className="px-8 pt-8 pb-6 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-red-200 scrollbar-track-transparent hover:scrollbar-thumb-red-300">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-red-600">Create Account</h2>
-            <button
-              onClick={() => setShowSignupModal(false)}
-              className="text-gray-400 hover:text-gray-500 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <button
-                onClick={() => {
-                  setShowSignupModal(false);
-                  setShowLoginModal(true);
-                }}
-                className="text-red-500 hover:text-red-600 font-semibold"
-              >
-                Login here
-              </button>
-            </div>
-
-            {/* Social Signup Buttons */}
-            <div className="grid grid-cols-2 gap-4 mb-2">
-              <button className="flex items-center justify-center px-4 py-2.5 border border-red-400 rounded-lg hover:bg-red-50 transition-colors">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium text-gray-600">Google</span>
-              </button>
-              <button className="flex items-center justify-center px-4 py-2.5 border border-red-400 rounded-lg hover:bg-red-50 transition-colors">
-                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium text-gray-600">Facebook</span>
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-
-              <div className="relative flex justify-center text-sm">
-                {/* Only show the button if showForm is false */}
-                {!showForm && (
-                  <button
-                    onClick={() => setShowForm(true)}
-                    className="px-4 py-2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  >
-                    Sign up with email
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Signup Form */}
-            {showForm && (
-              <form onSubmit={handleSignup} className="space-y-4">
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="Email"
-                  className="w-full px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                />
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder="Password (min. 8 characters)"
-                    className="w-full px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Name"
-                    className="px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                  />
-                  <input
-                    type="text"
-                    value={formData.surname}
-                    onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                    placeholder="Surname"
-                    className="px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                  />
-                </div>
-
-                <div className="flex space-x-2">
-                  <select
-                    className="w-24 px-2 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                    value={formData.countryCode}
-                    onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                  >
-                    <option>+34</option>
-                  </select>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="Telephone number"
-                    className="flex-1 px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <select
-                    className="px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  >
-                    <option value="">Select country</option>
-                  </select>
-                  <input
-                    type="text"
-                    value={formData.postalCode}
-                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                    placeholder="Postal code"
-                    className="px-4 py-3 border bg-red-50/70 border-red-200 rounded-lg focus:ring-2 focus:ring-red-200 focus:border-transparent outline-none transition-all"
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="terms"
-                    checked={formData.agreeToTerms}
-                    onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
-                    className="rounded border-red-200 text-red-500 focus:ring-red-200"
-                  />
-                  <label htmlFor="terms" className="text-sm text-gray-600">
-                    I agree to the processing of{' '}
-                    <a href="#" className="text-red-500 hover:text-red-600">
-                      personal data
-                    </a>
-                    .
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full px-4 py-3 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  Register
-                </button>
-              </form>
-            )}
-
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  if (!isClient) {
-    return null;
-  }
+const AuthDropdown = ({ onClose, isMobile, selectedLang, onSelectLang }) => {
+  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
+  const selectedLanguage = languages.find(lang => lang.id === selectedLang);
 
   return (
     <>
-      <nav className="absolute w-full z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo and Left Menu Items */}
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <Link href="/" className="text-xl font-bold text-white">
-                  <Image
-                    src="/Logo/logo.png.png"
-                    alt="Logo"
-                    width={100}
-                    height={50}
-                    className="inline-block"
-                  />
-                </Link>
-                <span className="text-gray-200 text-2xl mx-5">|</span>
-              </div>
-              <div className="hidden md:block">
-                <div className="flex items-center space-x-1">
-                  <Link
-                    href="/cars"
-                    className="text-white hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Search
-                  </Link>
-                  <Link
-                    href="/bestdealss"
-                    className="text-white hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Best Deals
-                  </Link>
-                  <div className="relative">
-                    <ServicesDropdown />
-                  </div>
-                  <Link
-                      href="/importproces"
-                      className="text-white hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                    >
-                      Import process
-                    </Link>
-                  <Link
-                    href="/blog"
-                    className="text-white hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    News
-                  </Link>
-                  <Link
-                    href="/about"
-                    className="text-white hover:text-red-400 hover:bg-gray-50/40 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    About
-                  </Link>
-                </div>
-              </div>
+      <div className={`
+        fixed top-0 right-0 bottom-0 w-[300px] z-[70] bg-white flex flex-col
+        lg:absolute lg:top-[calc(100%+8px)] lg:w-[320px] lg:h-auto lg:bottom-auto 
+        lg:rounded-[8px] lg:shadow-[0_2px_8px_rgba(0,0,0,0.08)] lg:border lg:border-[#E5E7EB]
+        transition-transform duration-200 ease-out ${isMobile ? 'translate-x-0' : ''}
+      `}>
+
+        <div className="flex flex-col h-full bg-white lg:rounded-[8px] overflow-hidden">
+          {/* Mobile close button */}
+          <div className="h-14 flex items-center justify-end px-5 border-b border-[#E5E7EB] lg:hidden">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 transition-colors">
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+          </div>
+
+          {/* Menu Items */}
+          <div className="flex-1 px-5">
+            <div className="py-2 space-y-1">
+              <Link text="Saved searches" icon={Bookmark} />
+              <Link text="Last searches" icon={Clock} />
+              <Link text="Favorite cars" icon={Heart} />
+              <Link text="Orders in progress" icon={ShoppingCart} />
+            </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="mt-auto">
+            <div className="px-5 py-4 border-t border-[#E5E7EB]">
+              <button className="w-full h-[48px] bg-[#EF4444] hover:bg-[#D93C0B] text-white rounded-[8px] text-[15px] font-medium flex items-center justify-center transition-all duration-200">
+                <User className="w-[22px] h-[22px] mr-2" strokeWidth={1.5} />
+                Login
+              </button>
+              <p className="text-[15px] text-center mt-4 text-[#6B7280]">
+                Don't have an account?
+                <a href="#" className="text-[#EF4444] font-medium ml-1 hover:underline">
+                  Register
+                </a>
+              </p>
             </div>
 
-            {/* Right Menu Items */}
-            <div className="flex items-center space-x-4">
-              <Heart className="text-gray-100 hover:text-red-500 cursor-pointer" />
-              <Select
-                options={languageOptions}
-                defaultValue={languageOptions[0]}
-                styles={customStyles}
-                formatOptionLabel={(option) => (
-                  <div className="flex items-center">
-                    {option.flag && <img src={option.flag} alt="" className="w-5 h-5 rounded-full" />}
-                    <span className="ml-2">{option.label}</span>
-                  </div>
-                )}
-                isSearchable={false}
-              />
-
-              {/* User Icon with Dropdown - Desktop Only */}
-              {/* User Icon with Dropdown - Desktop Only */}
-              <UserDropdown
-                setShowLoginModal={setShowLoginModal}
-                setShowSignupModal={setShowSignupModal}
-              />
-
-              {/* Mobile Menu Button */}
-              <div className="md:hidden">
-                <button
-                  type="button"
-                  className="text-white hover:text-gray-200 p-2"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-              </div>
+            {/* Language Selector Button - Mobile Only */}
+            <div className="lg:hidden px-5 py-3 bg-[#F9FAFB] border-t border-[#E5E7EB]">
+              <button
+                onClick={() => setIsLanguageSelectorOpen(true)}
+                className="flex items-center h-[42px] w-full hover:text-[#EF4444] transition-colors"
+              >
+                <img
+                  src={selectedLanguage?.flag}
+                  alt={`${selectedLanguage?.name} Flag`}
+                  className="w-[22px] h-[22px] rounded-full"
+                />
+                <span className="ml-[14px] text-[15px] leading-5 font-medium text-[#1A1A1A]">
+                  {selectedLanguage?.name} ({selectedLang.toUpperCase()})
+                </span>
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu - Updated to match desktop links */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-[#ffeded] shadow-lg">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link href="/cars" className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base">
-                Search
-              </Link>
-              <Link href="/bestdealss" className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base">
-                Best Deals
-              </Link>
-              <div className="relative">
-                <ServicesDropdown/>
-              </div>
-              <Link href="/import__process" className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base">
-                Import process
-              </Link>
-              <Link href="/blog" className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base">
-                Blog
-              </Link>
-              <Link href="/about" className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base">
-                About
-              </Link>
-              <div className="pt-4 mt-2 border-t border-gray-200">
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setShowLoginModal(true);
-                  }}
-                  className="block w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setShowSignupModal(true);
-                  }}
-                  className="block w-full text-left text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-base font-medium mt-2"
-                >
-                  Sign Up
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Modals */}
-      <LoginModal />
-      <SignupModal />
+      </div>
+      <MobileLanguageSelector
+        isOpen={isLanguageSelectorOpen}
+        onClose={() => setIsLanguageSelectorOpen(false)}
+        selectedLang={selectedLang}
+        onSelectLang={onSelectLang}
+      />
     </>
   );
 };
 
-export default dynamic(() => Promise.resolve(Navbar), { ssr: false });
+// Navigation data structure
+const navigationLinks = [
+  {
+    id: 'buy',
+    label: 'Buy',
+    href: '/cars',
+    type: 'link'
+  },
+  {
+    id: 'best-deals',
+    label: 'Best Deals',
+    href: '/best-deals',
+    type: 'link'
+  },
+  {
+    id: 'Import-process',
+    label: 'Import Process',
+    href: '/import-process',
+    type: 'link'
+  },
+  {
+    id: 'services',
+    label: 'Services',
+    type: 'dropdown',
+    items: [
+      { id: 'financing', label: 'Car Financing', href: '/services/finance' },
+      { id: 'Safe Purchase Program', label: 'Safe Purchase Program', href: '/services/safe-purchase' },
+      { id: 'inspection', label: 'Vehicle Inspection', href: '/services/inspect' },
+    ]
+  },
+  {
+    id: 'news',
+    label: 'News',
+    href: '/blog',
+    type: 'link'
+  },
+  {
+    id: 'About',
+    label: 'About',
+    href: '/about',
+    type: 'link'
+  },
+  // {
+  //   id: 'electric-hybrid',
+  //   label: 'Electric & Hybrid',
+  //   href: '/electric-hybrid',
+  //   type: 'link',
+  //   badge: {
+  //     text: 'NEW',
+  //     color: 'bg-orange-500'
+  //   }
+  // }
+];
+
+const ServicesDropdown = ({ isOpen }) => {
+  if (!isOpen) return null;
+  
+  const services = navigationLinks.find(link => link.id === 'services').items;
+  
+  return (
+    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+      {services.map(service => (
+        <a
+          key={service.id}
+          href={service.href}
+          className="block px-4 py-2 text-[15px] text-gray-600 hover:text-[#EF4444] hover:bg-gray-50 transition-colors"
+        >
+          {service.label}
+        </a>
+      ))}
+    </div>
+  );
+};
+
+const NavLink = ({ link }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  if (link.type === 'dropdown') {
+    return (
+      <div className="relative" onMouseLeave={() => setIsDropdownOpen(false)}>
+        <button
+          onMouseEnter={() => setIsDropdownOpen(true)}
+          className="px-1 py-6 text-[15px] font-medium text-[#6B7280] hover:text-[#EF4444] transition-colors inline-flex items-center group"
+        >
+          {link.label}
+          <ChevronDown 
+            className={`ml-1 w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
+            strokeWidth={1.5} 
+          />
+        </button>
+        <ServicesDropdown isOpen={isDropdownOpen} />
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={link.href}
+      className="px-1 py-6 text-[15px] font-medium text-[#6B7280] hover:text-[#EF4444] transition-colors relative group"
+    >
+      {link.label}
+      {link.badge && (
+        <span className={`ml-2 px-2 py-0.5 text-[11px] font-medium ${link.badge.color} text-white rounded-full leading-none`}>
+          {link.badge.text}
+        </span>
+      )}
+      <span className="absolute bottom-[1px] left-0 w-full h-[3.5px] rounded-lg bg-[#EF4444] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
+    </a>
+  );
+};
+
+
+// Link component for menu items
+const Link = ({ text, icon: Icon }) => (
+  <a href="#" className="flex items-center h-[52px] text-[#1A1A1A] hover:text-[#EF4444] transition-colors group">
+    <Icon className="w-[22px] h-[22px] text-[#EF4444]" strokeWidth={1.5} />
+    <span className="ml-[14px] text-[15px] leading-5 font-medium">{text}</span>
+  </a>
+);
+
+const CarvagoNav = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedLang, setSelectedLang] = useState('en');
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const closeAll = () => {
+    setIsMobileMenuOpen(false);
+    setIsLoginOpen(false);
+    setIsServicesOpen(false);
+  };
+
+  return (
+    <header className="relative top-0 left-0 right-0 z-50 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+      <nav className="max-w-[1440px] mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Mobile Menu Button */}
+          <button
+            className="lg:hidden flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="w-5 h-5" strokeWidth={1.5} />
+            <span className="text-sm font-medium ml-2">Menu</span>
+          </button>
+
+          {/* Logo */}
+          <a href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:ml-0 transition-all">
+            <img src={logo.src} alt="" className="object-contain size-24" />
+          </a>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-8">
+            {navigationLinks.map(link => (
+              <NavLink key={link.id} link={link} />
+            ))}
+          </div>
+
+          {/* Right Section */}
+          <div className="flex items-center space-x-1">
+            <button className="p-2 text-[#1A1A1A] hover:text-[#EF4444] transition-colors">
+              <Heart className="w-[22px] h-[22px]" strokeWidth={1.5} />
+            </button>
+
+            <DesktopLanguageSelector
+              selectedLang={selectedLang}
+              onSelectLang={setSelectedLang}
+            />
+
+            {/* Login Button */}
+            <div className="relative">
+              <button
+                onClick={() => setIsLoginOpen(!isLoginOpen)}
+                className="p-2 inline-flex items-center text-[#1A1A1A] hover:text-[#EF4444] transition-colors group"
+              >
+                <User className="w-[22px] h-[22px]" strokeWidth={1.5} />
+                <span className="hidden lg:inline ml-2 text-[15px] font-medium">Login</span>
+                <ChevronDown className="hidden lg:inline ml-1 w-4 h-4" strokeWidth={1.5} />
+              </button>
+
+              {isLoginOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 bg-black/20 z-60 lg:hidden"
+                    onClick={closeAll}
+                  />
+                  <AuthDropdown
+                    onClose={closeAll}
+                    isMobile={isMobile}
+                    selectedLang={selectedLang}
+                    onSelectLang={setSelectedLang}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[60] bg-white">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
+            <img src={logo.src} alt="" className="object-contain size-24" />
+            <button onClick={closeAll} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <X className="w-[22px] h-[22px]" strokeWidth={1.5} />
+            </button>
+          </div>
+
+          <nav className="px-4 py-2">
+            <div className="space-y-1">
+              <a href="/" className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors">
+                Home
+              </a>
+              {navigationLinks.map(link => (
+                <div key={link.id}>
+                  {link.type === 'dropdown' ? (
+                    <>
+                      <button 
+                        onClick={() => setIsServicesOpen(!isServicesOpen)}
+                        className="w-full flex items-center justify-between px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
+                      >
+                        {link.label}
+                        <ChevronDown 
+                          className={`w-5 h-5 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+                          strokeWidth={1.5} 
+                        />
+                      </button>
+                      {isServicesOpen && (
+                        <div className="pl-6 py-2 space-y-2 bg-gray-50">
+                          {link.items.map(item => (
+                            <a
+                              key={item.id}
+                              href={item.href}
+                              className="block px-3 py-2 text-[#6B7280] text-[15px] font-medium hover:text-[#EF4444] transition-colors"
+                            >
+                              {item.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="block px-3 py-3 text-[#6B7280] text-[16px] font-medium hover:text-[#EF4444] transition-colors"
+                    >
+                      {link.label}
+                      {link.badge && (
+                        <span className={`ml-2 px-2 py-0.5 text-[11px] font-medium ${link.badge.color} text-white rounded-full`}>
+                          {link.badge.text}
+                        </span>
+                      )}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default CarvagoNav;

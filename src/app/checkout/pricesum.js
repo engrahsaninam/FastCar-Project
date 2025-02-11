@@ -29,46 +29,54 @@ const MobileDrawer = ({ isOpen, onClose, children }) => {
 };
 
 const PriceSummaryContent = ({ isMobile = false }) => {
-  const baseClass = isMobile ? "bg-white" : "bg-red-50/85 rounded-lg shadow-sm";
+  const baseClass = isMobile ? "bg-white" : "bg-white rounded-2xl shadow-xl";
   
   return (
-    <div className={`${baseClass} p-4`}>
-      {/* Header */}
-      <div className="bg-red-500 rounded-lg p-4 mb-4">
-        <div className="text-sm font-medium text-white">TOTAL PRICE OF THE CAR INCL. SERVICES</div>
-        <div className="text-xl font-bold mt-1 text-white">CZK 647,765</div>
-        <div className="text-xs text-white">CZK 542,965 without VAT</div>
-      </div>
-
-      {/* Car details */}
-      <div className="border-b pb-3 mb-3">
-        <div className="text-sm font-medium mb-2">Mercedes-Benz A 200 d 110 kW</div>
-        <div className="flex justify-between text-xs mb-1">
-          <span className="text-gray-600">Price incl. necessary import services</span>
-          <span className="font-medium">CZK 634,490</span>
-        </div>
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>Price without VAT</span>
-          <span>CZK 447,915</span>
-        </div>
-        <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-          <span>The price is recalculated from 25.65 €/CZK</span>
-          <Info className="w-3 h-3" />
+    <div className={`${baseClass} p-7`}>
+      {/* Premium Header */}
+      <div className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-xl p-6 mb-7 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-16 -translate-y-16" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full transform -translate-x-12 translate-y-12" />
+        
+        <div className="relative">
+          <div className="text-sm font-medium text-red-100/90">TOTAL PRICE INCL. SERVICES</div>
+          <div className="text-3xl font-bold mt-2 text-white tracking-tight">CZK 647,765</div>
+          <div className="text-xs text-red-100/80 mt-1.5">CZK 542,965 without VAT</div>
         </div>
       </div>
 
-      {/* CarAudit */}
-      <div className="border-b pb-3 mb-3">
-        <div className="flex justify-between items-center text-sm">
-          <span>CarAudit™</span>
-          <span className="font-medium">CZK 1,990</span>
+      {/* Car details with premium styling */}
+      <div className="border-b border-gray-100 pb-5 mb-5">
+        <div className="text-base font-semibold text-gray-900 mb-3">Mercedes-Benz A 200 d 110 kW</div>
+        <div className="space-y-2.5">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-600">Price incl. necessary import services</span>
+            <span className="text-sm font-semibold text-gray-900">CZK 634,490</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-500">Price without VAT</span>
+            <span className="text-sm text-gray-500">CZK 447,915</span>
+          </div>
+          <div className="flex items-center gap-1.5 mt-2 bg-gray-50 rounded-lg p-2.5">
+            <span className="text-xs text-gray-600">The price is recalculated from 25.65 €/CZK</span>
+            <Info className="w-3.5 h-3.5 text-gray-400" />
+          </div>
         </div>
       </div>
 
-      {/* Additional Services */}
-      <div className="mb-3">
-        <div className="text-xs font-medium text-gray-500 mb-2">ADDITIONAL SERVICES</div>
-        <div className="space-y-1.5">
+      {/* CarAudit with premium hover effect */}
+      <div className="border-b border-gray-100 pb-5 mb-5">
+        <div className="flex justify-between items-center hover:bg-red-50/40 p-2.5 rounded-lg transition-all duration-300">
+          <span className="text-sm font-medium text-gray-800">CarAudit™</span>
+          <span className="text-sm font-semibold text-gray-900">CZK 1,990</span>
+        </div>
+      </div>
+
+      {/* Additional Services with premium styling */}
+      <div className="mb-7">
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Additional Services</div>
+        <div className="space-y-3">
           {[
             { label: 'Home delivery', price: 'CZK 15,005', hasDropdown: true },
             { label: '12 liters of fuel', price: 'FREE', isFree: true },
@@ -77,14 +85,21 @@ const PriceSummaryContent = ({ isMobile = false }) => {
             { label: 'Car registration', price: 'CZK 1,990' },
             { label: 'Extended warranty', price: 'FREE', isFree: true }
           ].map((service, index) => (
-            <div key={index} className="flex justify-between items-center text-sm">
-              <div className="flex items-center gap-1">
-                <span>{service.label}</span>
-                {service.hasDropdown && <ChevronDown className="w-3 h-3" />}
+            <div 
+              key={index} 
+              className="flex justify-between items-center p-2.5 hover:bg-gray-50 rounded-lg transition-all duration-300"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700">{service.label}</span>
+                {service.hasDropdown && (
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                )}
               </div>
-              <span className={service.isFree ? 
-                "px-1.5 py-0.5 text-xs text-white bg-green-500 rounded" : 
-                "font-medium"}>
+              <span className={`
+                ${service.isFree 
+                  ? "px-2.5 py-1 text-xs font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-full shadow-sm" 
+                  : "text-sm font-medium text-gray-900"}
+              `}>
                 {service.price}
               </span>
             </div>
@@ -92,31 +107,31 @@ const PriceSummaryContent = ({ isMobile = false }) => {
         </div>
       </div>
 
-      {/* Optional Services */}
-      <div className="mb-4">
-        <div className="text-xs font-medium text-gray-500 mb-1">OPTIONAL SERVICES</div>
-        <div className="text-xs text-gray-400">
+      {/* Optional Services with premium card style */}
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-4 mb-7">
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Optional Services</div>
+        <div className="text-xs text-gray-600">
           Other recommended services can be selected in the car order
         </div>
       </div>
 
-      {/* Total Price */}
-      <div className="border-t pt-3 mb-3">
+      {/* Total Price with premium styling */}
+      <div className="border-t border-gray-100 pt-5 mb-7">
         <div className="flex justify-between items-center">
-          <span className="font-medium">Total price</span>
-          <span className="text-lg font-bold">CZK 667,765</span>
+          <span className="text-base font-medium text-gray-800">Total price</span>
+          <span className="text-2xl font-bold text-red-600">CZK 667,765</span>
         </div>
       </div>
 
-      {/* Financing Note */}
-      <div className="bg-blue-50 rounded-lg p-3 text-sm">
-        <div className="flex justify-between items-center mb-1">
-          <span>You are financing car for example for</span>
-          <span className="font-bold">CZK 5,557/mo</span>
+      {/* Financing Note with premium gradient */}
+      <div className="bg-gradient-to-br from-red-50 via-red-50/50 to-transparent rounded-xl p-5 border border-red-100/50">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm text-gray-700">You are financing car for example for</span>
+          <span className="text-base font-bold text-red-600">CZK 5,557/mo</span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 text-xs text-gray-600">
           <span>120%, 48 instalments</span>
-          <Info className="w-3 h-3" />
+          <Info className="w-3.5 h-3.5 text-gray-400" />
         </div>
       </div>
     </div>

@@ -90,44 +90,94 @@ const GuaranteeCard = () => {
 
 const CarTabs = () => {
     const [activeTab, setActiveTab] = useState('details');
-
+    
+    // Create refs for each section
+    const detailsRef = useRef(null);
+    const featuresRef = useRef(null);
+    const howItWorksRef = useRef(null);
+    const priceHistoryRef = useRef(null);
+    const priceMapRef = useRef(null);
+    const financingRef = useRef(null);
+  
     const tabs = [
-        { id: 'details', label: 'Details' },
-        { id: 'features', label: 'Features' },
-        { id: 'howItWorks', label: 'How it works' },
-        { id: 'priceHistory', label: 'Price History', hasIcon: true },
-        { id: 'priceMap', label: 'Price map' },
-        { id: 'financing', label: 'Financing' }
-    ];
+        { id: 'details', label: 'Details', ref: detailsRef },
+        { id: 'features', label: 'Features', ref: featuresRef },
+        { id: 'howItWorks', label: 'How it works', ref: howItWorksRef },
+        { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
+        { id: 'priceMap', label: 'Price map', ref: priceMapRef },
+        { id: 'financing', label: 'Financing', ref: financingRef }
+      ];
+  
+    // Handle scroll events to update active tab
+    useEffect(() => {
+        const handleScroll = () => {
+          const scrollPosition = window.scrollY + 100; // Offset for header
+    
+          for (const tab of tabs) {
+            if (tab.ref.current) {
+              const element = tab.ref.current;
+              const offsetTop = element.offsetTop;
+              const offsetBottom = offsetTop + element.offsetHeight;
+    
+              if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+                setActiveTab(tab.id);
+                break;
+              }
+            }
+          }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+    
+      const handleTabClick = (tabId) => {
+        setActiveTab(tabId);
+        const tab = tabs.find(t => t.id === tabId);
+        if (tab && tab.ref.current) {
+          const headerOffset = 80; // Adjust based on your header height
+          const elementPosition = tab.ref.current.offsetTop;
+          const offsetPosition = elementPosition - headerOffset;
+    
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      };
+    
 
-    return (
-        <div className="lg:w-[65%] px-6 border-b border-gray-200">
+      return (
+        <div className="sticky top-0 bg-white z-30 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8">
             <div className="flex space-x-1 overflow-x-auto">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`
-                            whitespace-nowrap px-4 py-2.5 text-sm font-medium 
-                            ${activeTab === tab.id
-                                ? 'text-red-500 border-b-2 border-red-500'
-                                : 'text-gray-500 hover:text-gray-700'}
-                            transition-colors duration-150 ease-in-out
-                            flex items-center gap-1.5
-                        `}
-                    >
-                        {tab.label}
-                        {tab.hasIcon && (
-                            <div className="bg-orange-100 rounded p-0.5">
-                                <BarChart className="w-3 h-3 text-orange-500" />
-                            </div>
-                        )}
-                    </button>
-                ))}
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`
+                    whitespace-nowrap px-4 py-2.5 text-sm font-medium 
+                    ${activeTab === tab.id 
+                      ? 'text-red-500 border-b-2 border-red-500'
+                      : 'text-gray-500 hover:text-gray-700'}
+                    transition-colors duration-150 ease-in-out
+                    flex items-center gap-1.5
+                  `}
+                >
+                  {tab.label}
+                  {tab.hasIcon && (
+                    <div className="bg-orange-100 rounded p-0.5">
+                      <BarChart className="w-3 h-3 text-orange-500" />
+                    </div>
+                  )}
+                </button>
+              ))}
             </div>
+          </div>
         </div>
-    );
-};
+      );
+    };
+    
 const HowItWorks = () => {
     const [activeCard, setActiveCard] = useState(0);
 
@@ -449,7 +499,7 @@ const PriceMap = () => {
             </div>
 
             {/* Comparable Cars Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="hidden md:grid md:grid-cols-2 gap-6">
                 {chartData.comparableCars.map(car => (
                     <div key={car.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
                         <img
@@ -687,477 +737,247 @@ const Financing = () => {
     );
 };
 
-
-
-const CheckoutSidebar = () => {
+const MobileCheckoutBar = () => {
     const router = useRouter();
     const [isServicesExpanded, setIsServicesExpanded] = useState(false);
-    const [isFinancingModalOpen, setIsFinancingModalOpen] = useState(false)
+    const [isFinancingModalOpen, setIsFinancingModalOpen] = useState(false);
     const [showSignupModal, setShowSignupModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showServicesModal, setShowServicesModal] = useState(false);
     const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        name: '',
-        surname: '',
-        countryCode: '+34',
-        phone: '',
-        country: '',
-        postalCode: '',
-        agreeToTerms: false
+      email: '',
+      password: '',
+      name: '',
+      surname: '',
+      countryCode: '+34',
+      phone: '',
+      country: '',
+      postalCode: '',
+      agreeToTerms: false
     });
-
+  
     const handleSignup = (e) => {
-        e.preventDefault();
-        // Handle signup logic here
-        setIsLoggedIn(true);
-        setShowSignupModal(false);
+      e.preventDefault();
+      setIsLoggedIn(true);
+      setShowSignupModal(false);
     };
-
+  
     const handleBuyClick = () => {
-        // Navigate to checkout page
-        router.push('/checkout');
+      router.push('/checkout');
     };
-
-    const FinancingModal = ({ isOpen, onClose }) => {
-        const [selectedOption, setSelectedOption] = useState('lowInstallment');
-        const [monthsRange, setMonthsRange] = useState(48);
-        const [downPayment, setDownPayment] = useState(0);
-
-        return (
-            <div
-                className={`fixed inset-0 flex z-50 items-center justify-center ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    } transition-opacity duration-300`}
-            >
-                <div
-                    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                    onClick={onClose}
-                />
-
-                <div className="relative bg-white rounded-lg w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100">
-                    <div className="p-4">
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900">Financing</h2>
-                            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {/* Options Toggle */}
-                        <div className="grid grid-cols-2 gap-3 mb-4"> {/* Reduced gap and margin */}
-                            <div
-                                className={`relative rounded-lg p-3 cursor-pointer ${selectedOption === 'lowInstallment' ? 'bg-red-500' : 'bg-gray-100'
-                                    }`}
-                                onClick={() => setSelectedOption('lowInstallment')}
-                            >
-                                <div className="flex items-center mb-1">
-                                    <span className={`text-sm font-medium ${selectedOption === 'lowInstallment' ? 'text-white' : 'text-gray-900'
-                                        }`}>
-                                        Low installment
-                                    </span>
-                                    <span className="ml-1 px-1 text-xs bg-orange-500 text-white rounded">NEW</span>
-                                </div>
-                                <span className={`text-xs ${selectedOption === 'lowInstallment' ? 'text-white/80' : 'text-gray-600'
-                                    }`}>
-                                    €14.4 % choose low payments
-                                </span>
-                            </div>
-
-                            {/* Regular loan option similar adjustments */}
-                            <div
-                                className={`relative rounded-lg p-3 cursor-pointer ${selectedOption === 'regularLoan' ? 'bg-red-500' : 'bg-gray-100'
-                                    }`}
-                                onClick={() => setSelectedOption('regularLoan')}
-                            >
-                                <div className="flex items-center mb-1">
-                                    <span className={`text-sm font-medium ${selectedOption === 'regularLoan' ? 'text-white' : 'text-gray-900'
-                                        }`}>
-                                        Regular loan
-                                    </span>
-                                </div>
-                                <span className={`text-xs ${selectedOption === 'regularLoan' ? 'text-white/80' : 'text-gray-600'
-                                    }`}>
-                                    8.8 % choose to avoid an increased final payment
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Sliders Section */}
-                        <div className="space-y-4"> {/* Reduced spacing */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Payback period
-                                </label>
-                                <div className="flex items-center justify-between text-xs text-gray-600">
-                                    <span>12 months</span>
-                                    <span>60 months</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="12"
-                                    max="60"
-                                    step="12"
-                                    value={monthsRange}
-                                    onChange={(e) => setMonthsRange(e.target.value)}
-                                    className="w-full accent-red-500 mt-1"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Down payment (%) <span className="text-gray-500">0 % = ?</span>
-                                </label>
-                                <div className="flex justify-between text-xs text-gray-600">
-                                    <span>10%</span>
-                                    <span>60%</span>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="60"
-                                    step="10"
-                                    value={downPayment}
-                                    onChange={(e) => setDownPayment(e.target.value)}
-                                    className="w-full accent-red-500 mt-1"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Payment Details */}
-                        <div className="bg-gray-50 rounded-lg p-3 my-4"> {/* Adjusted padding and margin */}
-                            <div className="grid grid-cols-3 gap-3 text-xs mb-3">
-                                <div>
-                                    <div className="text-gray-600">DOWN PAYMENT (%) %</div>
-                                    <div className="font-medium">€3,000</div>
-                                </div>
-                                <div>
-                                    <div className="text-gray-600">INSTALLMENT</div>
-                                    <div className="font-medium">48</div>
-                                </div>
-                                <div>
-                                    <div className="text-gray-600">INTEREST RATE / APR</div>
-                                    <div className="font-medium">7.79% / 8.01%</div>
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-gray-600 text-xs">MONTHLY</div>
-                                <div className="text-lg font-medium">€170</div>
-                            </div>
-                        </div>
-
-                        {/* Info Link */}
-                        <button className="w-full text-center text-sm text-red-500 hover:text-red-600 mb-4">
-                            How does a regular loan work?
-                        </button>
-
-                        {/* Action Button */}
-                        <button className="w-full bg-red-500 text-white py-2.5 rounded-lg flex items-center justify-center hover:bg-red-600">
-                            <span>Next</span>
-                            <ChevronRight className="w-4 h-4 ml-1" />
-                        </button>
-
-                        {/* Help Section */}
-                        <div className="mt-4 text-center text-sm">
-                            <div className="text-gray-600 mb-1">Need some advice?</div>
-                            <a href="tel:+420244034700" className="flex items-center justify-center text-red-500 hover:text-red-600">
-                                <Phone className="w-4 h-4 mr-1" />
-                                +420 244 034 700
-                            </a>
-                        </div>
-
-                        {/* Disclaimer */}
-                        <p className="mt-3 text-xs text-gray-500 text-center">
-                            The calculated amount is only a ballpark figure and does not represent a binding commercial quote.
-                            The exact installment amount and interest rate may between providers depending on the final calculation.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    return (
-        <div className="relative">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-                {/* Price Section */}
-                <div className="mb-6">
-                    <div className="flex justify-between items-start">
-                        <span className="text-gray-600 font-bold text-2xl">Car price</span>
-                        <div className="text-right">
-                            <div className="text-2xl font-bold">€27,299</div>
-                            <div className="text-sm text-gray-500">Price without VAT €22,561</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <button
-                    className="w-full bg-red-500 text-white py-3 rounded-lg mb-3 flex items-center justify-center hover:bg-red-600"
-                    onClick={handleBuyClick}
-                >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Buy
-                </button>
-                <button
-                    onClick={() => setIsFinancingModalOpen(true)}
-                    className="w-full border border-gray-200 py-3 rounded-lg mb-6 flex items-center justify-center hover:bg-gray-50"
-                >
-                    <CreditCard className="w-5 h-5 mr-2" />
-                    Financing €170/mo
-                </button>
-
-                {/* Financing Modal */}
-                <FinancingModal
-                    isOpen={isFinancingModalOpen}
-                    onClose={() => setIsFinancingModalOpen(false)}
-                />
-
-
-                {/* Services Section */}
-                <div className="border-t pt-4">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-gray-600">Services total</span>
-                        <div className="flex items-center">
-                            <span className="font-bold">€364</span>
-                            <ChevronDown
-                                className={`w-5 h-5 ml-2 cursor-pointer transform transition-transform ${isServicesExpanded ? 'rotate-180' : ''}`}
-                                onClick={() => setIsServicesExpanded(!isServicesExpanded)}
-                            />
-                        </div>
-                    </div>
-
-                    {isServicesExpanded && (
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span>CarAudit™</span>
-                                <span>€79</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center">
-                                    <span>Car registration</span>
-                                    <Info className="w-4 h-4 ml-1 text-gray-400" />
-                                </div>
-                                <span>€80</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center">
-                                    <span>Administration Fee</span>
-                                    <Info className="w-4 h-4 ml-1 text-gray-400" />
-                                </div>
-                                <span>€30</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center">
-                                    <span>Import MOT</span>
-                                    <Info className="w-4 h-4 ml-1 text-gray-400" />
-                                </div>
-                                <span>€175</span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Total Price */}
-                <div className="border-t mt-6 pt-4">
-                    <div className="flex justify-between">
-                        <div>
-                            <div className="font-bold text-lg">Total price</div>
-                            <div className="text-sm text-gray-500">Total price excluding VAT</div>
-                        </div>
-                        <div className="text-right">
-                            <div className="font-bold text-lg">€27,663</div>
-                            <div className="text-sm text-gray-500">€22,847</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Signup Modal */}
-            <div
-                className={`fixed inset-0 flex z-50 items-center justify-center ${showSignupModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    } transition-opacity duration-300`}
-            >
-                {/* Backdrop */}
-                <div
-                    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                    onClick={() => setShowSignupModal(false)}
-                />
-
-                {/* Modal */}
-                <div
-                    className={`relative bg-red-50/85 rounded-lg w-full max-w-md max-h-[90vh] transform transition-all duration-300 ${showSignupModal ? 'scale-100' : 'scale-95'
-                        }`} // Changed bg-red-50/85 to bg-white
-                >
-                    <div className="px-8 pt-8 pb-6 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-red-500">Create Account</h2> {/* Changed text color */}
-                            <button
-                                onClick={() => setShowSignupModal(false)}
-                                className="text-gray-400 hover:text-gray-500 transition-colors"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="text-sm text-gray-600">
-                                Already have an account?{' '}
-                                <button
-                                    onClick={() => {
-                                        setShowSignupModal(false);
-                                        setShowLoginModal(true);
-                                    }}
-                                    className="text-red-500 hover:text-red-600 font-semibold"
-                                >
-                                    Login here
-                                </button>
-                            </div>
-
-                            {/* Social Signup Buttons */}
-                            <div className="grid grid-cols-2 gap-4 mb-2">
-                                <button className="flex items-center justify-center px-4 py-2.5 border border-red-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 mr-2" />
-                                    <span className="text-sm font-medium text-gray-600">Google</span>
-                                </button>
-                                <button className="flex items-center justify-center px-4 py-2.5 border border-red-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-5 h-5 mr-2" />
-                                    <span className="text-sm font-medium text-gray-600">Facebook</span>
-                                </button>
-                            </div>
-
-                            {/* Divider */}
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-200"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    {!showForm && (
-                                        <button
-                                            onClick={() => setShowForm(true)}
-                                            className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 focus:outline-none rounded-md"
-                                        >
-                                            Sign up with email
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Signup Form */}
-                            {showForm && (
-                                <form onSubmit={handleSignup} className="space-y-4">
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        placeholder="Email"
-                                        className="w-full px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                    />
-
-                                    <div className="relative">
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            value={formData.password}
-                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                            placeholder="Password (min. 8 characters)"
-                                            className="w-full px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        >
-                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                        </button>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            placeholder="Name"
-                                            className="px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={formData.surname}
-                                            onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                                            placeholder="Surname"
-                                            className="px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                        />
-                                    </div>
-
-                                    <div className="flex gap-4">
-                                        <select
-                                            className="w-24 px-3 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                            value={formData.countryCode}
-                                            onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                                        >
-                                            <option>+34</option>
-                                        </select>
-                                        <input
-                                            type="tel"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            placeholder="Telephone number"
-                                            className="flex-1 px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <select
-                                            className="px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                            value={formData.country}
-                                            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                                        >
-                                            <option value="">Select country</option>
-                                        </select>
-                                        <input
-                                            type="text"
-                                            value={formData.postalCode}
-                                            onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                                            placeholder="Postal code"
-                                            className="px-4 py-3 bg-red-50/30 border border-red-100 rounded-lg focus:ring-1 focus:ring-red-200 focus:border-red-200 outline-none transition-all"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-start gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id="terms"
-                                            checked={formData.agreeToTerms}
-                                            onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
-                                            className="mt-1 rounded border-red-200 text-red-500 focus:ring-red-200"
-                                        />
-                                        <label htmlFor="terms" className="text-sm text-gray-600">
-                                            I agree to the processing of{' '}
-                                            <a href="#" className="text-red-500 hover:text-red-600">
-                                                personal data
-                                            </a>
-                                            .
-                                        </label>
-                                    </div>
-
-                                    <button
-                                        type="submit"
-                                        className="w-full px-4 py-3 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                    >
-                                        Register
-                                    </button>
-                                </form>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+  
+    // Reusable Modal Component
+    const Modal = ({ isOpen, onClose, children }) => (
+      <div className={`fixed inset-0 z-50 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[90vh] overflow-y-auto transform transition-transform duration-300 ease-out">
+          {children}
         </div>
+      </div>
     );
-};
-
+  
+    // Services Modal Content
+    const ServicesModal = () => (
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">Services</h2>
+          <button onClick={() => setShowServicesModal(false)}>
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span>CarAudit™</span>
+            <span>€79</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <span>Car registration</span>
+              <Info className="w-4 h-4 ml-1 text-gray-400" />
+            </div>
+            <span>€80</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <span>Administration Fee</span>
+              <Info className="w-4 h-4 ml-1 text-gray-400" />
+            </div>
+            <span>€30</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <span>Total</span>
+              <Info className="w-4 h-4 ml-1 text-gray-400" />
+            </div>
+            <span>€364</span>
+          </div>
+        </div>
+      </div>
+    );
+  
+    // Financing Modal
+    const FinancingModal = () => {
+      const [selectedOption, setSelectedOption] = useState('lowInstallment');
+      const [monthsRange, setMonthsRange] = useState(48);
+      const [downPayment, setDownPayment] = useState(0);
+  
+      return (
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold">Financing</h2>
+            <button onClick={() => setIsFinancingModalOpen(false)}>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+  
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div
+              className={`relative rounded-lg p-3 cursor-pointer ${
+                selectedOption === 'lowInstallment' ? 'bg-red-500' : 'bg-gray-100'
+              }`}
+              onClick={() => setSelectedOption('lowInstallment')}
+            >
+              <div className="flex items-center mb-1">
+                <span className={`text-sm font-medium ${
+                  selectedOption === 'lowInstallment' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  Low installment
+                </span>
+                <span className="ml-1 px-1 text-xs bg-orange-500 text-white rounded">NEW</span>
+              </div>
+              <span className={`text-xs ${
+                selectedOption === 'lowInstallment' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                14.4% choose low payments
+              </span>
+            </div>
+  
+            <div
+              className={`relative rounded-lg p-3 cursor-pointer ${
+                selectedOption === 'regularLoan' ? 'bg-red-500' : 'bg-gray-100'
+              }`}
+              onClick={() => setSelectedOption('regularLoan')}
+            >
+              <div className="flex items-center mb-1">
+                <span className={`text-sm font-medium ${
+                  selectedOption === 'regularLoan' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  Regular loan
+                </span>
+              </div>
+              <span className={`text-xs ${
+                selectedOption === 'regularLoan' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                8.8% choose fixed payments
+              </span>
+            </div>
+          </div>
+  
+          {/* Rest of your financing modal content */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Payback period
+              </label>
+              <input
+                type="range"
+                min="12"
+                max="60"
+                step="12"
+                value={monthsRange}
+                onChange={(e) => setMonthsRange(e.target.value)}
+                className="w-full accent-red-500"
+              />
+            </div>
+  
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="grid grid-cols-3 gap-3 text-xs mb-3">
+                <div>
+                  <div className="text-gray-600">DOWN PAYMENT</div>
+                  <div className="font-medium">€3,000</div>
+                </div>
+                <div>
+                  <div className="text-gray-600">MONTHLY</div>
+                  <div className="font-medium">€170</div>
+                </div>
+                <div>
+                  <div className="text-gray-600">TOTAL</div>
+                  <div className="font-medium">€27,663</div>
+                </div>
+              </div>
+            </div>
+  
+            <button className="w-full bg-red-500 text-white py-2.5 rounded-lg flex items-center justify-center">
+              <span>Next</span>
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
+        </div>
+      );
+    };
+  
+    return (
+      <>
+        {/* Fixed bottom bar */}
+        <div className="fixed bottom-0   left-0 right-0 bg-white border-t border-gray-200 p-6 z-40 ">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-sm text-gray-600">Total price</div>
+              <div className="text-xl font-bold">€27,663</div>
+              <div className="text-xs text-gray-500">incl. services (€27,663)</div>
+              <div className="text-xs text-gray-500">€22,863 without VAT</div>
+              
+            </div>
+            <button 
+              onClick={() => setShowServicesModal(true)}
+              className="text-red-500 text-sm underline"
+            >
+              View details
+            </button>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={handleBuyClick}
+              className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-600 flex items-center justify-center"
+            >
+              <ShoppingCart className="w-5 h-5 mr-2" />
+              Buy now
+            </button>
+            <button
+              onClick={() => setIsFinancingModalOpen(true)}
+              className="flex-1 border border-gray-200 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center"
+            >
+              <CreditCard className="w-5 h-5 mr-2" />
+              €170/mo
+            </button>
+          </div>
+        </div>
+  
+        {/* Services Modal */}
+        <Modal 
+          isOpen={showServicesModal} 
+          onClose={() => setShowServicesModal(false)}
+        >
+          <ServicesModal />
+        </Modal>
+  
+        {/* Financing Modal */}
+        <Modal 
+          isOpen={isFinancingModalOpen} 
+          onClose={() => setIsFinancingModalOpen(false)}
+        >
+          <FinancingModal />
+        </Modal>
+  
+        {/* Bottom padding to prevent content from being hidden behind the fixed bar */}
+        <div className="lg:hidden h-32"></div>
+      </>
+    );
+  };
 
 
 const CarDetailPage = () => {
@@ -1167,20 +987,70 @@ const CarDetailPage = () => {
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
 
-    const specs = [
-        { icon: <Route className="w-[18px] h-[18px] stroke-[1.5]" />, text: "5 km" },
-        { icon: <Calendar className="w-[18px] h-[18px] stroke-[1.5]" />, text: "10/2024" },
-        { icon: <Gauge className="w-[18px] h-[18px] stroke-[1.5]" />, text: "95 kW (129 hp)" },
-        { icon: <Settings className="w-[18px] h-[18px] stroke-[1.5]" />, text: "Manual" },
-        { icon: <Fuel className="w-[18px] h-[18px] stroke-[1.5]" />, text: "Petrol" }
-    ];
+    // Add refs for scroll navigation
+    const detailsRef = useRef(null);
+    const featuresRef = useRef(null);
+    const howItWorksRef = useRef(null);
+    const priceHistoryRef = useRef(null);
+    const priceMapRef = useRef(null);
+    const financingRef = useRef(null);
 
-    const features = [
-        "Keyless entry", "Apple CarPlay", "Android auto", "Heated front seats",
-        "Blind spot assist", "Electrically heated side mirrors", "Alarm", "USB"
-    ];
+    // Section visibility detection
+    const [activeTab, setActiveTab] = useState('details');
 
+const specs = [
+    { icon: <Route className="w-[18px] h-[18px] stroke-[1.5]" />, text: "5 km" },
+    { icon: <Calendar className="w-[18px] h-[18px] stroke-[1.5]" />, text: "10/2024" },
+    { icon: <Gauge className="w-[18px] h-[18px] stroke-[1.5]" />, text: "95 kW (129 hp)" },
+    { icon: <Settings className="w-[18px] h-[18px] stroke-[1.5]" />, text: "Manual" },
+    { icon: <Fuel className="w-[18px] h-[18px] stroke-[1.5]" />, text: "Petrol" }
+];
+
+// Update features array
+const features = [
+    "Keyless entry", 
+    "Apple CarPlay", 
+    "Android auto", 
+    "Heated front seats",
+    "Blind spot assist", 
+    "Electrically heated side mirrors", 
+    "Alarm", 
+    "USB"
+];
     const images = Array(8).fill('https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
+
+    // Navigation tabs configuration
+    const tabs = [
+        { id: 'details', label: 'Details', ref: detailsRef },
+        { id: 'features', label: 'Features', ref: featuresRef },
+        { id: 'howItWorks', label: 'How it works', ref: howItWorksRef },
+        { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
+        { id: 'priceMap', label: 'Price map', ref: priceMapRef },
+        { id: 'financing', label: 'Financing', ref: financingRef }
+    ];
+
+    // Handle scroll events to update active tab
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY + 100;
+
+            for (const tab of tabs) {
+                if (tab.ref.current) {
+                    const element = tab.ref.current;
+                    const offsetTop = element.offsetTop;
+                    const offsetBottom = offsetTop + element.offsetHeight;
+
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+                        setActiveTab(tab.id);
+                        break;
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -1219,9 +1089,7 @@ const CarDetailPage = () => {
     const scroll = (direction) => {
         const container = scrollRef.current;
         if (container) {
-            // Calculate the width of one image including margin
-            const imageWidth = container.querySelector('div').offsetWidth + 4; // 4px for margin
-
+            const imageWidth = container.querySelector('div').offsetWidth + 4;
             container.scrollTo({
                 left: direction === 'left'
                     ? container.scrollLeft - imageWidth
@@ -1231,6 +1099,20 @@ const CarDetailPage = () => {
         }
     };
 
+    const handleTabClick = (tabId) => {
+        setActiveTab(tabId);
+        const tab = tabs.find(t => t.id === tabId);
+        if (tab && tab.ref.current) {
+            const headerOffset = 80;
+            const elementPosition = tab.ref.current.offsetTop;
+            const offsetPosition = elementPosition - headerOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     const openModal = (index) => {
         setSelectedImage(index);
@@ -1251,144 +1133,169 @@ const CarDetailPage = () => {
         }
     };
 
+    // CarTabs component integrated into main component
+    const CarTabs = () => (
+        <div className="lg:w-[65%] px-6 border-b border-gray-200 sticky top-0 bg-white z-30">
+            <div className="flex space-x-1 overflow-x-auto">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => handleTabClick(tab.id)}
+                        className={`
+                            whitespace-nowrap px-4 py-2.5 text-sm font-medium 
+                            ${activeTab === tab.id
+                                ? 'text-red-500 border-b-2 border-red-500'
+                                : 'text-gray-500 hover:text-gray-700'}
+                            transition-colors duration-150 ease-in-out
+                            flex items-center gap-1.5
+                        `}
+                    >
+                        {tab.label}
+                        {tab.hasIcon && (
+                            <div className="bg-orange-100 rounded p-0.5">
+                                <BarChart className="w-3 h-3 text-orange-500" />
+                            </div>
+                        )}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
     return (
         <div className='bg-white'>
-            {/* Mobile/Tablet Header */}
             <div className="md:hidden relative">
-                <div className="absolute top-4 left-4 z-10">
-                    <button onClick={() => window.location.href = '/cars'} className="p-2 bg-white/90 rounded-lg shadow-lg">
-                        <ChevronLeft className="h-6 w-6 text-[#1a224f] stroke-[1.5]" />
-                    </button>
-                </div>
-                <div className="absolute top-4 right-4 z-10">
-                    <button className="p-2 bg-white/90 rounded-lg shadow-lg ml-2">
-                        <Share className="h-6 w-6 text-[#1a224f] stroke-[1.5]" />
-                    </button>
+    <div className="absolute top-4 left-4 z-10">
+        <button onClick={() => window.location.href = '/cars'} className="p-2 bg-white/90 rounded-lg shadow-lg">
+            <ChevronLeft className="h-6 w-6 text-[#1a224f] stroke-[1.5]" />
+        </button>
+    </div>
+    <div className="absolute top-4 right-4 z-10">
+        <button className="p-2 bg-white/90 rounded-lg shadow-lg ml-2">
+            <Share className="h-6 w-6 text-[#1a224f] stroke-[1.5]" />
+        </button>
+    </div>
+</div>
+
+{/* Desktop Header Section */}
+<div className="hidden md:block max-w-7xl mx-auto  px-8 py-2        ">
+    <div className="flex items-center justify-between mb-3 mt-2">
+        <div className="flex items-center">
+            <ChevronLeft className="h-6 w-6 text-[#1a224f] stroke-[1.5] mr-1" />
+            <h1 className="text-[28px] font-bold text-red-600/70 tracking-[-0.5px]">
+                Suzuki SX4 S-Cross 95 kW
+            </h1>
+        </div>
+        <div className="flex items-center space-x-6 mt-2">
+            <button className="flex items-center text-red-500 hover:text-red-600">
+                <Heart className="h-5 w-5 mr-1.5 stroke-[1.5]" />
+                <span className="text-[14px] font-medium underline underline-offset-2">Favorites</span>
+            </button>
+            <button className="flex items-center text-red-500 hover:text-red-600">
+                <Share className="h-5 w-5 mr-1.5 stroke-[1.5]" />
+                <span className="text-[14px] font-medium underline underline-offset-2">Share</span>
+            </button>
+        </div>
+    </div>
+
+    <div className="flex flex-wrap items-center gap-x-6 mb-4">
+        {specs.map((spec, index) => (
+            <div key={index} className="flex items-center text-[#4a5578]">
+                <span className="mr-1.5 size-4">{spec.icon}</span>
+                <span className="text-[14px] font-bold">{spec.text}</span>
+            </div>
+        ))}
+    </div>
+
+    <div className="flex flex-wrap gap-2 mb-3">
+        {features.map((feature, index) => (
+            <span
+                key={index}
+                className="px-3 py-1.5 bg-red-100/70 text-red-600/80 rounded-lg text-[14px] font-medium"
+            >
+                {feature}
+            </span>
+        ))}
+    </div>
+</div>
+
+{/* Image Slider Section */}
+<div className="relative w-full max-w-7xl mx-auto px-8 py-6 bg-white">
+    <div
+        ref={scrollRef}
+        className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth w-full"
+    >
+        {images.map((image, index) => (
+            <div
+                key={index}
+                onClick={() => openModal(index)}
+                 className="relative flex-shrink-0 w-full md:w-[calc(50%-12px)] group cursor-pointer"
+            >
+                 <div className="relative w-full pb-[75%] md:pb-[62.5%] overflow-hidden rounded-xl">
+                    <img
+                        src={image}
+                        alt={`Car view ${index + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+                    />
                 </div>
             </div>
+        ))}
+    </div>
 
-            {/* Desktop Header Section */}
-            <div className="hidden md:block max-w-7xl mx-auto px-8 py-4">
-                <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center">
-                        <ChevronLeft className="h-6 w-6 text-[#1a224f] stroke-[1.5] mr-1" />
-                        <h1 className="text-[28px] font-bold text-red-600/70 tracking-[-0.5px]">
-                            Suzuki SX4 S-Cross 95 kW
-                        </h1>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                        <button className="flex items-center text-red-500 hover:text-red-600">
-                            <Heart className="h-5 w-5 mr-1.5 stroke-[1.5]" />
-                            <span className="text-[14px] font-medium underline underline-offset-2">Favorites</span>
-                        </button>
-                        <button className="flex items-center text-red-500 hover:text-red-600">
-                            <Share className="h-5 w-5 mr-1.5 stroke-[1.5]" />
-                            <span className="text-[14px] font-medium underline underline-offset-2">Share</span>
-                        </button>
-                    </div>
-                </div>
+    {showLeftArrow && (
+        <button
+            onClick={() => scroll('left')}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
+        >
+            <ChevronLeft className="w-6 h-6 text-gray-800" />
+        </button>
+    )}
 
-                <div className="flex flex-wrap items-center gap-x-6 mb-4">
-                    {specs.map((spec, index) => (
-                        <div key={index} className="flex items-center text-[#4a5578]">
-                            <span className="mr-1.5 size-4">{spec.icon}</span>
-                            <span className="text-[14px] font-bold">{spec.text}</span>
-                        </div>
-                    ))}
-                </div>
+    {showRightArrow && (
+        <button
+            onClick={() => scroll('right')}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
+        >
+            <ChevronRight className="w-6 h-6 text-gray-800" />
+        </button>
+    )}
+</div>
 
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {features.map((feature, index) => (
-                        <span
-                            key={index}
-                            className="px-3 py-1.5 bg-red-100/70 text-red-600/80 rounded-lg text-[14px] font-medium"
-                        >
-                            {feature}
-                        </span>
-                    ))}
-                </div>
+{/* Mobile/Tablet Content Section */}
+<div className="md:hidden px-4 py-6">
+    <h1 className="text-2xl font-bold text-red-600/70 tracking-[-0.5px] mb-4">
+        Suzuki SX4 S-Cross 95 kW
+    </h1>
+
+    <div className="flex flex-wrap items-center gap-4 mb-6">
+        {specs.map((spec, index) => (
+            <div key={index} className="flex items-center text-[#4a5578]">
+                <span className="mr-1.5 size-4">{spec.icon}</span>
+                <span className="text-[14px] font-bold">{spec.text}</span>
             </div>
+        ))}
+    </div>
 
-            {/* Image Slider Section */}
-            <div className="relative w-full p-2">
-                <div
-                    ref={scrollRef}
-                    className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-                >
-                    {images.map((image, index) => (
-                        <div
-                            key={index}
-                            onClick={() => openModal(index)}
-                            className={`relative flex-shrink-0 w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-12px)] snap-start cursor-pointer ${index === 0 ? 'ml-0' : 'ml-4'
-                                }`}
-                            style={{ aspectRatio: '4/3' }}
-                        >
-                            <img
-                                src={image}
-                                alt={`Car view ${index + 1}`}
-                                className="w-full h-full object-cover hover:opacity-90 transition-opacity rounded-lg"
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                {showLeftArrow && (
-                    <button
-                        onClick={() => scroll('left')}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-10"
-                    >
-                        <ChevronLeft className="w-6 h-6 text-gray-700" />
-                    </button>
-                )}
-
-                {showRightArrow && (
-                    <button
-                        onClick={() => scroll('right')}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg hover:bg-white transition-colors z-10"
-                    >
-                        <ChevronRight className="w-6 h-6 text-gray-700" />
-                    </button>
-                )}
-            </div>
-            {/* Mobile/Tablet Content Section */}
-            <div className="md:hidden px-4 py-6">
-                <h1 className="text-2xl font-bold text-red-600/70 tracking-[-0.5px] mb-4">
-                    Suzuki SX4 S-Cross 95 kW
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-4 mb-6">
-                    {specs.map((spec, index) => (
-                        <div key={index} className="flex items-center text-[#4a5578]">
-                            <span className="mr-1.5 size-4">{spec.icon}</span>
-                            <span className="text-[14px] font-bold">{spec.text}</span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                    {features.map((feature, index) => (
-                        <span
-                            key={index}
-                            className="px-3 py-1.5 bg-red-100/70 text-red-600/80 rounded-lg text-[14px] font-medium"
-                        >
-                            {feature}
-                        </span>
-                    ))}
-                </div>
-            </div>
+    <div className="flex flex-wrap gap-2">
+        {features.map((feature, index) => (
+            <span
+                key={index}
+                className="px-3 py-1.5 bg-red-100/70 text-red-600/80 rounded-lg text-[14px] font-medium"
+            >
+                {feature}
+            </span>
+        ))}
+    </div>
+</div>
 
             <div className="max-w-7xl mx-auto px-4 lg:px-8">
                 <GuaranteeCard />
                 <CarTabs />
 
-                {/* New flexbox container for main content and sidebar */}
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Main content area */}
                     <div className="flex-1">
-                        {/* <AppBar /> */}
-
                         {/* Details Section */}
-                        <div className="mt-8">
+                        <div ref={detailsRef} className="mt-8">
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">Details</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {specs.map((spec, index) => (
@@ -1401,7 +1308,7 @@ const CarDetailPage = () => {
                         </div>
 
                         {/* Features Section */}
-                        <div className="mt-12">
+                        <div ref={featuresRef} className="mt-12">
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">Features</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {features.map((feature, index) => (
@@ -1412,91 +1319,106 @@ const CarDetailPage = () => {
                                 ))}
                             </div>
                         </div>
-                        <HowItWorks />
-                        <PriceHistory />
-                        <PriceMap />
-                        <Financing />
 
+                        {/* How it Works Section */}
+                        <div ref={howItWorksRef}>
+                            <HowItWorks />
+                        </div>
+
+                        {/* Price History Section */}
+                        <div ref={priceHistoryRef}>
+                            <PriceHistory />
+                        </div>
+
+                        {/* Price Map Section */}
+                        <div ref={priceMapRef}>
+                            <PriceMap />
+                        </div>
+
+                        {/* Financing Section */}
+                        <div ref={financingRef}>
+                            <Financing />
+                        </div>
                     </div>
 
                     {/* Checkout Sidebar */}
-                    <div className="lg:w-[380px]">
-                        <div className="sticky top-24">
+                    {/* <div className="hidden lg:block lg:w-[380px]">
+                        <div className="sticky top-[100%]">
                             <CheckoutSidebar />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
+
+                {/* Mobile Checkout Bar */}
+                <MobileCheckoutBar
+                    price={649990}
+                    monthlyPayment="€170"
+                />
             </div>
 
-
-
-
-
-
-            {/* Modal Viewer */}
+            {/* Modal Viewer - Keep your existing modal code */}
             {modalOpen && (
-                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-                    <button
-                        onClick={closeModal}
-                        className="absolute right-4 top-4 text-white hover:text-gray-300 z-50"
-                    >
-                        <X className="w-8 h-8" />
-                    </button>
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+        <button
+            onClick={closeModal}
+            className="absolute right-4 top-4 text-white hover:text-gray-300 z-50"
+        >
+            <X className="w-8 h-8" />
+        </button>
 
-                    <div className="h-full flex items-center justify-center relative w-full">
-                        <img
-                            src={images[selectedImage]}
-                            alt={`Car view ${selectedImage + 1}`}
-                            className="max-h-[85vh] max-w-[85vw] object-contain"
-                        />
+        <div className="h-full flex items-center justify-center relative w-full">
+            <img
+                src={images[selectedImage]}
+                alt={`Car view ${selectedImage + 1}`}
+                className="max-h-[85vh] max-w-[85vw] object-contain"
+            />
 
-                        <div className="absolute bottom-4 right-4 bg-black/50 px-4 py-2 rounded-lg">
-                            <span className="text-white text-sm">
-                                {selectedImage + 1} / {images.length}
-                            </span>
-                        </div>
+            <div className="absolute bottom-4 right-4 bg-black/50 px-4 py-2 rounded-lg">
+                <span className="text-white text-sm">
+                    {selectedImage + 1} / {images.length}
+                </span>
+            </div>
 
-                        <button
-                            onClick={() => navigateImage('prev')}
-                            className="absolute left-4 p-2 bg-white/10 rounded-lg hover:bg-white/20"
-                        >
-                            <ChevronLeft className="w-8 h-8 text-white" />
-                        </button>
+            <button
+                onClick={() => navigateImage('prev')}
+                className="absolute left-4 p-2 bg-white/10 rounded-lg hover:bg-white/20"
+            >
+                <ChevronLeft className="w-8 h-8 text-white" />
+            </button>
 
-                        <button
-                            onClick={() => navigateImage('next')}
-                            className="absolute right-4 p-2 bg-white/10 rounded-lg hover:bg-white/20"
-                        >
-                            <ChevronRight className="w-8 h-8 text-white" />
-                        </button>
-                    </div>
+            <button
+                onClick={() => navigateImage('next')}
+                className="absolute right-4 p-2 bg-white/10 rounded-lg hover:bg-white/20"
+            >
+                <ChevronRight className="w-8 h-8 text-white" />
+            </button>
+        </div>
 
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-                        {images.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setSelectedImage(index)}
-                                className={`w-2 h-2 rounded-full transition-colors ${selectedImage === index ? 'bg-white' : 'bg-white/50'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
+            {images.map((_, index) => (
+                <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                        selectedImage === index ? 'bg-white' : 'bg-white/50'
+                    }`}
+                />
+            ))}
+        </div>
+    </div>
+)}
 
             <style>
                 {`
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    `}
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                `}
             </style>
-            {/* <GuaranteeCard />
-            <AppBar /> */}
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import AppBar from '@/components/AppBar2'
+import AppBar from '@/components/AppBar'
 import BlogPage from '@/components/Blogpage'
 import Footer from '@/components/HomePage/Footer'
 import React from 'react'

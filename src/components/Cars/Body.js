@@ -20,6 +20,60 @@ import Image from 'next/image';
 import OptionsModal from './FinancingModal';
 import SearchBar from './carSearchComponent';
 import Link from 'next/link';
+import { Suspense } from 'react';
+import logo from '@/assets/logo.png'
+
+const CarCardSkeleton = () => {
+  return (
+    <div className="flex flex-col md:flex-col lg:flex-row bg-white rounded-lg overflow-hidden border border-gray-100 animate-pulse">
+      {/* Image Skeleton */}
+      <div className="relative w-full lg:w-[250px] aspect-[16/9] lg:aspect-[4/3] bg-gray-200" />
+
+      {/* Content Skeleton */}
+      <div className="flex-1 p-3 flex flex-col gap-y-2">
+        <div className="flex justify-between">
+          <div className="h-6 w-48 bg-gray-200 rounded" />
+          <div className="h-8 w-24 bg-gray-200 rounded" />
+        </div>
+
+        {/* Specs Row Skeleton */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-4 w-20 bg-gray-200 rounded" />
+          ))}
+        </div>
+
+        {/* Features Skeleton */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-5 w-24 bg-gray-200 rounded" />
+          ))}
+        </div>
+
+        {/* Location and Price Skeleton */}
+        <div className="mt-auto flex flex-row justify-between items-center gap-2 pt-2 border-t border-gray-100">
+          <div className="h-4 w-32 bg-gray-200 rounded" />
+          <div className="h-6 w-24 bg-gray-200 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CarListSkeleton = () => {
+  return (
+    <div className="w-full">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-col gap-4 mt-4">
+          {[1, 2, 3, 4].map((i) => (
+            <CarCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const CarCard = ({ car }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -90,9 +144,9 @@ const CarCard = ({ car }) => {
         {/* Content Section */}
         <div className="flex-1 p-3 flex flex-col gap-y-2">
           <div className='flex justify-between'>
-            <h3 className="text-base font-bold text-red-500 mb-2">{car.name}</h3>
+          <h3 className="text-xl font-bold text-red-500 mb-2 tracking-wide hover:text-red-600 transition-colors">{car.name}</h3>
             <img
-              src="/Logo/logo.png.png"
+              src={logo.src}
               alt="Logo"
               width={100}
               height={50}
@@ -155,14 +209,14 @@ const CarCard = ({ car }) => {
 
             <div className="text-right">
               <div className="text-lg font-bold text-gray-900">€{car.price.toLocaleString()}</div>
-              <div className="text-xs text-gray-500">
+              {/* <div className="text-xs text-gray-500">
                 €{car.priceWithoutVat.toLocaleString()} without VAT
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* Import and Financing Options */}
-          <div className="mt-4 flex flex-col gap-2">
+          {/* <div className="mt-4 flex flex-col gap-2">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -173,7 +227,7 @@ const CarCard = ({ car }) => {
             >
               View Options
             </button>
-          </div>
+          </div> */}
 
           <OptionsModal
             car={car}
@@ -189,10 +243,12 @@ const CarCard = ({ car }) => {
 
 const CarList = () => {
   const [filteredCars, setFilteredCars] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const cars = [
     {
       id: 1,
-      name: "bmw   Cooper 100 kW",
+      name: "BMW  Cooper 100 kW",
       images: [
         "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
         "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
@@ -214,7 +270,7 @@ const CarList = () => {
         "LED headlights"
       ],
       price: 25749,
-      priceWithoutVat: 21280,
+      
       logo: "/Logo/logo.png"
     },
     {
@@ -585,9 +641,24 @@ const CarList = () => {
   ];
 
   useEffect(() => {
-    setFilteredCars(cars);
+    // Simulate API loading delay
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setFilteredCars(cars);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
+  if (isLoading) {
+    return <CarListSkeleton />;
+  }
 
   // const handleSearch = (searchTerm) => {
   //   if (!searchTerm.trim()) {
@@ -613,9 +684,9 @@ const CarList = () => {
   // };
 
   return (
+    <Suspense fallback={<CarListSkeleton />}>
     <div className="w-full">
       <div className="max-w-7xl mx-auto px-4">
-        {/* <SearchBar onSearch={handleSearch} /> */}
         <div className="flex flex-col gap-4 mt-4">
           {filteredCars.map((car) => (
             <CarCard key={car.id} car={car} />
@@ -623,6 +694,7 @@ const CarList = () => {
         </div>
       </div>
     </div>
+  </Suspense>
   );
 };
 
@@ -666,7 +738,6 @@ const Body = ({ openMobileFilter }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState([]);
-
 
   const removeFilter = (filterId) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -735,6 +806,16 @@ const Body = ({ openMobileFilter }) => {
             params.delete('features');
           }
         }
+        if (filterId.startsWith('makeModel-')) {
+          const makeModelId = filterId.replace('makeModel-', '');
+          const currentMakeModels = params.get('makeModel')?.split(',') || [];
+          const newMakeModels = currentMakeModels.filter(mm => mm !== makeModelId);
+          if (newMakeModels.length) {
+            params.set('makeModel', newMakeModels.join(','));
+          } else {
+            params.delete('makeModel');
+          }
+        }
     }
 
     const newPath = `/cars${params.toString() ? `?${params.toString()}` : ''}`;
@@ -753,6 +834,18 @@ const Body = ({ openMobileFilter }) => {
   useEffect(() => {
     const filters = [];
 
+    // Make and Model filters
+    const makeModels = searchParams.get('makeModel')?.split(',') || [];
+    makeModels.forEach(makeModel => {
+      const [make, model] = makeModel.split('-');
+      filters.push({
+        id: `makeModel-${makeModel}`,
+        label: model === 'all' ? 
+          `${make} (All Models)` : 
+          `${make} ${model}`
+      });
+    });
+
     // Price Range
     const priceFrom = searchParams.get('priceFrom');
     const priceTo = searchParams.get('priceTo');
@@ -764,6 +857,7 @@ const Body = ({ openMobileFilter }) => {
       });
     }
 
+    
     // Registration period
     const regFrom = searchParams.get('regFrom');
     const regTo = searchParams.get('regTo');
@@ -896,6 +990,7 @@ const Body = ({ openMobileFilter }) => {
     setActiveFilters(filters);
   }, [searchParams]);
 
+  
   const VerifiedCarsHeader = () => {
     return (
       <div className="w-full bg-transparent">

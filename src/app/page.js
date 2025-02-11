@@ -25,7 +25,6 @@ export default function Home() {
     <WhyChooseUs/>
     <CarBudgetSelector/>
     <TestimonialsSection/>
-    <CarValuationForm/>
     <Footer/>
    </>
   );
