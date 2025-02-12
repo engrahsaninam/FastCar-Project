@@ -48,7 +48,7 @@ const WhyChooseUs = () => {
       </div>
 
       <div className="flex justify-center">
-        <a href="/bestdealss" className="px-6 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors inline-block">
+        <a href="/best-deals" className="px-6 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors inline-block">
           Get the best deals
         </a>
       </div>

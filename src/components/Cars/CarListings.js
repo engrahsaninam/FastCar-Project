@@ -33,7 +33,6 @@ const MultiColorSelector = ({ selectedColors, onColorSelect }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-bold text-[#1a1a1a]">EXTERIOR COLOR</h2>
         {selectedColors.length > 0 && (
           <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
             {selectedColors.length}
@@ -119,11 +118,11 @@ const CustomSelect = ({ value, onChange, placeholder, options }) => {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-10"
+            className="flex inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
           <div
-            className="absolute z-20 w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-50"
+            className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-50"
           >
             <div className="py-1">
               {options.map((option) => (
@@ -249,15 +248,16 @@ const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrde
     );
   };
 
+ 
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm font-bold text-[#1a1a1a]">{title}</h2>
-        {selected.length > 0 && (
+        {/* {selected.length > 0 && (
           <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
             {selected.length}
           </span>
-        )}
+        )} */}
       </div>
       <div className="relative w-full">
         <div
@@ -282,11 +282,11 @@ const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrde
         {isOpen && (
           <>
             <div
-              className="fixed inset-0 z-10"
+              className="fixed inset-0 z-[60]"
               onClick={() => setIsOpen(false)}
             />
             <ul
-              className="absolute z-20 w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto"
+              className="relative z-[70] w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto"
               role="listbox"
             >
               <div className="py-1">
@@ -331,7 +331,6 @@ const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrde
     </div>
   );
 };
-
 
 const fuelData = {
   types: [
@@ -832,6 +831,81 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     );
   };
 
+  const Category = ({ title, children, badge = null, defaultOpen = false }) => {
+    // Create a unique key for this category's state in localStorage
+    const storageKey = `category-${title.toLowerCase().replace(/\s+/g, '-')}`;
+    
+    // Initialize state from localStorage or use default
+    const [isOpen, setIsOpen] = useState(() => {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        return saved !== null ? JSON.parse(saved) : defaultOpen;
+      } catch {
+        return defaultOpen;
+      }
+    });
+  
+    // Persist state changes to localStorage
+    useEffect(() => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(isOpen));
+      } catch (error) {
+        console.error('Failed to save category state:', error);
+      }
+    }, [isOpen, storageKey]);
+  
+    // Prevent default behavior and handle state change
+    const handleToggle = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsOpen(prev => !prev);
+    };
+  
+    // Clean up localStorage when component unmounts
+    useEffect(() => {
+      return () => {
+        try {
+          localStorage.removeItem(storageKey);
+        } catch (error) {
+          console.error('Failed to clean up category state:', error);
+        }
+      };
+    }, [storageKey]);
+  
+    return (
+      <div className="border-b border-gray-100 last:border-0">
+        <button
+          onClick={handleToggle}
+          className="w-full flex items-center justify-between py-[10px] text-left focus:outline-none group"
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-sm font-bold text-[#1a1a1a] group-hover:text-gray-900">
+              {title}
+            </h2>
+            {badge && (
+              <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
+                {badge}
+              </span>
+            )}
+          </div>
+          <ChevronDown
+            className={`w-5 h-5 mb-1 text-gray-400 transition-transform duration-200 
+              ${isOpen ? 'transform rotate-180' : ''}`}
+          />
+        </button>
+  
+        <div
+          className={`transition-all duration-200 ease-in-out overflow-hidden 
+            ${isOpen ? 'max-h-[1000px] opacity-100 mb-4' : 'max-h-0 opacity-0'}`}
+          onClick={e => e.stopPropagation()}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  };
+
+
   // Create the Features section component:
   const FeaturesSection = () => {
     const visibleFeatures = showAllFeatures ? features : features.slice(0, 8);
@@ -846,7 +920,6 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
     return (
       <div>
-        <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">FEATURES</h2>
         <div className="space-y-3">
           {visibleFeatures.map(feature => (
             <Checkbox
@@ -957,123 +1030,113 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
       case 'all':
         return (
           <div className="space-y-6">
-            {/* Make and Model Section */}
-            {/* Make and Model Section */}
-            <div>
-              <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">MAKE AND MODEL</h2>
-              <button
-                onClick={() => setIsMakeModelOpen(true)}
-                className="w-full flex items-center justify-between px-4 py-2.5 border-2 border-gray-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-              >
-                <div className="flex items-center">
-                  <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                  <span className="font-medium">Add a car</span>
-                </div>
-                <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
-              </button>
 
-              {/* Show selected make/model filters */}
-              <MakeModelSelection
-                selectedFilters={makeModelFilters}
-                onRemoveFilter={(filterId) => {
-                  setMakeModelFilters(prev => prev.filter(f => f.id !== filterId));
-                }}
-              />
+            <Category title="MAKE AND MODEL">
+              <div>
+                <button
+                  onClick={() => setIsMakeModelOpen(true)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 border-2 border-gray-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
+                    <span className="font-medium">Add a car</span>
+                  </div>
+                  <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
+                </button>
 
-              {/* Popup */}
-              <MakeModelPopup
-                isOpen={isMakeModelOpen}
-                onClose={() => setIsMakeModelOpen(false)}
-                selectedFilters={makeModelFilters}
-                onSelect={(selected) => {
-                  setMakeModelFilters(prev => {
-                    // Combine existing filters with new ones, removing duplicates
-                    const combined = [...prev];
-                    selected.forEach(filter => {
-                      if (!combined.some(f => f.id === filter.id)) {
-                        combined.push(filter);
-                      }
+                {/* Show selected make/model filters */}
+                <MakeModelSelection
+                  selectedFilters={makeModelFilters}
+                  onRemoveFilter={(filterId) => {
+                    setMakeModelFilters(prev => prev.filter(f => f.id !== filterId));
+                  }}
+                />
+
+                {/* Popup */}
+                <MakeModelPopup
+                  isOpen={isMakeModelOpen}
+                  onClose={() => setIsMakeModelOpen(false)}
+                  selectedFilters={makeModelFilters}
+                  onSelect={(selected) => {
+                    setMakeModelFilters(prev => {
+                      // Combine existing filters with new ones, removing duplicates
+                      const combined = [...prev];
+                      selected.forEach(filter => {
+                        if (!combined.some(f => f.id === filter.id)) {
+                          combined.push(filter);
+                        }
+                      });
+                      return combined;
                     });
-                    return combined;
-                  });
-                }}
-              />
-            </div>
+                  }}
+                />
+              </div>
+            </Category>
+
             {/* Price Section */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-sm font-bold text-[#1a1a1a]">PRICE (€)</h2>
-                <div className="flex shadow-sm">
-                  <button
-                    onClick={() => setPriceType('instalments')}
-                    className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-l-lg ${priceType === 'instalments'
-                      ? 'bg-red-400 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                  >
-                    Instalments
-                  </button>
-                  <button
-                    onClick={() => setPriceType('cash')}
-                    className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-r-lg ${priceType === 'cash'
-                      ? 'bg-red-400 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                  >
-                    Cash
-                  </button>
+            <Category
+              title="PRICE (€)"
+              badge={priceFrom || priceTo ? '1' : null}
+            >
+              <div>
+                <div className="flex justify-end items-center mb-3">
+                  <div className="flex shadow-sm">
+                    <button
+                      onClick={() => setPriceType('instalments')}
+                      className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-l-lg ${priceType === 'instalments'
+                        ? 'bg-red-400 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                    >
+                      Instalments
+                    </button>
+                    <button
+                      onClick={() => setPriceType('cash')}
+                      className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-r-lg ${priceType === 'cash'
+                        ? 'bg-red-400 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                    >
+                      Cash
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <CustomSelect
+                    value={priceFrom}
+                    onChange={setPriceFrom}
+                    placeholder="From"
+                    options={priceOptions}
+                  />
+                  <CustomSelect
+                    value={priceTo}
+                    onChange={setPriceTo}
+                    placeholder="To"
+                    options={priceOptions}
+                  />
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <CustomSelect
-                  value={priceFrom}
-                  onChange={setPriceFrom}
-                  placeholder="From"
-                  options={priceOptions}
-                />
-                <CustomSelect
-                  value={priceTo}
-                  onChange={setPriceTo}
-                  placeholder="To"
-                  options={priceOptions}
-                />
-              </div>
-            </div>
-
-            {/* Checkboxes */}
-            <div className="space-y-3">
-              <label className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={vatDeduction}
-                  onChange={(e) => setVatDeduction(e.target.checked)}
-                  className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-                />
-                <span className="ml-2 text-gray-700 group-hover:text-gray-900">VAT deduction</span>
-              </label>
-              <div className="flex items-center">
-                <label className="flex items-center cursor-pointer flex-1 group">
+              {/* Checkboxes */}
+              <div className="space-y-3 pt-4">
+                <label className="flex items-center cursor-pointer group">
                   <input
                     type="checkbox"
-                    checked={discountedCars}
-                    onChange={(e) => setDiscountedCars(e.target.checked)}
+                    checked={vatDeduction}
+                    onChange={(e) => setVatDeduction(e.target.checked)}
                     className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
                   />
-                  <span className="ml-2 text-gray-700 group-hover:text-gray-900">Discounted cars</span>
-                  <div className="ml-2 w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center text-xs cursor-help">
-                    i
-                  </div>
+                  <span className="ml-2 text-gray-700 group-hover:text-gray-900">VAT deduction</span>
                 </label>
-                <div className="mx-3 p-1 bg-orange-500 text-white rounded">
-                  <TrendingDown size={16} />
-                </div>
               </div>
-            </div>
+            </Category>
+
 
             {/* Registration Section */}
-            <div>
-              <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">REGISTRATION</h2>
+            <Category
+              title="REGISTRATION"
+              badge={registrationFrom || registrationTo ? '1' : null}
+            >
               <div className="flex gap-2">
                 <CustomSelect
                   value={registrationFrom}
@@ -1088,11 +1151,12 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   options={registrationYears}
                 />
               </div>
-            </div>
-
+            </Category>
             {/* Mileage Section */}
-            <div>
-              <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">MILEAGE</h2>
+            <Category
+              title="MILEAGE"
+              badge={mileageFrom || mileageTo ? '1' : null}
+            >
               <div className="flex gap-2">
                 <CustomSelect
                   value={mileageFrom}
@@ -1107,73 +1171,87 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   options={mileageOptions}
                 />
               </div>
-            </div>
-
+            </Category>
             {/* Transmission Section */}
-            <div>
-              <h2 className="text-sm font-bold text-[#1a1a1a] mb-3">TRANSMISSION</h2>
+            <Category
+              title="TRANSMISSION"
+              badge={transmission ? '1' : null}
+            >
               <ToggleButton
                 options={['Automatic', 'Manual']}
                 value={transmission}
                 onChange={setTransmission}
               />
-            </div>
+            </Category>
 
+            <Category 
+  title="FUEL" 
+  badge={selectedFuels.length > 0 ? selectedFuels.length : null}
+
+>             
             <MultiSelect
-              title="FUEL"
               selected={selectedFuels}
               onChange={(newSelected) => {
                 setSelectedFuels(newSelected);
               }}
               options={fuelData.types}
               displayOrder={fuelData.displayOrder}
+              placeholder="Select fuel types"
+
             />
+                        </Category>
 
-            {/* // Add this section in your TabContent component (in the 'all' case): */}
-            <div className="bg-red-50 p-4 rounded-lg space-y-4">
-              <h2 className="text-sm font-bold text-[#1a1a1a]">ELETRIC & HYBRID</h2>
+            {/* Electric & Hybrid Section */}
+            <Category
+              title="ELECTRIC & HYBRID"
+              badge={(isElectricVehicle || hybridType) ? '1' : null}
+            >
+              {/* // Add this section in your TabContent component (in the 'all' case): */}
+              <div className="bg-red-50 p-4 rounded-lg space-y-4">
 
-              <label className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={isElectricVehicle}
-                  onChange={(e) => setIsElectricVehicle(e.target.checked)}
-                  className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-                />
-                <span className="ml-2 text-gray-700 group-hover:text-gray-900">
-                  Electric vehicles
-                </span>
-              </label>
+                <label className="flex items-center cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={isElectricVehicle}
+                    onChange={(e) => setIsElectricVehicle(e.target.checked)}
+                    className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                  />
+                  <span className="ml-2 text-gray-700 group-hover:text-gray-900">
+                    Electric vehicles
+                  </span>
+                </label>
 
-              <div>
-                <h3 className="text-sm font-bold text-[#1a1a1a] mb-2">HYBRID TYPE</h3>
-                <div className="flex w-full rounded-lg border-2 border-gray-200 overflow-hidden">
-                  <button
-                    onClick={() => setHybridType('plug-in')}
-                    className={`flex-1 py-2.5 text-sm font-medium transition-colors
+                <div>
+                  <h3 className="text-sm font-bold text-[#1a1a1a] mb-2">HYBRID TYPE</h3>
+                  <div className="flex w-full rounded-lg border-2 border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => setHybridType('plug-in')}
+                      className={`flex-1 py-2.5 text-sm font-medium transition-colors
           ${hybridType === 'plug-in'
-                        ? 'bg-red-400 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    Plug-in hybrid
-                  </button>
-                  <div className="w-[1px] bg-gray-200" />
-                  <button
-                    onClick={() => setHybridType('full')}
-                    className={`flex-1 py-2.5 text-sm font-medium transition-colors
+                          ? 'bg-red-400 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      Plug-in hybrid
+                    </button>
+                    <div className="w-[1px] bg-gray-200" />
+                    <button
+                      onClick={() => setHybridType('full')}
+                      className={`flex-1 py-2.5 text-sm font-medium transition-colors
           ${hybridType === 'full'
-                        ? 'bg-red-400 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    Full hybrid
-                  </button>
+                          ? 'bg-red-400 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      Full hybrid
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-sm font-bold text-[#1a1a1a]">POWER</h2>
+            </Category>
+          <Category 
+            title="POWER"
+            badge={powerFrom || powerTo ? '1' : null}
+          >
+            <div className='justify-end flex mb-3'>
                 <PowerUnitToggle
                   value={powerUnit}
                   onChange={setPowerUnit}
@@ -1192,11 +1270,15 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   placeholder="To"
                   options={getPowerOptions(powerUnit)}
                 />
-              </div>
-            </div>
+                </div>
+        </Category>
 
+
+        <Category 
+            title="VEHICLE TYPE"
+            badge={selectedVehicleTypes.length ? selectedVehicleTypes.length : null}
+          >
             <MultiSelect
-              title="VEHICLE TYPE"
               selected={selectedVehicleTypes.map(type => ({
                 id: type,
                 value: type,
@@ -1210,28 +1292,40 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               placeholder="All"
             />
 
-            {/* // Add these sections in your TabContent component where you want them: */}
+            <div className='mt-4'>
             <Checkbox
               label="Drive type 4x4"
               checked={is4x4}
               onChange={(e) => setIs4x4(e.target.checked)}
             />
+            </div>
 
+</Category>
+
+ <Category 
+            title="EXTERIOR COLOR"
+            badge={selectedColors.length ? selectedColors.length : null}
+          >
             <MultiColorSelector
               selectedColors={selectedColors}
               onColorSelect={setSelectedColors}
             />
-            <hr className='mt-1 mb-1' />
+            </Category>
+            <Category 
+            title="FEATURES"
+            badge={selectedFeatures.length ? selectedFeatures.length : null}
+          >
             <FeaturesSection />
-
             <button
-              className="text-red-400 hover:text-red-500 font-medium text-sm flex items-center"
+              className="text-red-400 hover:text-red-500 font-medium text-sm flex items-center mt-4"
             >
               More features
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <ChevronRight className="w-4 h-4 ml-1 " />
             </button>
 
-            <hr className='mt-1 mb-1' />
+          </Category>
+
+          
 
             {/* After FeaturesSection */}
             <div className="space-y-2 pt-2">

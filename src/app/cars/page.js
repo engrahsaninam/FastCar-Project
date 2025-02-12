@@ -2,18 +2,22 @@
 import { useState, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import AppBar from '@/components/AppBar';
+
 // Dynamically import components with suspense
 const Body = dynamic(() => import("@/components/Cars/Body"), {
   loading: () => <BodySkeleton />,
   ssr: false
 });
+
 const CarFilterUI = dynamic(() => import("@/components/Cars/CarListings"), {
   loading: () => <FilterSkeleton />,
   ssr: false
 });
+
 const Footer = dynamic(() => import("@/components/HomePage/Footer"), {
   ssr: true
 });
+
 // Loading skeletons
 const BodySkeleton = () => (
   <div className="animate-pulse">
@@ -25,6 +29,7 @@ const BodySkeleton = () => (
     </div>
   </div>
 );
+
 const FilterSkeleton = () => (
   <div className="animate-pulse p-4">
     <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -35,18 +40,31 @@ const FilterSkeleton = () => (
     </div>
   </div>
 );
+
 export default function Cars() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
+
   return (
     <Suspense fallback={<BodySkeleton />}>
       {/* Main Container */}
       <AppBar/>
       <div className="flex flex-col md:flex-row min-h-screen md:bg-red-50/50">
         {/* Desktop Filter Sidebar */}
-        <div className="hidden md:block md:w-[27%] md:max-w-[400px] md:min-w-[320px]">
-          <Suspense fallback={<FilterSkeleton />}>
-            <CarFilterUI />
-          </Suspense>
+        <div 
+          className={`
+            hidden md:block transition-all duration-300 ease-in-out
+            ${isFilterOpen ? 'md:w-[320px]' : 'md:w-0'}
+          `}
+        >
+          {isFilterOpen && (
+            <Suspense fallback={<FilterSkeleton />}>
+              <CarFilterUI 
+                isOpen={isFilterOpen}
+                setIsOpen={setIsFilterOpen}
+              />
+            </Suspense>
+          )}
         </div>
 
         {/* Mobile Filter Overlay */}
@@ -68,17 +86,26 @@ export default function Cars() {
         >
           <Suspense fallback={<FilterSkeleton />}>
             <CarFilterUI 
-              isMobileOpen={isMobileFilterOpen} 
-              setIsMobileOpen={setIsMobileFilterOpen} 
+              isMobileOpen={isMobileFilterOpen}
+              setIsMobileOpen={setIsMobileFilterOpen}
             />
           </Suspense>
         </div>
 
         {/* Body - Full width on mobile, remaining space on desktop */}
-        <div className="flex-1 w-full md:bg-red-50/50">
+        <div 
+          className={`
+            flex-1 w-full transition-all duration-300 ease-in-out
+            ${isFilterOpen ? '' : 'md:ml-0'}
+          `}
+        >
           <div className="px-0 md:px-6 py-1 md:py-4">
             <Suspense fallback={<BodySkeleton />}>
-              <Body openMobileFilter={() => setIsMobileFilterOpen(true)} />
+              <Body 
+                openMobileFilter={() => setIsMobileFilterOpen(true)}
+                isFilterOpen={isFilterOpen}
+                setIsFilterOpen={setIsFilterOpen}
+              />
             </Suspense>
           </div>
         </div>

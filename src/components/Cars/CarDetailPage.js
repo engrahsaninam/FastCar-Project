@@ -103,7 +103,7 @@ const CarTabs = () => {
         { id: 'details', label: 'Details', ref: detailsRef },
         { id: 'features', label: 'Features', ref: featuresRef },
         { id: 'howItWorks', label: 'How it works', ref: howItWorksRef },
-        { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
+        // { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
         { id: 'priceMap', label: 'Price map', ref: priceMapRef },
         { id: 'financing', label: 'Financing', ref: financingRef }
       ];
@@ -304,71 +304,71 @@ const HowItWorks = () => {
     );
 };
 
-const PriceHistory = () => {
-    return (
-        <div className="mt-12 px-4 lg:px-0">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Price History</h2>
+// const PriceHistory = () => {
+//     return (
+//         <div className="mt-12 px-4 lg:px-0">
+//             <h2 className="text-2xl font-bold text-gray-900 mb-8">Price History</h2>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="mb-2">
-                    <div className="text-sm font-semibold text-red-500">NO PRICE CHANGE</div>
-                    <div className="text-lg text-[#1e2b4d]">1 day on Fast cars</div>
-                </div>
+//             <div className="bg-white rounded-lg p-6 shadow-sm">
+//                 <div className="mb-2">
+//                     <div className="text-sm font-semibold text-red-500">NO PRICE CHANGE</div>
+//                     <div className="text-lg text-[#1e2b4d]">1 day on Fast cars</div>
+//                 </div>
 
-                {/* Price Chart */}
-                <div className="relative mt-8 mb-4">
-                    {/* Y-axis labels */}
-                    <div className="absolute -left-16 top-0 h-full flex flex-col justify-between text-sm text-gray-500">
-                        <span>651 000</span>
-                        <span>650 000</span>
-                        <span>649 000</span>
-                    </div>
+//                 {/* Price Chart */}
+//                 <div className="relative mt-8 mb-4">
+//                     {/* Y-axis labels */}
+//                     <div className="absolute -left-16 top-0 h-full flex flex-col justify-between text-sm text-gray-500">
+//                         <span>651 000</span>
+//                         <span>650 000</span>
+//                         <span>649 000</span>
+//                     </div>
 
-                    {/* Chart area */}
-                    <div className="relative h-32 ml-2">
-                        {/* Grid lines */}
-                        <div className="absolute inset-0 flex flex-col justify-between">
-                            <div className="border-t border-gray-200 w-full h-0" />
-                            <div className="border-t border-gray-200 w-full h-0" />
-                            <div className="border-t border-gray-200 w-full h-0" />
-                        </div>
+//                     {/* Chart area */}
+//                     <div className="relative h-32 ml-2">
+//                         {/* Grid lines */}
+//                         <div className="absolute inset-0 flex flex-col justify-between">
+//                             <div className="border-t border-gray-200 w-full h-0" />
+//                             <div className="border-t border-gray-200 w-full h-0" />
+//                             <div className="border-t border-gray-200 w-full h-0" />
+//                         </div>
 
-                        {/* Price line */}
-                        <div className="absolute top-1/2 w-full h-0.5 bg-red-500" />
+//                         {/* Price line */}
+//                         <div className="absolute top-1/2 w-full h-0.5 bg-red-500" />
 
-                        {/* Price points */}
-                        <div className="absolute top-1/2 -translate-y-1/2 left-0">
-                            <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
-                                649 990
-                            </div>
-                        </div>
-                        <div className="absolute top-1/2 -translate-y-1/2 right-0">
-                            <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
-                                649 990
-                            </div>
-                        </div>
-                    </div>
+//                         {/* Price points */}
+//                         <div className="absolute top-1/2 -translate-y-1/2 left-0">
+//                             <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
+//                                 649 990
+//                             </div>
+//                         </div>
+//                         <div className="absolute top-1/2 -translate-y-1/2 right-0">
+//                             <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
+//                                 649 990
+//                             </div>
+//                         </div>
+//                     </div>
 
-                    {/* X-axis labels */}
-                    <div className="flex justify-between mt-2 text-sm text-gray-500">
-                        <div className="flex items-center">
-                            <span>CZK</span>
-                            <span className="ml-2">11/2024</span>
-                        </div>
-                        <span>11/2024</span>
-                    </div>
-                </div>
+//                     {/* X-axis labels */}
+//                     <div className="flex justify-between mt-2 text-sm text-gray-500">
+//                         <div className="flex items-center">
+//                             <span>CZK</span>
+//                             <span className="ml-2">11/2024</span>
+//                         </div>
+//                         <span>11/2024</span>
+//                     </div>
+//                 </div>
 
-                {/* Disclaimer */}
-                <div className="mt-8 text-sm text-gray-600 text-center">
-                    We play fair, so we
-                    <span className="font-semibold"> do not include changes in the exchange rate in the development of the car's price; </span>
-                    the data given only reflect changes on the seller's side.
-                </div>
-            </div>
-        </div>
-    );
-};
+//                 {/* Disclaimer */}
+//                 <div className="mt-8 text-sm text-gray-600 text-center">
+//                     We play fair, so we
+//                     <span className="font-semibold"> do not include changes in the exchange rate in the development of the car's price; </span>
+//                     the data given only reflect changes on the seller's side.
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
 
 const PriceMap = () => {
     // Sample data points for the scatter plot
@@ -1024,7 +1024,7 @@ const features = [
         { id: 'details', label: 'Details', ref: detailsRef },
         { id: 'features', label: 'Features', ref: featuresRef },
         { id: 'howItWorks', label: 'How it works', ref: howItWorksRef },
-        { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
+        // { id: 'priceHistory', label: 'Price History', hasIcon: true, ref: priceHistoryRef },
         { id: 'priceMap', label: 'Price map', ref: priceMapRef },
         { id: 'financing', label: 'Financing', ref: financingRef }
     ];
@@ -1326,9 +1326,9 @@ const features = [
                         </div>
 
                         {/* Price History Section */}
-                        <div ref={priceHistoryRef}>
+                        {/* <div ref={priceHistoryRef}>
                             <PriceHistory />
-                        </div>
+                        </div> */}
 
                         {/* Price Map Section */}
                         <div ref={priceMapRef}>

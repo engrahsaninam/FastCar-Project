@@ -273,11 +273,11 @@ const HeroSection = () => {
                     </span>
                   </label>
                 </div>
-
-                <button className="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors text-sm">
-                  1 043 923 Offers
+                <Link href="/cars">
+                <button className="w-full bg-red-500 text-white py-3  rounded-lg hover:bg-red-600 transition-colors text-sm mt-6 mb-2">
+                1 043 923 Offers
                 </button>
-
+                </Link>
                 <button
                   onClick={toggleAdvanced}
                   className="w-full text-red-500 hover:text-red-600 flex items-center justify-center gap-1 text-sm"

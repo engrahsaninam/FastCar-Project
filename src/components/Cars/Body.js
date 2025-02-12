@@ -734,7 +734,7 @@ const featuresMap = {
   'xenon-lights': 'Xenon headlights'
 };
 
-const Body = ({ openMobileFilter }) => {
+const Body = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState([]);
@@ -1043,8 +1043,6 @@ const Body = ({ openMobileFilter }) => {
       </div>
     );
   };
-
-
   return (
     <div className="w-full">
       <div className="flex flex-col overflow-hidden bg-white md:bg-transparent">
@@ -1079,7 +1077,6 @@ const Body = ({ openMobileFilter }) => {
                 ))}
               </div>
             </div>
-
           </div>
           <div>
             <VerifiedCarsHeader />
@@ -1088,8 +1085,17 @@ const Body = ({ openMobileFilter }) => {
         </div>
 
         {/* Desktop Version */}
-        <div className="hidden md:flex flex-col w-full"> {/* Changed to flex-col */}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="hidden md:flex flex-col w-full">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            {/* Filter button - always visible */}
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-400 text-white rounded-lg font-semibold text-sm hover:bg-red-500 transition-colors"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filter
+            </button>
+            
             <button className="flex items-center gap-2 px-4 py-1.5 bg-orange-500 text-white rounded-lg font-semibold text-sm hover:bg-orange-600 transition-colors">
               <Bell className="w-4 h-4" />
               Save search
