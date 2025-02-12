@@ -18,22 +18,22 @@ import {
 const slides = [
   {
     id: 1,
-    title: "How to make a purchase",
+    title: "How to Make a Purchase",
     icon: Info,
     tag: "Overview",
-    content: "You are just a few steps away from your new car! The total price includes everything you need: MOT, registration, and delivery. No hidden fees or additional charges unless you opt for extra services.",
+    content: "You're just a few steps away from owning your new car! The total price includes everything—MOT, registration, and delivery. No hidden fees or surprises, unless you choose additional services.",
     image: "/1.png",
     bgColor: "bg-blue-50"
   },
   {
     id: 2,
-    title: "Payment method",
+    title: "Payment Method",
     icon: CreditCard,
     tag: "Step 1",
     subTitle: "Secure Payment",
     price: "CZK 567,265",
     priceLabel: "TOTAL PRICE INCLUDING ALL SERVICES",
-    content: "Choose your preferred payment method",
+    content: "Select your preferred payment method for a smooth and secure transaction.",
     image: "/2.png",
     bgColor: "bg-red-50"
   },
@@ -43,7 +43,7 @@ const slides = [
     icon: Car,
     tag: "Step 2",
     subTitle: "Thorough Check",
-    content: "We perform a comprehensive inspection of the car's condition for CZK 1,990. You'll receive a detailed technical report to help make an informed decision.",
+    content: "Get a full technical report on the car’s condition for CZK 1,990. Our comprehensive inspection ensures transparency and helps you make an informed decision.",
     image: "/3.png",
     bgColor: "bg-green-50"
   },
@@ -52,8 +52,8 @@ const slides = [
     title: "Warranty Coverage",
     icon: Shield,
     tag: "Step 3",
-    subTitle: "Full Protection",
-    content: "Purchase directly through us for complete warranty coverage. All contracts are in English, ensuring total transparency and understanding.",
+    subTitle: "Complete Protection",
+    content: "Enjoy full warranty coverage when purchasing through us. Contracts are in English, ensuring clarity and peace of mind.",
     image: "/warranty.webp",
     bgColor: "bg-amber-50"
   },
@@ -62,12 +62,13 @@ const slides = [
     title: "Contract Review",
     icon: FileText,
     tag: "Final Step",
-    subTitle: "Full Transparency",
-    content: "Review your purchase contract at home before making any commitments. Available in English with our support team ready to answer any questions.",
+    subTitle: "Total Transparency",
+    content: "Review your contract at home before committing. Available in English, with our support team ready to assist with any questions.",
     image: "/contract.webp",
     bgColor: "bg-purple-50"
   }
 ];
+
 
 const SlideContent = ({ slide, isMobile }) => {
   const Icon = slide.icon;
