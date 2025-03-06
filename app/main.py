@@ -1,0 +1,47 @@
+ 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
+# Import routers
+from app.api import cars, auth, users, filters
+
+# Import database initialization
+from app.database.sqlite import create_tables
+
+from app.utils import email
+
+# Create app
+app = FastAPI(
+    title="EUCar API",
+    description="API for European Car Insights",
+    version="1.0.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(cars.router, prefix="/api/cars", tags=["cars"])
+app.include_router(filters.router, prefix="/api/filters", tags=["filters"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(users.router, prefix="/api/users", tags=["users"])
+
+@app.on_event("startup")
+async def startup_event():
+    # Create SQLite tables on startup
+    create_tables()
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to EUCar API"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
