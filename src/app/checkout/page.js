@@ -1,11 +1,12 @@
 "use client";
 import React from 'react';
-import PaymentMethod from './PaymentMethod';
-import Purchaseinfo from './Purchaseinfo';
-import CheckoutHeader from './CheckoutHeader';
 import AppBar from '@/components/AppBar';
 import PriceSummary from './pricesum';
 import Footer from '@/components/HomePage/Footer';
+import CheckoutCarDetails from '@/components/checkout/CheckoutCarDetails';
+import CheckoutSteps from '@/components/checkout/CheckoutSteps';
+import CheckoutPurchaseGuide from '@/components/checkout/CheckoutPurchaseGuide';
+import CheckoutSection from '@/components/checkout/CheckoutStepDetail';
 
 const CheckoutPage = () => {
     const carData = {
@@ -19,7 +20,8 @@ const CheckoutPage = () => {
     return (
         <div className="min-h-screen bg-[#F8F9FE]">
             <AppBar />
-            <CheckoutHeader carData={carData} />
+            <CheckoutCarDetails carData={carData}/>
+            <CheckoutSteps  />
             
             {/* Mobile Price Summary */}
             <div className="block lg:hidden w-full">
@@ -30,9 +32,9 @@ const CheckoutPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
                     {/* Main Content */}
                     <div className="col-span-1 lg:col-span-2 w-full">
-                        <div className="px-0 sm:px-4 lg:px-6">
-                            <Purchaseinfo />
-                            <PaymentMethod />
+                        <div className="px-0 sm:px-4 lg:px-6 ">
+                            <CheckoutPurchaseGuide/>
+                                <CheckoutSection />
                         </div>
                     </div>
 

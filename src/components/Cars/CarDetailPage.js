@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-
 import {
     ChevronLeft,
     ChevronRight,
@@ -22,18 +21,23 @@ import {
     Eye,
     EyeOff,
     BarChart,
+    ChevronUp,
     Phone,
     Car,
     Clock
-
-
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-
-
-// New Checkout Sidebar Component
-
+import { 
+    Box, 
+    Flex, 
+    Text, 
+    Button, 
+    Icon, 
+    IconButton
+  } from "@chakra-ui/react";
+  import { ChevronUpIcon, HeartIcon, ShoppingCartIcon, CreditCardIcon } from '@chakra-ui/icons';
+  
+  
 
 const GuaranteeCard = () => {
     return (
@@ -303,72 +307,6 @@ const HowItWorks = () => {
         </div>
     );
 };
-
-// const PriceHistory = () => {
-//     return (
-//         <div className="mt-12 px-4 lg:px-0">
-//             <h2 className="text-2xl font-bold text-gray-900 mb-8">Price History</h2>
-
-//             <div className="bg-white rounded-lg p-6 shadow-sm">
-//                 <div className="mb-2">
-//                     <div className="text-sm font-semibold text-red-500">NO PRICE CHANGE</div>
-//                     <div className="text-lg text-[#1e2b4d]">1 day on Fast cars</div>
-//                 </div>
-
-//                 {/* Price Chart */}
-//                 <div className="relative mt-8 mb-4">
-//                     {/* Y-axis labels */}
-//                     <div className="absolute -left-16 top-0 h-full flex flex-col justify-between text-sm text-gray-500">
-//                         <span>651 000</span>
-//                         <span>650 000</span>
-//                         <span>649 000</span>
-//                     </div>
-
-//                     {/* Chart area */}
-//                     <div className="relative h-32 ml-2">
-//                         {/* Grid lines */}
-//                         <div className="absolute inset-0 flex flex-col justify-between">
-//                             <div className="border-t border-gray-200 w-full h-0" />
-//                             <div className="border-t border-gray-200 w-full h-0" />
-//                             <div className="border-t border-gray-200 w-full h-0" />
-//                         </div>
-
-//                         {/* Price line */}
-//                         <div className="absolute top-1/2 w-full h-0.5 bg-red-500" />
-
-//                         {/* Price points */}
-//                         <div className="absolute top-1/2 -translate-y-1/2 left-0">
-//                             <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
-//                                 649 990
-//                             </div>
-//                         </div>
-//                         <div className="absolute top-1/2 -translate-y-1/2 right-0">
-//                             <div className="bg-red-500 text-white px-3 py-1 rounded-md text-sm">
-//                                 649 990
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     {/* X-axis labels */}
-//                     <div className="flex justify-between mt-2 text-sm text-gray-500">
-//                         <div className="flex items-center">
-//                             <span>CZK</span>
-//                             <span className="ml-2">11/2024</span>
-//                         </div>
-//                         <span>11/2024</span>
-//                     </div>
-//                 </div>
-
-//                 {/* Disclaimer */}
-//                 <div className="mt-8 text-sm text-gray-600 text-center">
-//                     We play fair, so we
-//                     <span className="font-semibold"> do not include changes in the exchange rate in the development of the car's price; </span>
-//                     the data given only reflect changes on the seller's side.
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
 
 const PriceMap = () => {
     // Sample data points for the scatter plot
@@ -737,244 +675,88 @@ const Financing = () => {
     );
 };
 
-const MobileCheckoutBar = () => {
-    const router = useRouter();
-    const [isServicesExpanded, setIsServicesExpanded] = useState(false);
-    const [isFinancingModalOpen, setIsFinancingModalOpen] = useState(false);
-    const [showSignupModal, setShowSignupModal] = useState(false);
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [showServicesModal, setShowServicesModal] = useState(false);
-    const [formData, setFormData] = useState({
-      email: '',
-      password: '',
-      name: '',
-      surname: '',
-      countryCode: '+34',
-      phone: '',
-      country: '',
-      postalCode: '',
-      agreeToTerms: false
-    });
-  
-    const handleSignup = (e) => {
-      e.preventDefault();
-      setIsLoggedIn(true);
-      setShowSignupModal(false);
-    };
-  
-    const handleBuyClick = () => {
-      router.push('/checkout');
-    };
-  
-    // Reusable Modal Component
-    const Modal = ({ isOpen, onClose, children }) => (
-      <div className={`fixed inset-0 z-50 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl max-h-[90vh] overflow-y-auto transform transition-transform duration-300 ease-out">
-          {children}
-        </div>
-      </div>
-    );
-  
-    // Services Modal Content
-    const ServicesModal = () => (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Services</h2>
-          <button onClick={() => setShowServicesModal(false)}>
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span>CarAudit™</span>
-            <span>€79</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <span>Car registration</span>
-              <Info className="w-4 h-4 ml-1 text-gray-400" />
-            </div>
-            <span>€80</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <span>Administration Fee</span>
-              <Info className="w-4 h-4 ml-1 text-gray-400" />
-            </div>
-            <span>€30</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <span>Total</span>
-              <Info className="w-4 h-4 ml-1 text-gray-400" />
-            </div>
-            <span>€364</span>
-          </div>
-        </div>
-      </div>
-    );
-  
-    // Financing Modal
-    const FinancingModal = () => {
-      const [selectedOption, setSelectedOption] = useState('lowInstallment');
-      const [monthsRange, setMonthsRange] = useState(48);
-      const [downPayment, setDownPayment] = useState(0);
-  
-      return (
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">Financing</h2>
-            <button onClick={() => setIsFinancingModalOpen(false)}>
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-  
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div
-              className={`relative rounded-lg p-3 cursor-pointer ${
-                selectedOption === 'lowInstallment' ? 'bg-red-500' : 'bg-gray-100'
-              }`}
-              onClick={() => setSelectedOption('lowInstallment')}
-            >
-              <div className="flex items-center mb-1">
-                <span className={`text-sm font-medium ${
-                  selectedOption === 'lowInstallment' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  Low installment
-                </span>
-                <span className="ml-1 px-1 text-xs bg-orange-500 text-white rounded">NEW</span>
-              </div>
-              <span className={`text-xs ${
-                selectedOption === 'lowInstallment' ? 'text-white/80' : 'text-gray-600'
-              }`}>
-                14.4% choose low payments
-              </span>
-            </div>
-  
-            <div
-              className={`relative rounded-lg p-3 cursor-pointer ${
-                selectedOption === 'regularLoan' ? 'bg-red-500' : 'bg-gray-100'
-              }`}
-              onClick={() => setSelectedOption('regularLoan')}
-            >
-              <div className="flex items-center mb-1">
-                <span className={`text-sm font-medium ${
-                  selectedOption === 'regularLoan' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  Regular loan
-                </span>
-              </div>
-              <span className={`text-xs ${
-                selectedOption === 'regularLoan' ? 'text-white/80' : 'text-gray-600'
-              }`}>
-                8.8% choose fixed payments
-              </span>
-            </div>
-          </div>
-  
-          {/* Rest of your financing modal content */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payback period
-              </label>
-              <input
-                type="range"
-                min="12"
-                max="60"
-                step="12"
-                value={monthsRange}
-                onChange={(e) => setMonthsRange(e.target.value)}
-                className="w-full accent-red-500"
-              />
-            </div>
-  
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="grid grid-cols-3 gap-3 text-xs mb-3">
-                <div>
-                  <div className="text-gray-600">DOWN PAYMENT</div>
-                  <div className="font-medium">€3,000</div>
-                </div>
-                <div>
-                  <div className="text-gray-600">MONTHLY</div>
-                  <div className="font-medium">€170</div>
-                </div>
-                <div>
-                  <div className="text-gray-600">TOTAL</div>
-                  <div className="font-medium">€27,663</div>
-                </div>
-              </div>
-            </div>
-  
-            <button className="w-full bg-red-500 text-white py-2.5 rounded-lg flex items-center justify-center">
-              <span>Next</span>
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </button>
-          </div>
-        </div>
-      );
-    };
-  
+
+const MobileCheckout = () => {
     return (
       <>
-        {/* Fixed bottom bar */}
-        <div className="fixed bottom-0   left-0 right-0 bg-white border-t border-gray-200 p-6 z-40 ">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <div className="text-sm text-gray-600">Total price</div>
-              <div className="text-xl font-bold">€27,663</div>
-              <div className="text-xs text-gray-500">incl. services (€27,663)</div>
-              <div className="text-xs text-gray-500">€22,863 without VAT</div>
-              
-            </div>
-            <button 
-              onClick={() => setShowServicesModal(true)}
-              className="text-red-500 text-sm underline"
-            >
-              View details
-            </button>
-          </div>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={handleBuyClick}
-              className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-600 flex items-center justify-center"
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Buy now
-            </button>
-            <button
-              onClick={() => setIsFinancingModalOpen(true)}
-              className="flex-1 border border-gray-200 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center"
-            >
-              <CreditCard className="w-5 h-5 mr-2" />
-              €170/mo
-            </button>
-          </div>
-        </div>
-  
-        {/* Services Modal */}
-        <Modal 
-          isOpen={showServicesModal} 
-          onClose={() => setShowServicesModal(false)}
+        {/* Chevron up button above the checkout */}
+        <Box 
+          position="fixed" 
+          bottom="70px" 
+          left="0" 
+          right="0" 
+          display="flex" 
+          justifyContent="center" 
+          zIndex="40"
         >
-          <ServicesModal />
-        </Modal>
+          <IconButton
+            aria-label="Open checkout"
+            icon={<ChevronUp />} // Using Lucide icon instead of Chakra
+            size="md"
+            borderRadius="full"
+            boxShadow="md"
+            bg="white"
+            color="gray.600"
+            _hover={{ bg: "gray.50" }}
+          />
+        </Box>
   
-        {/* Financing Modal */}
-        <Modal 
-          isOpen={isFinancingModalOpen} 
-          onClose={() => setIsFinancingModalOpen(false)}
+        {/* Fixed checkout bar */}
+        <Box 
+          position="fixed" 
+          bottom="0" 
+          left="0" 
+          right="0" 
+          bg="white" 
+          borderTopWidth="1px" 
+          borderColor="gray.200" 
+          p={4} 
+          zIndex="40"
         >
-          <FinancingModal />
-        </Modal>
+          <Flex direction="column">
+            {/* Price section */}
+            <Flex justify="space-between" align="center" mb={3}>
+              <Box>
+                <Text fontSize="sm" color="gray.600">Total price</Text>
+                <Text fontSize="xl" fontWeight="bold">€36,599</Text>
+                <Text fontSize="xs" color="gray.500">+ services</Text>
+                <Text fontSize="xs" color="gray.500">€369.45/mo</Text>
+              </Box>
+              <Flex align="center">
+                <Icon as={Heart} boxSize={6} color="blue.600" cursor="pointer" /> {/* Using Lucide icon */}
+              </Flex>
+            </Flex>
   
-        {/* Bottom padding to prevent content from being hidden behind the fixed bar */}
-        <div className="lg:hidden h-32"></div>
+            {/* Button row */}
+            <Flex gap={2}>
+              <Button
+                flex="1"
+                bg="blue.600"
+                color="white"
+                py={2}
+                px={4}
+                borderRadius="md"
+                leftIcon={<ShoppingCart />} 
+                _hover={{ bg: "blue.700" }}
+              >
+                Buy now
+              </Button>
+              <Button
+                flex="1"
+                border="1px"
+                borderColor="gray.200"
+                py={2}
+                px={4}
+                borderRadius="md"
+                bg="white"
+                leftIcon={<CreditCard />} 
+                _hover={{ bg: "gray.50" }}
+              >
+                €369.45/mo
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
       </>
     );
   };
@@ -1350,9 +1132,8 @@ const features = [
                 </div>
 
                 {/* Mobile Checkout Bar */}
-                <MobileCheckoutBar
-                    price={649990}
-                    monthlyPayment="€170"
+                <MobileCheckout
+                    
                 />
             </div>
 

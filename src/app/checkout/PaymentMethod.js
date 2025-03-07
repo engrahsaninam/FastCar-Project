@@ -6,14 +6,20 @@ import {
   Check,
   CheckCircle,
   ChevronDown,
+  ChevronUp,
   X,
   Info,
   SmileIcon,
   ClipboardIcon,
+  Clock,
+  Calendar, 
+  ExternalLink,
   InfoIcon,
+  info,
   FileSearch,
   FileText,
   Wrench,  // Changed from Tool/Tools
+  MapPin,
   FileCheck,
   ShieldCheck,
   AlertCircle,
@@ -21,13 +27,11 @@ import {
   ClipboardCheck
 } from 'lucide-react';
 
+
 // Adjust the import path as needed
 // Adjust the import path as needed
 
 const FinancingOptions = ({ handleStepActivation }) => {
-
-
-
   // Primary form state
   const [loanAmount, setLoanAmount] = useState(45.3);
   const [period, setPeriod] = useState(36);
@@ -72,51 +76,6 @@ const FinancingOptions = ({ handleStepActivation }) => {
 
   const [showFinancingDetails, setShowFinancingDetails] = useState(false);
   const [showCarAudit, setShowCarAudit] = useState(false);
-
-  // const ApplicationSentView = () => {
-  //   return (
-  //     <div className="bg-white p-4 rounded-lg mb-6">
-  //       <div className="flex justify-between items-center">
-  //         <div className="flex items-center gap-2">
-  //           <Check className="w-5 h-5 text-green-500" />
-  //           <h2 className="text-lg font-medium">Financing or wire transfer?</h2>
-  //         </div>
-  //         <div className="text-blue-600 flex items-center gap-1">
-  //           Financing
-  //           <ChevronUp className="w-4 h-4" />
-  //         </div>
-  //       </div>
-
-  //       <p className="text-gray-600 mt-4 mb-6">
-  //         Before we get into the CarAudit, we need to choose a financing method...
-  //       </p>
-
-  //       <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-  //         <h3 className="font-medium">Are you considering financing?</h3>
-  //         <div className="space-y-3">
-  //           <div className="flex items-center gap-2">
-  //             <Check className="w-5 h-5 text-green-500" />
-  //             <span>We are the only ones able to finance cars from abroad</span>
-  //           </div>
-  //           <div className="flex items-center gap-2">
-  //             <Check className="w-5 h-5 text-green-500" />
-  //             <span>Unbeatable rate from 7.95%</span>
-  //           </div>
-  //           <div className="flex items-center gap-2">
-  //             <Check className="w-5 h-5 text-green-500" />
-  //             <span>Everything simply online, approval within 4 hours</span>
-  //           </div>
-  //         </div>
-
-  //         <div className="flex justify-between items-center">
-  //           <span className="text-gray-500">OUR PARTNER FOR FINANCING</span>
-  //           <span>Agos logo</span>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
 
   const FinancingDetailsView = () => {
     const [showDetails, setShowDetails] = useState(false);
@@ -244,9 +203,6 @@ const FinancingOptions = ({ handleStepActivation }) => {
       </div>
     );
   };
-
-
-
 
   const [companyFormData, setCompanyFormData] = useState({
     name: '',
@@ -1044,7 +1000,7 @@ const FinancingOptions = ({ handleStepActivation }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button className="p-4 bg-red-500 text-white rounded-lg text-left">
-              LoanForsmart
+              Loan For smart
               <div className="text-sm mt-1">{loanAmount}%</div>
             </button>
             <button className="p-4 bg-gray-100 text-gray-500 rounded-lg text-left">
@@ -1189,16 +1145,112 @@ const FinancingOptions = ({ handleStepActivation }) => {
   );
 };
 
+const CompletedAudit = () => {
+  return (
+    <div className="mb-6 animate-fadeIn">
+      <div className="text-sm text-gray-500 uppercase tracking-wider mb-2">STEP 2</div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Header */}
+        <div className="p-5 flex justify-between items-center border-b border-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-green-400 flex items-center justify-center shadow-sm">
+              <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-gray-900">CarAudit™</span>
+              <span className="text-[15px] text-gray-600">vehicle inspection</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full text-sm">Free</span>
+            <ChevronUp className="w-4 h-4 text-gray-400" />
+          </div>
+        </div>
+
+        <div className="p-5 space-y-6">
+          {/* Status Alert */}
+          <div className="bg-green-50 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-white rounded-lg p-2 shadow-sm">
+                <FileText className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">The car check is complete!</p>
+                <p className="text-sm text-green-700 mt-0.5">You now have time to decide whether to buy the car.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Inspector Info */}
+          <div className="bg-gray-50/50 rounded-lg p-4">
+            <div className="text-sm text-gray-500 uppercase tracking-wider mb-3">CHECKED BY</div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-white shadow-md">
+                  <img
+                    src="/1.png"
+                    alt="mechanic"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">Fast Car mechanic</div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5">
+                    <Calendar className="w-4 h-4" />
+                    <span>14.02.2025</span>
+                  </div>
+                </div>
+              </div>
+              <button className="bg-red-400 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500 transition-all shadow-sm hover:shadow-md flex items-center gap-2 group">
+                View CarAudit
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+          </div>
+
+          {/* Report Content */}
+          <div className="bg-gray-50/50 rounded-lg p-5">
+            <div className="prose prose-gray max-w-none">
+              <p className="text-gray-600 text-[15px] leading-relaxed">
+                Acquistare questo veicolo rappresenta una scelta vantaggiosa grazie alle sue eccellenti condizioni
+                accompagnate da un prezzo competitivo, offrendo un'opportunità di acquisto imperdibile. Questo veicolo
+                non ha mai subito incidenti, come confermato dalla sua storia, il che testimonia le sue condizioni eccellenti.
+              </p>
+              <button className="mt-4 text-red-400 hover:text-red-500 transition-colors text-sm font-medium inline-flex items-center gap-2 group">
+                Read complete report
+                <ChevronUp className="w-4 h-4 rotate-90 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CarAuditInspection = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isProcessing] = useState(true); // Always true as request is being processed
-  
+  const [showCompleted, setShowCompleted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowCompleted(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showCompleted) {
+    return <CompletedAudit />;
+  }
+
   return (
     <div className="mb-6">
       <div className="text-sm text-gray-500 uppercase mb-2">STEP 2</div>
       <div className="bg-white rounded-lg overflow-hidden border">
         {/* Header - Changed to red theme */}
-        <div 
+        <div
           className="p-4 flex justify-between items-center cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
@@ -1210,10 +1262,9 @@ const CarAuditInspection = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-red-500 font-medium">€79</span>
-            <ChevronDown 
-              className={`w-4 h-4 text-gray-400 transform transition-transform ${
-                isExpanded ? 'rotate-180' : ''
-              }`} 
+            <ChevronDown
+              className={`w-4 h-4 text-gray-400 transform transition-transform ${isExpanded ? 'rotate-180' : ''
+                }`}
             />
           </div>
         </div>
@@ -1241,14 +1292,14 @@ const CarAuditInspection = () => {
             <div className="mt-8 flex justify-between">
               <div className="flex-1 pr-8">
                 <h4 className="font-medium mb-6">What happens after ordering the inspection</h4>
-                
+
                 <div className="space-y-6">
                   <div className="flex gap-4">
                     <div className="text-red-500 font-medium">1</div>
                     <div>
                       <p className="font-medium text-[15px]">We get the car VIN from the dealer</p>
                       <p className="text-sm text-gray-500">
-                        and we check this in legal status in European countries 
+                        and we check this in legal status in European countries
                         to see whether the car has been stolen or crashed and we also check the mileage.
                       </p>
                     </div>
@@ -1303,8 +1354,8 @@ const CarAuditInspection = () => {
                 </div>
 
                 <p className="text-xs text-gray-500 mt-4">
-                  We try to reserve each car with the dealer before the inspection. However, we cannot guarantee this 
-                  reservation. It all depends on the specific dealer. If the car is sold in the meanwhile, we will provide you a full 
+                  We try to reserve each car with the dealer before the inspection. However, we cannot guarantee this
+                  reservation. It all depends on the specific dealer. If the car is sold in the meanwhile, we will provide you a full
                   refund of the price of the inspection.
                 </p>
               </div>
@@ -1318,9 +1369,9 @@ const CarAuditInspection = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Disabled continue button */}
-            <button 
+            <button
               disabled={isProcessing}
               className="w-full mt-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2
                 bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -1510,12 +1561,27 @@ const BankTransferForm = () => {
 const PaymentMethod = () => {
 
   const [selectedPayment, setSelectedPayment] = useState(null);
+    // Track active step and selection
+    const [currentStep, setCurrentStep] = useState(1);
+    const [showFinancingForm, setShowFinancingForm] = useState(false);
+  
   const [activeSteps, setActiveSteps] = useState({
     payment: false,
     carAudit: false,
     delivery: false,
     additionalServices: false
   });
+
+  const handlePaymentSelection = (method) => {
+    setSelectedPayment(method);
+    setCurrentStep(2);
+  };
+
+  // Handle completion of financing form
+  const handleFinancingComplete = () => {
+    setShowFinancingForm(false);
+    setCurrentStep(3);
+  };
 
   const handleStepActivation = (payment, activateCarAudit = false) => {
     if (payment === 'bank') {
@@ -1536,6 +1602,263 @@ const PaymentMethod = () => {
     setSelectedPayment(payment);
   };
 
+
+
+  const PickupMap = () => (
+    <div className="w-full h-96 relative rounded-xl overflow-hidden border border-gray-200">
+      <iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=8.5,44.5,9.5,45.5&layer=mapnik&marker=44.8828,8.8382"
+        className="w-full h-full border-0"
+        title="Pickup Location Map"
+        loading="lazy"
+      />
+    </div>
+  );
+  
+
+  const renderStep = (stepNumber, title, isActive, isCompleted) => {
+    return (
+      <div className="mb-6">
+        <div className="text-sm text-gray-500 uppercase mb-2">STEP {stepNumber}</div>
+        <div className={`bg-white p-4 rounded-xl shadow-sm transition-all duration-300 
+          ${isActive ? 'border-2 border-red-500 bg-red-50' : ''}
+          ${!isActive && !isCompleted ? 'opacity-60' : ''}`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center
+              ${isCompleted ? 'bg-red-500' : isActive ? 'border-2 border-red-500' : 'bg-gray-100'}`}>
+              {isCompleted ? (
+                <Check className="w-4 h-4 text-white" />
+              ) : (
+                <div className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-red-500' : 'bg-gray-300'}`} />
+              )}
+            </div>
+            <span className={`text-[15px] ${isActive ? 'text-red-500 font-medium' : ''}`}>{title}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+
+  const DeliveryForm = () => {
+    const [deliveryType, setDeliveryType] = useState('home');
+    const [formData, setFormData] = useState({
+      street: '',
+      houseNumber: '',
+      postalCode: '',
+      city: '',
+      country: 'Italy'
+    });
+    const [errors, setErrors] = useState({});
+  
+    const validateForm = () => {
+      const newErrors = {};
+      if (deliveryType === 'home') {
+        if (!formData.street) newErrors.street = 'Street is required';
+        if (!formData.houseNumber) newErrors.houseNumber = 'House number is required';
+        if (!formData.postalCode) newErrors.postalCode = 'Postal code is required';
+        if (!formData.city) newErrors.city = 'City is required';
+      }
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    const handleSubmit = () => {
+      if (validateForm()) {
+        console.log('Form submitted', { deliveryType, formData });
+      }
+    };
+  
+    return (
+      <div className="mb-6 animate-fadeIn">
+        <div className="text-sm text-gray-500 uppercase tracking-wider mb-2">STEP 3</div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Header */}
+          <div className="p-5 flex justify-between items-center border-b border-gray-50">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-400 flex items-center justify-center shadow-sm">
+                <Clock className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-[15px] font-semibold text-gray-900">Delivery</span>
+            </div>
+            <ChevronUp className="w-4 h-4 text-gray-400" />
+          </div>
+  
+          <div className="p-5 space-y-6">
+            <div>
+              <h3 className="text-gray-900 font-medium mb-4">Where should we deliver the car?</h3>
+  
+              {/* Delivery Options */}
+              <div className="space-y-3">
+                <button
+                  onClick={() => setDeliveryType('home')}
+                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                    deliveryType === 'home'
+                      ? 'border-red-500 bg-red-50/50'
+                      : 'border-gray-200 hover:border-red-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      deliveryType === 'home' ? 'border-red-500' : 'border-gray-300'
+                    }`}>
+                      {deliveryType === 'home' && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      )}
+                    </div>
+                    <span className="text-[15px] font-medium">Delivery to you</span>
+                  </div>
+                </button>
+  
+                <button
+                  onClick={() => setDeliveryType('pickup')}
+                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                    deliveryType === 'pickup'
+                      ? 'border-red-500 bg-red-50/50'
+                      : 'border-gray-200 hover:border-red-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      deliveryType === 'pickup' ? 'border-red-500' : 'border-gray-300'
+                    }`}>
+                      {deliveryType === 'pickup' && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      )}
+                    </div>
+                    <span className="text-[15px] font-medium">Delivery to PickUp point</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+  
+            {deliveryType === 'home' && (
+              <div className="animate-fadeIn">
+                <div className="text-lg font-semibold text-gray-900 mb-6">Delivery to you</div>
+  
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Street</label>
+                    <input
+                      type="text"
+                      value={formData.street}
+                      onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                      className={`w-full p-3 rounded-lg border ${errors.street ? 'border-red-500' : 'border-gray-200'} 
+                      focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all`}
+                      placeholder="Street"
+                    />
+                    {errors.street && <p className="text-red-500 text-xs mt-1">{errors.street}</p>}
+                  </div>
+  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">House Number</label>
+                      <input
+                        type="text"
+                        value={formData.houseNumber}
+                        onChange={(e) => setFormData({ ...formData, houseNumber: e.target.value })}
+                        className={`w-full p-3 rounded-lg border ${errors.houseNumber ? 'border-red-500' : 'border-gray-200'}
+                        focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all`}
+                        placeholder="No."
+                      />
+                      {errors.houseNumber && <p className="text-red-500 text-xs mt-1">{errors.houseNumber}</p>}
+                    </div>
+  
+                    <div>
+                      <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Postal Code</label>
+                      <input
+                        type="text"
+                        value={formData.postalCode}
+                        onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                        className={`w-full p-3 rounded-lg border ${errors.postalCode ? 'border-red-500' : 'border-gray-200'}
+                        focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all`}
+                        placeholder="4600"
+                      />
+                      {errors.postalCode && <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>}
+                    </div>
+                  </div>
+  
+                  <div>
+                    <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">City</label>
+                    <input
+                      type="text"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className={`w-full p-3 rounded-lg border ${errors.city ? 'border-red-500' : 'border-gray-200'}
+                      focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all`}
+                      placeholder="City"
+                    />
+                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+                  </div>
+  
+                  <div>
+                    <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Country</label>
+                    <div className="relative">
+                      <select
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        className="w-full p-3 rounded-lg border border-gray-200 appearance-none bg-white
+                        focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all pr-10"
+                      >
+                        <option value="Italy">Italy</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+  
+           
+          {/* Pickup Point Section */}
+          {deliveryType === 'pickup' && (
+            <div className="animate-fadeIn">
+              <div className="space-y-4">
+                <div>
+                  <div className="text-lg font-semibold text-gray-900 mb-2">Delivery to PickUp point</div>
+                  <h4 className="text-gray-700 mb-4">To which pickup point should we deliver the car?</h4>
+                  <button className="w-full p-4 rounded-xl border-2 border-red-500 bg-red-50/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full border-2 border-red-500 flex items-center justify-center">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                        </div>
+                        <span className="text-[15px] font-medium">Villavernia (AL) - Italy</span>
+                      </div>
+                      <span className="text-red-500 font-semibold">€799</span>
+                    </div>
+                  </button>
+                </div>
+
+                <PickupMap />
+              </div>
+            </div>
+          )}
+  
+            {/* Price Display */}
+            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+              <div className="text-sm text-gray-500">Price of delivery:</div>
+              <div className="text-lg font-semibold text-red-500">
+                {deliveryType === 'pickup' ? '€799' : '€1,176'}
+              </div>
+            </div>
+  
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-red-500 text-white py-3 rounded-lg font-medium 
+              hover:bg-red-600 focus:ring-4 focus:ring-red-100 transition-all
+              flex items-center justify-center gap-2 group"
+            >
+              Confirm Delivery
+              <MapPin className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
   const handleNextStep = (currentStep) => {
     switch (currentStep) {
       case 'carAudit':
@@ -1558,8 +1881,6 @@ const PaymentMethod = () => {
         break;
     }
   };
-
-  // In your PaymentMethod component, modify the StepIndicator:
 
 
 
@@ -1669,19 +1990,8 @@ const PaymentMethod = () => {
           </div>
         )}
 
-        {!activeSteps.delivery && (
-          <div>
-            <div className="text-sm text-gray-500 uppercase mb-2">STEP 3</div>
-            <div className="bg-white p-4 rounded-xl shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-gray-400" />
-                </div>
-                <span className="text-[15px]">Delivery</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {!activeSteps.delivery && <DeliveryForm />}
+
 
         {!activeSteps.payment && (
           <div>
