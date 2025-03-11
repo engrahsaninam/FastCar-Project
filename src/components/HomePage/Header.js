@@ -314,16 +314,6 @@ const HeroSection = () => {
                   Advanced search <ChevronDown size={20} className={`transform transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
                 </button>
   
-                {/* Reviews section */}
-                <div className="flex items-center justify-center gap-3 pt-4">
-                  <div className="text-3xl font-bold">4.8</div>
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={24} className="text-yellow-400 fill-yellow-400" />
-                    ))}
-                  </div>
-                  <div className="text-lg text-gray-600">1023 reviews</div>
-                </div>
               </div>
             </div>
           </div>
