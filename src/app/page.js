@@ -24,7 +24,7 @@ export default function Home() {
     <CarBuy/>
     <WhyChooseUs/>
     <CarBudgetSelector/>
-    <TestimonialsSection/>
+    {/* <TestimonialsSection/> */}
     <Footer/>
    </>
   );

@@ -86,22 +86,6 @@ const CarvagoHero = () => {
             </div>
           </div>
 
-          {/* Ratings */}
-          <div className="mt-8 flex items-center gap-2">
-            <span className="text-4xl font-bold text-white">4.8</span>
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} className="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
-                </svg>
-              ))}
-            </div>
-            <button className="text-white hover:text-gray-200 flex items-center ml-2 transition-colors">
-              1828 reviews
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </button>
-          </div>
-
           {/* Features */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 pb-12">
             {[
