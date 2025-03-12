@@ -1,4 +1,3 @@
- 
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import json
@@ -54,9 +53,10 @@ class CarResponse(BaseModel):
             except:
                 data['attrs'] = {}
                 
-        # Calculate year from age if needed
+        # Calculate year from age - the age field actually contains the manufacturing year
+        # with a decimal component (e.g., 2021.25 for a car manufactured in 2021, first quarter)
         if 'age' in data and 'year' not in data:
-            data['year'] = 2025 - int(data['age'])
+            data['year'] = int(float(data['age']))
             
         super().__init__(**data)
 
