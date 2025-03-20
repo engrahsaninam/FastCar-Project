@@ -157,7 +157,7 @@ const CarInspectionPage = () => {
   ];
 
   return (
-    <div className="min-h-screen max-w-7xl bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <AppBar/>
       <div className="relative h-[450px] ">
@@ -326,7 +326,7 @@ const CarInspectionPage = () => {
         `}</style>
       </div>
 
-      {/* Reviews Section */}
+      {/* Reviews Section
       <div className="bg-lightBlue py-24 px-4 max-w-6xl mx-auto">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -358,10 +358,10 @@ const CarInspectionPage = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* FAQ Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto mb-24">
+      <div className="bg-white rounded-lg mt-24 shadow-sm p-6 max-w-6xl mx-auto mb-24">
         <h2 className="text-2xl font-bold mb-6">FAQ</h2>
         <div className="space-y-4">
           {faqs.map((faq, index) => (

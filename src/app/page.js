@@ -5,6 +5,7 @@ import CarListings from "@/components/HomePage/CarList";
 import CarValuationForm from "@/components/HomePage/CarValuation";
 import Footer from "@/components/HomePage/Footer";
 import HeroSection from "@/components/HomePage/Header";
+import NewsletterPopup from "@/components/HomePage/NewsletterPopup";
 import CarBuyingProcess from "@/components/HomePage/Proccess";
 import TestimonialsSection from "@/components/HomePage/Reviews";
 import SafePurchaseSection from "@/components/HomePage/SafePurchaseSection";
@@ -26,6 +27,7 @@ export default function Home() {
     <CarBudgetSelector/>
     {/* <TestimonialsSection/> */}
     <Footer/>
+    <NewsletterPopup/>
    </>
   );
 }
