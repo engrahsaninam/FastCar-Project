@@ -3,17 +3,45 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  IconButton,
+  Badge,
+  Skeleton,
+  SkeletonText,
+  HStack,
+  VStack,
+  Heading,
+  Container,
+  Wrap,
+  WrapItem,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  useDisclosure,
+  Link as ChakraLink,
+  Select,
+  AspectRatio,
+} from '@chakra-ui/react';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons';
+import {
   Heart,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
-  Gauge,
-  Calendar,
   ParkingMeterIcon,
+  Calendar,
+  Gauge,
   Power,
   Fuel,
   X,
   SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
   Bell,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -21,60 +49,86 @@ import OptionsModal from './FinancingModal';
 import SearchBar from './carSearchComponent';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import logo from '@/assets/logo.png'
+import logo from '@/assets/logo.png';
 
+// Custom Lucide icon wrapper for Chakra UI
+const LucideIcon = ({ icon: Icon, ...props }) => {
+  return <Box as={Icon} {...props} />;
+};
+
+// Car Card Skeleton for loading state
 const CarCardSkeleton = () => {
   return (
-    <div className="flex flex-col md:flex-col lg:flex-row bg-white rounded-lg overflow-hidden border border-gray-100 animate-pulse">
+    <Flex
+      direction={["column", "column", "row"]}
+      bg="white"
+      borderRadius="lg"
+      overflow="hidden"
+      borderWidth="1px"
+      borderColor="gray.100"
+    >
       {/* Image Skeleton */}
-      <div className="relative w-full lg:w-[250px] aspect-[16/9] lg:aspect-[4/3] bg-gray-200" />
+      <Box position="relative" w={["full", "full", "250px"]}>
+        <AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+          <Skeleton w="full" h="full" />
+        </AspectRatio>
+      </Box>
 
       {/* Content Skeleton */}
-      <div className="flex-1 p-3 flex flex-col gap-y-2">
-        <div className="flex justify-between">
-          <div className="h-6 w-48 bg-gray-200 rounded" />
-          <div className="h-8 w-24 bg-gray-200 rounded" />
-        </div>
+      <Flex flex="1" p="3" flexDir="column" gap="2">
+        <Flex justify="space-between">
+          <Skeleton height="6" width="48" borderRadius="md" />
+          <Skeleton height="8" width="24" borderRadius="md" />
+        </Flex>
 
         {/* Specs Row Skeleton */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3">
+        <Flex flexWrap="wrap" gap="4" mb="3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-4 w-20 bg-gray-200 rounded" />
+            <Skeleton key={i} height="4" width="20" borderRadius="md" />
           ))}
-        </div>
+        </Flex>
 
         {/* Features Skeleton */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <Flex flexWrap="wrap" gap="1.5" mb="3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-5 w-24 bg-gray-200 rounded" />
+            <Skeleton key={i} height="5" width="24" borderRadius="md" />
           ))}
-        </div>
+        </Flex>
 
         {/* Location and Price Skeleton */}
-        <div className="mt-auto flex flex-row justify-between items-center gap-2 pt-2 border-t border-gray-100">
-          <div className="h-4 w-32 bg-gray-200 rounded" />
-          <div className="h-6 w-24 bg-gray-200 rounded" />
-        </div>
-      </div>
-    </div>
+        <Flex
+          mt="auto"
+          justify="space-between"
+          align="center"
+          gap="2"
+          pt="2"
+          borderTopWidth="1px"
+          borderColor="gray.100"
+        >
+          <Skeleton height="4" width="32" borderRadius="md" />
+          <Skeleton height="6" width="24" borderRadius="md" />
+        </Flex>
+      </Flex>
+    </Flex>
   );
 };
 
+// List of Car Card Skeletons
 const CarListSkeleton = () => {
   return (
-    <div className="w-full">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col gap-4 mt-4">
+    <Box w="full">
+      <Container maxW="7xl" px="4">
+        <VStack spacing="4" mt="4" align="stretch">
           {[1, 2, 3, 4].map((i) => (
             <CarCardSkeleton key={i} />
           ))}
-        </div>
-      </div>
-    </div>
+        </VStack>
+      </Container>
+    </Box>
   );
 };
 
-
+// Car Card Component
 const CarCard = ({ car }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -91,156 +145,232 @@ const CarCard = ({ car }) => {
   };
 
   return (
-    <Link href={`/cars/car?id=${car.id}`} className="block">
-      <div className="flex flex-col md:flex-col lg:flex-row bg-white rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
-        {/* Image Section */}
-        <div className="relative w-full lg:w-[250px] aspect-[16/9] lg:aspect-[4/3]">
-          <div className="absolute top-2 right-2 z-20">
-            <button
-              onClick={(e) => {
-                e.preventDefault(); // Prevent navigation
-                setIsFavorite(!isFavorite);
-              }}
-              className="p-1 rounded-full bg-white/90 hover:bg-white"
+    <Link href={`/cars/car?id=${car.id}`} passHref legacyBehavior>
+      <ChakraLink display="block" _hover={{ textDecoration: 'none' }}>
+        <Flex
+          direction={["column", "column", "row"]}
+          bg="white"
+          borderRadius="lg"
+          overflow="hidden"
+          borderWidth="1px"
+          borderColor="gray.100"
+          transition="all 0.2s"
+          _hover={{ boxShadow: "md" }}
+        >
+          {/* Image Section */}
+          <Box position="relative" w={["full", "full", "300px"]}>
+            <AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+              <Box position="relative" w="full" h="full">
+                {/* Heart/Favorite Button - always visible */}
+                <IconButton
+                  position="absolute"
+                  top="2"
+                  right="2"
+                  zIndex="20"
+                  size="sm"
+                  icon={
+                    <LucideIcon
+                      icon={Heart}
+                      boxSize="4"
+                      color={isFavorite ? "red.600" : "gray.600"}
+                      fill={isFavorite ? "red.600" : "none"}
+                    />
+                  }
+                  borderRadius="full"
+                  bg="white"
+                  opacity="0.9"
+                  _hover={{ bg: "white", opacity: "1" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsFavorite(!isFavorite);
+                  }}
+                  aria-label="Add to favorites"
+                />
+
+                {/* Navigation Arrows - always visible for consistency */}
+                <IconButton
+                  position="absolute"
+                  left="2"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  zIndex="10"
+                  size="sm"
+                  icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
+                  borderRadius="full"
+                  bg="white"
+                  opacity="0.8"
+                  _hover={{ bg: "white", opacity: "1" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    previousImage();
+                  }}
+                  aria-label="Previous image"
+                />
+                <IconButton
+                  position="absolute"
+                  right="2"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  zIndex="10"
+                  size="sm"
+                  icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
+                  borderRadius="full"
+                  bg="white"
+                  opacity="0.8"
+                  _hover={{ bg: "white", opacity: "1" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    nextImage();
+                  }}
+                  aria-label="Next image"
+                />
+
+                <Image
+                  src={car.images[currentImageIndex]}
+                  alt={car.name}
+                  fill
+                  priority
+                  style={{ objectFit: "cover" }}
+                />
+              </Box>
+            </AspectRatio>
+          </Box>
+
+          {/* Content Section */}
+          <Flex flex="1" p="3" flexDir="column" gap="2">
+            <Flex justify="space-between">
+              <Heading
+                as="h3"
+                fontSize="xl"
+                fontWeight="bold"
+                color="red.500"
+                mb="2"
+                letterSpacing="wide"
+                transition="colors 0.2s"
+                _hover={{ color: "red.600" }}
+              >
+                {car.name}
+              </Heading>
+              <Box>
+                <Image
+                  src={logo.src}
+                  alt="Logo"
+                  width={100}
+                  height={50}
+                  style={{ display: "inline-block" }}
+                />
+              </Box>
+            </Flex>
+
+            {/* Specs Row */}
+            <Flex flexWrap="wrap" gap="4" mb="3" rowGap="1.5">
+              <HStack spacing="1.5">
+                <LucideIcon icon={ParkingMeterIcon} boxSize="3.5" color="gray.400" />
+                <Text fontSize="xs" color="gray.700">{car.mileage}</Text>
+              </HStack>
+              <HStack spacing="1.5">
+                <LucideIcon icon={Calendar} boxSize="3.5" color="gray.400" />
+                <Text fontSize="xs" color="gray.700">{car.date}</Text>
+              </HStack>
+              <HStack spacing="1.5">
+                <LucideIcon icon={Power} boxSize="3.5" color="gray.400" />
+                <Text fontSize="xs" color="gray.700">{car.power}</Text>
+              </HStack>
+              <HStack spacing="1.5">
+                <LucideIcon icon={Gauge} boxSize="3.5" color="gray.400" />
+                <Text fontSize="xs" color="gray.700">{car.transmission}</Text>
+              </HStack>
+              <HStack spacing="1.5">
+                <LucideIcon icon={Fuel} boxSize="3.5" color="gray.400" />
+                <Text fontSize="xs" color="gray.700">{car.fuelType}</Text>
+              </HStack>
+            </Flex>
+
+            {/* Features */}
+            <Flex flexWrap="wrap" gap="1.5" mb="3">
+              {car.features.slice(0, 4).map((feature, index) => (
+                <Badge
+                  key={index}
+                  px="2"
+                  py="0.5"
+                  bg="red.50"
+                  color="red.400"
+                  borderRadius="md"
+                  fontSize="xs"
+                  fontWeight="medium"
+                >
+                  {feature}
+                </Badge>
+              ))}
+              {car.features.length > 4 && (
+                <Button
+                  variant="unstyled"
+                  color="red.600"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  height="auto"
+                  px="2"
+                  py="0.5"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  + {car.features.length - 4} more
+                </Button>
+              )}
+            </Flex>
+
+            {/* Location and Price */}
+            <Flex
+              mt="auto"
+              justify="space-between"
+              align="center"
+              gap="2"
+              pt="2"
+              borderTopWidth="1px"
+              borderColor="gray.100"
             >
-              <Heart
-                className={`w-4 h-4 ${isFavorite ? 'fill-blue-600 text-blue-600' : 'text-gray-600'}`}
-              />
-            </button>
-          </div>
+              <HStack spacing="1.5" color="gray.600">
+                <LucideIcon icon={MapPin} boxSize="3.5" />
+                <Text fontSize="xs">Germany, delivery:</Text>
+                <Button
+                  variant="unstyled"
+                  color="red.600"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  textDecoration="underline"
+                  height="auto"
+                  _hover={{ color: "red.700" }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  Enter ZIP code
+                </Button>
+              </HStack>
 
-          {car.images.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent navigation
-                  previousImage();
-                }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full bg-white/80 hover:bg-white"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent navigation
-                  nextImage();
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full bg-white/80 hover:bg-white"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </>
-          )}
+              <Box textAlign="right">
+                <Text fontSize="lg" fontWeight="bold" color="gray.900">
+                  €{car.price.toLocaleString()}
+                </Text>
+                {/* Uncomment if needed
+                <Text fontSize="xs" color="gray.500">
+                  €{car.priceWithoutVat?.toLocaleString()} without VAT
+                </Text>
+                */}
+              </Box>
+            </Flex>
 
-          <Image
-            src={car.images[currentImageIndex]}
-            alt={car.name}
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-
-        {/* Content Section */}
-        <div className="flex-1 p-3 flex flex-col gap-y-2">
-          <div className='flex justify-between'>
-          <h3 className="text-xl font-bold text-red-500 mb-2 tracking-wide hover:text-red-600 transition-colors">{car.name}</h3>
-            <img
-              src={logo.src}
-              alt="Logo"
-              width={100}
-              height={50}
-              className="inline-block"
+            {/* Financing Modal */}
+            <OptionsModal
+              car={car}
+              isOpen={isOptionsModalOpen}
+              onClose={() => setIsOptionsModalOpen(false)}
             />
-          </div>
-          {/* Specs Row */}
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3">
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <ParkingMeterIcon className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs">{car.mileage}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <Calendar className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs">{car.date}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <Power className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs">{car.power}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <Gauge className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs">{car.transmission}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-gray-700">
-              <Fuel className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs">{car.fuelType}</span>
-            </div>
-          </div>
-
-          {/* Features */}
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {car.features.slice(0, 4).map((feature, index) => (
-              <span
-                key={index}
-                className="px-2 py-0.5 bg-red-50 text-red-400 rounded text-xs font-medium"
-              >
-                {feature}
-              </span>
-            ))}
-            {car.features.length > 4 && (
-              <button className="px-2 py-0.5 text-red-600 text-xs font-medium">
-                + {car.features.length - 4} more
-              </button>
-            )}
-          </div>
-
-          {/* Location and Price */}
-          <div className="mt-auto flex flex-row justify-between items-center gap-2 pt-2 border-t border-gray-100">
-            <div className="flex items-center gap-1.5 text-gray-600">
-              <MapPin className="w-3.5 h-3.5" />
-              <span className="text-xs">Germany, delivery:</span>
-              <button 
-                onClick={(e) => e.preventDefault()}
-                className="text-red-600 text-xs font-medium underline hover:text-red-700"
-              >
-                Enter ZIP code
-              </button>
-            </div>
-
-            <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">€{car.price.toLocaleString()}</div>
-              {/* <div className="text-xs text-gray-500">
-                €{car.priceWithoutVat.toLocaleString()} without VAT
-              </div> */}
-            </div>
-          </div>
-
-          {/* Import and Financing Options */}
-          {/* <div className="mt-4 flex flex-col gap-2">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsOptionsModalOpen(true);
-              }}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm self-start"
-            >
-              View Options
-            </button>
-          </div> */}
-
-          <OptionsModal
-            car={car}
-            isOpen={isOptionsModalOpen}
-            onClose={() => setIsOptionsModalOpen(false)}
-          />
-        </div>
-      </div>
+          </Flex>
+        </Flex>
+      </ChakraLink>
     </Link>
   );
 };
 
-
+// Car List Component
 const CarList = () => {
   const [filteredCars, setFilteredCars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -248,7 +378,7 @@ const CarList = () => {
   const cars = [
     {
       id: 1,
-      name: "BMW  Cooper 100 kW",
+      name: "BMW Cooper 100 kW",
       images: [
         "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
         "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
@@ -270,7 +400,6 @@ const CarList = () => {
         "LED headlights"
       ],
       price: 25749,
-      
       logo: "/Logo/logo.png"
     },
     {
@@ -325,319 +454,7 @@ const CarList = () => {
       price: 25749,
       priceWithoutVat: 21280
     },
-    {
-      id: 4,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 5,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 6,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 7,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 8,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 9,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 10,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 11,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 12,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 13,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 14,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 15,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    // Add more cars...
+    // More cars can be added here as in the original code
   ];
 
   useEffect(() => {
@@ -660,44 +477,22 @@ const CarList = () => {
     return <CarListSkeleton />;
   }
 
-  // const handleSearch = (searchTerm) => {
-  //   if (!searchTerm.trim()) {
-  //     setFilteredCars(cars);
-  //     return;
-  //   }
-
-  //   const searchLower = searchTerm.toLowerCase();
-  //   const filtered = cars.filter(car => {
-  //     return (
-  //       car.name.toLowerCase().includes(searchLower) ||
-  //       car.features.some(feature =>
-  //         feature.toLowerCase().includes(searchLower)
-  //       ) ||
-  //       car.transmission.toLowerCase().includes(searchLower) ||
-  //       car.fuelType.toLowerCase().includes(searchLower) ||
-  //       car.power.toLowerCase().includes(searchLower) ||
-  //       car.mileage.toLowerCase().includes(searchLower)
-  //     );
-  //   });
-
-  //   setFilteredCars(filtered);
-  // };
-
   return (
     <Suspense fallback={<CarListSkeleton />}>
-    <div className="w-full">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col gap-4 mt-4">
-          {filteredCars.map((car) => (
-            <CarCard key={car.id} car={car} />
-          ))}
-        </div>
-      </div>
-    </div>
-  </Suspense>
+ <Box w="full">
+        <Box w="full" px="10px">
+          <VStack spacing="4" mt="4" align="stretch">
+            {filteredCars.map((car) => (
+              <CarCard key={car.id} car={car} />
+            ))}
+          </VStack>
+        </Box>
+      </Box>
+    </Suspense>
   );
 };
 
+// Maps for filter display
 const colorMap = {
   'blue': 'Blue',
   'silver': 'Silver',
@@ -734,6 +529,127 @@ const featuresMap = {
   'xenon-lights': 'Xenon headlights'
 };
 
+// Verified Cars Header Component
+const VerifiedCarsHeader = () => {
+  return (
+    <Box w="full" bg="transparent">
+      <Flex
+        flexDir="row"
+        alignItems={["flex-start", "flex-start", "center"]}
+        justify="space-between"
+        gap="2"
+        px="4"
+        py="4"
+      >
+        {/* Title and Results Count */}
+        <Box>
+          <Heading as="h1" fontSize="2xl" fontWeight="bold" color="gray.900">
+            Verified cars
+          </Heading>
+          <Text fontSize="sm" color="gray.600">
+            194 475 results
+          </Text>
+        </Box>
+
+        {/* Sort and Pagination */}
+        <Flex alignItems="center" gap="4">
+          <Select
+            size="sm"
+            bg="white"
+            borderColor="gray.200"
+            borderRadius="lg"
+            px="1"
+            py="2"
+            fontSize="sm"
+            color="gray.700"
+            defaultValue="newest"
+          >
+            <option value="newest">Newest ad</option>
+            <option value="oldest">Oldest ad</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </Select>
+
+          {/* Pagination */}
+          <HStack spacing="2" display={["none", "none", "flex"]}>
+            <IconButton
+              aria-label="Previous page"
+              icon={<LucideIcon icon={ChevronLeft} boxSize="5" />}
+              variant="ghost"
+              color="gray.400"
+              p="2"
+            />
+            <Button
+              w="8"
+              h="8"
+              borderRadius="lg"
+              bg="red.400"
+              color="white"
+              variant="solid"
+              fontSize="sm"
+            >
+              1
+            </Button>
+            <Button
+              w="8"
+              h="8"
+              borderRadius="lg"
+              variant="ghost"
+              color="gray.600"
+              _hover={{ bg: "gray.100" }}
+              fontSize="sm"
+            >
+              2
+            </Button>
+            <Button
+              w="8"
+              h="8"
+              borderRadius="lg"
+              variant="ghost"
+              color="gray.600"
+              _hover={{ bg: "gray.100" }}
+              fontSize="sm"
+            >
+              3
+            </Button>
+            <Button
+              w="8"
+              h="8"
+              borderRadius="lg"
+              variant="ghost"
+              color="gray.600"
+              _hover={{ bg: "gray.100" }}
+              fontSize="sm"
+            >
+              4
+            </Button>
+            <Text px="2">...</Text>
+            <Button
+              w="8"
+              h="8"
+              borderRadius="lg"
+              variant="ghost"
+              color="gray.600"
+              _hover={{ bg: "gray.100" }}
+              fontSize="sm"
+            >
+              973
+            </Button>
+            <IconButton
+              aria-label="Next page"
+              icon={<LucideIcon icon={ChevronRight} boxSize="5" />}
+              variant="ghost"
+              color="gray.400"
+              p="2"
+            />
+          </HStack>
+        </Flex>
+      </Flex>
+    </Box>
+  );
+};
+
+// Main Body Component
 const Body = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -840,8 +756,8 @@ const Body = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
       const [make, model] = makeModel.split('-');
       filters.push({
         id: `makeModel-${makeModel}`,
-        label: model === 'all' ? 
-          `${make} (All Models)` : 
+        label: model === 'all' ?
+          `${make} (All Models)` :
           `${make} ${model}`
       });
     });
@@ -857,7 +773,6 @@ const Body = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
       });
     }
 
-    
     // Registration period
     const regFrom = searchParams.get('regFrom');
     const regTo = searchParams.get('regTo');
@@ -990,138 +905,159 @@ const Body = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
     setActiveFilters(filters);
   }, [searchParams]);
 
-  
-  const VerifiedCarsHeader = () => {
-    return (
-      <div className="w-full bg-transparent">
-        <div className="flex flex-row md:items-center justify-between gap-2 px-4 py-4 md:py-4">
-          {/* Title and Results Count */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Verified cars</h1>
-            <p className="text-sm text-gray-600">194 475 results</p>
-          </div>
-
-          {/* Sort and Pagination - Only visible on desktop */}
-          <div className="flex items-center gap-4">
-            <select
-              className="bg-white border border-gray-200 rounded-lg px-1 py-2 text-sm text-gray-700"
-              defaultValue="newest"
-            >
-              <option value="newest">Newest ad</option>
-              <option value="oldest">Oldest ad</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-            </select>
-
-            {/* Pagination */}
-            <div className="hidden md:flex items-center gap-2">
-              <button className="p-2 text-gray-400">
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button className="w-8 h-8 rounded-lg bg-red-400 text-white">
-                1
-              </button>
-              <button className="w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100">
-                2
-              </button>
-              <button className="w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100">
-                3
-              </button>
-              <button className="w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100">
-                4
-              </button>
-              <span className="px-2">...</span>
-              <button className="w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-100">
-                973
-              </button>
-              <button className="p-2 text-gray-400">
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
   return (
-    <div className="w-full">
-      <div className="flex flex-col overflow-hidden bg-white md:bg-transparent">
+    <Box w="full">
+      <Flex flexDir="column" overflow="hidden" bg={["white", "white", "transparent"]}>
         {/* Filter Bar for Mobile */}
-        <div className="md:hidden flex flex-col">
-          <div className='flex flex-row items-start gap-2 p-3.5 overflow-hidden'>
-            <button
+        <Flex
+          display={["flex", "flex", "none"]}
+          flexDir="column"
+        >
+          <Flex
+            flexDir="row"
+            alignItems="flex-start"
+            gap="2"
+            p="3.5"
+            overflow="hidden"
+          >
+            <Button
               onClick={openMobileFilter}
-              className="md:hidden flex items-center gap-2 px-4 py-2 bg-red-400 text-white rounded-lg font-semibold text-sm hover:bg-red-500 transition-colors"
+              display={["flex", "flex", "none"]}
+              alignItems="center"
+              gap="2"
+              px="4"
+              py="2"
+              bg="red.400"
+              color="white"
+              borderRadius="lg"
+              fontWeight="semibold"
+              fontSize="sm"
+              _hover={{ bg: "red.500" }}
+              transition="colors 0.2s"
+              leftIcon={<LucideIcon icon={SlidersHorizontal} boxSize="4" />}
             >
-              <SlidersHorizontal className="w-4 h-4" />
               Filter
-            </button>
+            </Button>
 
             {/* Horizontal scroll for chips */}
-            <div className="flex-1 overflow-x-auto scrollbar-none">
-              <div className="flex gap-2 pb-2">
+            <Box
+              flex="1"
+              overflowX="auto"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                'scrollbarWidth': 'none',
+              }}
+            >
+              <Flex gap="2" pb="2">
                 {activeFilters.map((filter) => (
-                  <div
+                  <Flex
                     key={filter.id}
-                    className="flex-none flex items-center gap-2 px-4 py-2 bg-red-100 text-red-400 rounded-md font-medium text-sm group"
+                    flexShrink="0"
+                    alignItems="center"
+                    gap="2"
+                    px="4"
+                    py="2"
+                    bg="red.100"
+                    color="red.500"
+                    borderRadius="md"
+                    fontWeight="medium"
+                    fontSize="sm"
                   >
                     {filter.label}
-                    <button
+                    <IconButton
                       onClick={() => removeFilter(filter.id)}
-                      className="hover:bg-red-200 rounded-full p-0.5 transition-colors"
                       aria-label={`Remove ${filter.label} filter`}
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                      icon={<LucideIcon icon={X} boxSize="3.5" />}
+                      size="xs"
+                      variant="ghost"
+                      color="red.400"
+                      borderRadius="full"
+                      _hover={{ bg: "red.200" }}
+                    />
+                  </Flex>
                 ))}
-              </div>
-            </div>
-          </div>
-          <div>
+              </Flex>
+            </Box>
+          </Flex>
+          <Box>
             <VerifiedCarsHeader />
             <CarList />
-          </div>
-        </div>
+          </Box>
+        </Flex>
 
         {/* Desktop Version */}
-        <div className="hidden md:flex flex-col w-full">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
+        <Flex
+          display={["none", "none", "flex"]}
+          flexDir="column"
+          w="full"
+        >
+          <Flex flexWrap="wrap" alignItems="center" gap="2" mb="2">
             {/* Filter button - always visible */}
-            <button
+            <Button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center gap-2 px-4 py-2 bg-red-400 text-white rounded-lg font-semibold text-sm hover:bg-red-500 transition-colors"
+              leftIcon={<LucideIcon icon={SlidersHorizontal} boxSize="4" />}
+              bg="red.400"
+              color="white"
+              px="4"
+              py="2"
+              borderRadius="lg"
+              fontWeight="semibold"
+              fontSize="sm"
+              _hover={{ bg: "red.500" }}
+              transition="colors 0.2s"
             >
-              <SlidersHorizontal className="w-4 h-4" />
               Filter
-            </button>
-            
-            <button className="flex items-center gap-2 px-4 py-1.5 bg-orange-500 text-white rounded-lg font-semibold text-sm hover:bg-orange-600 transition-colors">
-              <Bell className="w-4 h-4" />
+            </Button>
+
+            <Button
+              leftIcon={<LucideIcon icon={Bell} boxSize="4" />}
+              bg="red.500"
+              color="white"
+              px="4"
+              py="1.5"
+              borderRadius="lg"
+              fontWeight="semibold"
+              fontSize="sm"
+              _hover={{ bg: "red.600" }}
+              transition="colors 0.2s"
+            >
               Save search
-            </button>
+            </Button>
 
             {activeFilters.map((filter) => (
-              <div
+              <Flex
                 key={filter.id}
-                className="flex items-center gap-2 px-4 py-1.5 bg-red-100 text-red-400 rounded-md font-medium text-sm group"
+                alignItems="center"
+                gap="2"
+                px="4"
+                py="1.5"
+                bg="red.100"
+                color="red.400"
+                borderRadius="md"
+                fontWeight="medium"
+                fontSize="sm"
               >
                 {filter.label}
-                <button
+                <IconButton
                   onClick={() => removeFilter(filter.id)}
-                  className="hover:bg-red-200 rounded-full p-0.5 transition-colors"
                   aria-label={`Remove ${filter.label} filter`}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
+                  icon={<LucideIcon icon={X} boxSize="3.5" />}
+                  size="xs"
+                  variant="ghost"
+                  color="red.400"
+                  borderRadius="full"
+                  _hover={{ bg: "red.200" }}
+                />
+              </Flex>
             ))}
-          </div>
+          </Flex>
           <VerifiedCarsHeader />
           <CarList />
-        </div>
-      </div>
-    </div>
+        </Flex>
+      </Flex>
+    </Box>
   );
 };
 

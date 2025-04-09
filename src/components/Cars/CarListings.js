@@ -1,9 +1,56 @@
-
 "use client";
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronDown, Plus, Clock, Bookmark, Sliders, TrendingDown, X, Trash2, ChevronRight, Search, Check, } from 'lucide-react';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  Grid,
+  Heading,
+  HStack,
+  IconButton,
+  Input,
+  InputGroup,
+  Portal,
+  InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Select,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  Text,
+  VStack,
+  useDisclosure,
+  Collapse,
+} from '@chakra-ui/react';
+import {
+  ChevronDown,
+  Plus,
+  Clock,
+  Bookmark,
+  Sliders,
+  TrendingDown,
+  X,
+  Trash2,
+  ChevronRight,
+  Search,
+  Check,
+} from 'lucide-react';
 
+// Custom icon wrapper for Chakra UI
+const LucideIcon = ({ icon: Icon, ...props }) => {
+  return <Box as={Icon} {...props} />;
+};
 
 const colorOptions = [
   { id: 'black', value: '#000000', label: 'Black' },
@@ -31,33 +78,49 @@ const MultiColorSelector = ({ selectedColors, onColorSelect }) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-3">
+    <Box>
+      <Flex justify="space-between" align="center" mb={3}>
         {selectedColors.length > 0 && (
-          <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
-            {selectedColors.length}
-          </span>
+          <Tag size="sm" bg="red.100" color="red.400" fontWeight="semibold" borderRadius="md">
+            <TagLabel>{selectedColors.length}</TagLabel>
+          </Tag>
         )}
-      </div>
-      <div className="grid grid-cols-7 gap-4">
+      </Flex>
+      <Grid templateColumns="repeat(7, 1fr)" gap={4}>
         {colorOptions.map((color) => (
-          <button
+          <Box
             key={color.id}
+            as="button"
+            w="6"
+            h="6"
+            borderRadius="full"
+            position="relative"
+            transition="transform 0.2s"
+            borderWidth={color.border ? "1px" : "0"}
+            borderColor="gray.200"
+            bg={color.value}
+            _hover={{ transform: "scale(1.1)" }}
+            _focus={{
+              outline: "none",
+              boxShadow: "0 0 0 2px #FEB2B2, 0 0 0 4px white"
+            }}
             onClick={() => toggleColor(color.id)}
-            className={`
-              w-6 h-6 rounded-full relative transition-transform
-              ${color.border ? 'border border-gray-200' : ''}
-              ${selectedColors.includes(color.id) ? 'ring-2 ring-red-300 ring-offset-2 scale-110' : ''}
-              hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2
-            `}
-            style={{ backgroundColor: color.value }}
-            title={color.label}
             aria-label={color.label}
+            title={color.label}
+            {...(selectedColors.includes(color.id) && {
+              transform: "scale(1.1)",
+              boxShadow: "0 0 0 2px #FEB2B2, 0 0 0 4px white"
+            })}
           >
             {selectedColors.includes(color.id) && (
-              <svg
-                className={`absolute inset-0 m-auto w-4 h-4 
-                  ${color.id === 'white' || color.id === 'yellow' ? 'text-gray-900' : 'text-white'}`}
+              <Box
+                as="svg"
+                position="absolute"
+                inset="0"
+                m="auto"
+                w="4"
+                h="4"
+                color={color.id === 'white' || color.id === 'yellow' ? "gray.900" : "white"}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -66,149 +129,253 @@ const MultiColorSelector = ({ selectedColors, onColorSelect }) => {
                 strokeLinejoin="round"
               >
                 <polyline points="20 6 9 17 4 12" />
-              </svg>
+              </Box>
             )}
-          </button>
+          </Box>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 };
 
 
+
+
+
+
 const CustomSelect = ({ value, onChange, placeholder, options }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, onToggle, onClose } = useDisclosure();
+  const selectRef = useRef(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+
+  // Update dropdown position when opened
+  useEffect(() => {
+    if (isOpen && selectRef.current) {
+      const rect = selectRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+  }, [isOpen]);
 
   return (
-    <div className="relative flex-1">
-      <div
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-4 py-2 bg-white border-2 rounded-lg transition-all cursor-pointer
-          ${value ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+    <Box position="relative" flex="1" ref={selectRef}>
+      <Flex
+        onClick={onToggle}
+        align="center"
+        justify="space-between"
+        px={3}
+        py={2}
+        bg="white"
+        borderWidth="2px"
+        borderRadius="lg"
+        transition="all 0.2s"
+        cursor="pointer"
+        borderColor={value ? "red.300" : "gray.200"}
+        bgColor={value ? "red.50" : "white"}
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         tabIndex={0}
       >
-        <div className="flex items-center flex-1">
-          <span className={`${value ? 'text-red-400 font-semibold text-xs' : 'text-gray-500'}`}>
+        <Flex align="center" flex="1">
+          <Text
+            color={value ? "red.400" : "gray.500"}
+            fontWeight={value ? "semibold" : "normal"}
+            fontSize="xs"
+          >
             {value ? (options.find(opt => opt.value === value)?.label || value) : placeholder}
-          </span>
-        </div>
-        <div className="flex items-center">
+          </Text>
+        </Flex>
+        <Flex align="center">
           {value && (
-            <div
+            <Box
               onClick={(e) => {
                 e.stopPropagation();
                 onChange('');
               }}
-              className="ml-2 hover:bg-red-100 rounded-full text-red-400 cursor-pointer p-0.5"
+              _hover={{ bg: "red.100" }}
+              borderRadius="full"
+              color="red.400"
+              cursor="pointer"
             >
-              <X size={14} strokeWidth={2.5} />
-            </div>
+              <LucideIcon icon={X} boxSize="14px" strokeWidth={2.5} />
+            </Box>
           )}
-          <ChevronDown
-            className={`w-5 h-5 ${value ? 'text-red-400' : 'text-gray-400'} transition-transform duration-200 
-              ${isOpen ? 'transform rotate-180' : ''}`}
+          <Box
+            as={ChevronDown}
+            boxSize="5"
+            color={value ? "red.400" : "gray.400"}
+            transition="transform 0.2s"
+            transform={isOpen ? "rotate(180deg)" : "rotate(0)"}
             strokeWidth={2}
           />
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {isOpen && (
         <>
-          <div
-            className="flex inset-0 z-10"
-            onClick={() => setIsOpen(false)}
+          <Box
+            position="fixed"
+            inset="0"
+            zIndex={1500}
+            onClick={onClose}
           />
-          <div
-            className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-50"
-          >
-            <div className="py-1">
-              {options.map((option) => (
-                <div
-                  key={option.value}
-                  onClick={() => {
-                    onChange(option.value);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 cursor-pointer
-                    ${value === option.value ? 'text-red-400 bg-red-50 font-medium' : 'text-gray-700'}
-                  `}
-                >
-                  {option.label}
-                </div>
-              ))}
-            </div>
-          </div>
+          <Portal>
+            <Box
+              position="absolute"
+              top={`${dropdownPosition.top}px`}
+              left={`${dropdownPosition.left}px`}
+              width={`${dropdownPosition.width}px`}
+              zIndex={1600}
+              bg="white"
+              borderWidth="2px"
+              borderColor="gray.200"
+              borderRadius="lg"
+              boxShadow="xl"
+              maxH="240px"
+              overflowY="auto"
+              sx={{
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  bg: 'gray.50',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  bg: 'gray.300',
+                  borderRadius: 'full',
+                },
+              }}
+            >
+              <Box py="1">
+                {options.map((option) => (
+                  <Box
+                    key={option.value}
+                    onClick={() => {
+                      onChange(option.value);
+                      onClose();
+                    }}
+                    w="full"
+                    px="4"
+                    py="2"
+                    textAlign="left"
+                    _hover={{ bg: "gray.50" }}
+                    cursor="pointer"
+                    color={value === option.value ? "red.400" : "gray.700"}
+                    bg={value === option.value ? "red.50" : "transparent"}
+                    fontWeight={value === option.value ? "medium" : "normal"}
+                  >
+                    {option.label}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Portal>
         </>
       )}
-    </div>
+    </Box>
   );
 };
 
-
-// components/ui/Checkbox.js
-const Checkbox = ({ label, checked, onChange }) => {
+const CustomCheckbox = ({ label, checked, onChange }) => {
   return (
-    <label className="flex items-center cursor-pointer group">
-      <div className="relative flex items-center">
-        <input
+    <Flex
+      as="label"
+      align="center"
+      cursor="pointer"
+      _hover={{ "span": { color: "gray.900" } }}
+    >
+      <Box position="relative" display="flex" alignItems="center">
+        <Box
+          as="input"
           type="checkbox"
           checked={checked}
           onChange={onChange}
-          className="w-4 h-4 border-2 border-gray-300 rounded 
-            peer appearance-none transition-colors
-            hover:border-red-400
-            checked:bg-red-400 checked:border-red-400"
+          h="4"
+          w="4"
+          borderWidth="2px"
+          borderColor="gray.300"
+          borderRadius="sm"
+          appearance="none"
+          transition="colors 0.2s"
+          _hover={{ borderColor: "red.400" }}
+          _checked={{ bg: "red.400", borderColor: "red.400" }}
+          position="relative"
+          zIndex="1"
+          sx={{
+            '&:checked': {
+              backgroundColor: 'var(--chakra-colors-red-400)',
+              borderColor: 'var(--chakra-colors-red-400)'
+            }
+          }}
         />
-        <svg
-          className="absolute w-4 h-4 pointer-events-none text-white opacity-0 
-            peer-checked:opacity-100 transition-opacity duration-200 left-0"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      </div>
-      <span className="ml-2 text-gray-700 group-hover:text-gray-900">
+        {checked && (
+          <Box
+            as="svg"
+            position="absolute"
+            w="4"
+            h="4"
+            pointerEvents="none"
+            color="white"
+            zIndex="2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            left="0"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </Box>
+        )}
+      </Box>
+      <Text ml={2} color="gray.700">
         {label}
-      </span>
-    </label>
+      </Text>
+    </Flex>
   );
 };
 
 
 const ToggleButton = ({ options, value, onChange }) => {
   return (
-    <div className="flex w-full rounded-lg border-2 border-gray-200 overflow-hidden">
+    <Flex w="full" borderRadius="lg" overflow="hidden">
       {options.map((option, index) => (
-        <React.Fragment key={option}>
-          <button
-            onClick={() => onChange(option)}
-            className={`flex-1 py-2.5 text-sm font-medium transition-colors relative
-              ${value === option
-                ? 'bg-red-400 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-          >
-            {option}
-          </button>
-          {index < options.length - 1 && (
-            <div className="w-[1px] bg-gray-200" />
-          )}
-        </React.Fragment>
+        <Button
+          key={option}
+          onClick={() => onChange(option)}
+          flex="1"
+          py="2.5"
+          fontSize="sm"
+          fontWeight="medium"
+          bg={value === option ? "red.400" : "white"}
+          color={value === option ? "white" : "gray.700"}
+          _hover={value !== option ? { bg: "gray.50" } : {}}
+          borderWidth="1px"
+          borderColor="gray.200"
+          borderRadius="0"
+          borderLeftRadius={index === 0 ? "lg" : "0"}
+          borderRightRadius={index === options.length - 1 ? "lg" : "0"}
+          transition="colors 0.2s"
+          height="42px"
+        >
+          {option}
+        </Button>
       ))}
-    </div>
+    </Flex>
   );
 };
 
 
+
 const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrder = [], placeholder }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, onToggle, onClose } = useDisclosure();
+  const selectRef = useRef(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
 
   // Ensure selected items are objects with proper structure
   const sortedSelected = useMemo(() => {
@@ -219,6 +386,17 @@ const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrde
         return aIndex - bIndex;
       });
   }, [selected, displayOrder]);
+
+  useEffect(() => {
+    if (isOpen && selectRef.current) {
+      const rect = selectRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+  }, [isOpen]);
 
   const handleSelect = (option) => {
     const isSelected = selected.some(item => item.id === option.id);
@@ -231,106 +409,132 @@ const MultiSelect = ({ selected = [], onChange, options = [], title, displayOrde
 
   const renderSelectedValues = () => {
     if (selected.length === 0) {
-      return <span className="text-gray-500">{placeholder}</span>;
+      return <Text color="gray.500">{placeholder}</Text>;
     }
 
     return (
-      <div className="flex items-center gap-1 flex-wrap">
+      <Flex align="center" gap="1" flexWrap="wrap">
         {sortedSelected.map((value) => (
-          <div
+          <Box
             key={value.id}
-            className="bg-red-100 px-3 py-1 rounded-md flex items-center"
+            bg="red.100"
+            px={3}
+            py={1}
+            borderRadius="md"
+            display="flex"
+            alignItems="center"
           >
-            <span className="text-red-400 text-sm font-medium">{value.label}</span>
-          </div>
+            <Text color="red.400" fontSize="sm" fontWeight="medium">{value.label}</Text>
+          </Box>
         ))}
-      </div>
+      </Flex>
     );
   };
 
- 
+  // Function to check if an option is selected
+  const isOptionSelected = (optionId) => {
+    return selected.some(item => item.id === optionId);
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-bold text-[#1a1a1a]">{title}</h2>
-        {/* {selected.length > 0 && (
-          <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
-            {selected.length}
-          </span>
-        )} */}
-      </div>
-      <div className="relative w-full">
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className={`w-full flex items-center justify-between px-4 py-2 bg-white border-2 rounded-lg transition-all cursor-pointer
-            ${selected.length > 0 ? 'border-red-300' : 'border-gray-200'}`}
+    <Box>
+      <Flex justify="space-between" align="center" mb={3}>
+        <Heading as="h2" fontSize="sm" fontWeight="bold" color="#1a1a1a">{title}</Heading>
+      </Flex>
+      <Box position="relative" w="full" ref={selectRef}>
+        <Flex
+          onClick={onToggle}
+          align="center"
+          justify="space-between"
+          px={4}
+          py={2}
+          bg="white"
+          borderWidth="2px"
+          borderRadius="lg"
+          transition="all 0.2s"
+          cursor="pointer"
+          borderColor={selected.length > 0 ? "red.300" : "gray.200"}
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           tabIndex={0}
         >
-          <div className="flex flex-1 overflow-hidden">
+          <Box flex="1" overflow="hidden">
             {renderSelectedValues()}
-          </div>
-          <ChevronDown
-            className={`w-5 h-5 ml-2 ${selected.length > 0 ? 'text-red-400' : 'text-gray-400'} transition-transform duration-200 
-              ${isOpen ? 'transform rotate-180' : ''}`}
+          </Box>
+          <Box
+            as={ChevronDown}
+            boxSize="5"
+            ml={2}
+            color={selected.length > 0 ? "red.400" : "gray.400"}
+            transition="transform 0.2s"
+            transform={isOpen ? "rotate(180deg)" : "rotate(0)"}
             strokeWidth={2}
           />
-        </div>
+        </Flex>
 
         {isOpen && (
           <>
-            <div
-              className="fixed inset-0 z-[60]"
-              onClick={() => setIsOpen(false)}
+            <Box
+              position="fixed"
+              inset="0"
+              zIndex={1500}
+              onClick={onClose}
             />
-            <ul
-              className="relative z-[70] w-full mt-1 bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[240px] overflow-auto"
-              role="listbox"
-            >
-              <div className="py-1">
-                {options.map((option) => (
-                  <li
-                    key={option.id}
-                    className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
-                    role="option"
-                    aria-selected={selected.some(item => item.id === option.id)}
-                    onClick={() => handleSelect(option)}
-                  >
-                    <div className="relative flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={selected.some(item => item.id === option.id)}
-                        onChange={() => handleSelect(option)}
-                        className="peer h-4 w-4 appearance-none rounded border-2 border-gray-300 checked:border-red-400 checked:bg-red-400"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      {selected.some(item => item.id === option.id) && (
-                        <svg
-                          className="absolute w-4 h-4 pointer-events-none text-white"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="ml-2 text-gray-700">{option.label}</span>
-                  </li>
-                ))}
-              </div>
-            </ul>
+            <Portal>
+              <Box
+                as="ul"
+                position="absolute"
+                top={`${dropdownPosition.top}px`}
+                left={`${dropdownPosition.left}px`}
+                width={`${dropdownPosition.width}px`}
+                zIndex={1600}
+                bg="white"
+                borderWidth="2px"
+                borderColor="gray.200"
+                borderRadius="lg"
+                boxShadow="xl"
+                maxH="240px"
+                overflowY="auto"
+                role="listbox"
+              >
+                <Box py="1">
+                  {options.map((option) => {
+                    const checked = isOptionSelected(option.id);
+                    return (
+                      <Flex
+                        as="li"
+                        key={option.id}
+                        align="center"
+                        px={4}
+                        py={2}
+                        _hover={{ bg: "gray.50" }}
+                        cursor="pointer"
+                        role="option"
+                        aria-selected={checked}
+                        onClick={() => handleSelect(option)}
+                      >
+                        <Checkbox
+                          isChecked={checked}
+                          onChange={() => handleSelect(option)}
+                          colorScheme="red"
+                          mr={2}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Text color="gray.700">{option.label}</Text>
+                      </Flex>
+                    );
+                  })}
+                </Box>
+              </Box>
+            </Portal>
           </>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
+
 
 const fuelData = {
   types: [
@@ -346,7 +550,6 @@ const fuelData = {
   displayOrder: ['diesel', 'petrol', 'electric', 'hybrid', 'cng', 'lpg', 'hydrogen', 'ethanol']
 };
 
-
 const features = [
   { id: 'air-conditioning', label: 'Air conditioning' },
   { id: 'cruise-control', label: 'Cruise control' },
@@ -356,7 +559,6 @@ const features = [
   { id: 'trailer', label: 'Trailer coupling' },
   { id: 'led-lights', label: 'LED headlights' },
   { id: 'xenon-lights', label: 'Xenon headlights' },
-  // Add more features as needed
 ];
 
 const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
@@ -368,7 +570,6 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
   // Add activeTab state
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
-
 
   // Other states
   const [priceType, setPriceType] = useState(searchParams.get('priceType') || 'cash');
@@ -407,9 +608,8 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
       return fuelType || null;
     }).filter(Boolean);
   });
-  // Add this with your other state declarations
+  // Make Model state
   const [isMakeModelOpen, setIsMakeModelOpen] = useState(false);
-  // Add to your existing states
   const [makeModelFilters, setMakeModelFilters] = useState(() => {
     const makeModelParam = searchParams.get('makeModel')?.split(',').filter(Boolean) || [];
     return makeModelParam.map(param => {
@@ -421,7 +621,6 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
       };
     });
   });
-
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -456,11 +655,9 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     if (selectedColors.length > 0) params.set('colors', selectedColors.join(','));
     if (is4x4) params.set('is4x4', 'true');
 
-    // Add to your existing useEffect params section
     if (makeModelFilters.length > 0) {
       params.set('makeModel', makeModelFilters.map(f => f.id).join(','));
     }
-
 
     // Construct the new URL
     const newPath = `/cars${params.toString() ? `?${params.toString()}` : ''}`;
@@ -470,7 +667,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
       router.push(newPath, { scroll: false });
     }
   }, [
-    activeTab, // Add activeTab to dependencies
+    activeTab,
     priceType,
     priceFrom,
     priceTo,
@@ -491,7 +688,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     selectedColors,
     is4x4,
     selectedFeatures,
-    makeModelFilters, // Add this line
+    makeModelFilters,
     router
   ]);
 
@@ -517,12 +714,10 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     is4x4 ||
     selectedColors.length > 0 ||
     selectedFeatures.length > 0 ||
-    makeModelFilters.length > 0 || // Add this line
-    selectedFeatures.length > 0
-
+    makeModelFilters.length > 0
   );
 
-  // Update resetFilters
+  // Reset filters
   const resetFilters = () => {
     setPriceFrom('');
     setPriceTo('');
@@ -542,14 +737,12 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     setPowerTo('');
     setSelectedVehicleTypes([]);
     setIs4x4(false);
-    setSelectedColors([]); // Add this line
-    setSelectedFeatures([]); // Added setSelectedFeatures
+    setSelectedColors([]);
+    setSelectedFeatures([]);
     setMakeModelFilters([]);
-
   };
 
-
-  // Add vehicle types data
+  // Vehicle types data
   const vehicleTypes = [
     { id: 'cabriolet', label: 'Cabriolet', value: 'cabriolet' },
     { id: 'compact', label: 'Compact', value: 'compact' },
@@ -557,10 +750,9 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     { id: 'estate', label: 'Estate car', value: 'estate' },
     { id: 'hatchback', label: 'Hatchback', value: 'hatchback' },
     { id: 'light', label: 'Light truck', value: 'light' },
-    // Add more vehicle types...
   ];
 
-  // Sample data remains the same
+  // Sample data for makes and models
   const makes = [
     { id: 'audi', name: 'Audi', popular: true },
     { id: 'bmw', name: 'BMW', popular: true },
@@ -594,24 +786,32 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     if (selectedFilters.length === 0) return null;
 
     return (
-      <div className="mt-3 flex flex-wrap gap-2">
+      <Flex mt={3} flexWrap="wrap" gap={2}>
         {selectedFilters.map(filter => (
-          <div
+          <Flex
             key={filter.id}
-            className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg text-sm"
+            align="center"
+            gap={2}
+            bg="red.50"
+            px={3}
+            py={1.5}
+            borderRadius="lg"
+            fontSize="sm"
           >
-            <span className="font-medium text-red-500">
+            <Text fontWeight="medium" color="red.500">
               {filter.make} {filter.model !== 'all' ? filter.model : '(All)'}
-            </span>
-            <button
+            </Text>
+            <Box
+              as="button"
+              color="red.400"
+              _hover={{ color: "red.600" }}
               onClick={() => onRemoveFilter(filter.id)}
-              className="text-red-400 hover:text-red-600"
             >
-              <X size={14} strokeWidth={2.5} />
-            </button>
-          </div>
+              <LucideIcon icon={X} boxSize="14px" strokeWidth={2.5} />
+            </Box>
+          </Flex>
         ))}
-      </div>
+      </Flex>
     );
   };
 
@@ -662,133 +862,226 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col">
+      <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
+        <ModalOverlay bg="blackAlpha.500" backdropFilter="blur(2px)" />
+        <ModalContent
+          w="full"
+          maxW="2xl"
+          maxH="90vh"
+          borderRadius="xl"
+          overflow="hidden"
+        >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-            <h2 className="text-lg font-semibold">
+          <ModalHeader display="flex" alignItems="center" justifyContent="space-between" borderBottomWidth="1px">
+            <Heading size="md" fontWeight="semibold">
               {selectedMake ? `Select ${selectedMake.name} Model` : 'Select Make'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+            </Heading>
+            <ModalCloseButton position="static" />
+          </ModalHeader>
 
           {/* Search */}
-          <div className="p-4 border-b flex-shrink-0">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
+          <Box p={4} borderBottomWidth="1px">
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <LucideIcon icon={Search} color="gray.400" boxSize="5" />
+              </InputLeftElement>
+              <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={selectedMake ? "Search models..." : "Search makes..."}
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 transition-colors"
+                borderWidth="2px"
+                borderColor="gray.200"
+                borderRadius="lg"
+                _focus={{ borderColor: "red.300", boxShadow: "0 0 0 1px var(--chakra-colors-red-200)" }}
+                pl="10"
               />
-            </div>
-          </div>
+            </InputGroup>
+          </Box>
 
           {/* Content - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <ModalBody overflowY="auto">
             {!selectedMake ? (
-              <div className="space-y-6">
+              <VStack spacing={6} align="stretch">
                 {popularMakes.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR MAKES</h3>
-                    <div className="grid grid-cols-2 gap-2">
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.500" mb={3}>
+                      POPULAR MAKES
+                    </Text>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
                       {popularMakes.map(make => (
-                        <button
+                        <Button
                           key={make.id}
                           onClick={() => handleMakeSelect(make)}
-                          className="flex items-center justify-between p-3 text-left border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-all group"
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          p={3}
+                          textAlign="left"
+                          borderWidth="2px"
+                          borderColor="gray.200"
+                          borderRadius="lg"
+                          bg="white"
+                          _hover={{ borderColor: "red.300", bg: "red.50" }}
+                          transition="all 0.2s"
+                          h="auto"
+                          w="full"
+                          variant="unstyled"
                         >
-                          <span className="font-medium">{make.name}</span>
-                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
-                        </button>
+                          <Text fontWeight="medium">{make.name}</Text>
+                          <LucideIcon
+                            icon={ChevronRight}
+                            boxSize="5"
+                            color="gray.400"
+                            className="group-hover:text-red-400"
+                          />
+                        </Button>
                       ))}
-                    </div>
-                  </div>
+                    </Grid>
+                  </Box>
                 )}
 
                 {otherMakes.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3">OTHER MAKES</h3>
-                    <div className="grid grid-cols-2 gap-2">
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.500" mb={3}>
+                      OTHER MAKES
+                    </Text>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
                       {otherMakes.map(make => (
-                        <button
+                        <Button
                           key={make.id}
                           onClick={() => handleMakeSelect(make)}
-                          className="flex items-center justify-between p-3 text-left border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-all group"
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          p={3}
+                          textAlign="left"
+                          borderWidth="2px"
+                          borderColor="gray.200"
+                          borderRadius="lg"
+                          bg="white"
+                          _hover={{ borderColor: "red.300", bg: "red.50" }}
+                          transition="all 0.2s"
+                          h="auto"
+                          w="full"
+                          variant="unstyled"
                         >
-                          <span className="font-medium">{make.name}</span>
-                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
-                        </button>
+                          <Text fontWeight="medium">{make.name}</Text>
+                          <LucideIcon
+                            icon={ChevronRight}
+                            boxSize="5"
+                            color="gray.400"
+                            className="group-hover:text-red-400"
+                          />
+                        </Button>
                       ))}
-                    </div>
-                  </div>
+                    </Grid>
+                  </Box>
                 )}
-              </div>
+              </VStack>
             ) : (
-              <div className="space-y-6">
+              <VStack spacing={6} align="stretch">
                 {popularModels.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3">POPULAR MODELS</h3>
-                    <div className="grid grid-cols-2 gap-2">
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.500" mb={3}>
+                      POPULAR MODELS
+                    </Text>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
                       {popularModels.map(model => (
-                        <button
+                        <Button
                           key={model.id}
                           onClick={() => handleModelToggle(model)}
-                          className={`flex items-center justify-between p-3 text-left border-2 rounded-lg transition-all
-                        ${selectedModels.includes(`${selectedMake.id}-${model.id}`)
-                              ? 'border-red-300 bg-red-50'
-                              : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
-                            }`}
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          p={3}
+                          textAlign="left"
+                          borderWidth="2px"
+                          borderRadius="lg"
+                          h="auto"
+                          w="full"
+                          variant="unstyled"
+                          borderColor={
+                            selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? "red.300"
+                              : "gray.200"
+                          }
+                          bg={
+                            selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? "red.50"
+                              : "white"
+                          }
+                          _hover={
+                            !selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? { borderColor: "red.300", bg: "red.50" }
+                              : {}
+                          }
+                          transition="all 0.2s"
                         >
-                          <span className="font-medium">{model.name}</span>
+                          <Text fontWeight="medium">{model.name}</Text>
                           {selectedModels.includes(`${selectedMake.id}-${model.id}`) && (
-                            <Check className="w-5 h-5 text-red-400" />
+                            <LucideIcon icon={Check} boxSize="5" color="red.400" />
                           )}
-                        </button>
+                        </Button>
                       ))}
-                    </div>
-                  </div>
+                    </Grid>
+                  </Box>
                 )}
 
                 {otherModels.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3">OTHER MODELS</h3>
-                    <div className="grid grid-cols-2 gap-2">
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.500" mb={3}>
+                      OTHER MODELS
+                    </Text>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
                       {otherModels.map(model => (
-                        <button
+                        <Button
                           key={model.id}
                           onClick={() => handleModelToggle(model)}
-                          className={`flex items-center justify-between p-3 text-left border-2 rounded-lg transition-all
-                        ${selectedModels.includes(`${selectedMake.id}-${model.id}`)
-                              ? 'border-red-300 bg-red-50'
-                              : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
-                            }`}
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          p={3}
+                          textAlign="left"
+                          borderWidth="2px"
+                          borderRadius="lg"
+                          h="auto"
+                          w="full"
+                          variant="unstyled"
+                          borderColor={
+                            selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? "red.300"
+                              : "gray.200"
+                          }
+                          bg={
+                            selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? "red.50"
+                              : "white"
+                          }
+                          _hover={
+                            !selectedModels.includes(`${selectedMake.id}-${model.id}`)
+                              ? { borderColor: "red.300", bg: "red.50" }
+                              : {}
+                          }
+                          transition="all 0.2s"
                         >
-                          <span className="font-medium">{model.name}</span>
+                          <Text fontWeight="medium">{model.name}</Text>
                           {selectedModels.includes(`${selectedMake.id}-${model.id}`) && (
-                            <Check className="w-5 h-5 text-red-400" />
+                            <LucideIcon icon={Check} boxSize="5" color="red.400" />
                           )}
-                        </button>
+                        </Button>
                       ))}
-                    </div>
-                  </div>
+                    </Grid>
+                  </Box>
                 )}
-              </div>
+              </VStack>
             )}
-          </div>
+          </ModalBody>
 
           {/* Footer */}
-          <div className="p-4 border-t bg-gray-50 rounded-b-xl flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <button
+          <ModalFooter bg="gray.50" borderTopWidth="1px" borderRadius="0 0 xl xl">
+            <Flex justify="space-between" w="full">
+              <Button
                 onClick={() => {
                   if (selectedMake) {
                     setSelectedMake(null);
@@ -796,11 +1089,14 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     onClose();
                   }
                 }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+                variant="ghost"
+                color="gray.600"
+                _hover={{ color: "gray.800" }}
+                fontWeight="medium"
               >
                 {selectedMake ? 'Back' : 'Cancel'}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   if (selectedModels.length > 0) {
                     const filters = selectedModels.map(id => {
@@ -815,26 +1111,27 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     onClose();
                   }
                 }}
-                disabled={selectedModels.length === 0}
-                className={`px-6 py-2 rounded-lg font-medium transition-all
-              ${selectedModels.length > 0
-                    ? 'bg-red-500 text-white hover:bg-red-600'
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
+                isDisabled={selectedModels.length === 0}
+                bg={selectedModels.length > 0 ? "red.500" : "gray.100"}
+                color={selectedModels.length > 0 ? "white" : "gray.400"}
+                _hover={selectedModels.length > 0 ? { bg: "red.600" } : {}}
+                fontWeight="medium"
+                borderRadius="lg"
+                px={6}
               >
                 Apply ({selectedModels.length})
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     );
   };
 
   const Category = ({ title, children, badge = null, defaultOpen = false }) => {
     // Create a unique key for this category's state in localStorage
     const storageKey = `category-${title.toLowerCase().replace(/\s+/g, '-')}`;
-    
+
     // Initialize state from localStorage or use default
     const [isOpen, setIsOpen] = useState(() => {
       try {
@@ -844,7 +1141,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         return defaultOpen;
       }
     });
-  
+
     // Persist state changes to localStorage
     useEffect(() => {
       try {
@@ -853,14 +1150,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         console.error('Failed to save category state:', error);
       }
     }, [isOpen, storageKey]);
-  
-    // Prevent default behavior and handle state change
-    const handleToggle = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsOpen(prev => !prev);
-    };
-  
+
     // Clean up localStorage when component unmounts
     useEffect(() => {
       return () => {
@@ -871,42 +1161,64 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         }
       };
     }, [storageKey]);
-  
+
     return (
-      <div className="border-b border-gray-100 last:border-0">
-        <button
-          onClick={handleToggle}
-          className="w-full flex items-center justify-between py-[10px] text-left focus:outline-none group"
+      <Box borderBottomWidth="1px" borderColor="gray.100" _last={{ borderBottom: 0 }}>
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsOpen(prev => !prev);
+          }}
+          w="full"
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          py="10px"
+          textAlign="left"
+          variant="unstyled"
+          _focus={{ outline: "none" }}
+          _hover={{ "h2": { color: "gray.900" } }}
+          h="auto"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-sm font-bold text-[#1a1a1a] group-hover:text-gray-900">
+          <Flex align="center" gap={2} mb={1}>
+            <Heading
+              as="h2"
+              fontSize="sm"
+              fontWeight="bold"
+              color="#1a1a1a"
+            >
               {title}
-            </h2>
+            </Heading>
             {badge && (
-              <span className="bg-red-100 text-red-400 text-sm font-semibold px-2 py-0.5 rounded-md">
-                {badge}
-              </span>
+              <Tag size="sm" bg="red.100" color="red.400" fontWeight="semibold" borderRadius="md">
+                <TagLabel>{badge}</TagLabel>
+              </Tag>
             )}
-          </div>
-          <ChevronDown
-            className={`w-5 h-5 mb-1 text-gray-400 transition-transform duration-200 
-              ${isOpen ? 'transform rotate-180' : ''}`}
+          </Flex>
+          <Box
+            as={ChevronDown}
+            boxSize="5"
+            mb={1}
+            color="gray.400"
+            transition="transform 0.2s"
+            transform={isOpen ? "rotate(180deg)" : "none"}
           />
-        </button>
-  
-        <div
-          className={`transition-all duration-200 ease-in-out overflow-hidden 
-            ${isOpen ? 'max-h-[1000px] opacity-100 mb-4' : 'max-h-0 opacity-0'}`}
-          onClick={e => e.stopPropagation()}
-        >
-          {children}
-        </div>
-      </div>
+        </Button>
+
+        <Collapse in={isOpen} animateOpacity>
+          <Box
+            mb={4}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {children}
+          </Box>
+        </Collapse>
+      </Box>
     );
   };
 
-
-  // Create the Features section component:
+  // Features section component
   const FeaturesSection = () => {
     const visibleFeatures = showAllFeatures ? features : features.slice(0, 8);
 
@@ -919,10 +1231,10 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     };
 
     return (
-      <div>
-        <div className="space-y-3">
+      <Box>
+        <VStack spacing={3} align="stretch">
           {visibleFeatures.map(feature => (
-            <Checkbox
+            <CustomCheckbox
               key={feature.id}
               label={feature.label}
               checked={selectedFeatures.includes(feature.id)}
@@ -931,13 +1243,23 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
           ))}
 
           {!showAllFeatures && features.length > 8 && (
-            <button
+            <Button
               onClick={() => setShowAllFeatures(true)}
-              className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center mt-2"
+              color="red.600"
+              _hover={{ color: "red.700" }}
+              fontWeight="medium"
+              fontSize="sm"
+              variant="unstyled"
+              display="flex"
+              alignItems="center"
+              mt={2}
+              height="auto"
             >
               More features
-              <svg
-                className="w-4 h-4 ml-1"
+              <Box as="svg"
+                w="4"
+                h="4"
+                ml="1"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -946,49 +1268,108 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                 strokeLinejoin="round"
               >
                 <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
+              </Box>
+            </Button>
           )}
-        </div>
-      </div>
+        </VStack>
+      </Box>
     );
   };
 
-  // Create Power Unit Toggle Component
+  // Power Unit Toggle Component
+  // Power Unit Toggle Component
   const PowerUnitToggle = ({ value, onChange }) => {
     return (
-      <div className="flex gap-1">
-        <button
+      <HStack spacing={1}>
+        <Button
           onClick={() => onChange('hp')}
-          className={`px-2 py-0.5 text-xs font-medium rounded transition-colors
-          ${value === 'hp'
-              ? 'bg-red-400 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          size="xs"
+          px={2}
+          py={0.5}
+          fontWeight="medium"
+          borderRadius="md"
+          bg={value === 'hp' ? "red.400" : "gray.100"}
+          color={value === 'hp' ? "white" : "gray.600"}
+          _hover={value !== 'hp' ? { bg: "gray.200" } : {}}
+          transition="colors 0.2s"
         >
           hp
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => onChange('kw')}
-          className={`px-2 py-0.5 text-xs font-medium rounded transition-colors
-          ${value === 'kw'
-              ? 'bg-red-400 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          size="xs"
+          px={2}
+          py={0.5}
+          fontWeight="medium"
+          borderRadius="md"
+          bg={value === 'kw' ? "red.400" : "gray.100"}
+          color={value === 'kw' ? "white" : "gray.600"}
+          _hover={value !== 'kw' ? { bg: "gray.200" } : {}}
+          transition="colors 0.2s"
         >
           kw
-        </button>
-      </div>
+        </Button>
+      </HStack>
     );
   };
 
+
+
   const getPowerOptions = (unit) => {
-    const multiplier = unit === 'hp' ? 1 : 0.745699872; // Convert HP to kW
-    return Array.from(
-      { length: 50 },
-      (_, i) => ({
-        value: String(Math.round((i + 1) * 10)),
-        label: `${Math.round((i + 1) * 10 * multiplier)} ${unit}`
-      })
-    );
+    // Common power values in hp
+    const hpValues = [
+      75, 100, 125, 150, 175, 200, 225, 250, 275, 300,
+      325, 350, 375, 400, 450, 500, 550, 600, 650, 700
+    ];
+
+    // Common power values in kW
+    const kwValues = [
+      55, 74, 92, 110, 129, 147, 165, 184, 202, 221,
+      239, 257, 276, 294, 331, 368, 405, 441, 478, 515
+    ];
+
+    if (unit === 'hp') {
+      return hpValues.map(value => ({
+        value: String(value),
+        label: `${value} hp`
+      }));
+    } else {
+      return kwValues.map(value => ({
+        value: String(value),
+        label: `${value} kW`
+      }));
+    }
+  };
+
+  const handlePowerUnitChange = (newUnit) => {
+    if (newUnit === powerUnit) return;
+
+    // Convert powerFrom if it exists
+    if (powerFrom) {
+      const fromValue = parseInt(powerFrom, 10);
+      if (newUnit === 'kw') {
+        // Convert hp to kW
+        setPowerFrom(String(Math.round(fromValue * 0.7457)));
+      } else {
+        // Convert kW to hp
+        setPowerFrom(String(Math.round(fromValue / 0.7457)));
+      }
+    }
+
+    // Convert powerTo if it exists
+    if (powerTo) {
+      const toValue = parseInt(powerTo, 10);
+      if (newUnit === 'kw') {
+        // Convert hp to kW
+        setPowerTo(String(Math.round(toValue * 0.7457)));
+      } else {
+        // Convert kW to hp
+        setPowerTo(String(Math.round(toValue / 0.7457)));
+      }
+    }
+
+    // Update the power unit
+    setPowerUnit(newUnit);
   };
 
   // Generate options for various selects
@@ -1024,25 +1405,36 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     { id: 'history', label: 'History', icon: Clock },
   ];
 
-
   const TabContent = ({ tabId }) => {
     switch (tabId) {
       case 'all':
         return (
-          <div className="space-y-6">
-
+          <VStack spacing={6} align="stretch">
             <Category title="MAKE AND MODEL">
-              <div>
-                <button
+              <Box>
+                <Button
                   onClick={() => setIsMakeModelOpen(true)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 border-2 border-gray-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                  w="full"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  px={4}
+                  py={2.5}
+                  borderWidth="2px"
+                  borderColor="gray.200"
+                  borderRadius="lg"
+                  color="red.500"
+                  _hover={{ bg: "red.50" }}
+                  transition="colors 0.2s"
+                  variant="unstyled"
+                  h="auto"
                 >
-                  <div className="flex items-center">
-                    <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                    <span className="font-medium">Add a car</span>
-                  </div>
-                  <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
-                </button>
+                  <Flex align="center">
+                    <LucideIcon icon={Plus} boxSize="5" mr="2" strokeWidth={2.5} />
+                    <Text fontWeight="medium">Add a car</Text>
+                  </Flex>
+                  <LucideIcon icon={ChevronDown} boxSize="5" strokeWidth={2.5} />
+                </Button>
 
                 {/* Show selected make/model filters */}
                 <MakeModelSelection
@@ -1070,7 +1462,7 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     });
                   }}
                 />
-              </div>
+              </Box>
             </Category>
 
             {/* Price Section */}
@@ -1078,31 +1470,43 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               title="PRICE (€)"
               badge={priceFrom || priceTo ? '1' : null}
             >
-              <div>
-                <div className="flex justify-end items-center mb-3">
-                  <div className="flex shadow-sm">
-                    <button
+              <Box>
+                <Flex justify="flex-end" align="center" mb={3}>
+                  <Flex shadow="sm">
+                    <Button
                       onClick={() => setPriceType('instalments')}
-                      className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-l-lg ${priceType === 'instalments'
-                        ? 'bg-red-400 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                      px={4}
+                      py={1.5}
+                      fontSize="sm"
+                      fontWeight="medium"
+                      transition="colors 0.2s"
+                      borderRadius="l-lg"
+                      borderRightRadius="0"
+                      bg={priceType === 'instalments' ? "red.400" : "gray.100"}
+                      color={priceType === 'instalments' ? "white" : "gray.600"}
+                      _hover={priceType !== 'instalments' ? { bg: "gray.200" } : {}}
                     >
                       Instalments
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setPriceType('cash')}
-                      className={`px-4 py-1.5 text-sm font-medium transition-colors rounded-r-lg ${priceType === 'cash'
-                        ? 'bg-red-400 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                      px={4}
+                      py={1.5}
+                      fontSize="sm"
+                      fontWeight="medium"
+                      transition="colors 0.2s"
+                      borderRadius="r-lg"
+                      borderLeftRadius="0"
+                      bg={priceType === 'cash' ? "red.400" : "gray.100"}
+                      color={priceType === 'cash' ? "white" : "gray.600"}
+                      _hover={priceType !== 'cash' ? { bg: "gray.200" } : {}}
                     >
                       Cash
-                    </button>
-                  </div>
-                </div>
+                    </Button>
+                  </Flex>
+                </Flex>
 
-                <div className="flex gap-2">
+                <Flex gap={2}>
                   <CustomSelect
                     value={priceFrom}
                     onChange={setPriceFrom}
@@ -1115,29 +1519,27 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     placeholder="To"
                     options={priceOptions}
                   />
-                </div>
-              </div>
+                </Flex>
+              </Box>
               {/* Checkboxes */}
-              <div className="space-y-3 pt-4">
-                <label className="flex items-center cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={vatDeduction}
-                    onChange={(e) => setVatDeduction(e.target.checked)}
-                    className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-                  />
-                  <span className="ml-2 text-gray-700 group-hover:text-gray-900">VAT deduction</span>
-                </label>
-              </div>
+              <VStack spacing={3} align="stretch" pt={4}>
+                <Checkbox
+                  isChecked={vatDeduction}
+                  onChange={(e) => setVatDeduction(e.target.checked)}
+                  colorScheme="red"
+                  size="md"
+                >
+                  VAT deduction
+                </Checkbox>
+              </VStack>
             </Category>
-
 
             {/* Registration Section */}
             <Category
               title="REGISTRATION"
               badge={registrationFrom || registrationTo ? '1' : null}
             >
-              <div className="flex gap-2">
+              <Flex gap={2}>
                 <CustomSelect
                   value={registrationFrom}
                   onChange={setRegistrationFrom}
@@ -1150,14 +1552,15 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   placeholder="To"
                   options={registrationYears}
                 />
-              </div>
+              </Flex>
             </Category>
+
             {/* Mileage Section */}
             <Category
               title="MILEAGE"
               badge={mileageFrom || mileageTo ? '1' : null}
             >
-              <div className="flex gap-2">
+              <Flex gap={2}>
                 <CustomSelect
                   value={mileageFrom}
                   onChange={setMileageFrom}
@@ -1170,8 +1573,9 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   placeholder="To"
                   options={mileageOptions}
                 />
-              </div>
+              </Flex>
             </Category>
+
             {/* Transmission Section */}
             <Category
               title="TRANSMISSION"
@@ -1184,80 +1588,92 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               />
             </Category>
 
-            <Category 
-  title="FUEL" 
-  badge={selectedFuels.length > 0 ? selectedFuels.length : null}
-
->             
-            <MultiSelect
-              selected={selectedFuels}
-              onChange={(newSelected) => {
-                setSelectedFuels(newSelected);
-              }}
-              options={fuelData.types}
-              displayOrder={fuelData.displayOrder}
-              placeholder="Select fuel types"
-
-            />
-                        </Category>
+            <Category
+              title="FUEL"
+              badge={selectedFuels.length > 0 ? selectedFuels.length : null}
+            >
+              <MultiSelect
+                selected={selectedFuels}
+                onChange={(newSelected) => {
+                  setSelectedFuels(newSelected);
+                }}
+                options={fuelData.types}
+                displayOrder={fuelData.displayOrder}
+                placeholder="Select fuel types"
+              />
+            </Category>
 
             {/* Electric & Hybrid Section */}
             <Category
               title="ELECTRIC & HYBRID"
               badge={(isElectricVehicle || hybridType) ? '1' : null}
             >
-              {/* // Add this section in your TabContent component (in the 'all' case): */}
-              <div className="bg-red-50 p-4 rounded-lg space-y-4">
-
-                <label className="flex items-center cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={isElectricVehicle}
+              <Box bg="red.50" p={4} borderRadius="lg">
+                <VStack spacing={4} align="stretch">
+                  <Checkbox
+                    isChecked={isElectricVehicle}
                     onChange={(e) => setIsElectricVehicle(e.target.checked)}
-                    className="w-4 h-4 border-2 border-gray-300 rounded text-red-400 focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-                  />
-                  <span className="ml-2 text-gray-700 group-hover:text-gray-900">
+                    colorScheme="red"
+                    size="md"
+                  >
                     Electric vehicles
-                  </span>
-                </label>
+                  </Checkbox>
 
-                <div>
-                  <h3 className="text-sm font-bold text-[#1a1a1a] mb-2">HYBRID TYPE</h3>
-                  <div className="flex w-full rounded-lg border-2 border-gray-200 overflow-hidden">
-                    <button
-                      onClick={() => setHybridType('plug-in')}
-                      className={`flex-1 py-2.5 text-sm font-medium transition-colors
-          ${hybridType === 'plug-in'
-                          ? 'bg-red-400 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                    >
-                      Plug-in hybrid
-                    </button>
-                    <div className="w-[1px] bg-gray-200" />
-                    <button
-                      onClick={() => setHybridType('full')}
-                      className={`flex-1 py-2.5 text-sm font-medium transition-colors
-          ${hybridType === 'full'
-                          ? 'bg-red-400 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                    >
-                      Full hybrid
-                    </button>
-                  </div>
-                </div>
-              </div>
+                  <Box>
+                    <Heading as="h3" fontSize="sm" fontWeight="bold" color="#1a1a1a" mb={2}>
+                      HYBRID TYPE
+                    </Heading>
+                    <Flex w="full" borderRadius="lg" borderWidth="2px" borderColor="gray.200" overflow="hidden">
+                      <Button
+                        onClick={() => setHybridType('plug-in')}
+                        flex="1"
+                        py={2.5}
+                        fontSize="sm"
+                        fontWeight="medium"
+                        transition="colors 0.2s"
+                        bg={hybridType === 'plug-in' ? "red.400" : "white"}
+                        color={hybridType === 'plug-in' ? "white" : "gray.700"}
+                        _hover={hybridType !== 'plug-in' ? { bg: "gray.50" } : {}}
+                        borderRadius="0"
+                        variant="unstyled"
+                        h="auto"
+                      >
+                        Plug-in hybrid
+                      </Button>
+                      <Box w="1px" bg="gray.200" />
+                      <Button
+                        onClick={() => setHybridType('full')}
+                        flex="1"
+                        py={2.5}
+                        fontSize="sm"
+                        fontWeight="medium"
+                        transition="colors 0.2s"
+                        bg={hybridType === 'full' ? "red.400" : "white"}
+                        color={hybridType === 'full' ? "white" : "gray.700"}
+                        _hover={hybridType !== 'full' ? { bg: "gray.50" } : {}}
+                        borderRadius="0"
+                        variant="unstyled"
+                        h="auto"
+                      >
+                        Full hybrid
+                      </Button>
+                    </Flex>
+                  </Box>
+                </VStack>
+              </Box>
             </Category>
-          <Category 
-            title="POWER"
-            badge={powerFrom || powerTo ? '1' : null}
-          >
-            <div className='justify-end flex mb-3'>
+
+            <Category
+              title="POWER"
+              badge={powerFrom || powerTo ? '1' : null}
+            >
+              <Flex justify="flex-end" mb={3}>
                 <PowerUnitToggle
                   value={powerUnit}
-                  onChange={setPowerUnit}
+                  onChange={handlePowerUnitChange}
                 />
-              </div>
-              <div className="flex gap-2">
+              </Flex>
+              <Flex gap={2}>
                 <CustomSelect
                   value={powerFrom}
                   onChange={setPowerFrom}
@@ -1270,92 +1686,103 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   placeholder="To"
                   options={getPowerOptions(powerUnit)}
                 />
-                </div>
-        </Category>
-
-
-        <Category 
-            title="VEHICLE TYPE"
-            badge={selectedVehicleTypes.length ? selectedVehicleTypes.length : null}
-          >
-            <MultiSelect
-              selected={selectedVehicleTypes.map(type => ({
-                id: type,
-                value: type,
-                label: vehicleTypes.find(t => t.value === type)?.label || type
-              }))}
-              onChange={(newSelected) => {
-                setSelectedVehicleTypes(newSelected.map(s => s.value));
-              }}
-              options={vehicleTypes}
-              displayOrder={vehicleTypes.map(t => t.value)}
-              placeholder="All"
-            />
-
-            <div className='mt-4'>
-            <Checkbox
-              label="Drive type 4x4"
-              checked={is4x4}
-              onChange={(e) => setIs4x4(e.target.checked)}
-            />
-            </div>
-
-</Category>
-
- <Category 
-            title="EXTERIOR COLOR"
-            badge={selectedColors.length ? selectedColors.length : null}
-          >
-            <MultiColorSelector
-              selectedColors={selectedColors}
-              onColorSelect={setSelectedColors}
-            />
+              </Flex>
             </Category>
-            <Category 
-            title="FEATURES"
-            badge={selectedFeatures.length ? selectedFeatures.length : null}
-          >
-            <FeaturesSection />
-            <button
-              className="text-red-400 hover:text-red-500 font-medium text-sm flex items-center mt-4"
+
+            <Category
+              title="VEHICLE TYPE"
+              badge={selectedVehicleTypes.length ? selectedVehicleTypes.length : null}
             >
-              More features
-              <ChevronRight className="w-4 h-4 ml-1 " />
-            </button>
-
-          </Category>
-
-          
-
-            {/* After FeaturesSection */}
-            <div className="space-y-2 pt-2">
-              <button
-                className="w-full py-2.5 text-red-400 hover:bg-red-50 border-2 border-red-400 rounded-lg font-medium transition-colors"
-                onClick={() => {
-                  // Add your detailed search logic here
+              <MultiSelect
+                selected={selectedVehicleTypes.map(type => ({
+                  id: type,
+                  value: type,
+                  label: vehicleTypes.find(t => t.value === type)?.label || type
+                }))}
+                onChange={(newSelected) => {
+                  setSelectedVehicleTypes(newSelected.map(s => s.value));
                 }}
+                options={vehicleTypes}
+                displayOrder={vehicleTypes.map(t => t.value)}
+                placeholder="All"
+              />
+
+              <Box mt={4}>
+                <CustomCheckbox
+                  label="Drive type 4x4"
+                  checked={is4x4}
+                  onChange={(e) => setIs4x4(e.target.checked)}
+                />
+              </Box>
+            </Category>
+
+            <Category
+              title="EXTERIOR COLOR"
+              badge={selectedColors.length ? selectedColors.length : null}
+            >
+              <MultiColorSelector
+                selectedColors={selectedColors}
+                onColorSelect={setSelectedColors}
+              />
+            </Category>
+
+            <Category
+              title="FEATURES"
+              badge={selectedFeatures.length ? selectedFeatures.length : null}
+            >
+              <FeaturesSection />
+              <Button
+                color="red.400"
+                _hover={{ color: "red.500" }}
+                fontWeight="medium"
+                fontSize="sm"
+                mt={4}
+                rightIcon={<LucideIcon icon={ChevronRight} boxSize="4" />}
+                variant="unstyled"
+                display="flex"
+                alignItems="center"
+                height="auto"
+              >
+                More features
+              </Button>
+            </Category>
+
+            <VStack spacing={2} pt={2}>
+              <Button
+                w="full"
+                py={2.5}
+                color="red.400"
+                _hover={{ bg: "red.50" }}
+                borderWidth="2px"
+                borderColor="red.400"
+                borderRadius="lg"
+                fontWeight="medium"
+                transition="colors 0.2s"
+                variant="outline"
               >
                 Detailed search
-              </button>
-            </div>
-          </div>
+              </Button>
+            </VStack>
+          </VStack>
         );
 
       case 'saved':
         return (
-          <div className="py-8 text-center">
-            <Bookmark className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-500">Your saved filters will appear here</p>
-          </div>
+          <Box py={8} textAlign="center">
+            <LucideIcon icon={Bookmark} boxSize="12" mx="auto" mb={4} color="gray.400" />
+            <Text color="gray.500">Your saved filters will appear here</Text>
+          </Box>
         );
 
       case 'history':
         return (
-          <div className="py-8 text-center">
-            <Clock className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-500">Your search history will appear here</p>
-          </div>
+          <Box py={8} textAlign="center">
+            <LucideIcon icon={Clock} boxSize="12" mx="auto" mb={4} color="gray.400" />
+            <Text color="gray.500">Your search history will appear here</Text>
+          </Box>
         );
+      default:
+        return null;
     }
   };
 
@@ -1366,85 +1793,128 @@ const FilterSidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
   // Main content component to avoid repetition
   const FilterContent = () => (
-    <div className="p-6 bg-white h-full overflow-y-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#1a1a1a]">Filter</h1>
-        <div className="flex items-center gap-2">
+    <Box p={6} bg="white" h="full" overflowY="auto">
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading as="h1" fontSize="2xl" fontWeight="bold" color="#1a1a1a">Filter</Heading>
+        <HStack spacing={2}>
           {hasFilters && (
-            <button
+            <IconButton
               onClick={resetFilters}
-              className="flex items-center text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+              aria-label="Reset filters"
+              icon={<LucideIcon icon={Trash2} boxSize="5" />}
+              color="gray.500"
+              _hover={{ color: "gray.700" }}
+              variant="ghost"
+            />
           )}
-          <button
+          <IconButton
             onClick={closeMobileSidebar}
-            className="md:hidden text-gray-500 hover:text-gray-700"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
+            aria-label="Close sidebar"
+            icon={<LucideIcon icon={X} boxSize="6" />}
+            color="gray.500"
+            _hover={{ color: "gray.700" }}
+            variant="ghost"
+            display={["flex", "flex", "none"]}
+          />
+        </HStack>
+      </Flex>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 relative">
+      <Flex borderBottomWidth="1px" borderColor="gray.200" mb={6} position="relative">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center mr-8 pb-2 relative transition-colors 
-                ${isActive ? 'text-red-400' : 'text-gray-500 hover:text-gray-700'}`}
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              mr={8}
+              pb={2}
+              position="relative"
+              transition="colors 0.2s"
+              color={isActive ? "red.400" : "gray.500"}
+              _hover={!isActive ? { color: "gray.700" } : {}}
+              variant="unstyled"
+              h="auto"
             >
-              <div className={`p-2 rounded-md mb-1 transition-colors ${isActive ? 'bg-red-50' : ''}`}>
-                <Icon className="w-5 h-5" strokeWidth={2.5} />
-              </div>
-              <span className="text-sm font-medium">{tab.label}</span>
+              <Box
+                p={2}
+                borderRadius="md"
+                mb={1}
+                transition="colors 0.2s"
+                bg={isActive ? "red.50" : "transparent"}
+              >
+                <LucideIcon icon={Icon} boxSize="5" strokeWidth={2.5} />
+              </Box>
+              <Text fontSize="sm" fontWeight="medium">{tab.label}</Text>
               {isActive && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-red-400" />
+                <Box
+                  position="absolute"
+                  bottom="0"
+                  left="0"
+                  w="full"
+                  h="0.5"
+                  bg="red.400"
+                />
               )}
-            </button>
+            </Button>
           );
         })}
-      </div>
+      </Flex>
 
       {/* Tab Content */}
       <TabContent tabId={activeTab} />
-    </div>
+    </Box>
   );
 
   return (
     <>
       {/* Mobile Overlay */}
       {isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+        <Box
+          position="fixed"
+          inset="0"
+          bg="blackAlpha.500"
+          zIndex="30"
+          display={["block", "block", "none"]}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Mobile Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 w-full max-w-[320px] z-30 transform transition-transform duration-300 ease
-        md:relative md:transform-none md:w-auto md:max-w-none
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
+      <Box
+        position={["fixed", "fixed", "relative"]}
+        top="0"
+        bottom="0"
+        left="0"
+        w="full"
+        maxW={["320px", "320px", "auto"]}
+        zIndex="30"
+        transform={isMobileOpen ? "translateX(0)" : ["translateX(-100%)", "translateX(-100%)", "none"]}
+        transition="transform 0.3s ease"
+      >
         {/* Desktop Card */}
-        <div className="hidden md:block rounded-lg shadow-lg">
+        <Box
+          display={["none", "none", "block"]}
+          borderRadius="lg"
+          boxShadow="lg"
+        >
           <FilterContent />
-        </div>
+        </Box>
 
         {/* Mobile Fullheight Sidebar */}
-        <div className="h-full sm:hidden">
+        <Box
+          h="full"
+          display={["block", "block", "none"]}
+        >
           <FilterContent />
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 };
-
 
 export default FilterSidebar;
