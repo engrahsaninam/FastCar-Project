@@ -99,7 +99,7 @@ const Controls = memo(({ current, total, onPrev, onNext, onDotClick }: ControlsP
         </HStack>
     </Flex>
 ));
-
+Controls.displayName = "Controls";
 const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, nextSlide, prevSlide, setCurrentSlide, direction }: MobileViewProps) => (
     <>
         <MotionButton
@@ -180,7 +180,7 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
         </AnimatePresence>
     </>
 ));
-
+MobileView.displayName = "MobileView";
 const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nextSlide, prevSlide, setCurrentSlide, direction }: DesktopViewProps) => (
     <MotionBox
         {...animations.fade}
@@ -241,7 +241,7 @@ const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nex
         </AnimatePresence>
     </MotionBox>
 ));
-
+DesktopView.displayName = "DesktopView";
 const CheckoutPurchaseGuide: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(1);
@@ -274,9 +274,8 @@ const CheckoutPurchaseGuide: React.FC = () => {
         nextSlide,
         prevSlide,
         setCurrentSlide: handleDotClick,
-        direction
-    }), [currentSlide, direction]);
-
+        direction,
+    }), [currentSlide, direction, nextSlide, prevSlide, handleDotClick]);
     return (
         <Box maxW="4xl" mx="auto" p={4}>
             {isMobile ? (

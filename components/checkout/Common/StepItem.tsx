@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
+import React from 'react';
+import { Box, Flex, Text, useColorModeValue, Badge } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ChevronDownIcon, TimeIcon, CheckIcon } from '@chakra-ui/icons';
 import { StepItemProps } from '../types/steps';
 
 const MotionFlex = motion(Flex);
 const MotionBox = motion(Box);
+const MotionBadge = motion(Badge);
 
 export const StepItem: React.FC<StepItemProps> = ({
     title,
@@ -17,12 +18,9 @@ export const StepItem: React.FC<StepItemProps> = ({
     onClick,
     isCompleted
 }) => {
-    const [isExpanded, setIsExpanded] = useState(isActive);
-
     const handleClick = () => {
-        if (!isLocked && showChevron) {
-            setIsExpanded(!isExpanded);
-            onClick?.(!isExpanded);
+        if (!isLocked && showChevron && onClick) {
+            onClick(!isActive);
         }
     };
 
@@ -36,6 +34,7 @@ export const StepItem: React.FC<StepItemProps> = ({
             align="center"
             justify="space-between"
             p={4}
+            pl={8}
             cursor={isLocked ? 'not-allowed' : 'pointer'}
             bg={bgColor}
             shadow={isFirst ? 'sm' : 'none'}
@@ -68,7 +67,7 @@ export const StepItem: React.FC<StepItemProps> = ({
 
             <Flex align="center" gap={2}>
                 {badge && (
-                    <MotionBox
+                    <MotionBadge
                         px={2}
                         py={0.5}
                         fontSize="11px"
@@ -81,11 +80,11 @@ export const StepItem: React.FC<StepItemProps> = ({
                         transition={{ delay: 0.2 }}
                     >
                         {badge}
-                    </MotionBox>
+                    </MotionBadge>
                 )}
                 {showChevron && (
                     <MotionBox
-                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        animate={{ rotate: isActive ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                     >
                         <ChevronDownIcon w="20px" h="20px" color="gray.400" />
