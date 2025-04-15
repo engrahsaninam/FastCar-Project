@@ -470,7 +470,7 @@ const CarList = () => {
     };
 
     loadData();
-  }, []);
+  }, [cars]);
 
 
   if (isLoading) {

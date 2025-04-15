@@ -284,9 +284,8 @@ const CheckoutPurchaseGuide: React.FC = () => {
         nextSlide,
         prevSlide,
         setCurrentSlide: handleDotClick,
-        direction
-    }), [currentSlide, direction]);
-
+        direction,
+    }), [currentSlide, direction, nextSlide, prevSlide, handleDotClick]);
     return (
         <Box maxW="4xl" mx="auto" p={4}>
             {isMobile ? (

@@ -143,5 +143,5 @@ const CheckoutCarDetails: FC = () => {
         </Box>
     );
 };
-
+CheckoutCarDetails.displayName = 'CheckoutCarDetails';
 export default CheckoutCarDetails;
