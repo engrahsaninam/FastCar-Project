@@ -260,7 +260,7 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                     </Box>
 
                     {/* Address Form */}
-                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6} shadow="md">
+                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6} >
                         <GridItem colSpan={{ md: 1 }}>
                             <FormControl>
                                 <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">STREET</FormLabel>
@@ -277,7 +277,7 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                             </FormControl>
                         </GridItem>
 
-                        <GridItem colSpan={{ md: 1 }} shadow="md">
+                        <GridItem colSpan={{ md: 1 }} >
                             <FormControl>
                                 <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">HOUSE NUMBER</FormLabel>
                                 <Box position="relative">
