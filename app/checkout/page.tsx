@@ -9,10 +9,11 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import CheckoutPurchaseGuide from '@/components/checkout/CheckoutPurchaseGuide';
 import StepOneContent from '@/components/checkout/StepOneContent';
 import StepContent from '@/components/checkout/Common/StepContent';
+import PriceSummary from '@/components/checkout/PriceSummary/PriceSummary';
 
 const page = () => {
     return (
-        <div>
+        <>
             <CheckoutCarDetails />
             <CheckoutSteps />
             <PriceSumMain />
@@ -30,15 +31,15 @@ const page = () => {
                     </GridItem>
 
                     {/* Desktop Price Summary (hidden on mobile) */}
-                    {/* <GridItem
+                    <GridItem
                         colSpan={1}
                         display={{ base: 'none', lg: 'block' }}
                     >
                         <PriceSummary />
-                    </GridItem> */}
+                    </GridItem>
                 </Grid>
             </Box>
-        </div>
+        </>
     )
 }
 

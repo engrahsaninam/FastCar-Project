@@ -29,7 +29,7 @@ export const SlideContent: React.FC<SlideContentProps> = ({ slide, direction }) 
             <Box bg="red.50" p={6} borderRadius="xl" w="full">
                 <Flex alignItems="flex-start" gap={3} mb={6}>
                     <MotionBox {...animations.scale} p={2} bg="red.50" borderRadius="lg">
-                        <Icon as={IconComponent} boxSize={5} color="gray.700" />
+                        <Icon as={IconComponent} boxSize={5} color="gray.700" aria-label="Icon" />
                     </MotionBox>
                     <Box>
                         <Text fontSize="sm" color="gray.500">{slide.tag}</Text>

@@ -56,7 +56,7 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
                 <Flex align="center">
                     <Text fontWeight="medium" fontSize="sm" color="red.900">Down payment (%)</Text>
                     <Box ml={1} cursor="help">
-                        <InfoIcon boxSize="14px" color="red.200" />
+                        <InfoIcon boxSize="14px" color="red.200" aria-label="info-Icon" />
                     </Box>
                 </Flex>
                 <Text fontWeight="bold" fontSize="sm">

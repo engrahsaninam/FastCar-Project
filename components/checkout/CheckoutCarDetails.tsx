@@ -18,25 +18,25 @@ const CarImage: FC<{ src: string; alt: string }> = memo(({ src, alt }) => (
         <Image src={src} alt={alt} w="100%" h="100%" objectFit="cover" borderRadius="md" />
     </Box>
 ));
-
+CarImage.displayName = 'CarImage';
 const InfoItem: FC<{ Icon: any; text: string }> = memo(({ Icon, text }) => (
     <Flex align="center" gap={1.5}>
         <Box w={4} h={4} display="flex" alignItems="center" justifyContent="center">
-            <Icon size={14} color="#6B7280" />
+            <Icon size={14} color="#6B7280" aria-label="Icon" />
         </Box>
         <Text fontSize="sm" color="gray.500">
             {text}
         </Text>
     </Flex>
 ));
-
+InfoItem.displayName = 'InfoItem';
 const DeliveryInfo: FC<{ text: string }> = memo(({ text }) => (
     <Flex align="start" gap={2} fontSize="sm" color="red.500">
-        <Icon as={Timer} boxSize={4} mt="1px" />
+        <Icon as={Timer} boxSize={4} mt="1px" aria-label="Icon" />
         <Text>{text}</Text>
     </Flex>
 ));
-
+DeliveryInfo.displayName = 'DeliveryInfo';
 const SupportCard: FC<{ phone: string; hours: string; isMobile: boolean }> = memo(
     ({ phone, hours, isMobile }) => (
         <Box
@@ -85,7 +85,7 @@ const SupportCard: FC<{ phone: string; hours: string; isMobile: boolean }> = mem
         </Box>
     )
 );
-
+SupportCard.displayName = 'SupportCard';
 const CarInfoCard: FC<{ data: CarData; isMobile: boolean }> = memo(({ data, isMobile }) => (
     <Box bg="white" border="1px" borderColor="gray.100" borderRadius="lg" boxShadow="sm" flex="1">
         <Flex p={4} direction="column" h="100%">
@@ -99,8 +99,8 @@ const CarInfoCard: FC<{ data: CarData; isMobile: boolean }> = memo(({ data, isMo
                         <ArrowUpRight size={16} color="#EF4444" />
                     </Flex>
                     <Flex gap={4} mt={1.5}>
-                        <InfoItem Icon={Timer} text={data.mileage} />
-                        <InfoItem Icon={CalendarDays} text={data.year} />
+                        <InfoItem Icon={Timer} text={data.mileage} aria-label="Icon" />
+                        <InfoItem Icon={CalendarDays} text={data.year} aria-label="Icon" />
                     </Flex>
                     {!isMobile && (
                         <Box mt={3}>
@@ -117,7 +117,7 @@ const CarInfoCard: FC<{ data: CarData; isMobile: boolean }> = memo(({ data, isMo
         </Flex>
     </Box>
 ));
-
+CarInfoCard.displayName = 'CarInfoCard';
 const CheckoutCarDetails: FC = () => {
     // const isMobile = useBreakpointValue({ base: true, lg: false });
 

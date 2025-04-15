@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Text, Input, Flex } from '@chakra-ui/react';
-import { Circle } from 'lucide-react';
 import { RadioOptionProps } from '../types/forms';
 
 export const RadioOption: React.FC<RadioOptionProps> = ({
@@ -11,7 +10,6 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
     isDisabled = false,
     applicationSent = false
 }) => {
-    // Special case for application sent
     if (id === 'financing' && applicationSent) {
         return (
             <Box
@@ -23,10 +21,12 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
                 py={3}
                 borderRadius="md"
                 borderWidth="1px"
-                borderColor="transparent"
-                bg="gray.300"
+                borderColor="red"
+                bg="#CBD5E0"
                 flex="1"
                 cursor="not-allowed"
+                shadow="md"
+                aria-disabled="true"
             >
                 <Flex
                     w="20px"
@@ -35,14 +35,9 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
                     bg="white"
                     alignItems="center"
                     justifyContent="center"
-                >
-                    <Circle size={12} />
-                </Flex>
-                <Text
-                    fontSize="sm"
-                    color="white"
-                    fontWeight="medium"
-                >
+                    aria-hidden="true"
+                />
+                <Text fontSize="sm" color="white" fontWeight="medium">
                     Application sent
                 </Text>
                 <Input
@@ -53,17 +48,16 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
                     onChange={() => { }}
                     display="none"
                     disabled={true}
+                    aria-label={`Financing application sent`}
                 />
             </Box>
         );
     }
 
-    // Standard radio button styling
-    const isActive = isSelected && !isDisabled;
-
     return (
         <Box
             as="label"
+            htmlFor={`payment-method-${id}`}
             display="flex"
             alignItems="center"
             gap={3}
@@ -71,36 +65,52 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
             py={3}
             borderRadius="md"
             borderWidth="1px"
+            borderColor={isSelected ? "red.500" : "gray.300"}
+            bg={isSelected ? "#ffe5e5" : "white"}
             cursor={isDisabled ? "not-allowed" : "pointer"}
             flex="1"
-            transition="all 0.2s ease-in-out"
-            bg={isActive ? "white" : "gray.50"}
-            borderColor={isActive ? "red.500" : "gray.200"}
-            opacity={isDisabled ? 0.8 : 1}
+            transition="all 0.2s"
+            shadow="md"
             _hover={{
-                borderColor: !isDisabled && (isActive ? "red.500" : "gray.300"),
-                bg: !isDisabled && (isActive ? "white" : "gray.100")
+                borderColor: !isDisabled && "red.500",
+                bg: !isDisabled && "#ffe5e5",
+                shadow: !isDisabled && "lg"
             }}
+            _active={{
+                shadow: !isDisabled && "sm",
+                bg: !isDisabled && "#ffe5e5"
+            }}
+            opacity={isDisabled ? 0.6 : 1}
+            role="radio"
+            aria-checked={isSelected}
+            aria-disabled={isDisabled}
         >
             <Flex
                 w="20px"
                 h="20px"
                 borderRadius="full"
-                borderWidth={isActive ? "6px" : "1px"}
-                borderColor={isActive ? "red.500" : "gray.300"}
-                bg="white"
+                borderWidth="6px"
+                borderColor={isSelected ? "red.500" : "gray.300"}
+                bg={isSelected ? "red.500" : "white"}
                 alignItems="center"
                 justifyContent="center"
                 transition="all 0.2s"
-            />
-            <Text
-                fontSize="sm"
-                color="gray.700"
-                fontWeight="medium"
+                aria-hidden="true"
             >
+                <Box
+                    w="8px"
+                    h="8px"
+                    borderRadius="full"
+                    bg="white"
+                />
+            </Flex>
+
+            <Text fontSize="sm" color="#1A202C" fontWeight="medium">
                 {label}
             </Text>
+
             <Input
+                id={`payment-method-${id}`}
                 type="radio"
                 name="payment-method"
                 value={id}
@@ -108,6 +118,7 @@ export const RadioOption: React.FC<RadioOptionProps> = ({
                 onChange={() => !isDisabled && onChange(id)}
                 display="none"
                 disabled={isDisabled}
+                aria-label={label}
             />
         </Box>
     );

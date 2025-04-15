@@ -22,7 +22,7 @@ const Controls = memo(({ current, total, onPrev, onNext, onDotClick }: ControlsP
         mt={4}
         pt={4}
         px={4}
-        borderTopWidth="1px"
+        borderTopWidth="0.54rem"
         borderColor="gray.200"
     >
         <HStack spacing={2}>
@@ -81,7 +81,7 @@ const Controls = memo(({ current, total, onPrev, onNext, onDotClick }: ControlsP
                 _disabled={{ opacity: 0.4 }}
                 aria-label="Previous slide"
             >
-                <Icon as={ChevronLeft} boxSize={4} />
+                <Icon as={ChevronLeft} boxSize={4} aria-hidden="true" />
             </MotionButton>
             <MotionButton
                 onClick={onNext}
@@ -94,11 +94,13 @@ const Controls = memo(({ current, total, onPrev, onNext, onDotClick }: ControlsP
                 _disabled={{ opacity: 0.4 }}
                 aria-label="Next slide"
             >
-                <Icon as={ChevronRight} boxSize={4} />
+                <Icon as={ChevronRight} boxSize={4} aria-hidden="true" />
             </MotionButton>
         </HStack>
     </Flex>
 ));
+
+Controls.displayName = 'Controls';
 
 const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, nextSlide, prevSlide, setCurrentSlide, direction }: MobileViewProps) => (
     <>
@@ -118,11 +120,11 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
         >
             <Flex alignItems="center" gap={2}>
                 <Box p={1.5} bg="red.50" borderRadius="md">
-                    <Icon as={Car} boxSize={4} color="red.500" />
+                    <Icon as={Car} boxSize={4} color="red.500" aria-hidden="true" />
                 </Box>
                 <Text fontWeight="medium">Purchase Guide</Text>
             </Flex>
-            <Icon as={ArrowRight} boxSize={4} color="gray.400" />
+            <Icon as={ArrowRight} boxSize={4} color="gray.400" aria-hidden="true" />
         </MotionButton>
 
         <AnimatePresence initial={false}>
@@ -133,6 +135,9 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
                     inset={0}
                     bg="white"
                     zIndex={50}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Purchase Guide"
                 >
                     <Flex direction="column" h="full">
                         <Flex
@@ -142,7 +147,7 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
                             borderBottomWidth="1px"
                         >
                             <Flex alignItems="center" gap={2}>
-                                <Icon as={Car} boxSize={4} />
+                                <Icon as={Car} boxSize={4} aria-hidden="true" />
                                 <Text fontWeight="medium">Purchase Guide</Text>
                             </Flex>
                             <MotionButton
@@ -155,7 +160,7 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
                                 height="auto"
                                 aria-label="Close"
                             >
-                                <Icon as={X} boxSize={4} />
+                                <Icon as={X} boxSize={4} aria-hidden="true" />
                             </MotionButton>
                         </Flex>
                         <Box flex="1" overflowY="auto" p={4}>
@@ -181,6 +186,8 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
     </>
 ));
 
+MobileView.displayName = 'MobileView';
+
 const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nextSlide, prevSlide, setCurrentSlide, direction }: DesktopViewProps) => (
     <MotionBox
         {...animations.fade}
@@ -196,7 +203,7 @@ const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nex
                     bg="red.50"
                     borderRadius="md"
                 >
-                    <Icon as={Car} boxSize={4} color="red.500" />
+                    <Icon as={Car} boxSize={4} color="red.500" aria-hidden="true" />
                 </MotionBox>
                 <Text fontWeight="medium">Purchase Guide</Text>
             </Flex>
@@ -211,6 +218,7 @@ const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nex
                 borderRadius="lg"
                 variant="ghost"
                 size="sm"
+                aria-expanded={isExpanded}
             >
                 {isExpanded ? 'View Less' : 'View Steps'}
             </MotionButton>
@@ -241,6 +249,8 @@ const DesktopView = memo(({ isExpanded, setIsExpanded, currentSlide, slides, nex
         </AnimatePresence>
     </MotionBox>
 ));
+
+DesktopView.displayName = 'DesktopView';
 
 const CheckoutPurchaseGuide: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -295,5 +305,7 @@ const CheckoutPurchaseGuide: React.FC = () => {
         </Box>
     );
 };
+
+CheckoutPurchaseGuide.displayName = 'CheckoutPurchaseGuide';
 
 export default CheckoutPurchaseGuide;

@@ -12,7 +12,7 @@ const FinancingInfoSection: React.FC = () => {
             width="100%"
         >
             <Flex alignItems="flex-start" gap={3}>
-                <Icon as={InfoIcon} color="red.500" boxSize={5} mt={0.5} />
+                <Icon as={InfoIcon} color="red.500" boxSize={5} mt={0.5} aria-label="info-Icon" />
                 <Box>
                     <Text fontWeight="medium" color="red.900" mb={1}>
                         The installment already includes the selected transport and other additional services.

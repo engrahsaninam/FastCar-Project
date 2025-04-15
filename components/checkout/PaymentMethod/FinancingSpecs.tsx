@@ -131,7 +131,7 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                 mb={isFinancingSpecsExpanded ? 6 : 0}
             >
                 <Flex align="center" gap={2}>
-                    <TimeIcon w="20px" h="20px" color="red.500" />
+                    <TimeIcon w="20px" h="20px" color="red.500" aria-label="time-Icon" />
                     <Heading as="h4" fontSize="15px" fontWeight="semibold" color="gray.900">
                         Financing specifications
                     </Heading>
@@ -144,9 +144,9 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                     variant="ghost"
                 >
                     {isFinancingSpecsExpanded ? (
-                        <ChevronUpIcon w="20px" h="20px" color="gray.500" />
+                        <ChevronUpIcon w="20px" h="20px" color="gray.500" aria-label="chevron-up-Icon" />
                     ) : (
-                        <ChevronDownIcon w="20px" h="20px" color="gray.500" />
+                        <ChevronDownIcon w="20px" h="20px" color="gray.500" aria-label="chevron-down-Icon" />
                     )}
                 </Button>
             </Flex>

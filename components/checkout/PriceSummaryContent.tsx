@@ -67,7 +67,7 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
                     </Flex>
                     <Flex align="center" gap={1.5} p={2.5} bg="gray.50" borderRadius="lg">
                         <Text fontSize="xs" color="gray.600">The price is recalculated from 25.65 €/CZK</Text>
-                        <Icon as={Info} w={3.5} h={3.5} color="gray.400" />
+                        <Icon as={Info} w={3.5} h={3.5} color="gray.400" aria-label="Icon" />
                     </Flex>
                 </VStack>
             </Box>
@@ -93,11 +93,11 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
                             align="center"
                             p={2.5}
                             borderRadius="lg"
-                            _hover={{ bg: 'gray.50' }}
+                            _hover={{ bg: '#e6f7ff' }}
                         >
                             <Flex align="center" gap={2}>
                                 <Text fontSize="sm" color="gray.700">{service.label}</Text>
-                                {service.hasDropdown && <Icon as={ChevronDown} w={4} h={4} color="gray.400" />}
+                                {service.hasDropdown && <Icon as={ChevronDown} w={4} h={4} color="gray.400" aria-label="Icon" />}
                             </Flex>
                             {service.isFree ? (
                                 <Badge
