@@ -16,7 +16,12 @@ const page = () => {
         <>
             <CheckoutCarDetails />
             <CheckoutSteps />
-            <PriceSumMain />
+            <GridItem
+                colSpan={1}
+                display={{ base: 'block', lg: 'none' }}
+            >
+                <PriceSummary />
+            </GridItem>
             <Box w="full" maxW="7xl" mx="auto">
                 <Grid
                     templateColumns={{ base: '1fr', lg: '2fr 1fr' }}

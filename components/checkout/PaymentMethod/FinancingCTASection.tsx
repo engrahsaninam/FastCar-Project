@@ -1,18 +1,18 @@
 import React from 'react';
-import { Box, Button, Flex, HStack, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, HStack, Icon, Text } from '@chakra-ui/react';
 import { PhoneIcon } from '@chakra-ui/icons';
 import { FinancingCTAProps } from '../types/financing';
 
 const FinancingCTASection: React.FC<FinancingCTAProps> = ({
-    heading = "Are you interested in this financing offer?",
+    heading = " Need more details about our financing offer?",
     subText = "You can verify financing options without obligation. You will receive the results within 240 minutes.",
-    primaryButtonText = "I want financing",
-    secondaryButtonText = "I will pay in full",
+    primaryButtonText = "Know More & Fill Details",
+    // secondaryButtonText = "I will pay in full",
     helpText = "Need some advice?",
     phoneHours = "Mo-Su 8 am-8 pm",
     phoneNumber = "+39 02 8736 1995",
     onPrimaryClick,
-    onSecondaryClick
+    // onSecondaryClick
 }) => {
     return (
         <Box mt={10}>
@@ -40,6 +40,7 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                 direction={{ base: "column", sm: "row" }}
                 gap="16px"
                 width="100%"
+                justifyContent="center"
                 mb="32px"
             >
                 <Button
@@ -55,7 +56,7 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                 >
                     {primaryButtonText}
                 </Button>
-                <Button
+                {/* <Button
                     variant="outline"
                     borderColor="#E53E3E"
                     color="#1A202C"
@@ -68,7 +69,7 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                     onClick={onSecondaryClick}
                 >
                     {secondaryButtonText}
-                </Button>
+                </Button> */}
             </Flex>
 
             {/* Gray Background Advice Section */}

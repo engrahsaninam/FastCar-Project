@@ -16,7 +16,7 @@ const ConnectedFinancingUI: React.FC<ConnectedFinancingUIProps> = ({
         <Box>
             <FinancingForm
                 onSubmit={onApplicationSubmit}
-                onDecline={onDecline}
+                // onDecline={onDecline}
             />
         </Box>
     );

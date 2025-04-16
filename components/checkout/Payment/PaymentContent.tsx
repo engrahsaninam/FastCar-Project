@@ -165,7 +165,7 @@ const PaymentContent: React.FC<PaymentContentProps> = ({ onConfirm }) => {
                     </Box>
 
                     {/* Billing information */}
-                    <Box as="section" aria-labelledby="billing-info-heading">
+                    {/* <Box as="section" aria-labelledby="billing-info-heading">
                         <FormLabel id="billing-info-heading" fontSize="sm" fontWeight="medium" mb={2}>Billing Information</FormLabel>
                         <FormControl mb={3}>
                             <FormLabel htmlFor="card-name" srOnly>Name on Card</FormLabel>
@@ -229,7 +229,7 @@ const PaymentContent: React.FC<PaymentContentProps> = ({ onConfirm }) => {
                                 />
                             </FormControl>
                         </SimpleGrid>
-                    </Box>
+                    </Box> */}
 
                     {/* Pay button */}
                     <Button

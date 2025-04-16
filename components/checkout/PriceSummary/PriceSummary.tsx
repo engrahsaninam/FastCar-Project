@@ -16,8 +16,9 @@ import {
     VStack,
     HStack,
     useBreakpointValue,
+    Slide,
 } from '@chakra-ui/react';
-import { Info, ChevronDown, X } from 'lucide-react';
+import { Info, ChevronDown, X, ChevronUp } from 'lucide-react';
 
 interface PriceSummaryContentProps {
     isMobile?: boolean;
@@ -240,8 +241,98 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
     );
 };
 
+// Custom mobile drawer component similar to the Tailwind version
+interface MobileDrawerProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
+const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }) => {
+    return (
+        <>
+            <Box
+                position="fixed"
+                inset="0"
+                bg="blackAlpha.600"
+                zIndex={50}
+                transition="all 0.3s"
+                opacity={isOpen ? 1 : 0}
+                pointerEvents={isOpen ? "auto" : "none"}
+                onClick={onClose}
+                display={{ md: "none" }}
+            />
+            <Box
+                position="fixed"
+                bottom="0"
+                left="0"
+                right="0"
+                bg="white"
+                borderTopRadius="2xl"
+                transition="transform 0.3s"
+                transform={isOpen ? "translateY(0)" : "translateY(100%)"}
+                zIndex={51}
+                display={{ md: "none" }}
+                maxHeight="90vh"
+                overflow="hidden"
+            >
+                {/* Handle at the top for swipe gesture */}
+                <Box
+                    width="36px"
+                    height="4px"
+                    bg="gray.300"
+                    borderRadius="full"
+                    mx="auto"
+                    mt={2}
+                    mb={2}
+                />
+
+                <Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor="gray.200">
+                    <Text fontSize="lg" fontWeight="semibold">Price Summary</Text>
+                    <Button variant="ghost" p={1} onClick={onClose} aria-label="Close drawer">
+                        <Icon as={X} w={5} h={5} />
+                    </Button>
+                </Flex>
+                <Box p={0} overflowY="auto" maxHeight="calc(90vh - 160px)">
+                    {children}
+                </Box>
+
+                {/* Bottom close button for easier mobile access */}
+                <Box
+                    py={5}
+                    px={4}
+                    pb={10} /* Extra padding to avoid the app bar */
+                    borderTop="1px"
+                    borderColor="gray.200"
+                    bg="white"
+                    position="sticky"
+                    bottom="0"
+                    width="100%"
+                    textAlign="center"
+                    boxShadow="0 -4px 6px -1px rgba(0, 0, 0, 0.05)"
+                >
+                    <Button
+                        onClick={onClose}
+                        colorScheme="red"
+                        size="lg"
+                        width="100%"
+                        borderRadius="full"
+                        boxShadow="lg"
+                        marginTop='100px'
+                        _hover={{ transform: "translateY(-1px)", boxShadow: "xl" }}
+                        _active={{ transform: "translateY(1px)", boxShadow: "md" }}
+                        aria-label="Close summary"
+                    >
+                        Close
+                    </Button>
+                </Box>
+            </Box>
+        </>
+    );
+};
+
 const PriceSummary: React.FC = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const isMobile = useBreakpointValue({ base: true, md: false });
 
     return (
@@ -251,51 +342,47 @@ const PriceSummary: React.FC = () => {
                 <PriceSummaryContent />
             </Box>
 
-            {/* Mobile Version */}
-            <Box display={{ md: 'none' }}>
-                {/* Floating Total Bar */}
+            {/* Mobile Version - Fixed bottom bar that opens drawer */}
+            <Box
+                position="fixed"
+                bottom={0}
+                left={0}
+                right={0}
+                zIndex={40}
+                display={{ md: 'none' }}
+            >
+                {/* Floating Price Bar */}
                 <Box
-                    position="fixed"
-                    bottom={0}
-                    left={0}
-                    right={0}
                     bg="white"
                     borderTop="1px"
                     borderColor="gray.200"
                     p={4}
-                    onClick={onOpen}
+                    cursor="pointer"
+                    onClick={() => setIsDrawerOpen(true)}
+                    boxShadow="0 -4px 6px -1px rgba(0, 0, 0, 0.05)"
+                    borderTopRadius="lg"
+                    transition="all 0.2s"
+                    _hover={{ bg: "gray.50" }}
                 >
                     <Flex justify="space-between" align="center">
                         <Box>
                             <Text fontSize="xs" color="gray.500">Total price</Text>
                             <Text fontSize="lg" fontWeight="bold">CZK 667,765</Text>
                         </Box>
-                        <Button colorScheme="red" size="sm">
+                        <Button
+                            colorScheme="red"
+                            size="sm"
+                            rightIcon={<Icon as={ChevronUp} w={4} h={4} />}
+                        >
                             View Details
                         </Button>
                     </Flex>
                 </Box>
 
                 {/* Mobile Drawer */}
-                <Drawer
-                    isOpen={isOpen}
-                    placement="bottom"
-                    onClose={onClose}
-                    size="full"
-                >
-                    <DrawerOverlay />
-                    <DrawerContent borderTopRadius="xl">
-                        <DrawerHeader borderBottomWidth="1px">
-                            <Flex justify="space-between" align="center">
-                                <Text fontSize="lg" fontWeight="semibold">Price Summary</Text>
-                                <DrawerCloseButton position="static" />
-                            </Flex>
-                        </DrawerHeader>
-                        <DrawerBody p={0}>
-                            <PriceSummaryContent isMobile />
-                        </DrawerBody>
-                    </DrawerContent>
-                </Drawer>
+                <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+                    <PriceSummaryContent isMobile />
+                </MobileDrawer>
             </Box>
         </>
     );

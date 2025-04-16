@@ -13,31 +13,52 @@ import DeliveryContent from './Delivery/DeliveryContent';
 import AdditionalServicesContent from './AdditionalServices/AdditionalServicesContent';
 import PaymentContent from './Payment/PaymentContent';
 
+// Define available steps with typings
+type StepStatus = 'locked' | 'active' | 'completed';
+type StepKey = 'payment' | 'inspection' | 'delivery' | 'additionalServices' | 'finalPayment';
+
 const StepOneContent: React.FC = () => {
+    // Track the current active step
+    const [activeStep, setActiveStep] = useState<StepKey>('payment');
+
+    // Track the step statuses
+    const [stepStatuses, setStepStatuses] = useState<Record<StepKey, StepStatus>>({
+        payment: 'active',
+        inspection: 'locked',
+        delivery: 'locked',
+        additionalServices: 'locked',
+        finalPayment: 'locked'
+    });
+
+    // Track step expansions - all steps visible but only first one expanded
     const [isStep1Expanded, setIsStep1Expanded] = useState(true);
-    const [isStep2Expanded, setIsStep2Expanded] = useState(true);
-    const [isStep3Expanded, setIsStep3Expanded] = useState(true);
-    const [isStep5Expanded, setIsStep5Expanded] = useState(true);
-    const [isStep6Expanded, setIsStep6Expanded] = useState(true);
+    const [isStep2Expanded, setIsStep2Expanded] = useState(false);
+    const [isStep3Expanded, setIsStep3Expanded] = useState(false);
+    const [isStep4Expanded, setIsStep4Expanded] = useState(false);
+    const [isStep5Expanded, setIsStep5Expanded] = useState(false);
+
+    // Track data for payment step
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
     const [applicationSent, setApplicationSent] = useState(false);
     const [showSpecs, setShowSpecs] = useState(false);
     const [showFinancingForm, setShowFinancingForm] = useState(false);
-    const [showStep2, setShowStep2] = useState(false);
-    const [showStep3, setShowStep3] = useState(false);
-    const [showStep5, setShowStep5] = useState(false);
-    const [showStep6, setShowStep6] = useState(false);
     const [isFinancingApproved, setIsFinancingApproved] = useState(false);
     const [showBillingAddress, setShowBillingAddress] = useState(false);
 
-    // Add ref for step 1
-    const step1Ref = useRef<HTMLDivElement>(null);
+    // Add ref for scrolling
+    const stepRefs = {
+        payment: useRef<HTMLDivElement>(null),
+        inspection: useRef<HTMLDivElement>(null),
+        delivery: useRef<HTMLDivElement>(null),
+        additionalServices: useRef<HTMLDivElement>(null),
+        finalPayment: useRef<HTMLDivElement>(null)
+    };
 
-    // Add scroll to step 1 function
-    const scrollToStep1 = () => {
+    // Helper to scroll to a step
+    const scrollToStep = (step: StepKey) => {
         setTimeout(() => {
-            if (step1Ref.current) {
-                step1Ref.current.scrollIntoView({
+            if (stepRefs[step]?.current) {
+                stepRefs[step].current?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
@@ -45,12 +66,44 @@ const StepOneContent: React.FC = () => {
         }, 100);
     };
 
+    // Helper to update step status
+    const updateStepStatus = (step: StepKey, status: StepStatus) => {
+        setStepStatuses(prev => ({
+            ...prev,
+            [step]: status
+        }));
+    };
+
+    // Helper to move to next step
+    const moveToNextStep = (currentStep: StepKey, nextStep: StepKey) => {
+        updateStepStatus(currentStep, 'completed');
+        updateStepStatus(nextStep, 'active');
+        setActiveStep(nextStep);
+
+        // Expand the next step and collapse others if not needed
+        switch (nextStep) {
+            case 'inspection':
+                setIsStep2Expanded(true);
+                break;
+            case 'delivery':
+                setIsStep3Expanded(true);
+                break;
+            case 'additionalServices':
+                setIsStep4Expanded(true);
+                break;
+            case 'finalPayment':
+                setIsStep5Expanded(true);
+                break;
+        }
+
+        scrollToStep(nextStep);
+    };
+
     const handlePaymentMethodSelect = (value: string) => {
         setSelectedPaymentMethod(value);
         if (value === 'bank-transfer') {
-            setShowStep2(true);
             setShowBillingAddress(true);
-            scrollToStep1();
+            moveToNextStep('payment', 'inspection');
         }
         if (value !== 'financing') {
             setShowFinancingForm(false);
@@ -60,14 +113,14 @@ const StepOneContent: React.FC = () => {
 
     const handleFinancingSubmit = () => {
         setApplicationSent(true);
-        scrollToStep1();
+        setIsFinancingApproved(true);
+        moveToNextStep('payment', 'inspection');
     };
 
     const handlePayInFull = () => {
         setSelectedPaymentMethod('bank-transfer');
-        setShowStep2(true);
         setShowBillingAddress(true);
-        scrollToStep1();
+        moveToNextStep('payment', 'inspection');
     };
 
     const handleToggleSpecs = () => {
@@ -79,59 +132,57 @@ const StepOneContent: React.FC = () => {
     };
 
     const handleBillingComplete = () => {
-        handleContinueFromInspection();
-        // scrollToStep1();
+        // Move to delivery step after billing address is completed
+        moveToNextStep('inspection', 'delivery');
     };
 
     const handleContinueFromInspection = () => {
-        setShowStep3(true);
-        // scrollToStep1();
+        moveToNextStep('inspection', 'delivery');
     };
 
     const handleContinueFromDelivery = () => {
-        setShowStep5(true);
-        // scrollToStep1();
+        moveToNextStep('delivery', 'additionalServices');
     };
 
     const handleContinueFromAdditionalServices = () => {
-        setShowStep6(true);
-        // scrollToStep1();
+        moveToNextStep('additionalServices', 'finalPayment');
     };
 
     const handlePaymentConfirm = () => {
         // Handle payment confirmation
+        updateStepStatus('finalPayment', 'completed');
         console.log('Payment confirmed');
     };
 
     return (
-        <>
+        <Box display="flex" flexDirection="column" gap={8}>
+            {/* Step 1: Payment Method */}
             <Box
                 bg="white"
                 borderRadius="xl"
                 overflow="hidden"
-                mt={8}
-                ref={step1Ref}
+                ref={stepRefs.payment}
             >
                 <Box p={6}>
                     <StepHeader
                         step="Step 1"
                         title="Payment Method"
-                        isLocked={false}
-                        isActive={true}
+                        isLocked={stepStatuses.payment === 'locked'}
+                        isActive={stepStatuses.payment === 'active'}
                     />
                 </Box>
 
                 <StepItem
                     title="Financing or wire transfer?"
-                    isLocked={false}
+                    isLocked={stepStatuses.payment === 'locked'}
                     isFirst={true}
                     showChevron={true}
                     isActive={isStep1Expanded}
-                    onClick={setIsStep1Expanded}
-                    isCompleted={!selectedPaymentMethod}
+                    onClick={() => stepStatuses.payment !== 'locked' && setIsStep1Expanded(!isStep1Expanded)}
+                    isCompleted={stepStatuses.payment === 'completed'}
                 />
 
-                <StepContent isActive={isStep1Expanded}>
+                <StepContent isActive={isStep1Expanded && stepStatuses.payment !== 'locked'}>
                     <Box p={6} pt={2}>
                         <PaymentMethodStep
                             selected={selectedPaymentMethod}
@@ -152,7 +203,6 @@ const StepOneContent: React.FC = () => {
                                 <Box mt={6}>
                                     <FinancingCTASection
                                         onPrimaryClick={handleWantFinancing}
-                                        onSecondaryClick={handlePayInFull}
                                     />
                                 </Box>
 
@@ -160,7 +210,6 @@ const StepOneContent: React.FC = () => {
                                     <Box mt={6}>
                                         <FinancingForm
                                             onSubmit={handleFinancingSubmit}
-                                            onDecline={handlePayInFull}
                                         />
                                     </Box>
                                 )}
@@ -170,157 +219,162 @@ const StepOneContent: React.FC = () => {
                 </StepContent>
             </Box>
 
-            {/* Step 2 */}
-            {showStep2 && (
-                <Box
-                    bg="white"
-                    borderRadius="xl"
-                    overflow="hidden"
-                    mt={8}
-                >
-                    <Box p={6}>
-                        <StepHeader
-                            step="Step 2"
-                            title="Car Inspection"
-                            isLocked={false}
-                            isActive={true}
-                        />
-                    </Box>
-
-                    <StepItem
-                        title="CarAudit™ vehicle inspection"
-                        isLocked={false}
-                        isFirst={true}
-                        showChevron={true}
-                        isActive={isStep2Expanded}
-                        onClick={setIsStep2Expanded}
-                        isCompleted={false}
+            {/* Step 2: Car Inspection */}
+            <Box
+                bg="white"
+                borderRadius="xl"
+                overflow="hidden"
+                ref={stepRefs.inspection}
+                opacity={stepStatuses.inspection === 'locked' ? 0.7 : 1}
+                filter={stepStatuses.inspection === 'locked' ? 'grayscale(1)' : 'none'}
+                transition="all 0.3s ease"
+            >
+                <Box p={6}>
+                    <StepHeader
+                        step="Step 2"
+                        title="Car Inspection"
+                        isLocked={stepStatuses.inspection === 'locked'}
+                        isActive={stepStatuses.inspection === 'active'}
                     />
-
-                    <StepContent isActive={isStep2Expanded}>
-                        <Box p={6} pt={2}>
-                            <CarInspectionContent
-                                isFinancingSelected={selectedPaymentMethod === 'financing'}
-                                isFinancingApproved={isFinancingApproved}
-                                onContinue={handleContinueFromInspection}
-                            />
-                            {showBillingAddress && (
-                                <ConnectedCarInspectionContent
-                                    onComplete={handleBillingComplete}
-                                />
-                            )}
-                        </Box>
-                    </StepContent>
                 </Box>
-            )}
 
-            {/* Step 3 */}
-            {showStep3 && (
-                <Box
-                    bg="white"
-                    borderRadius="xl"
-                    overflow="hidden"
-                    mt={8}
-                >
-                    <Box p={6}>
-                        <StepHeader
-                            step="Step 3"
-                            title="Delivery"
-                            isLocked={false}
-                            isActive={true}
+                <StepItem
+                    title="CarAudit™ vehicle inspection"
+                    isLocked={stepStatuses.inspection === 'locked'}
+                    isFirst={true}
+                    showChevron={true}
+                    isActive={isStep2Expanded}
+                    onClick={() => stepStatuses.inspection !== 'locked' && setIsStep2Expanded(!isStep2Expanded)}
+                    isCompleted={stepStatuses.inspection === 'completed'}
+                />
+
+                <StepContent isActive={isStep2Expanded && stepStatuses.inspection !== 'locked'}>
+                    <Box p={6} pt={2}>
+                        <CarInspectionContent
+                            isFinancingSelected={selectedPaymentMethod === 'financing'}
+                            isFinancingApproved={isFinancingApproved}
+                            onContinue={handleContinueFromInspection}
                         />
                     </Box>
+                    {showBillingAddress && (
+                        <ConnectedCarInspectionContent
+                            onComplete={handleBillingComplete}
+                        />
+                    )}
+                </StepContent>
+            </Box>
 
-                    <StepItem
+            {/* Step 3: Delivery */}
+            <Box
+                bg="white"
+                borderRadius="xl"
+                overflow="hidden"
+                ref={stepRefs.delivery}
+                opacity={stepStatuses.delivery === 'locked' ? 0.7 : 1}
+                filter={stepStatuses.delivery === 'locked' ? 'grayscale(1)' : 'none'}
+                transition="all 0.3s ease"
+            >
+                <Box p={6}>
+                    <StepHeader
+                        step="Step 3"
                         title="Delivery"
-                        isLocked={false}
-                        isFirst={true}
-                        showChevron={true}
-                        isActive={isStep3Expanded}
-                        onClick={setIsStep3Expanded}
-                        isCompleted={false}
+                        isLocked={stepStatuses.delivery === 'locked'}
+                        isActive={stepStatuses.delivery === 'active'}
                     />
-
-                    <StepContent isActive={isStep3Expanded}>
-                        <Box p={6} pt={2}>
-                            <DeliveryContent
-                                onContinue={handleContinueFromDelivery}
-                            />
-                        </Box>
-                    </StepContent>
                 </Box>
-            )}
 
-            {/* Step 5: Additional Services */}
-            {showStep5 && (
-                <Box
-                    bg="white"
-                    borderRadius="xl"
-                    overflow="hidden"
-                    mt={8}
-                >
-                    <Box p={6}>
-                        <StepHeader
-                            step="Step 4"
-                            title="Additional Services"
-                            isLocked={false}
-                            isActive={true}
+                <StepItem
+                    title="Delivery"
+                    isLocked={stepStatuses.delivery === 'locked'}
+                    isFirst={true}
+                    showChevron={true}
+                    isActive={isStep3Expanded}
+                    onClick={() => stepStatuses.delivery !== 'locked' && setIsStep3Expanded(!isStep3Expanded)}
+                    isCompleted={stepStatuses.delivery === 'completed'}
+                />
+
+                <StepContent isActive={isStep3Expanded && stepStatuses.delivery !== 'locked'}>
+                    <Box p={6} pt={2}>
+                        <DeliveryContent
+                            onContinue={handleContinueFromDelivery}
                         />
                     </Box>
+                </StepContent>
+            </Box>
 
-                    <StepItem
-                        title="Choose Additional Services"
-                        isLocked={false}
-                        isFirst={true}
-                        showChevron={true}
-                        isActive={isStep5Expanded}
-                        onClick={setIsStep5Expanded}
-                        isCompleted={false}
+            {/* Step 4: Additional Services */}
+            <Box
+                bg="white"
+                borderRadius="xl"
+                overflow="hidden"
+                ref={stepRefs.additionalServices}
+                opacity={stepStatuses.additionalServices === 'locked' ? 0.7 : 1}
+                filter={stepStatuses.additionalServices === 'locked' ? 'grayscale(1)' : 'none'}
+                transition="all 0.3s ease"
+            >
+                <Box p={6}>
+                    <StepHeader
+                        step="Step 4"
+                        title="Additional Services"
+                        isLocked={stepStatuses.additionalServices === 'locked'}
+                        isActive={stepStatuses.additionalServices === 'active'}
                     />
-
-                    <StepContent isActive={isStep5Expanded}>
-                        <AdditionalServicesContent
-                            onContinue={handleContinueFromAdditionalServices}
-                        />
-                    </StepContent>
                 </Box>
-            )}
 
-            {/* Step 6: Payment */}
-            {showStep6 && (
-                <Box
-                    bg="white"
-                    borderRadius="xl"
-                    overflow="hidden"
-                    mt={8}
-                >
-                    <Box p={6}>
-                        <StepHeader
-                            step="Step 5"
-                            title="Payment"
-                            isLocked={false}
-                            isActive={true}
-                        />
-                    </Box>
+                <StepItem
+                    title="Choose Additional Services"
+                    isLocked={stepStatuses.additionalServices === 'locked'}
+                    isFirst={true}
+                    showChevron={true}
+                    isActive={isStep4Expanded}
+                    onClick={() => stepStatuses.additionalServices !== 'locked' && setIsStep4Expanded(!isStep4Expanded)}
+                    isCompleted={stepStatuses.additionalServices === 'completed'}
+                />
 
-                    <StepItem
-                        title="Choose Payment Method"
-                        isLocked={false}
-                        isFirst={true}
-                        showChevron={true}
-                        isActive={isStep6Expanded}
-                        onClick={setIsStep6Expanded}
-                        isCompleted={false}
+                <StepContent isActive={isStep4Expanded && stepStatuses.additionalServices !== 'locked'}>
+                    <AdditionalServicesContent
+                        onContinue={handleContinueFromAdditionalServices}
                     />
+                </StepContent>
+            </Box>
 
-                    <StepContent isActive={isStep6Expanded}>
-                        <PaymentContent
-                            onConfirm={handlePaymentConfirm}
-                        />
-                    </StepContent>
+            {/* Step 5: Payment */}
+            <Box
+                bg="white"
+                borderRadius="xl"
+                overflow="hidden"
+                mb={8}
+                ref={stepRefs.finalPayment}
+                opacity={stepStatuses.finalPayment === 'locked' ? 0.7 : 1}
+                filter={stepStatuses.finalPayment === 'locked' ? 'grayscale(1)' : 'none'}
+                transition="all 0.3s ease"
+            >
+                <Box p={6}>
+                    <StepHeader
+                        step="Step 5"
+                        title="Payment"
+                        isLocked={stepStatuses.finalPayment === 'locked'}
+                        isActive={stepStatuses.finalPayment === 'active'}
+                    />
                 </Box>
-            )}
-        </>
+
+                <StepItem
+                    title="Complete Payment"
+                    isLocked={stepStatuses.finalPayment === 'locked'}
+                    isFirst={true}
+                    showChevron={true}
+                    isActive={isStep5Expanded}
+                    onClick={() => stepStatuses.finalPayment !== 'locked' && setIsStep5Expanded(!isStep5Expanded)}
+                    isCompleted={stepStatuses.finalPayment === 'completed'}
+                />
+
+                <StepContent isActive={isStep5Expanded && stepStatuses.finalPayment !== 'locked'}>
+                    <PaymentContent
+                        onConfirm={handlePaymentConfirm}
+                    />
+                </StepContent>
+            </Box>
+        </Box>
     );
 };
 

@@ -127,6 +127,12 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                                 onChange={(e) => setIsVatPayer(e.target.checked)}
                                 colorScheme="red"
                                 size="md"
+                                sx={{
+                                    '.chakra-checkbox__control': {
+                                        borderColor: isVatPayer ? 'red.500' : 'gray.400',
+                                        backgroundColor: isVatPayer ? 'red.500' : 'transparent',
+                                    },
+                                }}
                             >
                                 <Text ml={2} fontSize="md" color="gray.700">
                                     I'm a VAT payer

@@ -139,9 +139,10 @@ const MobileView = memo(({ isMobileOpen, setIsMobileOpen, currentSlide, slides, 
                     aria-modal="true"
                     aria-label="Purchase Guide"
                 >
-                    <Flex direction="column" h="full">
+                    <Flex direction="column" h="full" marginTop='100px'>
                         <Flex
                             alignItems="center"
+                          
                             justifyContent="space-between"
                             p={3}
                             borderBottomWidth="1px"

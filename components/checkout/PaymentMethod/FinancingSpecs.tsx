@@ -27,8 +27,8 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
 }) => {
     const [isFinancingSpecsExpanded, setIsFinancingSpecsExpanded] = useState(true);
     const [selectedOption, setSelectedOption] = useState<string>('low-installment');
-    const [paybackPeriod, setPaybackPeriod] = useState<number>(36);
-    const [downPayment, setDownPayment] = useState<number>(40);
+    const [paybackPeriod, setPaybackPeriod] = useState<number>(12);
+    const [downPayment, setDownPayment] = useState<number>(12);
 
     const totalPrice = 27440;
 
@@ -50,8 +50,8 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
 
     useEffect(() => {
         if (selectedOption === 'low-installment') {
-            if (![24, 36, 48].includes(paybackPeriod)) {
-                setPaybackPeriod(36);
+            if (![12, 24, 36, 48, 60, 72, 84, 96, 108, 120].includes(paybackPeriod)) {
+                setPaybackPeriod(48);
             }
             if (downPayment < 10) {
                 setDownPayment(10);
@@ -59,8 +59,8 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
         } else {
             if (paybackPeriod < 12) {
                 setPaybackPeriod(12);
-            } else if (paybackPeriod > 96) {
-                setPaybackPeriod(96);
+            } else if (paybackPeriod > 240) {
+                setPaybackPeriod(240);
             }
             const remainder = paybackPeriod % 12;
             if (remainder !== 0) {
@@ -187,7 +187,7 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                     />
 
                     <FinancingInfoSection />
-{/* 
+                    {/* 
                     <FinancingCTASection
                         onPrimaryClick={onFinancingRequest}
                         onSecondaryClick={onFullPayment}

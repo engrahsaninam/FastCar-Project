@@ -73,7 +73,7 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
 
                         // If this is the selected segment, make it darker green
                         if (step === activeSegment) {
-                            bgColor = "green.200";
+                            bgColor = "#fff";
                         } else {
                             // All other segments are light green
                             bgColor = "green.50";

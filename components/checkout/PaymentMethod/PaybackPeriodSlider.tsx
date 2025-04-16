@@ -6,7 +6,8 @@ import {
     Slider,
     SliderTrack,
     SliderFilledTrack,
-    SliderThumb
+    SliderThumb,
+    SliderMark
 } from '@chakra-ui/react';
 import { PaybackPeriodSliderProps } from '../types/financing';
 
@@ -17,30 +18,28 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
 }) => {
     // Define the periods based on the selected financing option
     const periods = selectedOption === 'low-installment'
-        ? [24, 36, 48]
-        : [12, 24, 36, 48, 60, 72, 84, 96];
+        ? [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
+        : [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
 
-    // Calculate the slider value as a percentage
-    const minPeriod = periods[0];
-    const maxPeriod = periods[periods.length - 1];
-    const sliderValue = ((paybackPeriod - minPeriod) / (maxPeriod - minPeriod)) * 100;
+    // Find the index of the current period in the periods array
+    const currentIndex = periods.indexOf(paybackPeriod);
 
-    // Add direct click handler
+    // Convert index to percentage for slider
+    const sliderValue = currentIndex >= 0 ? (currentIndex / (periods.length - 1)) * 100 : 0;
+
+    // Handle slider change
+    const handleSliderChange = (value: number) => {
+        // Convert percentage to index
+        const index = Math.round((value / 100) * (periods.length - 1));
+        // Get the corresponding period
+        const newPeriod = periods[index];
+        onPeriodChange(newPeriod);
+    };
+
+    // Handle direct period selection
     const handlePeriodClick = (period: number) => {
         onPeriodChange(period);
     };
-
-    // Custom tick component
-    const Tick: React.FC<{ value: number }> = ({ value }) => (
-        <Flex
-            direction="column"
-            alignItems="center"
-            cursor="pointer"
-            onClick={() => handlePeriodClick(value)}
-        >
-            <Text fontSize="xs" mt={1} color="gray.500">{value}</Text>
-        </Flex>
-    );
 
     return (
         <Box mt={8} px="20px">
@@ -52,29 +51,14 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                     {paybackPeriod} months
                 </Text>
             </Flex>
-            <Box position="relative" w="full" h="8px" mb={10}>
+            <Box position="relative" pt={4} pb={8}>
                 <Slider
                     value={sliderValue}
-                    onChange={(val: number) => {
-                        // Convert percentage back to period value
-                        const calculatedPeriod = Math.round(
-                            minPeriod + (val / 100) * (maxPeriod - minPeriod)
-                        );
-
-                        // Find the closest valid period
-                        let closestPeriod = periods[0];
-                        let minDiff = Math.abs(calculatedPeriod - periods[0]);
-
-                        for (let i = 1; i < periods.length; i++) {
-                            const diff = Math.abs(calculatedPeriod - periods[i]);
-                            if (diff < minDiff) {
-                                minDiff = diff;
-                                closestPeriod = periods[i];
-                            }
-                        }
-
-                        onPeriodChange(closestPeriod);
-                    }}
+                    onChange={handleSliderChange}
+                    min={0}
+                    max={100}
+                    step={100 / (periods.length - 1)}
+                    aria-label="payback-period-slider"
                 >
                     <SliderTrack bg="gray.200" h="8px" borderRadius="full">
                         <SliderFilledTrack bg="red.500" />
@@ -85,19 +69,34 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                         borderWidth="2px"
                         borderColor="red.500"
                         boxShadow="md"
+                        _focus={{
+                            boxShadow: "outline"
+                        }}
                     />
+
+                    {/* Marks for each period */}
+                    {periods.map((period, index) => {
+                        const percentage = (index / (periods.length - 1)) * 100;
+                        return (
+                            <SliderMark
+                                key={period}
+                                value={percentage}
+                                mt={8}
+                                ml={-2.5}
+                                fontSize="xs"
+                                color={paybackPeriod === period ? "red.500" : "gray.500"}
+                                fontWeight={paybackPeriod === period ? "bold" : "normal"}
+                                cursor="pointer"
+                                onClick={() => handlePeriodClick(period)}
+                                _hover={{
+                                    color: "red.500"
+                                }}
+                            >
+                                {period}
+                            </SliderMark>
+                        );
+                    })}
                 </Slider>
-                {/* Tick marks container */}
-                <Flex
-                    position="absolute"
-                    w="full"
-                    justify="space-between"
-                    bottom="-32px"
-                >
-                    {periods.map(period => (
-                        <Tick key={period} value={period} />
-                    ))}
-                </Flex>
             </Box>
         </Box>
     );
