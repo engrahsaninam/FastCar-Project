@@ -1,19 +1,11 @@
 // app/layout.tsx
 import type { Metadata } from "next"
-import { Urbanist } from "next/font/google"
 import "@/node_modules/react-modal-video/css/modal-video.css"
 import "/public/assets/css/main.css" 
-// import "/public/assets/css/globals.css" 
+import "/public/assets/css/globals.css" 
 import { Providers } from './provider'
-// Import the logo at the top of the file
 import logo from "@/public/assets/imgs/template/logo-d.svg"
 
-const urbanist = Urbanist({
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  subsets: ['latin'],
-  variable: "--urbanist",
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: "Fast4Car - #1 Import Car Marketplace",
@@ -74,7 +66,7 @@ export default function RootLayout({
       <head>
         <link rel="canonical" href="https://fast4car.com" />
       </head>
-      <body className={`${urbanist.variable}`}>
+      <body className={`font-euclid`}  >
         <Providers>
           {children}
         </Providers>

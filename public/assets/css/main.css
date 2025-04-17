@@ -40,10 +40,10 @@ TABLE CONTENT
 @import url(../css/plugins/bootstrap-datepicker3.css);
 @import url(../css/plugins/slick.css);
 @import url(../css/plugins/odometer.css);
+@import url('https://fonts.cdnfonts.com/css/euclid-circular-b');
 
 
 :root {
-	--urbanist: "Urbanist", sans-serif;
 	--bs-border-color: #dde1de;
 	--bs-color-white: #ffffff;
 	--bs-color-black: #000000;

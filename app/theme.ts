@@ -1,7 +1,5 @@
 // src/theme.ts
 'use client';
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/700.css"; // Optional weights
 
 import { extendTheme } from '@chakra-ui/react';
 
@@ -17,8 +15,15 @@ const theme = extendTheme({
     darkBorder: "#374151",
   },
   fonts: {
-    heading: `'Inter', sans-serif`,
-    body: `'Inter', sans-serif`,
+    heading: `var(--font-euclid)`,
+    body: `var(--font-euclid)`,
+  },
+  styles: {
+    global: {
+      '*': {
+        fontFamily: `var(--font-euclid)`,
+      },
+    },
   },
 });
 
