@@ -47,13 +47,14 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             borderRadius={isMobile ? "none" : "xl"}
             boxShadow={isMobile ? "none" : "xl"}
             p={7}
+            mt={10}
         >
             {/* Premium Header */}
             <Box
                 bgGradient="linear(to-br, red.500, red.600, red.700)"
                 borderRadius="xl"
                 p={6}
-                mb={7}
+                mb={3}
                 position="relative"
                 overflow="hidden"
             >
@@ -93,11 +94,11 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             </Box>
 
             {/* Car details */}
-            <Box borderBottom="1px" borderColor="gray.100" pb={5} mb={5}>
+            <Box borderBottom="1px" borderColor="gray.100" mb={1}>
                 <Text fontSize="md" fontWeight="semibold" color="gray.900" mb={3}>
                     Mercedes-Benz A 200 d 110 kW
                 </Text>
-                <VStack spacing={2.5} align="stretch">
+                <VStack spacing={1} align="stretch">
                     <Flex justify="space-between" align="center">
                         <Text fontSize="sm" color="gray.600">Price incl. necessary import services</Text>
                         <Text fontSize="sm" fontWeight="semibold" color="gray.900">CZK 634,490</Text>
@@ -106,7 +107,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                         <Text fontSize="sm" color="gray.500">Price without VAT</Text>
                         <Text fontSize="sm" color="gray.500">CZK 447,915</Text>
                     </Flex>
-                    <Flex align="center" gap={1.5} mt={2} bg="gray.50" rounded="lg" p={2.5}>
+                    <Flex align="center" gap={1} mt={2} bg="gray.50" rounded="lg">
                         <Text fontSize="xs" color="gray.600">The price is recalculated from 25.65 €/CZK</Text>
                         <Icon as={Info} w={3.5} h={3.5} color="gray.400" aria-label="info-Icon" />
                     </Flex>
@@ -114,11 +115,11 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             </Box>
 
             {/* CarAudit */}
-            <Box borderBottom="1px" borderColor="gray.100" pb={5} mb={5}>
+            <Box borderBottom="1px" borderColor="gray.100" >
                 <Flex
                     justify="space-between"
                     align="center"
-                    p={2.5}
+                    p={1}
                     rounded="lg"
                     _hover={{ bg: 'red.50', opacity: 0.4 }}
                     transition="all 0.3s"
@@ -129,24 +130,24 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             </Box>
 
             {/* Additional Services */}
-            <Box mb={7}>
+            <Box mb={2}>
                 <Text
                     fontSize="xs"
                     fontWeight="semibold"
                     color="gray.500"
                     textTransform="uppercase"
                     letterSpacing="wider"
-                    mb={4}
+                    mb={1}
                 >
                     Additional Services
                 </Text>
-                <VStack spacing={3} align="stretch">
+                <VStack spacing={1} align="stretch">
                     {services.map((service, index) => (
                         <Flex
                             key={index}
                             justify="space-between"
                             align="center"
-                            p={2.5}
+                            p={1}
                             _hover={{ bg: 'gray.50' }}
                             rounded="lg"
                             transition="all 0.3s"
@@ -184,7 +185,6 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                 opacity={0.5}
                 rounded="xl"
                 p={4}
-                mb={7}
             >
                 <Text
                     fontSize="xs"
@@ -192,7 +192,6 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                     color="gray.500"
                     textTransform="uppercase"
                     letterSpacing="wider"
-                    mb={1}
                 >
                     Optional Services
                 </Text>
@@ -202,7 +201,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             </Box>
 
             {/* Total Price */}
-            <Box borderTop="1px" borderColor="gray.100" pt={5} mb={7}>
+            <Box borderTop="1px" borderColor="gray.100"  >
                 <Flex justify="space-between" align="center">
                     <Text fontSize="md" fontWeight="medium" color="gray.800">
                         Total price
@@ -230,7 +229,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                         CZK 5,557/mo
                     </Text>
                 </Flex>
-                <Flex align="center" gap={1.5}>
+                <Flex align="center" gap={0.5}>
                     <Text fontSize="xs" color="gray.600">
                         120%, 48 instalments
                     </Text>

@@ -16,16 +16,22 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
     onPeriodChange,
     selectedOption
 }) => {
-    // Define the periods based on the selected financing option
+    // Define the periods based on the selected financing option (in months)
     const periods = selectedOption === 'low-installment'
         ? [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
-        : [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
+        : [12, 24, 36, 48, 60, 72, 84, 96, 108, 120];
 
     // Find the index of the current period in the periods array
     const currentIndex = periods.indexOf(paybackPeriod);
 
     // Convert index to percentage for slider
     const sliderValue = currentIndex >= 0 ? (currentIndex / (periods.length - 1)) * 100 : 0;
+
+    // Convert months to years with decimal
+    const getYearsDisplay = (months: number) => {
+        const years = months / 12;
+        return years === 1 ? "1 year" : `${years} years`;
+    };
 
     // Handle slider change
     const handleSliderChange = (value: number) => {
@@ -48,7 +54,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                     Payback period
                 </Text>
                 <Text fontWeight="bold" color="gray.900">
-                    {paybackPeriod} months
+                    {getYearsDisplay(paybackPeriod)}
                 </Text>
             </Flex>
             <Box position="relative" pt={4} pb={8}>
@@ -77,6 +83,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                     {/* Marks for each period */}
                     {periods.map((period, index) => {
                         const percentage = (index / (periods.length - 1)) * 100;
+                        const years = period / 12;
                         return (
                             <SliderMark
                                 key={period}
@@ -92,7 +99,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                                     color: "red.500"
                                 }}
                             >
-                                {period}
+                                {years}
                             </SliderMark>
                         );
                     })}

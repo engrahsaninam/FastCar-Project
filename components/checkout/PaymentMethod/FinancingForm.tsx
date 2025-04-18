@@ -280,9 +280,13 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
             <Check size={16} color={color} />
         </Box>
     );
-
+    const grayborderstyle = {
+        border: '1px solid #D3D3D3',
+        borderRadius: 'lg',
+        shadow: 'md'
+    }
     return (
-        <Box position="relative" ml={{ base: 10, md: 14 }} mt={4} as="section" aria-labelledby="financing-form-title">
+        <Box position="relative" ml={{ base: 10, md: 14 }} mt={4} as="section" aria-labelledby="financing-form-title" style={grayborderstyle} borderRadius="lg">
             {/* SVG Connection line */}
             <Box position="absolute" top="-36px" left="-40px" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">

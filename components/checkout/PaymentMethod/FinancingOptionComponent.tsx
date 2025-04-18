@@ -19,7 +19,7 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
     const isSelected = option.id === selectedOption;
 
     return (
-        <Box flex="1">
+        <Box flex="1" display="flex" flexDirection="column" alignItems="center">
             <MotionBox
                 whileHover={{ scale: isSelected ? 1.02 : 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
@@ -34,8 +34,11 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
                 _hover={{
                     bg: isSelected ? 'red.500' : 'gray.300'
                 }}
+                width="auto"
+                minWidth="150px"
+                textAlign="center"
             >
-                <Flex align="center" justify="space-between">
+                <Flex align="center" justify="center" gap={2}>
                     <Text fontWeight="medium" fontSize={{ base: 'xs', md: 'md' }}>
                         {option.title}
                     </Text>

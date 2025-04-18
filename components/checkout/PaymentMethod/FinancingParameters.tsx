@@ -16,7 +16,7 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
     downPaymentAmount,
     installmentPeriod,
     interestRate,
-    APR,
+    // APR,
     monthlyPayment
 }) => {
     // Use responsive layout based on screen size
@@ -88,7 +88,8 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
 
                         <GridItem textAlign="right">
                             <Text fontSize="md" fontWeight="semibold" color="#1F2937" mb={3}>
-                                {interestRate} % / {APR} %
+                                {interestRate} %
+                                {/* / {APR} % */}
                             </Text>
                         </GridItem>
 
@@ -176,14 +177,14 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
                             textTransform="uppercase"
                             mb={2}
                         >
-                            INSTALLMENT
+                            INSTALLMENT 
                         </Text>
                         <Text
                             fontSize={{ base: "md", lg: "lg" }}
                             fontWeight="medium"
                             color="#1F2937"
                         >
-                            {installmentPeriod}
+                            {installmentPeriod} months
                         </Text>
                     </Box>
 
@@ -195,14 +196,16 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
                             textTransform="uppercase"
                             mb={2}
                         >
-                            INTEREST RATE / APR
+                            INTEREST RATE 
+                            {/* / APR */}
                         </Text>
                         <Text
                             fontSize={{ base: "md", lg: "lg" }}
                             fontWeight="medium"
                             color="#1F2937"
                         >
-                            {interestRate} % / {APR} %
+                            {interestRate} %
+                            {/* % / {APR} % */}
                         </Text>
                     </Box>
 

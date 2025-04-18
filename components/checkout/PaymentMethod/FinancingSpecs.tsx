@@ -26,20 +26,17 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
     onToggleSpecs
 }) => {
     const [isFinancingSpecsExpanded, setIsFinancingSpecsExpanded] = useState(true);
-    const [selectedOption, setSelectedOption] = useState<string>('low-installment');
+    const [selectedOption, setSelectedOption] = useState<string>('regular-loan');
     const [paybackPeriod, setPaybackPeriod] = useState<number>(12);
     const [downPayment, setDownPayment] = useState<number>(12);
 
     const totalPrice = 27440;
-
+    const grayborderstyle = {
+        border: '1px solid #D3D3D3',
+        borderRadius: 'lg',
+        shadow: 'md'
+    }
     const options: FinancingOption[] = [
-        {
-            id: 'low-installment',
-            title: 'Low Instalment',
-            isNew: true,
-            percentage: '91.4 %',
-            description: 'choose low payments'
-        },
         {
             id: 'regular-loan',
             title: 'Regular loan',
@@ -121,7 +118,9 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
             bg="white"
             mt={6}
             borderWidth="1px"
+            borderColor="gray.500"
             borderRadius="lg"
+            style={grayborderstyle}
         >
             <Flex
                 align="center"
@@ -181,7 +180,7 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                         downPayment={downPayment}
                         downPaymentAmount={downPaymentAmount}
                         installmentPeriod={paybackPeriod}
-                        interestRate={selectedOption === 'low-installment' ? '9.50' : '8.50'}
+                        interestRate={selectedOption === 'regular-loan' ? '8.99' : '9.50'}
                         APR={selectedOption === 'low-installment' ? '11.55' : '10.25'}
                         monthlyPayment={monthlyPayment}
                     />

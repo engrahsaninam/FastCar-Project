@@ -69,14 +69,14 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
                 <Flex width="100%" height="24px" mb="16px">
                     {percentageSteps.map((step, i) => {
                         // Default background is very light gray
-                        let bgColor = "gray.100";
+                        let bgColor = "#fff";
 
                         // If this is the selected segment, make it darker green
                         if (step === activeSegment) {
                             bgColor = "#fff";
                         } else {
                             // All other segments are light green
-                            bgColor = "green.50";
+                            bgColor = "#fff";
                         }
 
                         return (

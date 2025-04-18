@@ -13,7 +13,7 @@ import PriceSummary from '@/components/checkout/PriceSummary/PriceSummary';
 
 const page = () => {
     return (
-        <>
+        <div className='bg-gray-100'>
             <CheckoutCarDetails />
             <CheckoutSteps />
             <GridItem
@@ -44,7 +44,7 @@ const page = () => {
                     </GridItem>
                 </Grid>
             </Box>
-        </>
+        </div>
     )
 }
 

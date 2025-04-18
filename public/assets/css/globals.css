@@ -2,4 +2,22 @@
 
 :root {
   --font-euclid: 'Euclid Circular B', sans-serif;  
+  --chakra-colors-gray-100: #EDF2F7;
+  --chakra-bg-gray-100: var(--chakra-colors-gray-100);
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-euclid);
+}
+
+/* Utility classes for Chakra colors */
+.bg-gray-100 {
+  background-color: var(--chakra-bg-gray-100) !important; 
+}
+.body {
+  background-color: var(--chakra-bg-gray-100) !important; 
+}
+.bg-gray-100 {
+  background-color: var(--chakra-bg-gray-100) !important; 
 }

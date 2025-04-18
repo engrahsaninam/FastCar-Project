@@ -10,185 +10,165 @@ import {
     Heading,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
+import { AlertCircle } from 'lucide-react';
 
 interface CarInspectionContentProps {
     isFinancingSelected: boolean;
     isFinancingApproved: boolean;
-    onContinue: () => void;
+    // onContinue: () => void;
 }
 
 const CarInspectionContent: React.FC<CarInspectionContentProps> = ({
-    isFinancingSelected,
-    isFinancingApproved,
-    onContinue
+    isFinancingSelected = false,
+    isFinancingApproved = false,
+    // onContinue = () => { }
 }) => {
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onContinue();
-    };
+    // Data for inspection steps
+    const steps = [
+        {
+            number: 1,
+            title: "We get the car VIN from the dealer",
+            description: "and we check the legal status in European countries to see whether the car has been stolen or crashed and we also check the mileage."
+        },
+        {
+            number: 2,
+            title: "We arrange a visit by a mechanic",
+            description: "who checks the actual technical condition of the car."
+        },
+        {
+            number: 3,
+            title: "In the case of a tax-deductible car, we check,",
+            description: "to see whether the car really is tax-deductible."
+        },
+        {
+            number: 4,
+            title: "You receive an inspection report",
+            description: "including evaluation of the condition of the car. We assume a guarantee for this being the actual condition of the car and are liable to you for this if you subsequently decide to buy the car."
+        }
+    ];
 
     return (
-        <Box as="section" aria-labelledby="car-inspection-title">
-            <form onSubmit={handleSubmit}>
-                <VStack spacing={6} align="stretch">
-                    <Text fontSize="md" color="gray.700" id="car-inspection-title">
-                        Before we deliver your car, we conduct a thorough inspection to ensure everything is in perfect condition.
-                        Our proprietary CarAudit™ process consists of the following steps:
-                    </Text>
+        <Box px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} border='1px solid #D3D3D3' borderRadius='lg' shadow="md">
+            {/* Main content */}
+            <Box>
+                <Text mb={{ base: 6, md: 8 }} fontSize={{ base: "sm", md: "md" }} color="gray.700">
+                    We want you to buy a car in the best possible condition and this is why we have to first of all
+                    thoroughly inspect the chosen car. You receive a details inspection report on the technical condition
+                    of the car, photo documentation and our recommendation.
+                </Text>
 
-                    {/* Inspection Steps */}
-                    <VStack spacing={5} align="stretch" as="section" aria-labelledby="inspection-steps-heading">
-                        <Heading as="h3" fontSize="md" fontWeight="semibold" id="inspection-steps-heading" srOnly>
-                            Inspection Steps
-                        </Heading>
+                {/* What happens section */}
+                <Box bg="gray.50" p={{ base: 4, md: 6 }} borderRadius="lg">
+                    <Heading as="h3" size={{ base: "sm", md: "md" }} mb={{ base: 6, md: 8 }} textAlign="center">
+                        What happens after ordering the inspection
+                    </Heading>
 
-                        <Box borderWidth="1px" borderColor="gray.200" p={4} borderRadius="md" as="article">
-                            <HStack align="flex-start" spacing={4}>
-                                <Flex
-                                    w="30px"
-                                    h="30px"
-                                    bg="red.500"
-                                    color="white"
-                                    borderRadius="full"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    fontWeight="bold"
-                                    mt={1}
-                                    aria-hidden="true"
-                                >
-                                    1
-                                </Flex>
-                                <Box>
-                                    <Text fontWeight="semibold" color="gray.800">Technical Inspection</Text>
-                                    <Text color="gray.600" mt={1}>
-                                        Our certified technicians examine all mechanical components, electrical systems, and fluid levels to ensure optimal performance.
-                                    </Text>
-                                </Box>
-                            </HStack>
+                    <Flex direction={{ base: "column", md: "row" }} gap={{ base: 6, md: 8 }}>
+                        {/* Left side with numbered steps */}
+                        <Box flex="1" pr={{ md: 6 }}>
+                            <VStack spacing={{ base: 4, md: 6 }} align="stretch">
+                                {steps.map((step) => (
+                                    <HStack key={step.number} align="flex-start" spacing={3}>
+                                        <Flex
+                                            justifyContent="center"
+                                            alignItems="center"
+                                            minWidth={{ base: "28px", md: "32px" }}
+                                            height={{ base: "28px", md: "32px" }}
+                                            bg="red.100"
+                                            color="red.600"
+                                            fontSize={{ base: "sm", md: "md" }}
+                                            fontWeight="bold"
+                                            borderRadius="full"
+                                            flexShrink={0}
+                                        >
+                                            {step.number}
+                                        </Flex>
+                                        <Box>
+                                            <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>{step.title}</Text>
+                                            <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600" mt={1}>
+                                                {step.description}
+                                            </Text>
+                                        </Box>
+                                    </HStack>
+                                ))}
+                            </VStack>
                         </Box>
 
-                        <Box borderWidth="1px" borderColor="gray.200" p={4} borderRadius="md" as="article">
-                            <HStack align="flex-start" spacing={4}>
-                                <Flex
-                                    w="30px"
-                                    h="30px"
-                                    bg="red.500"
-                                    color="white"
-                                    borderRadius="full"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    fontWeight="bold"
-                                    mt={1}
-                                    aria-hidden="true"
-                                >
-                                    2
-                                </Flex>
-                                <Box>
-                                    <Text fontWeight="semibold" color="gray.800">Exterior & Interior Check</Text>
-                                    <Text color="gray.600" mt={1}>
-                                        We meticulously inspect the body, paint, upholstery, and interior features for any cosmetic issues or wear.
-                                    </Text>
-                                </Box>
-                            </HStack>
-                        </Box>
+                        {/* Right side with pricing */}
+                        <Box width={{ base: "100%", md: "300px" }} mt={{ base: 4, md: 0 }}>
+                            <Box
+                                bg="red.500"
+                                color="white"
+                                py={3}
+                                textAlign="center"
+                                borderTopRadius="md"
+                                fontWeight="bold"
+                                fontSize={{ base: "sm", md: "md" }}
+                            >
+                                SALE PRICE
+                            </Box>
+                            <Box
+                                border="1px"
+                                borderColor="gray.200"
+                                p={{ base: 3, md: 4 }}
+                                pb={{ base: 4, md: 6 }}
+                                textAlign="center"
+                                borderTopWidth="0"
+                                borderBottomRadius="md"
+                                bg="white"
+                            >
+                                <Text fontSize={{ base: "sm", md: "md" }} textDecoration="line-through" color="gray.500" mb={1}>€199</Text>
+                                <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold" color="gray.900" mb={4}>€119</Text>
 
-                        <Box borderWidth="1px" borderColor="gray.200" p={4} borderRadius="md" as="article">
-                            <HStack align="flex-start" spacing={4}>
-                                <Flex
-                                    w="30px"
-                                    h="30px"
-                                    bg="red.500"
-                                    color="white"
-                                    borderRadius="full"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    fontWeight="bold"
-                                    mt={1}
-                                    aria-hidden="true"
+                                <Box
+                                    bg="green.50"
+                                    py={3}
+                                    px={4}
+                                    borderRadius="md"
+                                    display="flex"
+                                    alignItems="flex-start"
+                                    gap={3}
                                 >
-                                    3
-                                </Flex>
-                                <Box>
-                                    <Text fontWeight="semibold" color="gray.800">Road Test & Final Quality Control</Text>
-                                    <Text color="gray.600" mt={1}>
-                                        Every vehicle undergoes a comprehensive road test to evaluate driving dynamics, braking, and overall performance.
-                                    </Text>
+                                    <Box color="green.500" mt="1" flexShrink={0}>
+                                        <Icon as={CheckIcon} boxSize={{ base: 3, md: 4 }} />
+                                    </Box>
+                                    <Box textAlign="left">
+                                        <Text fontWeight="medium" color="green.700" fontSize={{ base: "sm", md: "md" }}>Money-back guarantee</Text>
+                                        <Text fontSize={{ base: "xs", md: "sm" }} color="gray.700">if the car fails the inspection.</Text>
+                                    </Box>
                                 </Box>
-                            </HStack>
-                        </Box>
-                    </VStack>
-
-                    {/* Pricing Information */}
-                    <Box
-                        bg="gray.50"
-                        p={5}
-                        borderRadius="md"
-                        as="section"
-                        aria-labelledby="pricing-section-heading"
-                    >
-                        <Heading as="h3" fontSize="md" fontWeight="semibold" mb={3} id="pricing-section-heading">
-                            Car Price & Guarantee
-                        </Heading>
-                        <HStack mb={3}>
-                            <Text fontWeight="semibold" color="gray.700">Sale Price:</Text>
-                            <Text fontWeight="bold" color="red.500">€28,990</Text>
-                        </HStack>
-                        <Box mt={4} borderWidth="1px" borderColor="gray.200" p={3} borderRadius="md" bg="white">
-                            <HStack>
-                                <Icon as={CheckIcon} color="green.500" />
-                                <Text color="gray.700" fontSize="sm">
-                                    14-day money-back guarantee if you're not completely satisfied with your purchase.
+                            </Box>
+                            {/* Text below the price box */}
+                            <Box fontSize={{ base: "xs", md: "sm" }} color="gray.600" mt={4}>
+                                <Text>
+                                    We try to reserve each car with the dealer before the inspection. However, we cannot guarantee this
+                                    reservation. It all depends on the specific dealer. If the car is sold in the meanwhile, we will
+                                    provide you a full refund of the price of the inspection.
                                 </Text>
-                            </HStack>
+                            </Box>
                         </Box>
-                    </Box>
+                    </Flex>
 
-                    {/* Financing Notice */}
+                    {/* Only show financing notification if using financing */}
                     {isFinancingSelected && (
                         <Box
-                            borderWidth="1px"
-                            borderColor="red.100"
                             bg="red.50"
-                            p={4}
+                            p={{ base: 3, md: 4 }}
                             borderRadius="md"
-                            role="alert"
-                            aria-live="polite"
+                            mt={{ base: 4, md: 6 }}
                         >
-                            <HStack>
-                                <Icon as={CheckIcon} color="red.500" />
-                                <Text fontWeight="medium" color="gray.700">
-                                    {isFinancingApproved
-                                        ? "Your financing has been approved! You can proceed to the next step."
-                                        : "Your financing application is currently being processed. You'll be notified once approved."}
+                            <Flex gap={3} align="flex-start">
+                                <Box color="red.500" mt={1} flexShrink={0}>
+                                    <Icon as={AlertCircle} boxSize={{ base: 4, md: 5 }} />
+                                </Box>
+                                <Text color="red.800" fontWeight="medium" fontSize={{ base: "sm", md: "md" }}>
+                                    When buying with financing, it is necessary to wait for the pre-approval of the loan to order.
                                 </Text>
-                            </HStack>
+                            </Flex>
                         </Box>
                     )}
-
-                    {/* Continue Button */}
-                    <Flex justify="center" mt={2}>
-                        <Button
-                            type="submit"
-                            colorScheme="red"
-                            size="lg"
-                            px={12}
-                            isDisabled={isFinancingSelected && !isFinancingApproved}
-                            shadow="md"
-                            _hover={{
-                                shadow: "lg",
-                                transform: "translateY(-1px)"
-                            }}
-                            _active={{
-                                shadow: "sm",
-                                transform: "translateY(1px)"
-                            }}
-                            aria-label="Continue to next step"
-                        >
-                            Continue
-                        </Button>
-                    </Flex>
-                </VStack>
-            </form>
+                </Box>
+            </Box>
         </Box>
     );
 };

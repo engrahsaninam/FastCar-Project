@@ -78,19 +78,16 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
     };
 
     return (
-        <Box position="relative" ml={{ base: 10, md: 14 }} mt={4}>
-            {/* Connection line */}
+        <Box position="relative" ml={{ base: 10, md: 14 }} mt={4} border='1px solid #D3D3D3' borderRadius='lg'>
             <Box position="absolute" top="-36px" left="-40px">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
                     <path d="M20,20 L20,80 C20,86.6 25.4,92 32,92 L40,92" stroke="#FFA9A9" strokeWidth="2" fill="none" />
                 </svg>
             </Box>
 
-            {/* Main container */}
-            <Box bg="white" borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200" boxShadow="sm">
-                {/* Header */}
+            <Box bg="white" borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="1px solid #D3D3D3" boxShadow="sm">
                 <Box py={4} px={6} borderBottomWidth="1px" borderColor="gray.200">
-                    <Text fontSize="lg" fontWeight="bold" color="gray.700">Billing address</Text>
+                    <Text fontSize="lg" fontWeight="bold" color="gray.700">Personal information</Text>
                 </Box>
 
                 {/* Account type toggle */}

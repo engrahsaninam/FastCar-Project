@@ -700,8 +700,8 @@ export default function CarsDetails1() {
 												</div>
 											</div>
 											<div className="box-button-book">
-												<Link className="btn btn-book" href="#">
-													Book Now
+												<Link className="btn btn-book" href="/checkout">
+													Buy Now
 													<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 														<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													</svg>

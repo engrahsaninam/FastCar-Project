@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, Text, Icon } from '@chakra-ui/react';
 import StepHeader from './Common/StepHeader';
 import StepItem from './Common/StepItem';
 import StepContent from './Common/StepContent';
@@ -9,9 +9,11 @@ import FinancingSpecs from './PaymentMethod/FinancingSpecs';
 import FinancingForm from './PaymentMethod/FinancingForm';
 import CarInspectionContent from './CarInspection/CarInspectionContent';
 import ConnectedCarInspectionContent from './CarInspection/ConnectedCarInspectionContent';
+import OrderSummaryContent from './CarInspection/OrderSummaryContent';
 import DeliveryContent from './Delivery/DeliveryContent';
 import AdditionalServicesContent from './AdditionalServices/AdditionalServicesContent';
 import PaymentContent from './Payment/PaymentContent';
+import { Check, Clock } from 'lucide-react';
 
 // Define available steps with typings
 type StepStatus = 'locked' | 'active' | 'completed';
@@ -44,6 +46,9 @@ const StepOneContent: React.FC = () => {
     const [showFinancingForm, setShowFinancingForm] = useState(false);
     const [isFinancingApproved, setIsFinancingApproved] = useState(false);
     const [showBillingAddress, setShowBillingAddress] = useState(false);
+
+    // Track inspection step data
+    const [showOrderSummary, setShowOrderSummary] = useState(false);
 
     // Add ref for scrolling
     const stepRefs = {
@@ -114,6 +119,7 @@ const StepOneContent: React.FC = () => {
     const handleFinancingSubmit = () => {
         setApplicationSent(true);
         setIsFinancingApproved(true);
+        setShowFinancingForm(false);
         moveToNextStep('payment', 'inspection');
     };
 
@@ -132,7 +138,12 @@ const StepOneContent: React.FC = () => {
     };
 
     const handleBillingComplete = () => {
-        // Move to delivery step after billing address is completed
+        // Show order summary when billing details are confirmed
+        setShowOrderSummary(true);
+    };
+
+    const handleOrderSummaryComplete = () => {
+        // Move to delivery step after order summary is confirmed
         moveToNextStep('inspection', 'delivery');
     };
 
@@ -184,6 +195,44 @@ const StepOneContent: React.FC = () => {
 
                 <StepContent isActive={isStep1Expanded && stepStatuses.payment !== 'locked'}>
                     <Box p={6} pt={2}>
+                        {selectedPaymentMethod === 'financing' && applicationSent ? (
+                            <Box mb={6}>
+                                {/* Application Sent Status */}
+                                <Flex
+                                    p={4}
+                                    bg="red.50"
+                                    borderRadius="md"
+                                    alignItems="center"
+                                    gap={4}
+                                    mb={6}
+                                    border="1px solid"
+                                    borderColor="red.100"
+                                >
+                                    <Flex
+                                        w="48px"
+                                        h="48px"
+                                        borderRadius="full"
+                                        bg="red.100"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    >
+                                        <Icon as={Clock} color="red.500" boxSize="24px" />
+                                    </Flex>
+                                    <Box>
+                                        <Text fontWeight="bold" color="red.500" mb={1}>
+                                            Application sent
+                                        </Text>
+                                        <Text fontSize="sm" color="gray.500">
+                                            Your request for financing is being processed
+                                        </Text>
+                                        <Text fontSize="xs" color="#718096" mt={1}>
+                                            All you have to do now is wait, usually a request takes us 24 hours to process
+                                        </Text>
+                                    </Box>
+                                </Flex>
+                            </Box>
+                        ) : null}
+
                         <PaymentMethodStep
                             selected={selectedPaymentMethod}
                             onSelect={handlePaymentMethodSelect}
@@ -253,13 +302,21 @@ const StepOneContent: React.FC = () => {
                         <CarInspectionContent
                             isFinancingSelected={selectedPaymentMethod === 'financing'}
                             isFinancingApproved={isFinancingApproved}
-                            onContinue={handleContinueFromInspection}
                         />
                     </Box>
-                    {showBillingAddress && (
+
+                    {showBillingAddress && !showOrderSummary && (
                         <ConnectedCarInspectionContent
                             onComplete={handleBillingComplete}
                         />
+                    )}
+
+                    {showOrderSummary && (
+                        <Box px={6} pb={6}>
+                            <OrderSummaryContent
+                                onComplete={handleOrderSummaryComplete}
+                            />
+                        </Box>
                     )}
                 </StepContent>
             </Box>

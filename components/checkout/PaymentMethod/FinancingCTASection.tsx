@@ -14,8 +14,13 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
     onPrimaryClick,
     // onSecondaryClick
 }) => {
+    const grayborderstyle = {
+        border: '1px solid #D3D3D3',
+        borderRadius: 'lg',
+        shadow: 'md'
+    }
     return (
-        <Box mt={10}>
+        <Box mt={10} >
             {/* Heading and description */}
             <Text
                 fontSize="20px"

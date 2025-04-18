@@ -122,7 +122,7 @@ const CheckoutCarDetails: FC = () => {
     // const isMobile = useBreakpointValue({ base: true, lg: false });
 
     return (
-        <Box w="full" fontFamily="sans">
+        <Box w="full" >
             {/* Mobile */}
             <Box display={{ base: 'block', lg: 'none' }}>
                 <Stack spacing={4}>
