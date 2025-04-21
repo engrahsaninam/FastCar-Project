@@ -246,18 +246,28 @@ const OrderSummaryContent: React.FC<OrderSummaryContentProps> = ({
 
                             />
                             <Text>
-                                I agree with {" "}
-                                <Text as="span" color="red.500" fontWeight="medium" cursor="pointer">
+                                I agree with{' '}
+                                <Text
+                                    as="span"
+                                    color="red.500"
+                                    fontWeight="medium"
+                                    cursor="pointer"
+                                    _hover={{ color: 'red.600' }}
+                                    _active={{ color: 'red.600' }}
+                                    _focus={{ color: 'red.600' }}
+                                >
                                     general terms and conditions
                                 </Text>
                             </Text>
+
+
                         </Flex>
                     </Box>
 
                     {/* Continue Button */}
                     <Flex justifyContent="center" mt={8}>
                         <Button
-                            bg="red.200"
+                            bg="red.500"
                             color="white"
                             size="lg"
                             px={12}
@@ -294,22 +304,24 @@ const OrderSummaryContent: React.FC<OrderSummaryContentProps> = ({
                         {/* Google Pay Button */}
                         <Button
                             variant="solid"
-                            bg="red.500"
+                            bg="black"
                             color="white"
                             size="lg"
                             width="100%"
                             mb={6}
-                            borderRadius="full"
+                            borderRadius="10px"
                             height="50px"
+                            _hover={{color:"gray.500"}}
                         >
                             <Flex alignItems="center" justifyContent="center">
                                 <Text fontSize="md" fontWeight="medium" mr={2}>Buy with</Text>
-                                <Text fontSize="lg" fontWeight="bold" mr={1}>G</Text>
-                                <Text fontSize="lg" fontWeight="bold" color="white.500">o</Text>
+                                
+                                {/* <Text fontSize="lg" fontWeight="bold" color="white.500">o</Text>
                                 <Text fontSize="lg" fontWeight="bold" color="yellow.500">o</Text>
                                 <Text fontSize="lg" fontWeight="bold" color="blue.500">g</Text>
                                 <Text fontSize="lg" fontWeight="bold" color="green.500">l</Text>
-                                <Text fontSize="lg" fontWeight="bold" color="white">e</Text>
+                                <Text fontSize="lg" fontWeight="bold" color="white">e</Text> */}
+                                <img src='/search.png' width="18px" height="18px" color="white" />
                                 <Text fontSize="lg" fontWeight="bold" ml={1}>Pay</Text>
                             </Flex>
                         </Button>

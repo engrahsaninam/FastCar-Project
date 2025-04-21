@@ -442,7 +442,6 @@ export default function AboutUs() {
 							</div>
 						</div>
 					</section>
-					{/* cta 9*/}
 					<section className="section-cta-7 background-body py-96">
 						<div className="box-cta-6">
 							<div className="container">

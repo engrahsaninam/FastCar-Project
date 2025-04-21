@@ -154,7 +154,7 @@ const ServiceOptionComponent = ({ service, isSelected, onToggle }: {
 
                         <Box width="100%">
                             <Text fontWeight="bold" fontSize="sm" color="red.500" mb={2}>
-                                ✅ Coverage Includes:
+                                ✅ Package Includes:
                             </Text>
                             <List spacing={2}>
                                 {service.details.coverage.map((item, index) => (

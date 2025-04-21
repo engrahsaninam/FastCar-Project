@@ -51,7 +51,7 @@ TABLE CONTENT
 	--bs-background-1000: #230000;
 	--bs-background-white: #ffffff;
 	--bs-color-1000: #000000;
-	--bs-background-body: #ffffff;
+	/* --bs-background-body: #ffffff; */
 	--bs-background-1: #fff0ec;
 	--bs-background-2: #f4d8d8; /* Adjusted to Red */
 	--bs-background-3: #e3f0ff;
@@ -478,7 +478,7 @@ input[type=number]:focus,
 }
 
 body {
-	background: #fff;
+	/* background: #fff; */
 	background-size: contain;
 }
 

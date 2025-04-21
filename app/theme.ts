@@ -1,7 +1,7 @@
 // src/theme.ts
 'use client';
 
-import { extendTheme } from '@chakra-ui/react';
+import { background, extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
   config: {
@@ -15,14 +15,17 @@ const theme = extendTheme({
     darkBorder: "#374151",
   },
   fonts: {
-    heading: `var(--font-euclid)`,
-    body: `var(--font-euclid)`,
+    heading: `var(--urbanist)`,
+    body: `var(--urbanist)`
   },
   styles: {
     global: {
       '*': {
-        fontFamily: `var(--font-euclid)`,
+        fontFamily: `var(--urbanist)`,
       },
+      body: {
+        bg: "gray.100",
+      }
     },
   },
 });

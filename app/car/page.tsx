@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import Marquee from 'react-fast-marquee'
 import ModalVideo from 'react-modal-video'
 import Slider from "react-slick"
+import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
 const SlickArrowLeft = ({ currentSlide, slideCount, ...props }: any) => (
 	<button
 		{...props}
@@ -27,7 +28,8 @@ const SlickArrowRight = ({ currentSlide, slideCount, ...props }: any) => (
 		}
 		type="button"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33325 7.99992" stroke="" strokeLinecap="round" strokeLinejoin="round"> </path></svg>
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33301 7.99992" strokeLinecap="round" strokeLinejoin="round" />
+		</svg>
 	</button>
 )
 export default function CarsDetails1() {
@@ -36,17 +38,146 @@ export default function CarsDetails1() {
 	const [nav2, setNav2] = useState(null)
 	const [slider1, setSlider1] = useState(null)
 	const [slider2, setSlider2] = useState(null)
+	const [activeTab, setActiveTab] = useState("price-history")
+	const [activeStep, setActiveStep] = useState(1)
 
 	useEffect(() => {
 		setNav1(slider1)
 		setNav2(slider2)
-	}, [slider2, slider1])
+
+		// Handle smooth scrolling for nav links
+		const navLinks = document.querySelectorAll('.car-nav-tabs a');
+		navLinks.forEach(link => {
+			link.addEventListener('click', (e) => {
+				e.preventDefault();
+				const targetId = (e.currentTarget as HTMLAnchorElement).getAttribute('href')?.substring(1);
+				if (targetId) {
+					setActiveTab(targetId);
+
+					const targetElement = document.getElementById(targetId);
+					if (targetElement) {
+						window.scrollTo({
+							top: targetElement.offsetTop - 100,
+							behavior: 'smooth'
+						});
+					}
+				}
+			});
+		});
+
+		// Initialize carousel event listeners
+		const carousel = document.getElementById('howItWorksCarousel');
+		if (carousel) {
+			carousel.addEventListener('slide.bs.carousel', (e: any) => {
+				if (e && typeof e.to === 'number') {
+					setActiveStep(e.to + 1);
+				}
+			});
+		}
+
+		// Track scroll position to update active tab
+		const handleScroll = () => {
+			const scrollPosition = window.scrollY + 200;
+
+			// Find all sections
+			const sections = ['details', 'features', 'how-it-works', 'price-history', 'price-map', 'comparison', 'financing'];
+
+			// Find the current visible section
+			for (let i = sections.length - 1; i >= 0; i--) {
+				const section = document.getElementById(sections[i]);
+				if (section && section.offsetTop <= scrollPosition) {
+					setActiveTab(sections[i]);
+					break;
+				}
+			}
+		};
+
+		// Initialize carousel indicators and counter
+		const currentSlideSpan = document.getElementById('current-slide');
+		const indicators = document.querySelectorAll('.carousel-indicators button');
+		const prevButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="prev"]') as HTMLElement | null;
+		const nextButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="next"]') as HTMLElement | null;
+
+		// Function to update indicators
+		const updateIndicators = (slideIndex: number) => {
+			// Update the current slide number in the counter
+			if (currentSlideSpan) {
+				currentSlideSpan.textContent = (slideIndex + 1).toString();
+			}
+
+			// Update indicator styling
+			indicators.forEach((indicator, i) => {
+				if (i === slideIndex) {
+					indicator.classList.remove('bg-secondary');
+					indicator.classList.add('bg-primary', 'active');
+				} else {
+					indicator.classList.remove('bg-primary', 'active');
+					indicator.classList.add('bg-secondary');
+				}
+			});
+		};
+
+		// Event handler for carousel slide change
+		const handleSlideChange = (e: Event) => {
+			const slideEvent = e as unknown as { to: number };
+			updateIndicators(slideEvent.to);
+		};
+
+		// Touch event handlers for mobile swipe
+		let touchStartX = 0;
+		let touchEndX = 0;
+
+		const handleTouchStart = (e: TouchEvent) => {
+			touchStartX = e.changedTouches[0].screenX;
+		};
+
+		const handleTouchEnd = (e: TouchEvent) => {
+			touchEndX = e.changedTouches[0].screenX;
+
+			// Handle swipe
+			const swipeThreshold = 50;
+			if (touchEndX < touchStartX - swipeThreshold) {
+				// Swipe left - next slide
+				if (nextButton) nextButton.click();
+			} else if (touchEndX > touchStartX + swipeThreshold) {
+				// Swipe right - previous slide
+				if (prevButton) prevButton.click();
+			}
+		};
+
+		// Add event listeners
+		window.addEventListener('scroll', handleScroll);
+
+		if (carousel) {
+			carousel.addEventListener('slide.bs.carousel', handleSlideChange);
+			carousel.addEventListener('touchstart', handleTouchStart, { passive: true });
+			carousel.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+			// Initialize with first slide
+			updateIndicators(0);
+		}
+
+		// Clean up event listeners
+		return () => {
+			navLinks.forEach(link => {
+				link.removeEventListener('click', () => { });
+			});
+			window.removeEventListener('scroll', handleScroll);
+
+			if (carousel) {
+				carousel.removeEventListener('slide.bs.carousel', handleSlideChange);
+				carousel.removeEventListener('touchstart', handleTouchStart);
+				carousel.removeEventListener('touchend', handleTouchEnd);
+			}
+		};
+	}, [slider2, slider1]);
 
 	const settingsMain = {
 		slidesToShow: 1,
 		slidesToScroll: 1,
 		arrows: true,
 		fade: false,
+
 		prevArrow: <SlickArrowLeft />,
 		nextArrow: <SlickArrowRight />,
 	}
@@ -100,183 +231,526 @@ export default function CarsDetails1() {
 					</section>
 					<section className="section-box box-banner-home2 background-body">
 						<div className="container">
-							<div className="container-banner-activities">
-								<div className="box-banner-activities">
-									<Slider
-										{...settingsMain}
-										asNavFor={nav2 as any}
-										ref={(slider) => setSlider1(slider as any)}
-										className="banner-activities-detail">
-										<div className="banner-slide-activity">
-											<img src="/assets/imgs/cars-details/banner.png" alt="Fast4Car" />
-										</div>
-										<div className="banner-slide-activity">
-											<img src="/assets/imgs/cars-details/banner2.png" alt="Fast4Car" />
-										</div>
-										<div className="banner-slide-activity">
-											<img src="/assets/imgs/cars-details/banner3.png" alt="Fast4Car" />
-										</div>
-										<div className="banner-slide-activity">
-											<img src="/assets/imgs/cars-details/banner4.png" alt="Fast4Car" />
-										</div>
-										<div className="banner-slide-activity">
-											<img src="/assets/imgs/cars-details/banner5.png" alt="Fast4Car" />
-										</div>
-									</Slider>
-									<div className="box-button-abs">
-										<Link className="btn btn-primary rounded-pill" href="#">
-											<svg width={22} height={22} viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-												<path d="M20 8V2.75C20 2.3375 19.6625 2 19.25 2H14C13.5875 2 13.25 2.3375 13.25 2.75V8C13.25 8.4125 13.5875 8.75 14 8.75H19.25C19.6625 8.75 20 8.4125 20 8ZM19.25 0.5C20.495 0.5 21.5 1.505 21.5 2.75V8C21.5 9.245 20.495 10.25 19.25 10.25H14C12.755 10.25 11.75 9.245 11.75 8V2.75C11.75 1.505 12.755 0.5 14 0.5H19.25Z" fill="currentColor" />
-												<path d="M20 19.25V14C20 13.5875 19.6625 13.25 19.25 13.25H14C13.5875 13.25 13.25 13.5875 13.25 14V19.25C13.25 19.6625 13.5875 20 14 20H19.25C19.6625 20 20 19.6625 20 19.25ZM19.25 11.75C20.495 11.75 21.5 12.755 21.5 14V19.25C21.5 20.495 20.495 21.5 19.25 21.5H14C12.755 21.5 11.75 20.495 11.75 19.25V14C11.75 12.755 12.755 11.75 14 11.75H19.25Z" fill="currentColor" />
-												<path d="M8 8.75C8.4125 8.75 8.75 8.4125 8.75 8V2.75C8.75 2.3375 8.4125 2 8 2H2.75C2.3375 2 2 2.3375 2 2.75V8C2 8.4125 2.3375 8.75 2.75 8.75H8ZM8 0.5C9.245 0.5 10.25 1.505 10.25 2.75V8C10.25 9.245 9.245 10.25 8 10.25H2.75C1.505 10.25 0.5 9.245 0.5 8V2.75C0.5 1.505 1.505 0.5 2.75 0.5H8Z" fill="currentColor" />
-												<path d="M8 20C8.4125 20 8.75 19.6625 8.75 19.25V14C8.75 13.5875 8.4125 13.25 8 13.25H2.75C2.3375 13.25 2 13.5875 2 14V19.25C2 19.6625 2.3375 20 2.75 20H8ZM8 11.75C9.245 11.75 10.25 12.755 10.25 14V19.25C10.25 20.495 9.245 21.5 8 21.5H2.75C1.505 21.5 0.5 20.495 0.5 19.25V14C0.5 12.755 1.505 11.75 2.75 11.75H8Z" fill="currentColor" />
-											</svg>
-											See All Photos
-										</Link>
-										<a className="btn btn-white-md popup-youtube" onClick={() => setOpen(true)}> <img src="/assets/imgs/page/activities/video.svg" alt="Fast4Car" />Video Clips</a>
-									</div>
-								</div>
-								<div className="slider-thumnail-activities">
-									<Slider
-										{...settingsThumbs}
-										asNavFor={nav1 as any}
-										ref={(slider) => setSlider2(slider as any)}
-										className="slider-nav-thumbnails-activities-detail">
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn2.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn4.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn5.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn6.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
-										<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
-									</Slider>
-								</div>
-							</div>
-						</div>
-					</section>
-					<section className="box-section box-content-tour-detail background-body">
-						<div className="container">
-							<div className="tour-header">
-								<div className="tour-rate">
-									<div className="rate-element">
-										<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
-									</div>
-								</div>
-								<div className="row">
-									<div className="col-lg-8">
-										<div className="tour-title-main">
-											<h4 className="neutral-1000">Hyundai Accent 2015 - Modern compact sedan in blue color on beautiful dark wheels</h4>
-										</div>
-									</div>
-								</div>
-								<div className="tour-metas">
-									<div className="tour-meta-left">
-										<p className="text-md-medium neutral-1000 mr-20 tour-location">
-											<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
-												<path d="M7.99967 0C4.80452 0 2.20508 2.59944 2.20508 5.79456C2.20508 9.75981 7.39067 15.581 7.61145 15.8269C7.81883 16.0579 8.18089 16.0575 8.38789 15.8269C8.60867 15.581 13.7943 9.75981 13.7943 5.79456C13.7942 2.59944 11.1948 0 7.99967 0ZM7.99967 8.70997C6.39211 8.70997 5.0843 7.40212 5.0843 5.79456C5.0843 4.187 6.39214 2.87919 7.99967 2.87919C9.6072 2.87919 10.915 4.18703 10.915 5.79459C10.915 7.40216 9.6072 8.70997 7.99967 8.70997Z" fill="#101010" />
-											</svg>
-											Las Vegas, USA
-										</p>
-										<Link className="text-md-medium neutral-1000 mr-30" href="#">Show on map</Link>
-										<p className="text-md-medium neutral-1000 tour-code mr-15">
-											<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={20} height={18} viewBox="0 0 20 18" fill="none">
-												<path fillRule="evenodd" clipRule="evenodd" d="M13.2729 0.273646C13.4097 0.238432 13.5538 0.24262 13.6884 0.28573L18.5284 1.83572L18.5474 1.84209C18.8967 1.96436 19.1936 2.19167 19.4024 2.4875C19.5891 2.75202 19.7309 3.08694 19.7489 3.46434C19.7494 3.47622 19.7497 3.4881 19.7497 3.49998V15.5999C19.7625 15.8723 19.7102 16.1395 19.609 16.3754C19.6059 16.3827 19.6026 16.39 19.5993 16.3972C19.476 16.6613 19.3017 16.8663 19.1098 17.0262C19.1023 17.0324 19.0947 17.0385 19.087 17.0445C18.8513 17.2258 18.5774 17.3363 18.2988 17.3734L18.2927 17.3743C18.0363 17.4063 17.7882 17.3792 17.5622 17.3133C17.5379 17.3081 17.5138 17.3016 17.4901 17.294L13.4665 16.0004L6.75651 17.7263C6.62007 17.7614 6.47649 17.7574 6.34221 17.7147L1.47223 16.1647C1.46543 16.1625 1.45866 16.1603 1.45193 16.1579C1.0871 16.0302 0.813939 15.7971 0.613929 15.5356C0.608133 15.528 0.602481 15.5203 0.596973 15.5125C0.395967 15.2278 0.277432 14.8905 0.260536 14.5357C0.259972 14.5238 0.259689 14.5119 0.259689 14.5V2.39007C0.246699 2.11286 0.301239 1.83735 0.420015 1.58283C0.544641 1.31578 0.724533 1.10313 0.942417 0.93553C1.17424 0.757204 1.45649 0.6376 1.7691 0.61312C2.03626 0.583264 2.30621 0.616234 2.56047 0.712834L6.56277 1.99963L13.2729 0.273646ZM13.437 1.78025L6.72651 3.50634C6.58929 3.54162 6.44493 3.53736 6.31011 3.49398L2.08011 2.13402C2.06359 2.1287 2.04725 2.12282 2.03113 2.11637C2.00054 2.10413 1.96854 2.09972 1.93273 2.10419C1.91736 2.10611 1.90194 2.10756 1.88649 2.10852C1.88649 2.10852 1.88436 2.10866 1.88088 2.11001C1.8771 2.11149 1.86887 2.11532 1.85699 2.12447C1.81487 2.15686 1.79467 2.18421 1.77929 2.21715C1.76189 2.25446 1.75611 2.28942 1.75823 2.32321C1.7592 2.33879 1.75969 2.35439 1.75969 2.36999V14.4772C1.76448 14.5336 1.78316 14.5879 1.81511 14.6367C1.86704 14.7014 1.90866 14.7272 1.94108 14.7398L6.59169 16.2199L13.3028 14.4937C13.44 14.4584 13.5844 14.4626 13.7192 14.506L17.8938 15.8482C17.9184 15.8537 17.9428 15.8605 17.9669 15.8685C18.0209 15.8865 18.0669 15.8902 18.1034 15.8862C18.1214 15.8833 18.1425 15.8759 18.1629 15.8623C18.1981 15.8309 18.2196 15.8024 18.2346 15.7738C18.2473 15.7399 18.2533 15.7014 18.2511 15.6668C18.2502 15.6512 18.2497 15.6356 18.2497 15.62V3.52464C18.2453 3.48222 18.2258 3.42174 18.1769 3.3525C18.147 3.3102 18.1062 3.2784 18.0582 3.26022L13.437 1.78025Z" fill="#101010" />
-												<path fillRule="evenodd" clipRule="evenodd" d="M6.55957 2.01953C6.97375 2.01953 7.30957 2.35532 7.30957 2.76953V16.9195C7.30957 17.3338 6.97375 17.6695 6.55957 17.6695C6.14533 17.6695 5.80957 17.3338 5.80957 16.9195V2.76953C5.80957 2.35532 6.14533 2.01953 6.55957 2.01953Z" fill="#101010" />
-												<path fillRule="evenodd" clipRule="evenodd" d="M13.4893 0.330078C13.9035 0.330078 14.2393 0.665862 14.2393 1.08008V15.2301C14.2393 15.6443 13.9035 15.9801 13.4893 15.9801C13.0751 15.9801 12.7393 15.6443 12.7393 15.2301V1.08008C12.7393 0.665862 13.0751 0.330078 13.4893 0.330078Z" fill="#101010" />
-											</svg>
-											Fleet Code:
-										</p>
-										<Link className="text-md-medium neutral-1000" href="#">LVA-4125</Link>
-									</div>
-									<div className="tour-meta-right">
-										<Link className="btn btn-share" href="#">
-											<svg width={16} height={18} viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-												<path d="M13 11.5332C12.012 11.5332 11.1413 12.0193 10.5944 12.7584L5.86633 10.3374C5.94483 10.0698 6 9.79249 6 9.49989C6 9.10302 5.91863 8.72572 5.77807 8.37869L10.7262 5.40109C11.2769 6.04735 12.0863 6.46655 13 6.46655C14.6543 6.46655 16 5.12085 16 3.46655C16 1.81225 14.6543 0.466553 13 0.466553C11.3457 0.466553 10 1.81225 10 3.46655C10 3.84779 10.0785 4.20942 10.2087 4.54515L5.24583 7.53149C4.69563 6.90442 3.8979 6.49989 3 6.49989C1.3457 6.49989 0 7.84559 0 9.49989C0 11.1542 1.3457 12.4999 3 12.4999C4.00433 12.4999 4.8897 11.9996 5.4345 11.2397L10.147 13.6529C10.0602 13.9331 10 14.2249 10 14.5332C10 16.1875 11.3457 17.5332 13 17.5332C14.6543 17.5332 16 16.1875 16 14.5332C16 12.8789 14.6543 11.5332 13 11.5332Z" fill="currentColor" />
-											</svg>
-											Share
-										</Link>
-										<Link className="btn btn-wishlish" href="#">
-											<svg width={20} height={18} viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-												<path fillRule="evenodd" clipRule="evenodd" d="M2.2222 2.3638C4.34203 0.243977 7.65342 0.0419426 10.0004 1.7577C12.3473 0.0419426 15.6587 0.243977 17.7786 2.3638C20.1217 4.70695 20.1217 8.50594 17.7786 10.8491L12.1217 16.5059C10.9501 17.6775 9.05063 17.6775 7.87906 16.5059L2.2222 10.8491C-0.120943 8.50594 -0.120943 4.70695 2.2222 2.3638Z" fill="currentColor" />
-											</svg>
-											Wishlish
-										</Link>
-									</div>
-								</div>
-							</div>
-							<div className="row mt-30">
+							<div className="row">
 								<div className="col-lg-8">
-									<div className="box-feature-car">
-										<div className="list-feature-car">
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/km.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">56,500</p>
+									<div className="container-banner-activities">
+										<div className="box-banner-activities">
+											<Slider
+												{...settingsMain}
+												asNavFor={nav2 as any}
+												ref={(slider) => setSlider1(slider as any)}
+												className="banner-activities-detail">
+												<div className="banner-slide-activity">
+													<img src="/assets/imgs/cars-details/banner.png" alt="Fast4Car" className="w-100" />
+												</div>
+												<div className="banner-slide-activity">
+													<img src="/assets/imgs/cars-details/banner2.png" alt="Fast4Car" className="w-100" />
+												</div>
+												<div className="banner-slide-activity">
+													<img src="/assets/imgs/cars-details/banner3.png" alt="Fast4Car" className="w-100" />
+												</div>
+												<div className="banner-slide-activity">
+													<img src="/assets/imgs/cars-details/banner4.png" alt="Fast4Car" className="w-100" />
+												</div>
+												<div className="banner-slide-activity">
+													<img src="/assets/imgs/cars-details/banner5.png" alt="Fast4Car" className="w-100" />
+												</div>
+											</Slider>
+											<div className="box-button-abs">
+												<Link className="btn btn-success rounded-pill" href="#">
+													<svg className="me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6Z" fill="currentColor" />
+														<path d="M20 2H8C6.9 2 6 2.9 6 4V16C6 17.1 6.9 18 8 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H8V4H20V16ZM13 15H15V11H19V9H15V5H13V9H9V11H13V15Z" fill="currentColor" />
+													</svg>
+													See All Photos
+												</Link>
+												<a className="btn btn-light rounded-pill popup-youtube" onClick={() => setOpen(true)}>
+													<svg className="me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M10 8L16 12L10 16V8Z" fill="currentColor" />
+													</svg>
+													Video Clips
+												</a>
+											</div>
+										</div>
+										<div className="slider-thumnail-activities">
+											<Slider
+												{...settingsThumbs}
+												asNavFor={nav1 as any}
+												ref={(slider) => setSlider2(slider as any)}
+												className="slider-nav-thumbnails-activities-detail">
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn2.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn4.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn5.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn6.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
+												<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
+											</Slider>
+										</div>
+									</div>
+
+									<div className="car-nav-tabs mt-4 mb-4 position-sticky" style={{ top: "0", zIndex: "100" }}>
+										<div className="container-fluid px-0">
+											<div className="nav-scroll py-3 bg-light rounded shadow-sm" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+												<ul className="nav nav-pills d-flex px-3">
+													<li className="nav-item">
+														<a href="#details" className={`nav-link px-4 ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#FF7A00" } : {}}>Details</a>
+													</li>
+													<li className="nav-item">
+														<a href="#features" className={`nav-link px-4 ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#FF7A00" } : {}}>Features</a>
+													</li>
+													<li className="nav-item">
+														<a href="#how-it-works" className={`nav-link px-4 ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#FF7A00" } : {}}>How it works</a>
+													</li>
+													{/* <li className="nav-item">
+														<a href="#price-history" className={`nav-link px-4 ${activeTab === 'price-history' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-history' ? { backgroundColor: "#FF7A00" } : {}}>Price History</a>
+													</li> */}
+													<li className="nav-item">
+														<a href="#price-map" className={`nav-link px-4 ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#FF7A00" } : {}}>Price map</a>
+													</li>
+													<li className="nav-item">
+														<a href="#comparison" className={`nav-link px-4 ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#FF7A00" } : {}}>Comparison</a>
+													</li>
+													<li className="nav-item">
+														<a href="#financing" className={`nav-link px-4 ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#FF7A00" } : {}}>Financing</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+
+									<div className="features-section py-5" id="features">
+										<div className="container-fluid px-0">
+											<h3 className="mb-4">Features</h3>
+
+											<div className="row">
+												<div className="col-md-6 mb-4">
+													<div className="card border-0 h-100">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Security, Safety and Assistance</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Parking camera</a>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Parking assist system self-steering</a>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Blind spot assist</a>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">ABS</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Emergency braking assist (EBA, BAS)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Emergency call</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Fatigue warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front collision warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Hill-start assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Immobilizer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Lane assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front and rear parking sensors</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Power assisted steering</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Rain sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Rear seats ISOFIX points</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Traction control (TC, ASR)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Traffic sign recognition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Tyre pressure monitoring</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
 													</div>
 												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/diesel.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">Diesel</p>
+
+												<div className="col-md-6 mb-4">
+													<div className="card border-0 h-100">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Comfort and Convenience</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">USB</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Navigation system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Keyless entry</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Heated steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Heated front seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Apple CarPlay</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Android Auto</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Automatic 2-zones air conditioning</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Alloy wheels</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Armrest front</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">JBL audio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Automatic parking brake</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Bluetooth</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Central locking</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Adaptive cruise control</span>
+																		</li>
+																	</ul>
+																</div>
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">DAB radio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Daytime running lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front electric windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front Fog lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Hands-free</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">LED headlights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">High beam assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Integrated music streaming</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Keyless ignition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Leather steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Light sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Multifunctional steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">On-board computer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Radio</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
 													</div>
 												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/auto.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">Automatic</p>
-													</div>
-												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/seat.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">7 seats</p>
-													</div>
-												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/bag.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">3 Large bags</p>
-													</div>
-												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/suv.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">SUVs</p>
-													</div>
-												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/door.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">4 Doors</p>
-													</div>
-												</div>
-											</div>
-											<div className="item-feature-car w-md-25">
-												<div className="item-feature-car-inner">
-													<div className="feature-image"><img src="/assets/imgs/page/car/lit.svg" alt="Fast4Car" /></div>
-													<div className="feature-info">
-														<p className="text-md-medium neutral-1000">2.5L</p>
+
+												<div className="col-md-6 mb-4">
+													<div className="card border-0">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Accessories and Extra features</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">Tyre repair kit</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Divided rear seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Side mirrors with electric adjustment</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Start-stop system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Tinted windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Touch screen</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Voice control</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-									<div className="box-collapse-expand">
-										<div className="group-collapse-expand">
+
+									<div id="how-it-works" className="mt-5 pt-3 w-full">
+										<h3 className="mb-4">How it works</h3>
+										<div className="card border-0 rounded-4 overflow-hidden shadow">
+											<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="false">
+												<div className="carousel-inner">
+													<div className="carousel-item active">
+														<div className="row g-0">
+															<div className="col-md-4 position-relative">
+																<img src="/how_works_1.webp" className="img-fluid rounded-start w-100 h-70 object-cover" alt="Delivery truck" />
+																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
+																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 1</span>
+																</div>
+															</div>
+															<div className="col-md-8">
+																<div className="card-body p-4 p-md-5">
+																	<div className="d-flex align-items-center mb-3">
+																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
+																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+																				<line x1="16" y1="2" x2="16" y2="6"></line>
+																				<line x1="8" y1="2" x2="8" y2="6"></line>
+																				<line x1="3" y1="10" x2="21" y2="10"></line>
+																			</svg>
+																		</div>
+																		<div>
+																			<h4 className="card-title mb-0 text-primary">Delivery time</h4>
+																			<p className="text-muted small mb-0">Order confirmation</p>
+																		</div>
+																	</div>
+																	<div className="card-text">
+																		<p className="mb-4">We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.</p>
+																		<p className="text-muted">Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.</p>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div className="carousel-item">
+														<div className="row g-0">
+															<div className="col-md-4 position-relative">
+																<img src="/how_works_2.webp" className="img-fluid rounded-start w-100 h-100 object-cover" alt="Car inspection" />
+																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
+																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 2</span>
+																</div>
+															</div>
+															<div className="col-md-8">
+																<div className="card-body p-4 p-md-5">
+																	<div className="d-flex align-items-center mb-3">
+																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
+																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<h4 className="card-title mb-0 text-primary">Check the car first, decide later</h4>
+																			<p className="text-muted small mb-0">Technical inspection</p>
+																		</div>
+																	</div>
+																	<div className="card-text">
+																		<p className="mb-4">For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.</p>
+																		<p className="text-muted">Only then do you decide whether you want to buy the car.</p>
+																		<div className="mt-4">
+																			<button className="btn rounded-circle border-0" style={{ backgroundColor: '#FF7A00', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(255, 122, 0, 0.3)' }}>
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
+																					<polygon points="6 3 20 12 6 21 6 3"></polygon>
+																				</svg>
+																			</button>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div className="carousel-item">
+														<div className="row g-0">
+															<div className="col-md-4 position-relative">
+																<img src="/how_works_3.webp" className="img-fluid rounded-start w-100 h-100 object-cover" alt="Customer warranty" />
+																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
+																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 3</span>
+																</div>
+															</div>
+															<div className="col-md-8">
+																<div className="card-body p-4 p-md-5">
+																	<div className="d-flex align-items-center mb-3">
+																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
+																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<h4 className="card-title mb-0 text-primary">We keep the guarantee!</h4>
+																			<p className="text-muted small mb-0">6-month warranty</p>
+																		</div>
+																	</div>
+																	<div className="card-text">
+																		<p className="mb-4">We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.</p>
+																		<p className="text-muted">If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong></p>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												{/* Controls and indicators in a fixed footer */}
+												<div className="position-relative border-top mt-3">
+													<div className="d-flex justify-content-between align-items-center px-4 py-3">
+														<div className="d-flex">
+															{[1, 2, 3].map((step) => (
+																<button
+																	key={step}
+																	type="button"
+																	data-bs-target="#howItWorksCarousel"
+																	data-bs-slide-to={step - 1}
+																	className={`position-relative d-flex align-items-center justify-content-center me-3 ${activeStep === step ? 'active' : ''}`}
+																	style={{
+																		background: "transparent",
+																		border: "none",
+																		cursor: "pointer",
+																		padding: 0
+																	}}
+																	onClick={() => setActiveStep(step)}
+																	aria-label={`Go to slide ${step}`}
+																>
+																	<div className="position-relative">
+																		<div
+																			className={`rounded-circle transition-all duration-200`}
+																			style={{
+																				width: '12px',
+																				height: '12px',
+																				backgroundColor: activeStep === step ? '#FF7A00' : '#D1D5DB',
+																				opacity: activeStep === step ? 1 : 0.5,
+																				transition: 'all 0.2s ease'
+																			}}
+																		></div>
+																		<div
+																			className="position-absolute top-0 left-0 rounded-circle"
+																			style={{
+																				width: '12px',
+																				height: '12px',
+																				border: activeStep === step ? '2px solid #FFCCA5' : 'none',
+																				opacity: activeStep === step ? 1 : 0,
+																				transform: 'scale(1.5)',
+																				transition: 'all 0.2s ease'
+																			}}
+																		></div>
+																	</div>
+																	<div className="ms-2 d-none d-md-block">
+																		<span className="small fw-medium" style={{
+																			color: activeStep === step ? '#FF7A00' : '#718096'
+																		}}>
+																			Step {step}
+																		</span>
+																	</div>
+																</button>
+															))}
+														</div>
+
+														<div className="d-flex">
+															<button
+																className="btn btn-sm me-2 d-flex align-items-center justify-content-center"
+																style={{
+																	width: '36px',
+																	height: '36px',
+																	backgroundColor: 'transparent',
+																	color: '#4A5568',
+																	border: '1px solid #E2E8F0',
+																	borderRadius: '8px'
+																}}
+																type="button"
+																data-bs-target="#howItWorksCarousel"
+																data-bs-slide="prev"
+																onClick={() => {
+																	if (activeStep > 1) {
+																		setActiveStep(activeStep - 1);
+																	}
+																}}
+															>
+																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+																	<path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+																</svg>
+															</button>
+															<button
+																className="btn btn-sm d-flex align-items-center justify-content-center"
+																style={{
+																	width: '36px',
+																	height: '36px',
+																	backgroundColor: 'transparent',
+																	color: '#4A5568',
+																	border: '1px solid #E2E8F0',
+																	borderRadius: '8px'
+																}}
+																type="button"
+																data-bs-target="#howItWorksCarousel"
+																data-bs-slide="next"
+																onClick={() => {
+																	if (activeStep < 3) {
+																		setActiveStep(activeStep + 1);
+																	}
+																}}
+															>
+																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+																	<path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+																</svg>
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div className="box-collapse-expand mt-4">
+										<div className="group-collapse-expand" id="details">
 											<button className={isAccordion == 1 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverview" aria-expanded="false" aria-controls="collapseOverview" onClick={() => handleAccordion(1)}>
 												<h6>Overview</h6>
 												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
@@ -285,30 +759,284 @@ export default function CarsDetails1() {
 											</button>
 											<div className={isAccordion == 1 ? "collapse" : "collapse show"} id="collapseOverview">
 												<div className="card card-body">
-													<p>Elevate your Las Vegas experience to new heights with a journey aboard The High Roller at The LINQ. As the tallest observation wheel in the world, standing at an impressive 550 feet tall, The High Roller offers a bird's-eye perspective of the iconic Las Vegas Strip and its surrounding desert landscape. From the moment you step into one of the spacious cabins, you'll be transported on a mesmerizing adventure, where every turn offers a new and breathtaking vista of the vibrant city below.</p>
-													<p>Whether you're a first-time visitor or a seasoned Las Vegas aficionado, The High Roller promises an unparalleled experience that will leave you in awe. With its climate-controlled cabins and immersive audio commentary, this attraction provides a unique opportunity to see Las Vegas from a whole new perspective, while learning about its rich history and famous landmarks along the way.</p>
+													<div className="car-details-specifications py-4">
+														<h4 className="mb-4">Details</h4>
+
+														<div className="bg-light p-4 rounded mb-4">
+															<div className="row g-4">
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0z"></path>
+																				<path d="M12 7v5l3 3"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">MILEAGE</div>
+																			<div className="fw-bold">46,042 km</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+																				<line x1="16" y1="2" x2="16" y2="6"></line>
+																				<line x1="8" y1="2" x2="8" y2="6"></line>
+																				<line x1="3" y1="10" x2="21" y2="10"></line>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">FIRST REGISTRATION</div>
+																			<div className="fw-bold">12/2020</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M4 20h16a2 2 0 0 1 2-2V8a2 2 0 0 0-2-2h-2V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>
+																				<path d="M12 8v8"></path>
+																				<path d="M8 12h8"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">POWER</div>
+																			<div className="fw-bold">181 hp</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M5 16l2.5-7.5L10 16"></path>
+																				<path d="M14 16l2-4 2 4"></path>
+																				<path d="M4 19h4"></path>
+																				<path d="M14 19h6"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">TRANSMISSION</div>
+																			<div className="fw-bold">Automatic</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">DRIVE TYPE</div>
+																			<div className="fw-bold">4x2</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M6 10H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"></path>
+																				<path d="M6 14H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"></path>
+																				<path d="M6 6h.01"></path>
+																				<path d="M6 18h.01"></path>
+																				<path d="M13 12l-3-3m0 6l3-3"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">CONSUMPTION</div>
+																			<div className="fw-bold">4 l/100km</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M9 20L3 17V7l6 3"></path>
+																				<path d="M9 20v-9"></path>
+																				<path d="M15 20l6-3V7l-6 3"></path>
+																				<path d="M15 20v-9"></path>
+																				<path d="M9 11L15 8"></path>
+																				<path d="M9 4l6-3"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">CO2 EMISSIONS</div>
+																			<div className="fw-bold">92 g/km</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-4">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+																				<path d="M8.5 8.5v.01"></path>
+																				<path d="M16 12v.01"></path>
+																				<path d="M12 16v.01"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">LOCATION</div>
+																			<div className="fw-bold">Germany</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+
+														<div className="electric-specs p-4 rounded mb-4" style={{ background: 'linear-gradient(to right, #f0f6ff, #ffffff)' }}>
+															<div className="d-flex justify-content-between mb-3">
+																<h5>Electric motor specifications for a new car</h5>
+																<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
+															</div>
+
+															<div className="row g-4 mt-2">
+																<div className="col-md-6">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3 text-primary">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+																				<path d="M12 4v16"></path>
+																				<path d="M6 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+																				<path d="M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">BATTERY CAPACITY</div>
+																			<div className="fw-bold">2 kWh</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-6">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3 text-primary">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
+																			<div className="fw-bold">80 kW</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-6">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3 text-primary">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																				<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																				<path d="M8 10h6"></path>
+																				<path d="M4 15l4 5"></path>
+																				<path d="M16 20l4-5"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
+																			<div className="fw-bold">112 kW</div>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-6">
+																	<div className="d-flex align-items-center">
+																		<div className="icon-container me-3 text-primary">
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																				<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																				<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																				<path d="M8 10h6"></path>
+																				<path d="M4 15l4 5"></path>
+																				<path d="M16 20l4-5"></path>
+																			</svg>
+																		</div>
+																		<div>
+																			<div className="text-uppercase text-muted small">SECONDARY FUEL ⓘ</div>
+																			<div className="fw-bold">Petrol</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+
+															<div className="row mt-4">
+																<div className="col-md-4">
+																	<div className="mb-3">
+																		<div className="text-uppercase text-muted small">Battery type</div>
+																		<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
+																	</div>
+																</div>
+															</div>
+
+															<div className="mt-2">
+																<a href="#" className="text-primary d-flex align-items-center">
+																	<span>More about electric cars</span>
+																	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ms-2">
+																		<path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
+																		<path d="M14 2h6v6"></path>
+																		<path d="M18 8L8 18"></path>
+																	</svg>
+																</a>
+															</div>
+
+															<div className="mt-4 pt-3 border-top text-muted small">
+																<p className="mb-0">The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.</p>
+															</div>
+														</div>
+
+														<div className="general-engine-info">
+															<div className="row">
+																<div className="col-md-6">
+																	<div className="card border-0 mb-4">
+																		<div className="card-header bg-light">General</div>
+																		<div className="card-body p-0">
+																			<table className="table table-striped mb-0">
+																				<tbody>
+																					<tr>
+																						<td className="text-muted">Vehicle ID</td>
+																						<td className="fw-medium">74002238</td>
+																					</tr>
+																					<tr>
+																						<td className="text-muted">Make</td>
+																						<td className="fw-medium">Toyota</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+																<div className="col-md-6">
+																	<div className="card border-0 mb-4">
+																		<div className="card-header bg-light">Engine</div>
+																		<div className="card-body p-0">
+																			<table className="table table-striped mb-0">
+																				<tbody>
+																					<tr>
+																						<td className="text-muted">Engine capacity</td>
+																						<td className="fw-medium">1,987 ccm</td>
+																					</tr>
+																					<tr>
+																						<td className="text-muted">Consumption (comb.)</td>
+																						<td className="fw-medium">4 l/100km</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
-										<div className="group-collapse-expand">
-											<button className={isAccordion == 2 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseItinerary" aria-expanded="false" aria-controls="collapseItinerary" onClick={() => handleAccordion(2)}>
-												<h6>Included in the price</h6>
-												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
-													<path d="M1 1L6 6L11 1" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg>
-											</button>
-											<div className={isAccordion == 2 ? "collapse" : "collapse show"} id="collapseItinerary">
-												<div className="card card-body">
-													<ul className="list-checked-green">
-														<li>Free cancellation up to 48 hours before pick-up</li>
-														<li>Collision Damage Waiver with $700 deductible</li>
-														<li>Theft Protection with ₫66,926,626 excess</li>
-														<li>Unlimited mileage</li>
-													</ul>
-												</div>
-											</div>
-										</div>
-										<div className="group-collapse-expand">
+
+										{/* <div className="group-collapse-expand" id="price-history">
 											<button className={isAccordion == 3 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestion" aria-expanded="false" aria-controls="collapseQuestion" onClick={() => handleAccordion(3)}>
 												<h6>Question  Answers</h6>
 												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
@@ -345,404 +1073,507 @@ export default function CarsDetails1() {
 													</div>
 												</div>
 											</div>
-										</div>
-										<div className="group-collapse-expand">
-											<button className={isAccordion == 4 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseReviews" aria-expanded="false" aria-controls="collapseReviews" onClick={() => handleAccordion(4)}>
-												<h6>Rate  Reviews</h6>
-												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
-													<path d="M1 1L6 6L11 1" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg>
-											</button>
-											<div className={isAccordion == 4 ? "collapse" : "collapse show"} id="collapseReviews">
-												<div className="card card-body">
-													<div className="head-reviews">
-														<div className="review-left">
-															<div className="review-info-inner">
-																<h6 className="neutral-1000">4.95 / 5</h6>
-																<p className="text-sm-medium neutral-400">(672 reviews)</p>
-																<div className="review-rate"> <img src="/assets/imgs/page/tour-detail/star.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star.svg" alt="Travila" /></div>
-															</div>
+										</div> */}
+
+									</div>
+
+									<div id="price-history" className="mt-5 pt-3">
+										<h3 className="mb-4">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h3>
+										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+											<div className="card-body p-4">
+												<div className="d-flex justify-content-between align-items-center mb-3">
+													<h5 className="mb-0">Price vs Mileage Comparison</h5>
+													<div className="d-flex gap-3 align-items-center">
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
+															<span className="small">This vehicle</span>
 														</div>
-														<div className="review-right">
-															<div className="review-progress">
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Price</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '90%' }}> </div>
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>4.8/5</p>
-																	</div>
-																</div>
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Service</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '90%' }}> </div>
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>4.2/5</p>
-																	</div>
-																</div>
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Safety</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '95%' }}> </div>
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>4.9/5</p>
-																	</div>
-																</div>
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Entertainment</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '85%' }}> </div>
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>4.7/5</p>
-																	</div>
-																</div>
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Accessibility</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '100%' }}> </div>
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>5/5</p>
-																	</div>
-																</div>
-																<div className="item-review-progress">
-																	<div className="text-rv-progress">
-																		<p className="text-sm-bold">Support</p>
-																	</div>
-																	<div className="bar-rv-progress">
-																		<div className="progress">
-																			<div className="progress-bar" style={{ width: '100%' }} />
-																		</div>
-																	</div>
-																	<div className="text-avarage">
-																		<p>5/5</p>
-																	</div>
-																</div>
-															</div>
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
+															<span className="small">Similar models</span>
+														</div>
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
+															<span className="small">Market average</span>
 														</div>
 													</div>
-													<div className="list-reviews">
-														<div className="item-review">
-															<div className="head-review">
-																<div className="author-review"> <img src="/assets/imgs/page/tour-detail/avatar.png" alt="Travila" />
-																	<div className="author-info">
-																		<p className="text-lg-bold">Sarah Johnson</p>
-																		<p className="text-sm-medium neutral-500">December 4, 2024 at 3:12 pm</p>
-																	</div>
-																</div>
-																<div className="rate-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></div>
-															</div>
-															<div className="content-review">
-																<p className="text-sm-medium neutral-800">The views from The High Roller were absolutely stunning! It's a fantastic way to see the Strip and the surrounding area. The cabins are spacious and comfortable, and the audio commentary adds an extra layer of enjoyment. Highly recommend!</p>
-															</div>
+												</div>
+
+												<div className="price-map-chart bg-white rounded-3 p-3" style={{ height: '250px' }}>
+													{/* Enhanced price map chart */}
+													<div className="position-relative h-100">
+														{/* Y-axis labels */}
+														<div className="position-absolute start-0 h-100 d-flex flex-column justify-content-between" style={{ width: '60px' }}>
+															<div className="text-muted small">€31,000</div>
+															<div className="text-muted small">€29,000</div>
+															<div className="text-muted small">€27,000</div>
+															<div className="text-muted small">€25,000</div>
+															<div className="text-muted small">€23,000</div>
 														</div>
-														<div className="item-review">
-															<div className="head-review">
-																<div className="author-review"> <img src="/assets/imgs/page/tour-detail/avatar.png" alt="Travila" />
-																	<div className="author-info">
-																		<p className="text-lg-bold">Sarah Johnson</p>
-																		<p className="text-sm-medium neutral-500">December 4, 2024 at 3:12 pm</p>
-																	</div>
-																</div>
-																<div className="rate-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></div>
-															</div>
-															<div className="content-review">
-																<p className="text-sm-medium neutral-800">The views from The High Roller were absolutely stunning! It's a fantastic way to see the Strip and the surrounding area. The cabins are spacious and comfortable, and the audio commentary adds an extra layer of enjoyment. Highly recommend!</p>
-															</div>
+
+														{/* X-axis labels */}
+														<div className="position-absolute bottom-0 start-0 w-100 d-flex justify-content-between ps-5 pe-3">
+															<div className="text-muted small">40,000 km</div>
+															<div className="text-muted small">44,000 km</div>
+															<div className="text-muted small">48,000 km</div>
+															<div className="text-muted small">52,000 km</div>
+															<div className="text-muted small">56,000 km</div>
 														</div>
-														<div className="item-review">
-															<div className="head-review">
-																<div className="author-review"> <img src="/assets/imgs/page/tour-detail/avatar.png" alt="Travila" />
-																	<div className="author-info">
-																		<p className="text-lg-bold">Sarah Johnson</p>
-																		<p className="text-sm-medium neutral-500">December 4, 2024 at 3:12 pm</p>
-																	</div>
+
+														{/* Chart with grid lines and dots */}
+														<div className="position-absolute top-0 start-0 w-100 h-100 ps-5 pe-3 pt-3 pb-5">
+															{/* Horizontal grid lines */}
+															{[0, 25, 50, 75, 100].map((pos) => (
+																<div key={pos} className="position-absolute w-100 border-top border-gray-200" style={{ top: `${pos}%`, opacity: 0.3 }}></div>
+															))}
+
+															{/* Vertical grid lines */}
+															{[0, 25, 50, 75, 100].map((pos) => (
+																<div key={`v-${pos}`} className="position-absolute h-100 border-start border-gray-200" style={{ left: `${pos}%`, opacity: 0.3 }}></div>
+															))}
+
+															{/* This car dot with tooltip */}
+															<div className="position-absolute" style={{ top: '40%', left: '25%' }}>
+																<div
+																	className="rounded-circle position-relative"
+																	style={{
+																		width: '16px',
+																		height: '16px',
+																		backgroundColor: '#FF7A00',
+																		boxShadow: '0 0 0 4px rgba(255, 122, 0, 0.2)',
+																		cursor: 'pointer'
+																	}}
+																	data-bs-toggle="tooltip"
+																	data-bs-placement="top"
+																	title="This car: €24,999 | 46,042 km"
+																></div>
+															</div>
+
+															{/* Comparison car dots with pulsing effect */}
+															<div className="position-absolute" style={{ top: '35%', left: '45%' }}>
+																<div
+																	className="rounded-circle"
+																	style={{
+																		width: '14px',
+																		height: '14px',
+																		backgroundColor: '#3B66FF',
+																		boxShadow: '0 0 0 3px rgba(59, 102, 255, 0.2)',
+																		cursor: 'pointer'
+
+
+																	}}
+																	data-bs-toggle="tooltip"
+																	data-bs-placement="top"
+																	title="Toyota C-HR: €25,499 | 48,500 km"
+																></div>
+															</div>
+
+															<div className="position-absolute" style={{ top: '50%', left: '55%' }}>
+																<div
+																	className="rounded-circle"
+																	style={{
+																		width: '14px',
+																		height: '14px',
+																		backgroundColor: '#3B66FF',
+																		boxShadow: '0 0 0 3px rgba(59, 102, 255, 0.2)',
+																		cursor: 'pointer'
+																	}}
+																	data-bs-toggle="tooltip"
+																	data-bs-placement="top"
+																	title="Toyota C-HR: €23,750 | 51,200 km"
+																></div>
+															</div>
+
+															{/* Background dots for other cars */}
+															{Array.from({ length: 15 }).map((_, index) => (
+																<div key={index} className="position-absolute" style={{
+																	top: `${20 + Math.random() * 60}%`,
+																	left: `${15 + Math.random() * 70}%`
+																}}>
+																	<div
+																		className="rounded-circle"
+																		style={{
+																			width: '8px',
+																			height: '8px',
+																			backgroundColor: '#BBC5D5',
+																			opacity: 0.8,
+																			cursor: 'pointer'
+																		}}
+																		data-bs-toggle="tooltip"
+																		data-bs-placement="top"
+																		title={`Toyota ${Math.random() > 0.5 ? 'C-HR' : 'RAV4'}: €${(23000 + Math.random() * 4000).toFixed(0)} | ${(42000 + Math.random() * 14000).toFixed(0)} km`}
+																	></div>
 																</div>
-																<div className="rate-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></div>
-															</div>
-															<div className="content-review">
-																<p className="text-sm-medium neutral-800">The views from The High Roller were absolutely stunning! It's a fantastic way to see the Strip and the surrounding area. The cabins are spacious and comfortable, and the audio commentary adds an extra layer of enjoyment. Highly recommend!</p>
-															</div>
+															))}
 														</div>
 													</div>
-													<nav aria-label="Page navigation example">
-														<ul className="pagination">
-															<li className="page-item"><Link className="page-link" href="#" aria-label="Previous"><span aria-hidden="true">
-																<svg width={12} height={12} viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M6.00016 1.33325L1.3335 5.99992M1.3335 5.99992L6.00016 10.6666M1.3335 5.99992H10.6668" strokeLinecap="round" strokeLinejoin="round" />
-																</svg></span></Link></li>
-															<li className="page-item"><Link className="page-link" href="#">1</Link></li>
-															<li className="page-item"><Link className="page-link active" href="#">2</Link></li>
-															<li className="page-item"><Link className="page-link" href="#">3</Link></li>
-															<li className="page-item"><Link className="page-link" href="#">4</Link></li>
-															<li className="page-item"><Link className="page-link" href="#">5</Link></li>
-															<li className="page-item"><Link className="page-link" href="#">...</Link></li>
-															<li className="page-item"><Link className="page-link" href="#" aria-label="Next"><span aria-hidden="true">
-																<svg width={12} height={12} viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M5.99967 10.6666L10.6663 5.99992L5.99968 1.33325M10.6663 5.99992L1.33301 5.99992" strokeLinecap="round" strokeLinejoin="round" />
-																</svg></span></Link></li>
-														</ul>
-													</nav>
+												</div>
+
+												<div className="d-flex justify-content-between align-items-center mt-3">
+													<div className="text-muted small">Data from similar vehicles in market</div>
+													<div className="bg-light-green rounded-2 py-1 px-2 d-flex align-items-center">
+														<span className="text-success small fw-medium">Good price positioning</span>
+													</div>
 												</div>
 											</div>
 										</div>
-										<div className="group-collapse-expand">
-											<button className={isAccordion == 5 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddReview" aria-expanded="false" aria-controls="collapseAddReview" onClick={() => handleAccordion(5)}>
-												<h6>Add a review</h6>
-												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
-													<path d="M1 1L6 6L11 1" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg>
-											</button>
-											<div className={isAccordion == 5 ? "collapse" : "collapse show"} id="collapseAddReview">
-												<div className="card card-body">
-													<div className="box-type-reviews">
-														<div className="row">
-															<div className="col-lg-4">
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Price</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Service</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
+
+										<div className="row g-4">
+											<div className="col-md-6">
+												<div className="card border-0 rounded-4 shadow-sm h-100">
+													<div className="position-relative">
+														<img src="/assets/imgs/cars-details/banner.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
+														<div className="position-absolute top-0 start-0 m-3">
+															<span className="badge bg-primary text-white px-3 py-2">THIS CAR</span>
+														</div>
+													</div>
+													<div className="card-body p-4">
+														<h5 className="mb-2">Toyota C-HR 2.0 Hybrid 135 kW</h5>
+														<div className="d-flex align-items-center mb-3">
+															<div className="me-4">
+																<span className="text-muted small">46,042 km</span>
 															</div>
-															<div className="col-lg-4">
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Safety</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Entertainment</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
+															<div>
+																<span className="text-muted small">12/2020</span>
 															</div>
-															<div className="col-lg-4">
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Accessibility</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
-																<div className="box-type-review">
-																	<p className="text-sm-bold text-type-rv">Support</p>
-																	<p className="rate-type-review"> <img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /><img src="/assets/imgs/page/tour-detail/star-big.svg" alt="Travila" /></p>
-																</div>
+														</div>
+
+														<div className="d-flex mb-3">
+															<div className="text-success me-2">
+																★★★★☆
+															</div>
+															<span className="text-muted small">Very good price</span>
+														</div>
+
+														<div className="d-flex justify-content-between align-items-baseline mb-3">
+															<h4 className="mb-0">24 999 €</h4>
+															<span className="text-muted small">without VAT 20 491 €</span>
+														</div>
+
+														<h6 className="mt-4 mb-3">Equipment</h6>
+														<div className="d-flex flex-wrap gap-2">
+															<span className="badge bg-light text-primary px-3 py-2">Parking assist</span>
+															<span className="badge bg-light text-primary px-3 py-2">Keyless entry</span>
+															<span className="badge bg-light text-primary px-3 py-2">Heated wheel</span>
+															<span className="badge bg-light text-primary px-3 py-2">Apple CarPlay</span>
+															<span className="badge bg-light text-primary px-3 py-2">Android Auto</span>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<div className="col-md-6">
+												<div className="card border-0 rounded-4 shadow-sm h-100">
+													<div className="position-relative">
+														<img src="/assets/imgs/cars-details/banner2.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
+														<div className="position-absolute top-0 start-0 m-3">
+															<span className="badge bg-warning text-dark px-3 py-2">COMPARED TO</span>
+														</div>
+													</div>
+													<div className="card-body p-4">
+														<h5 className="mb-2">Toyota C-HR 2.0 135 kW</h5>
+														<div className="d-flex align-items-center mb-3">
+															<div className="me-4">
+																<span className="text-muted small">42,799 km</span>
+															</div>
+															<div>
+																<span className="text-muted small">1/2022</span>
+															</div>
+														</div>
+
+														<div className="d-flex justify-content-between align-items-baseline mb-3">
+															<h4 className="mb-0">24 149 €</h4>
+															<div className="text-end">
+																<div className="small">by 1 150 € more expensive</div>
+																<div className="text-muted small">without VAT 21 844 €</div>
+															</div>
+														</div>
+
+														<h6 className="mt-4 mb-3">Differences in equipment</h6>
+														<div className="mb-3">
+															<div className="d-flex mb-2">
+																<span className="badge bg-success me-2">+</span>
+																<span>Electric adjustable front seats</span>
+															</div>
+															<div className="d-flex mb-2">
+																<span className="badge bg-success me-2">+</span>
+																<span>Full leather</span>
+															</div>
+															<div className="d-flex">
+																<span className="badge bg-success me-2">+</span>
+																<span>Heated side mirrors</span>
+															</div>
+														</div>
+
+														<div>
+															<div className="d-flex mb-2">
+																<span className="badge bg-secondary me-2">-</span>
+																<span>Parking assist system</span>
+															</div>
+															<div className="d-flex mb-2">
+																<span className="badge bg-secondary me-2">-</span>
+																<span>Keyless entry</span>
+															</div>
+															<div className="d-flex">
+																<span className="badge bg-secondary me-2">-</span>
+																<span>Apple CarPlay</span>
 															</div>
 														</div>
 													</div>
-													<div className="box-form-reviews">
-														<h6 className="text-md-bold neutral-1000 mb-15">Leave feedback</h6>
-														<div className="row">
-															<div className="col-md-6">
-																<div className="form-group">
-																	<input className="form-control" type="text" placeholder="Your name" />
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div id="comparison" className="mt-5 pt-3">
+										<h3 className="mb-4">Comparison</h3>
+										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+											<div className="card-body p-4">
+												<div className="text-center mb-4">
+													<p className="mb-2 fs-5">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
+													<p className="mb-5">We take in account <span className="fw-bold">up to 70 vehicle characteristics</span>.</p>
+
+													<div className="position-relative mt-5 pt-4">
+														<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
+															<div className="text-white text-center p-3 rounded-3 mb-5 position-relative" style={{ width: '200px', margin: '0 auto', backgroundColor: '#F56565' }}>
+																<div className="mb-1 fw-bold">THIS CAR</div>
+																<div className="fs-2 fw-bold">€24,999</div>
+																<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
+																	<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #F56565' }}></div>
 																</div>
-															</div>
-															<div className="col-md-6">
-																<div className="form-group">
-																	<input className="form-control" type="text" placeholder="Email address" />
-																</div>
-															</div>
-															<div className="col-md-12">
-																<div className="form-group">
-																	<textarea className="form-control" placeholder="Your comment" defaultValue={""} />
-																</div>
-															</div>
-															<div className="col-md-12">
-																<button className="btn btn-black-lg-square">Submit review
-																	<svg width={16} height={16} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-																		<path d="M8 15L15 8L8 1M15 8L1 8" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-																	</svg>
-																</button >
 															</div>
 														</div>
+
+														<div className="d-flex justify-content-between align-items-center mt-4 mb-2 px-4">
+															<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Top offer</div>
+															<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Very good price</div>
+															<div className="text-warning fw-medium" style={{ fontSize: '14px' }}>Fair price</div>
+															<div className="text-warning fw-medium" style={{ fontSize: '14px' }}>Higher price</div>
+															<div style={{ color: '#FF8A00', fontWeight: '500', fontSize: '14px' }}>High price</div>
+														</div>
+
+														<div style={{ height: '8px', display: 'flex', borderRadius: '4px', overflow: 'hidden' }}>
+															<div style={{ width: '20%', backgroundColor: '#64C359' }}></div>
+															<div style={{ width: '20%', backgroundColor: '#8BD980' }}></div>
+															<div style={{ width: '20%', backgroundColor: '#FFD25F' }}></div>
+															<div style={{ width: '20%', backgroundColor: '#FFC107' }}></div>
+															<div style={{ width: '20%', backgroundColor: '#FF8A00' }}></div>
+														</div>
+
+														<div className="d-flex justify-content-between align-items-center mt-3 px-3">
+															<div className="text-muted">€24,165</div>
+															<div className="text-muted">€25,675</div>
+															<div className="text-muted">€27,218</div>
+															<div className="text-muted">€28,729</div>
+														</div>
 													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div id="financing" className="mt-5 pt-3">
+										<h3 className="mb-4">Financing</h3>
+										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+											<div className="card-body p-4">
+												<div className="d-flex justify-content-between align-items-center mb-3">
+													<h5 className="mb-0">Financing options</h5>
+													<div className="d-flex gap-3 align-items-center">
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
+															<span className="small">This vehicle</span>
+														</div>
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
+															<span className="small">Similar models</span>
+														</div>
+														<div className="d-flex align-items-center">
+															<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
+															<span className="small">Market average</span>
+														</div>
+													</div>
+												</div>
+												<div className="d-flex justify-content-between align-items-center">
+													<div className="text-muted small">Data from similar vehicles in market</div>
+													<div className="bg-light-green rounded-2 py-1 px-2 d-flex align-items-center">
+														<span className="text-success small fw-medium">Good price positioning</span>
+													</div>
+												</div>
+
+												<div className="mt-4">
+													<FinancingSpecs
+														onFinancingRequest={() => console.log('Financing requested')}
+														onFullPayment={() => console.log('Full payment selected')}
+														onToggleSpecs={(isExpanded) => console.log('Specs toggled:', isExpanded)}
+													/>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-4">
-									<div className="sidebar-banner">
+									<div className="sidebar-banner mb-4">
 										<div className="p-4 background-body border rounded-3">
-											<p className="text-xl-bold neutral-1000 mb-4">Get Started</p>
-											<Link href="#" className="btn btn-primary w-100 rounded-3 py-3 mb-3">
-												Schedule Test Drive
-												<svg width={17} height={16} viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-													<path d="M8.5 15L15.5 8L8.5 1M15.5 8L1.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</Link>
-											<Link href="#" className="btn btn-book bg-2">
-												Make An Offer Price
-												<svg width={17} height={16} viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-													<path d="M8.5 15L15.5 8L8.5 1M15.5 8L1.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</Link>
-										</div>
-									</div>
-									<div className="booking-form">
-										<div className="head-booking-form">
-											<p className="text-xl-bold neutral-1000">Rent This Vehicle</p>
-										</div>
-										<div className="content-booking-form">
-											<div className="item-line-booking border-bottom-0 pb-0">
-												<strong className="text-md-bold neutral-1000">Pick-Up</strong>
-												<div className="input-calendar">
-													<MyDatePicker form />
-													<svg width={18} height={18} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M14.5312 1.3828H13.8595V0.703125C13.8595 0.314789 13.5448 0 13.1564 0C12.7681 0 12.4533 0.314789 12.4533 0.703125V1.3828H5.55469V0.703125C5.55469 0.314789 5.2399 0 4.85156 0C4.46323 0 4.14844 0.314789 4.14844 0.703125V1.3828H3.47678C1.55967 1.3828 0 2.94247 0 4.85954V14.5232C0 16.4403 1.55967 18 3.47678 18H14.5313C16.4483 18 18.008 16.4403 18.008 14.5232V4.85954C18.008 2.94247 16.4483 1.3828 14.5312 1.3828ZM3.47678 2.78905H4.14844V4.16014C4.14844 4.54848 4.46323 4.86327 4.85156 4.86327C5.2399 4.86327 5.55469 4.54848 5.55469 4.16014V2.78905H12.4533V4.16014C12.4533 4.54848 12.7681 4.86327 13.1565 4.86327C13.5448 4.86327 13.8596 4.54848 13.8596 4.16014V2.78905H14.5313C15.6729 2.78905 16.6018 3.71788 16.6018 4.85954V5.53124H1.40625V4.85954C1.40625 3.71788 2.33508 2.78905 3.47678 2.78905ZM14.5312 16.5938H3.47678C2.33508 16.5938 1.40625 15.6649 1.40625 14.5232V6.93749H16.6018V14.5232C16.6018 15.6649 15.6729 16.5938 14.5312 16.5938ZM6.24611 9.70312C6.24611 10.0915 5.93132 10.4062 5.54298 10.4062H4.16018C3.77184 10.4062 3.45705 10.0915 3.45705 9.70312C3.45705 9.31479 3.77184 9 4.16018 9H5.54298C5.93128 9 6.24611 9.31479 6.24611 9.70312ZM14.551 9.70312C14.551 10.0915 14.2362 10.4062 13.8479 10.4062H12.4651C12.0767 10.4062 11.7619 10.0915 11.7619 9.70312C11.7619 9.31479 12.0767 9 12.4651 9H13.8479C14.2362 9 14.551 9.31479 14.551 9.70312ZM10.3945 9.70312C10.3945 10.0915 10.0798 10.4062 9.69142 10.4062H8.30862C7.92028 10.4062 7.60549 10.0915 7.60549 9.70312C7.60549 9.31479 7.92028 9 8.30862 9H9.69142C10.0797 9 10.3945 9.31479 10.3945 9.70312ZM6.24611 13.8516C6.24611 14.2399 5.93132 14.5547 5.54298 14.5547H4.16018C3.77184 14.5547 3.45705 14.2399 3.45705 13.8516C3.45705 13.4632 3.77184 13.1484 4.16018 13.1484H5.54298C5.93128 13.1484 6.24611 13.4632 6.24611 13.8516ZM14.551 13.8516C14.551 14.2399 14.2362 14.5547 13.8479 14.5547H12.4651C12.0767 14.5547 11.7619 14.2399 11.7619 13.8516C11.7619 13.4632 12.0767 13.1484 12.4651 13.1484H13.8479C14.2362 13.1484 14.551 13.4632 14.551 13.8516ZM10.3945 13.8516C10.3945 14.2399 10.0798 14.5547 9.69142 14.5547H8.30862C7.92028 14.5547 7.60549 14.2399 7.60549 13.8516C7.60549 13.4632 7.92028 13.1484 8.30862 13.1484H9.69142C10.0797 13.1484 10.3945 13.4632 10.3945 13.8516Z" fill="currentColor" />
-													</svg>
+											<div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
+												<div className="me-2">
+													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+													<span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
 												</div>
+												<p className="text-success m-0 fw-semibold">Very good price</p>
 											</div>
-											<div className="item-line-booking">
-												<strong className="text-md-bold neutral-1000">Drop-Off</strong>
-												<div className="input-calendar">
 
-													<MyDatePicker form />
-													<svg width={18} height={18} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M14.5312 1.3828H13.8595V0.703125C13.8595 0.314789 13.5448 0 13.1564 0C12.7681 0 12.4533 0.314789 12.4533 0.703125V1.3828H5.55469V0.703125C5.55469 0.314789 5.2399 0 4.85156 0C4.46323 0 4.14844 0.314789 4.14844 0.703125V1.3828H3.47678C1.55967 1.3828 0 2.94247 0 4.85954V14.5232C0 16.4403 1.55967 18 3.47678 18H14.5313C16.4483 18 18.008 16.4403 18.008 14.5232V4.85954C18.008 2.94247 16.4483 1.3828 14.5312 1.3828ZM3.47678 2.78905H4.14844V4.16014C4.14844 4.54848 4.46323 4.86327 4.85156 4.86327C5.2399 4.86327 5.55469 4.54848 5.55469 4.16014V2.78905H12.4533V4.16014C12.4533 4.54848 12.7681 4.86327 13.1565 4.86327C13.5448 4.86327 13.8596 4.54848 13.8596 4.16014V2.78905H14.5313C15.6729 2.78905 16.6018 3.71788 16.6018 4.85954V5.53124H1.40625V4.85954C1.40625 3.71788 2.33508 2.78905 3.47678 2.78905ZM14.5312 16.5938H3.47678C2.33508 16.5938 1.40625 15.6649 1.40625 14.5232V6.93749H16.6018V14.5232C16.6018 15.6649 15.6729 16.5938 14.5312 16.5938ZM6.24611 9.70312C6.24611 10.0915 5.93132 10.4062 5.54298 10.4062H4.16018C3.77184 10.4062 3.45705 10.0915 3.45705 9.70312C3.45705 9.31479 3.77184 9 4.16018 9H5.54298C5.93128 9 6.24611 9.31479 6.24611 9.70312ZM14.551 9.70312C14.551 10.0915 14.2362 10.4062 13.8479 10.4062H12.4651C12.0767 10.4062 11.7619 10.0915 11.7619 9.70312C11.7619 9.31479 12.0767 9 12.4651 9H13.8479C14.2362 9 14.551 9.31479 14.551 9.70312ZM10.3945 9.70312C10.3945 10.0915 10.0798 10.4062 9.69142 10.4062H8.30862C7.92028 10.4062 7.60549 10.0915 7.60549 9.70312C7.60549 9.31479 7.92028 9 8.30862 9H9.69142C10.0797 9 10.3945 9.31479 10.3945 9.70312ZM6.24611 13.8516C6.24611 14.2399 5.93132 14.5547 5.54298 14.5547H4.16018C3.77184 14.5547 3.45705 14.2399 3.45705 13.8516C3.45705 13.4632 3.77184 13.1484 4.16018 13.1484H5.54298C5.93128 13.1484 6.24611 13.4632 6.24611 13.8516ZM14.551 13.8516C14.551 14.2399 14.2362 14.5547 13.8479 14.5547H12.4651C12.0767 14.5547 11.7619 14.2399 11.7619 13.8516C11.7619 13.4632 12.0767 13.1484 12.4651 13.1484H13.8479C14.2362 13.1484 14.551 13.4632 14.551 13.8516ZM10.3945 13.8516C10.3945 14.2399 10.0798 14.5547 9.69142 14.5547H8.30862C7.92028 14.5547 7.60549 14.2399 7.60549 13.8516C7.60549 13.4632 7.92028 13.1484 8.30862 13.1484H9.69142C10.0797 13.1484 10.3945 13.4632 10.3945 13.8516Z" fill="currentColor" />
+											<div className="d-flex justify-content-between align-items-center mb-2">
+												<h6 className="text-lg-bold neutral-1000 m-0">Car price</h6>
+												<p className="text-xl-bold m-0 fs-3">€24,999</p>
+											</div>
+											<div className="d-flex justify-content-between align-items-center mb-4">
+												<p className="text-md-medium text-muted m-0">Price without VAT</p>
+												<p className="text-md-medium text-muted m-0">€20,491</p>
+											</div>
+
+											<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#F56565", color: "white" }}>
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
+													<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
+													<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
+													<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+												</svg>
+												Buy
+											</Link>
+
+											<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#F56565", border: "1px solid #E2E2E2" }}>
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
+													<path d="M19.5 3.75H4.5C4.08579 3.75 3.75 4.08579 3.75 4.5V19.5C3.75 19.9142 4.08579 20.25 4.5 20.25H19.5C19.9142 20.25 20.25 19.9142 20.25 19.5V4.5C20.25 4.08579 19.9142 3.75 19.5 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+													<path d="M16.5 7.5C15.6716 7.5 15 8.17157 15 9C15 9.82843 15.6716 10.5 16.5 10.5C17.3284 10.5 18 9.82843 18 9C18 8.17157 17.3284 7.5 16.5 7.5Z" fill="currentColor" />
+													<path d="M8.25 12L5.25 15.75H18.75L14.25 9.75L11.25 13.5L8.25 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+												</svg>
+												Financing €327/mo
+											</Link>
+
+											<div className="d-flex justify-content-between align-items-center mb-3">
+												<h6 className="m-0 d-flex align-items-center">
+													Services total
+													<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
+														<path d="M8 10.6667L4 6.66675H12L8 10.6667Z" fill="currentColor" />
 													</svg>
-												</div>
+												</h6>
+												<p className="text-md-bold m-0">€1,111</p>
 											</div>
-											<div className="item-line-booking">
-												<div className="box-tickets">
-													<strong className="text-md-bold neutral-1000">Add Extra:</strong>
-													<div className="line-booking-tickets">
-														<div className="item-ticket">
-															<ul className="list-filter-checkbox">
-																<li>
-																	<label className="cb-container"> <input type="checkbox" /><span className="text-md-medium">GPS Navigation System </span><span className="checkmark" /> </label>
-																</li>
-															</ul>
-														</div>
-														<div className="include-price">
-															<p className="text-md-bold neutral-1000">$25.00</p>
-														</div>
-													</div>
-													<div className="line-booking-tickets">
-														<div className="item-ticket">
-															<ul className="list-filter-checkbox">
-																<li>
-																	<label className="cb-container"> <input type="checkbox" /><span className="text-md-medium">Child Seat </span><span className="checkmark" /> </label>
-																</li>
-															</ul>
-														</div>
-														<div className="include-price">
-															<p className="text-md-bold neutral-1000">$32.00</p>
-														</div>
-													</div>
-													<div className="line-booking-tickets">
-														<div className="item-ticket">
-															<ul className="list-filter-checkbox">
-																<li>
-																	<label className="cb-container"> <input type="checkbox" /><span className="text-md-medium">Additional Driver </span><span className="checkmark" /> </label>
-																</li>
-															</ul>
-														</div>
-														<div className="include-price">
-															<p className="text-md-bold neutral-1000">$25.00</p>
-														</div>
-													</div>
-													<div className="line-booking-tickets">
-														<div className="item-ticket">
-															<ul className="list-filter-checkbox">
-																<li>
-																	<label className="cb-container"> <input type="checkbox" /><span className="text-md-medium">Insurance Coverage </span><span className="checkmark" /> </label>
-																</li>
-															</ul>
-														</div>
-														<div className="include-price">
-															<p className="text-md-bold neutral-1000">$52.00</p>
-														</div>
-													</div>
-												</div>
+
+											<div className="d-flex justify-content-between align-items-center py-2">
+												<p className="text-md-medium m-0">CarAudit™</p>
+												<p className="text-md-medium m-0">€119</p>
 											</div>
-											<div className="item-line-booking last-item pb-0">
-												<strong className="text-md-medium neutral-1000">Subtotal</strong>
-												<div className="line-booking-right">
-													<p className="text-xl-bold neutral-1000">$124.00</p>
-												</div>
-											</div>
-											<div className="item-line-booking last-item pb-0">
-												<strong className="text-md-medium neutral-1000">Sale discount</strong>
-												<div className="line-booking-right">
-													<p className="text-xl-bold neutral-1000">$124.00</p>
-												</div>
-											</div>
-											<div className="item-line-booking last-item">
-												<strong className="text-md-bold neutral-1000">Total Payable</strong>
-												<div className="line-booking-right">
-													<p className="text-xl-bold neutral-1000">$124.00</p>
-												</div>
-											</div>
-											<div className="box-button-book">
-												<Link className="btn btn-book" href="/checkout">
-													Buy Now
-													<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+											<div className="d-flex justify-content-between align-items-center py-2 border-bottom">
+												<p className="text-md-medium m-0 d-flex align-items-center">
+													Delivery
+													<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-primary">
+														<path d="M12.6667 6.00008H10.6667V2.66675H12L12.6667 6.00008ZM12.6667 6.00008H3.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M11.9999 10H12.6666C13.0348 10 13.3333 9.70152 13.3333 9.33333V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M3.99992 13.3333C4.73626 13.3333 5.33325 12.7363 5.33325 12C5.33325 11.2636 4.73626 10.6666 3.99992 10.6666C3.26359 10.6666 2.66659 11.2636 2.66659 12C2.66659 12.7363 3.26359 13.3333 3.99992 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M11.9999 13.3333C12.7363 13.3333 13.3333 12.7363 13.3333 12C13.3333 11.2636 12.7363 10.6666 11.9999 10.6666C11.2636 10.6666 10.6666 11.2636 10.6666 12C10.6666 12.7363 11.2636 13.3333 11.9999 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M10.6667 12H5.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M2.66659 12H1.99992V4.66667C1.99992 4.29848 2.29841 4 2.66659 4H10.6666V9.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													</svg>
-												</Link>
+												</p>
+												<Link href="#" className="text-primary text-decoration-none">Enter ZIP code</Link>
 											</div>
-											<div className="box-need-help">
-												<Link href="#">
-													<svg width={12} height={14} viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M2.83366 3.66667C2.83366 1.92067 4.25433 0.5 6.00033 0.5C7.74633 0.5 9.16699 1.92067 9.16699 3.66667C9.16699 5.41267 7.74633 6.83333 6.00033 6.83333C4.25433 6.83333 2.83366 5.41267 2.83366 3.66667ZM8.00033 7.83333H4.00033C1.88699 7.83333 0.166992 9.55333 0.166992 11.6667C0.166992 12.678 0.988992 13.5 2.00033 13.5H10.0003C11.0117 13.5 11.8337 12.678 11.8337 11.6667C11.8337 9.55333 10.1137 7.83333 8.00033 7.83333Z" fill="currentColor" />
+
+											<div className="d-flex justify-content-between align-items-center py-2">
+												<p className="text-md-medium m-0 d-flex align-items-center">
+													Registration / Province Tax
+													<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
+														<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													</svg>
-													Need some help?
-												</Link>
+												</p>
+												<p className="text-md-medium m-0">€293</p>
+											</div>
+
+											<div className="d-flex justify-content-between align-items-center py-2">
+												<p className="text-md-medium m-0 d-flex align-items-center">
+													Preparing the car for delivery (with a license plate)
+													<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
+														<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+													</svg>
+												</p>
+												<p className="text-md-medium m-0">€699</p>
+											</div>
+
+											<div className="d-flex justify-content-between align-items-center py-2">
+												<p className="text-md-medium m-0 d-flex align-items-center">
+													10 liters of fuel
+													<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
+														<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+														<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+													</svg>
+												</p>
+												<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
+											</div>
+
+											<div className="d-flex justify-content-between align-items-center py-2">
+												<p className="text-md-medium m-0">Extended warranty</p>
+												<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
 											</div>
 										</div>
 									</div>
-									<div className="sidebar-left border-1 background-card">
-										<h6 className="text-xl-bold neutral-1000">Listed by</h6>
-										<div className="box-sidebar-content">
-											<div className="box-agent-support border-bottom pb-3 mb-3">
-												<div className="card-author">
-													<div className="me-2"><img src="/assets/imgs/template/icons/car-1.png" alt="Fast4Car" /></div>
-													<div className="card-author-info">
-														<p className="text-lg-bold neutral-1000">Emily Rose</p>
-														<p className="text-sm-medium neutral-500">Las Vegas, USA</p>
+
+									<div className="sidebar-banner mb-4">
+										{/* <div className="p-4 background-body border rounded-3">
+											<h5 className="fw-bold mb-4">Get Started</h5>
+											<Link href="#" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#64E364", color: "black" }}>
+												Schedule Test Drive
+												<svg width={17} height={16} viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
+													<path d="M8.5 15L15.5 8L8.5 1M15.5 8L1.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+												</svg>
+											</Link>
+											<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center" style={{ background: "#E2FBDA", color: "black" }}>
+												Make An Offer Price
+												<svg width={17} height={16} viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
+													<path d="M8.5 15L15.5 8L8.5 1M15.5 8L1.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+												</svg>
+											</Link>
+										</div> */}
+									</div>
+
+									<div className="sidebar-banner mb-4">
+										<div className="p-4 background-body border rounded-3">
+											{/* <h5 className="fw-bold mb-4">Rent This Vehicle</h5>
+											<div className="booking-form">
+												<div className="content-booking-form">
+													<div className="row">
+														<div className="col-md-6">
+															<div className="form-group">
+																<input className="form-control" type="text" placeholder="Your name" />
+															</div>
+														</div>
+														<div className="col-md-6">
+															<div className="form-group">
+																<input className="form-control" type="text" placeholder="Email address" />
+															</div>
+														</div>
+														<div className="col-md-12">
+															<div className="form-group">
+																<textarea className="form-control" placeholder="Your comment" defaultValue={""} />
+															</div>
+														</div>
+														<div className="col-md-12">
+															<button className="btn btn-black-lg-square">Submit review
+																<svg width={16} height={16} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+																	<path d="M8 15L15 8L8 1M15 8L1 8" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+																</svg>
+															</button >
+														</div>
 													</div>
 												</div>
-											</div>
-											<div className="box-info-contact">
-												<p className="text-md-medium mobile-phone neutral-1000"><span className="text-md-bold">Mobile:</span> 1-222-333-4444</p>
-												<p className="text-md-medium email neutral-1000"><span className="text-md-bold">Email:</span> emily-rose@gmail.com</p>
-												<p className="text-md-medium whatsapp neutral-1000"><span className="text-md-bold">WhatsApp:</span> 1-222-333-4444</p>
-												<p className="text-md-medium fax neutral-1000"><span className="text-md-bold">Fax:</span> 1-222-333-4444</p>
-											</div>
-											<div className="box-link-bottom">
-												<Link className="btn btn-primary py-3 w-100 rounded-3" href="#">
-													All items by this dealer
-													<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													</svg>
-												</Link>
-											</div>
+											</div> */}
 										</div>
 									</div>
 								</div>
