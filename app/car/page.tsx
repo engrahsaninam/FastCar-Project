@@ -296,25 +296,25 @@ export default function CarsDetails1() {
 											<div className="nav-scroll py-3 bg-light rounded shadow-sm" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
 												<ul className="nav nav-pills d-flex px-3">
 													<li className="nav-item">
-														<a href="#details" className={`nav-link px-4 ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#FF7A00" } : {}}>Details</a>
+														<a href="#details" className={`nav-link px-4 ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 													</li>
 													<li className="nav-item">
-														<a href="#features" className={`nav-link px-4 ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#FF7A00" } : {}}>Features</a>
+														<a href="#features" className={`nav-link px-4 ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 													</li>
 													<li className="nav-item">
-														<a href="#how-it-works" className={`nav-link px-4 ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#FF7A00" } : {}}>How it works</a>
+														<a href="#how-it-works" className={`nav-link px-4 ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 													</li>
 													{/* <li className="nav-item">
 														<a href="#price-history" className={`nav-link px-4 ${activeTab === 'price-history' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-history' ? { backgroundColor: "#FF7A00" } : {}}>Price History</a>
 													</li> */}
 													<li className="nav-item">
-														<a href="#price-map" className={`nav-link px-4 ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#FF7A00" } : {}}>Price map</a>
+														<a href="#price-map" className={`nav-link px-4 ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 													</li>
 													<li className="nav-item">
-														<a href="#comparison" className={`nav-link px-4 ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#FF7A00" } : {}}>Comparison</a>
+														<a href="#comparison" className={`nav-link px-4 ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 													</li>
 													<li className="nav-item">
-														<a href="#financing" className={`nav-link px-4 ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#FF7A00" } : {}}>Financing</a>
+														<a href="#financing" className={`nav-link px-4 ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 													</li>
 												</ul>
 											</div>
@@ -1335,11 +1335,11 @@ export default function CarsDetails1() {
 
 													<div className="position-relative mt-5 pt-4">
 														<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
-															<div className="text-white text-center p-3 rounded-3 mb-5 position-relative" style={{ width: '200px', margin: '0 auto', backgroundColor: '#F56565' }}>
+															<div className="text-white text-center p-3 rounded-3 mb-5 position-relative" style={{ width: '200px', margin: '0 auto', backgroundColor: '#E53E3E' }}>
 																<div className="mb-1 fw-bold">THIS CAR</div>
 																<div className="fs-2 fw-bold">€24,999</div>
 																<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
-																	<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #F56565' }}></div>
+																	<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #E53E3E' }}></div>
 																</div>
 															</div>
 														</div>
@@ -1434,7 +1434,7 @@ export default function CarsDetails1() {
 												<p className="text-md-medium text-muted m-0">€20,491</p>
 											</div>
 
-											<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#F56565", color: "white" }}>
+											<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#E53E3E", color: "white" }}>
 												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
 													<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
 													<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
@@ -1443,7 +1443,7 @@ export default function CarsDetails1() {
 												Buy
 											</Link>
 
-											<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#F56565", border: "1px solid #E2E2E2" }}>
+											<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
 												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
 													<path d="M19.5 3.75H4.5C4.08579 3.75 3.75 4.08579 3.75 4.5V19.5C3.75 19.9142 4.08579 20.25 4.5 20.25H19.5C19.9142 20.25 20.25 19.9142 20.25 19.5V4.5C20.25 4.08579 19.9142 3.75 19.5 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													<path d="M16.5 7.5C15.6716 7.5 15 8.17157 15 9C15 9.82843 15.6716 10.5 16.5 10.5C17.3284 10.5 18 9.82843 18 9C18 8.17157 17.3284 7.5 16.5 7.5Z" fill="currentColor" />
