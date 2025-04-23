@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 import Marquee from 'react-fast-marquee'
 import ModalVideo from 'react-modal-video'
 import Slider from "react-slick"
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
 const SlickArrowLeft = ({ currentSlide, slideCount, ...props }: any) => (
 	<button
@@ -38,7 +40,7 @@ export default function CarsDetails1() {
 	const [nav2, setNav2] = useState(null)
 	const [slider1, setSlider1] = useState(null)
 	const [slider2, setSlider2] = useState(null)
-	const [activeTab, setActiveTab] = useState("price-history")
+	const [activeTab, setActiveTab] = useState("details")
 	const [activeStep, setActiveStep] = useState(1)
 
 	useEffect(() => {
@@ -68,10 +70,67 @@ export default function CarsDetails1() {
 		// Initialize carousel event listeners
 		const carousel = document.getElementById('howItWorksCarousel');
 		if (carousel) {
+			// Manual handling for Bootstrap carousel
+			const prevButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="prev"]');
+			const nextButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="next"]');
+			const indicators = document.querySelectorAll('[data-bs-target="#howItWorksCarousel"][data-bs-slide-to]');
+
+			// Manually initialize the carousel if Bootstrap is not available
+			if (typeof window !== 'undefined' && !(window as any)['bootstrap']) {
+				let currentSlide = 0;
+				const slides = carousel.querySelectorAll('.carousel-item');
+
+				const updateCarousel = () => {
+					slides.forEach((slide, index) => {
+						if (index === currentSlide) {
+							slide.classList.add('active');
+						} else {
+							slide.classList.remove('active');
+						}
+					});
+					setActiveStep(currentSlide + 1);
+				};
+
+				// Handle indicator clicks
+				indicators.forEach((indicator, index) => {
+					indicator.addEventListener('click', () => {
+						currentSlide = index;
+						updateCarousel();
+					});
+				});
+
+				// Handle prev/next clicks
+				if (prevButton) {
+					prevButton.addEventListener('click', () => {
+						currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+						updateCarousel();
+					});
+				}
+
+				if (nextButton) {
+					nextButton.addEventListener('click', () => {
+						currentSlide = (currentSlide + 1) % slides.length;
+						updateCarousel();
+					});
+				}
+			}
+
+			// Event listener for slide changes (if Bootstrap is available)
 			carousel.addEventListener('slide.bs.carousel', (e: any) => {
 				if (e && typeof e.to === 'number') {
 					setActiveStep(e.to + 1);
 				}
+			});
+
+			// Add click handlers for the step buttons
+			const stepButtons = document.querySelectorAll('[data-bs-target="#howItWorksCarousel"][data-bs-slide-to]');
+			stepButtons.forEach((button) => {
+				button.addEventListener('click', () => {
+					const slideIndex = button.getAttribute('data-bs-slide-to');
+					if (slideIndex) {
+						setActiveStep(parseInt(slideIndex) + 1);
+					}
+				});
 			});
 		}
 
@@ -80,7 +139,7 @@ export default function CarsDetails1() {
 			const scrollPosition = window.scrollY + 200;
 
 			// Find all sections
-			const sections = ['details', 'features', 'how-it-works', 'price-history', 'price-map', 'comparison', 'financing'];
+			const sections = ['details', 'features', 'how-it-works', 'price-map', 'comparison', 'financing'];
 
 			// Find the current visible section
 			for (let i = sections.length - 1; i >= 0; i--) {
@@ -293,7 +352,7 @@ export default function CarsDetails1() {
 
 									<div className="car-nav-tabs mt-4 mb-4 position-sticky" style={{ top: "0", zIndex: "100" }}>
 										<div className="container-fluid px-0">
-											<div className="nav-scroll py-3 bg-light rounded shadow-sm" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+											<div className="nav-scroll py-3 bg-light rounded" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
 												<ul className="nav nav-pills d-flex px-3">
 													<li className="nav-item">
 														<a href="#details" className={`nav-link px-4 ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
@@ -321,436 +380,8 @@ export default function CarsDetails1() {
 										</div>
 									</div>
 
-									<div className="features-section py-5" id="features">
-										<div className="container-fluid px-0">
-											<h3 className="mb-4">Features</h3>
-
-											<div className="row">
-												<div className="col-md-6 mb-4">
-													<div className="card border-0 h-100">
-														<div className="card-body p-4">
-															<h5 className="card-title text-dark mb-4">Security, Safety and Assistance</h5>
-															<div className="row">
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<a href="#" className="text-primary text-decoration-none">Parking camera</a>
-																		</li>
-																		<li className="mb-2">
-																			<a href="#" className="text-primary text-decoration-none">Parking assist system self-steering</a>
-																		</li>
-																		<li className="mb-2">
-																			<a href="#" className="text-primary text-decoration-none">Blind spot assist</a>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">ABS</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Emergency braking assist (EBA, BAS)</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Emergency call</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Fatigue warning system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Front collision warning system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Hill-start assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Immobilizer</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Lane assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Front and rear parking sensors</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Power assisted steering</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Rain sensor</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Rear seats ISOFIX points</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Traction control (TC, ASR)</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Traffic sign recognition</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Tyre pressure monitoring</span>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												<div className="col-md-6 mb-4">
-													<div className="card border-0 h-100">
-														<div className="card-body p-4">
-															<h5 className="card-title text-dark mb-4">Comfort and Convenience</h5>
-															<div className="row">
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-dark">USB</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Navigation system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Keyless entry</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Heated steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Heated front seats</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Apple CarPlay</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Android Auto</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Automatic 2-zones air conditioning</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Alloy wheels</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Armrest front</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">JBL audio</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Automatic parking brake</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Bluetooth</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Central locking</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Adaptive cruise control</span>
-																		</li>
-																	</ul>
-																</div>
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-dark">DAB radio</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Daytime running lights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Front electric windows</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Front Fog lights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Hands-free</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">LED headlights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">High beam assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Integrated music streaming</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Keyless ignition</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Leather steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Light sensor</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Multifunctional steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">On-board computer</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Radio</span>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												<div className="col-md-6 mb-4">
-													<div className="card border-0">
-														<div className="card-body p-4">
-															<h5 className="card-title text-dark mb-4">Accessories and Extra features</h5>
-															<div className="row">
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-dark">Tyre repair kit</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Divided rear seats</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Side mirrors with electric adjustment</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Start-stop system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Tinted windows</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Touch screen</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-dark">Voice control</span>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<div id="how-it-works" className="mt-5 pt-3 w-full">
-										<h3 className="mb-4">How it works</h3>
-										<div className="card border-0 rounded-4 overflow-hidden shadow">
-											<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="false">
-												<div className="carousel-inner">
-													<div className="carousel-item active">
-														<div className="row g-0">
-															<div className="col-md-4 position-relative">
-																<img src="/how_works_1.webp" className="img-fluid rounded-start w-100 h-70 object-cover" alt="Delivery truck" />
-																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
-																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 1</span>
-																</div>
-															</div>
-															<div className="col-md-8">
-																<div className="card-body p-4 p-md-5">
-																	<div className="d-flex align-items-center mb-3">
-																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
-																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																				<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-																				<line x1="16" y1="2" x2="16" y2="6"></line>
-																				<line x1="8" y1="2" x2="8" y2="6"></line>
-																				<line x1="3" y1="10" x2="21" y2="10"></line>
-																			</svg>
-																		</div>
-																		<div>
-																			<h4 className="card-title mb-0 text-primary">Delivery time</h4>
-																			<p className="text-muted small mb-0">Order confirmation</p>
-																		</div>
-																	</div>
-																	<div className="card-text">
-																		<p className="mb-4">We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.</p>
-																		<p className="text-muted">Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.</p>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div className="carousel-item">
-														<div className="row g-0">
-															<div className="col-md-4 position-relative">
-																<img src="/how_works_2.webp" className="img-fluid rounded-start w-100 h-100 object-cover" alt="Car inspection" />
-																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
-																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 2</span>
-																</div>
-															</div>
-															<div className="col-md-8">
-																<div className="card-body p-4 p-md-5">
-																	<div className="d-flex align-items-center mb-3">
-																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
-																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																				<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-																			</svg>
-																		</div>
-																		<div>
-																			<h4 className="card-title mb-0 text-primary">Check the car first, decide later</h4>
-																			<p className="text-muted small mb-0">Technical inspection</p>
-																		</div>
-																	</div>
-																	<div className="card-text">
-																		<p className="mb-4">For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.</p>
-																		<p className="text-muted">Only then do you decide whether you want to buy the car.</p>
-																		<div className="mt-4">
-																			<button className="btn rounded-circle border-0" style={{ backgroundColor: '#FF7A00', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(255, 122, 0, 0.3)' }}>
-																				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
-																					<polygon points="6 3 20 12 6 21 6 3"></polygon>
-																				</svg>
-																			</button>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div className="carousel-item">
-														<div className="row g-0">
-															<div className="col-md-4 position-relative">
-																<img src="/how_works_3.webp" className="img-fluid rounded-start w-100 h-100 object-cover" alt="Customer warranty" />
-																<div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)' }}>
-																	<span className="badge bg-warning text-dark px-3 py-2 rounded-pill">Step 3</span>
-																</div>
-															</div>
-															<div className="col-md-8">
-																<div className="card-body p-4 p-md-5">
-																	<div className="d-flex align-items-center mb-3">
-																		<div className="p-2 rounded-circle me-3" style={{ backgroundColor: '#FFEBE5' }}>
-																			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																				<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-																			</svg>
-																		</div>
-																		<div>
-																			<h4 className="card-title mb-0 text-primary">We keep the guarantee!</h4>
-																			<p className="text-muted small mb-0">6-month warranty</p>
-																		</div>
-																	</div>
-																	<div className="card-text">
-																		<p className="mb-4">We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.</p>
-																		<p className="text-muted">If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong></p>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												{/* Controls and indicators in a fixed footer */}
-												<div className="position-relative border-top mt-3">
-													<div className="d-flex justify-content-between align-items-center px-4 py-3">
-														<div className="d-flex">
-															{[1, 2, 3].map((step) => (
-																<button
-																	key={step}
-																	type="button"
-																	data-bs-target="#howItWorksCarousel"
-																	data-bs-slide-to={step - 1}
-																	className={`position-relative d-flex align-items-center justify-content-center me-3 ${activeStep === step ? 'active' : ''}`}
-																	style={{
-																		background: "transparent",
-																		border: "none",
-																		cursor: "pointer",
-																		padding: 0
-																	}}
-																	onClick={() => setActiveStep(step)}
-																	aria-label={`Go to slide ${step}`}
-																>
-																	<div className="position-relative">
-																		<div
-																			className={`rounded-circle transition-all duration-200`}
-																			style={{
-																				width: '12px',
-																				height: '12px',
-																				backgroundColor: activeStep === step ? '#FF7A00' : '#D1D5DB',
-																				opacity: activeStep === step ? 1 : 0.5,
-																				transition: 'all 0.2s ease'
-																			}}
-																		></div>
-																		<div
-																			className="position-absolute top-0 left-0 rounded-circle"
-																			style={{
-																				width: '12px',
-																				height: '12px',
-																				border: activeStep === step ? '2px solid #FFCCA5' : 'none',
-																				opacity: activeStep === step ? 1 : 0,
-																				transform: 'scale(1.5)',
-																				transition: 'all 0.2s ease'
-																			}}
-																		></div>
-																	</div>
-																	<div className="ms-2 d-none d-md-block">
-																		<span className="small fw-medium" style={{
-																			color: activeStep === step ? '#FF7A00' : '#718096'
-																		}}>
-																			Step {step}
-																		</span>
-																	</div>
-																</button>
-															))}
-														</div>
-
-														<div className="d-flex">
-															<button
-																className="btn btn-sm me-2 d-flex align-items-center justify-content-center"
-																style={{
-																	width: '36px',
-																	height: '36px',
-																	backgroundColor: 'transparent',
-																	color: '#4A5568',
-																	border: '1px solid #E2E8F0',
-																	borderRadius: '8px'
-																}}
-																type="button"
-																data-bs-target="#howItWorksCarousel"
-																data-bs-slide="prev"
-																onClick={() => {
-																	if (activeStep > 1) {
-																		setActiveStep(activeStep - 1);
-																	}
-																}}
-															>
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-																	<path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
-																</svg>
-															</button>
-															<button
-																className="btn btn-sm d-flex align-items-center justify-content-center"
-																style={{
-																	width: '36px',
-																	height: '36px',
-																	backgroundColor: 'transparent',
-																	color: '#4A5568',
-																	border: '1px solid #E2E8F0',
-																	borderRadius: '8px'
-																}}
-																type="button"
-																data-bs-target="#howItWorksCarousel"
-																data-bs-slide="next"
-																onClick={() => {
-																	if (activeStep < 3) {
-																		setActiveStep(activeStep + 1);
-																	}
-																}}
-															>
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-																	<path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-																</svg>
-															</button>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<div className="box-collapse-expand mt-4">
-										<div className="group-collapse-expand" id="details">
+									<div className="box-collapse-expand mt-4" id="details">
+										<div className="group-collapse-expand border-none">
 											<button className={isAccordion == 1 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverview" aria-expanded="false" aria-controls="collapseOverview" onClick={() => handleAccordion(1)}>
 												<h6>Overview</h6>
 												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
@@ -1077,9 +708,389 @@ export default function CarsDetails1() {
 
 									</div>
 
-									<div id="price-history" className="mt-5 pt-3">
+									<div className="features-section py-5" id="features">
+										<div className="container-fluid px-0">
+											<h3 className="mb-4">Features</h3>
+
+											<div className="row">
+												<div className="col-md-6 mb-4">
+													<div className="card border-0 h-100">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Security, Safety and Assistance</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Parking camera</a>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Parking assist system self-steering</a>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-primary text-decoration-none">Blind spot assist</a>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">ABS</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Emergency braking assist (EBA, BAS)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Emergency call</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Fatigue warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front collision warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Hill-start assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Immobilizer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Lane assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front and rear parking sensors</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Power assisted steering</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Rain sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Rear seats ISOFIX points</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Traction control (TC, ASR)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Traffic sign recognition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Tyre pressure monitoring</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div className="col-md-6 mb-4">
+													<div className="card border-0 h-100">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Comfort and Convenience</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">USB</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Navigation system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Keyless entry</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Heated steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Heated front seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Apple CarPlay</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Android Auto</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Automatic 2-zones air conditioning</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Alloy wheels</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Armrest front</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">JBL audio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Automatic parking brake</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Bluetooth</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Central locking</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Adaptive cruise control</span>
+																		</li>
+																	</ul>
+																</div>
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">DAB radio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Daytime running lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front electric windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Front Fog lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Hands-free</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">LED headlights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">High beam assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Integrated music streaming</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Keyless ignition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Leather steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Light sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Multifunctional steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">On-board computer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Radio</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div className="col-md-6 mb-4">
+													<div className="card border-0">
+														<div className="card-body p-4">
+															<h5 className="card-title text-dark mb-4">Accessories and Extra features</h5>
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-dark">Tyre repair kit</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Divided rear seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Side mirrors with electric adjustment</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Start-stop system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Tinted windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Touch screen</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-dark">Voice control</span>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div id="how-it-works" className="mt-5 pt-3 w-full">
+										<h3 className="mb-4">How it works</h3>
+										<div className="card border-0 rounded-4 overflow-hidden bg-white">
+											<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="carousel">
+												<div className="carousel-inner">
+													<div className="carousel-item active">
+														<div className="position-relative">
+															<div className="d-flex">
+																<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																	<div style={{ height: "400px" }}>
+																		<img src="/how_works_2.webp" className="w-100 h-100" alt="Car inspection" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	</div>
+																	<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
+																</div>
+																<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
+																	<h4 className="text-navy mb-3">Check the car first, decide later</h4>
+																	<p className="mb-4">
+																		For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.
+																	</p>
+																	<p className="text-muted">
+																		Only then do you decide whether you want to buy the car.
+																	</p>
+
+																	<div className="mt-4 position-relative">
+																		<div className="rounded-circle d-flex align-items-center justify-content-center"
+																			style={{
+																				width: "60px",
+																				height: "60px",
+																				backgroundColor: "#FF7A00",
+																				boxShadow: "0 0 20px rgba(255, 122, 0, 0.3)"
+																			}}>
+																			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff">
+																				<polygon points="6 3 20 12 6 21 6 3"></polygon>
+																			</svg>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div className="carousel-item">
+														<div className="position-relative">
+															<div className="d-flex">
+																<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																	<div style={{ height: "400px" }}>
+																		<img src="/how_works_3.webp" className="w-100 h-100" alt="Customer warranty" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	</div>
+																	<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
+																</div>
+																<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
+																	<h4 className="text-navy mb-3">We keep the guarantee!</h4>
+																	<p className="mb-4">
+																		We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
+																	</p>
+																	<p className="text-muted">
+																		If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong>
+																	</p>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div className="carousel-item">
+														<div className="position-relative">
+															<div className="d-flex">
+																<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																	<div style={{ height: "400px" }}>
+																		<img src="/how_works_1.webp" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	</div>
+																	<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
+																</div>
+																<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
+																	<h4 className="text-navy mb-3">Delivery time</h4>
+																	<p className="mb-4">
+																		We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.
+																	</p>
+																	<p className="text-muted">
+																		Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.
+																	</p>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div className="position-relative border-top py-3">
+													<div className="container-fluid px-4">
+														<div className="d-flex justify-content-between align-items-center">
+															<div className="d-flex align-items-center">
+																<div className="d-flex">
+																	{[1, 2, 3].map((step, index) => (
+																		<button
+																			key={step}
+																			type="button"
+																			data-bs-target="#howItWorksCarousel"
+																			data-bs-slide-to={index}
+																			className={`position-relative mx-2`}
+																			style={{
+																				width: '12px',
+																				height: '12px',
+																				borderRadius: '50%',
+																				border: 'none',
+																				padding: 0,
+																				backgroundColor: '#F5F5F5',    // ← light gray
+																				opacity: activeStep === step ? 1 : 0.5,
+																				transition: 'all 0.2s ease'
+																			}}
+																			aria-label={`Go to slide ${index}`}
+																		></button>
+																	))}
+																</div>
+																<div className="ms-4 text-muted">
+																	{activeStep} / 3
+																</div>
+															</div>
+
+															<div className="d-flex">
+																<button
+																	className="btn btn-sm me-2 d-flex align-items-center justify-content-center shadow"
+																	style={{
+																		width: '40px',
+																		height: '40px',
+																		backgroundColor: '#f5f5f5',
+
+																		color: 'black',
+																		borderRadius: '20%',
+																		fontSize: '15px',
+																		display: 'flex',
+																		alignItems: 'center',
+																		justifyContent: 'center'
+																	}}
+																	type="button"
+																	data-bs-target="#howItWorksCarousel"
+																	data-bs-slide="prev"
+																>
+																	<p><IoIosArrowBack style={{ fontWeight: 'bold' }} /></p>
+
+																</button>
+																<button
+																	className="btn btn-sm d-flex align-items-center justify-content-center shadow"
+																	style={{
+																		width: '40px',
+																		height: '40px',
+																		backgroundColor: '#f5f5f5',
+																		color: 'black',
+																		borderRadius: '20%',
+																		fontSize: '15px',
+																		display: 'flex',
+																		alignItems: 'center',
+																		justifyContent: 'center'
+																	}}
+																	type="button"
+																	data-bs-target="#howItWorksCarousel"
+																	data-bs-slide="next"
+																>
+																	<p><IoIosArrowForward style={{ fontWeight: 'bold' }} /></p>
+																</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div id="price-map" className="mt-5 pt-3">
 										<h3 className="mb-4">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h3>
-										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+										<div className="card border-0 rounded-4 overflow-hidden mb-4">
 											<div className="card-body p-4">
 												<div className="d-flex justify-content-between align-items-center mb-3">
 													<h5 className="mb-0">Price vs Mileage Comparison</h5>
@@ -1220,7 +1231,7 @@ export default function CarsDetails1() {
 
 										<div className="row g-4">
 											<div className="col-md-6">
-												<div className="card border-0 rounded-4 shadow-sm h-100">
+												<div className="card border-0 rounded-4 h-100">
 													<div className="position-relative">
 														<img src="/assets/imgs/cars-details/banner.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
 														<div className="position-absolute top-0 start-0 m-3">
@@ -1263,7 +1274,7 @@ export default function CarsDetails1() {
 											</div>
 
 											<div className="col-md-6">
-												<div className="card border-0 rounded-4 shadow-sm h-100">
+												<div className="card border-0 rounded-4 h-100">
 													<div className="position-relative">
 														<img src="/assets/imgs/cars-details/banner2.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
 														<div className="position-absolute top-0 start-0 m-3">
@@ -1327,7 +1338,7 @@ export default function CarsDetails1() {
 
 									<div id="comparison" className="mt-5 pt-3">
 										<h3 className="mb-4">Comparison</h3>
-										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+										<div className="card border-0 rounded-4 overflow-hidden mb-4">
 											<div className="card-body p-4">
 												<div className="text-center mb-4">
 													<p className="mb-2 fs-5">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
@@ -1374,7 +1385,7 @@ export default function CarsDetails1() {
 
 									<div id="financing" className="mt-5 pt-3">
 										<h3 className="mb-4">Financing</h3>
-										<div className="card border-0 rounded-4 overflow-hidden shadow-sm mb-4">
+										<div className="card border-0 rounded-4 overflow-hidden mb-4">
 											<div className="card-body p-4">
 												<div className="d-flex justify-content-between align-items-center mb-3">
 													<h5 className="mb-0">Financing options</h5>
@@ -1412,13 +1423,19 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 								<div className="col-lg-4">
-									<div className="sidebar-banner mb-4">
-										<div className="p-4 background-body border rounded-3">
+									<div className="sidebar-banner mb-4" style={{
+										position: 'sticky',
+										top: '20px',
+										zIndex: 100,
+										backgroundColor: 'white',
+										// boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+									}}>
+										<div className="p-4 background-body  rounded-3">
 											<div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
 												<div className="me-2">
 													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
 													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+													<span className="d-inline-Fblock me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
 													<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
 													<span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
 												</div>
@@ -1434,7 +1451,7 @@ export default function CarsDetails1() {
 												<p className="text-md-medium text-muted m-0">€20,491</p>
 											</div>
 
-											<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#E53E3E", color: "white" }}>
+											<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#C53030", color: "white" }}>
 												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
 													<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
 													<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
