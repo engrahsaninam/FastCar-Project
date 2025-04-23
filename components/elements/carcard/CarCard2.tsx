@@ -5,7 +5,7 @@ export default function CarCard2({ car }: any) {
 		<>
 			<div className="card-flight card-hotel card-property background-card border">
 				<div className="card-image">
-					<Link href="/cars-details-3"><img src={`/assets/imgs/cars-listing/cars-listing-6/${car.image}`} alt="Fast4Car" /></Link>
+					<Link href={'/car'}><img src={`/assets/imgs/cars-listing/cars-listing-6/${car.image}`} alt="Fast4Car" /></Link>
 				</div>
 				<div className="card-info p-md-40 p-3">
 					<label className="sale-lbl">-25%</label>
@@ -14,7 +14,7 @@ export default function CarCard2({ car }: any) {
 							<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
 						</div>
 					</div>
-					<div className="card-title"><Link className="heading-6 neutral-1000" href="/cars-details-3">{car.name}</Link></div>
+					<div className="card-title"><Link className="heading-6 neutral-1000" href={`/car?id=${car.id}`}>{car.name}</Link></div>
 					<div className="card-program">
 						<div className="card-location mb-25">
 							<p className="text-location text-md-medium neutral-500">Manchester, England</p>

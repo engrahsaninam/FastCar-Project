@@ -83,7 +83,7 @@ const CarCard = ({ car }) => {
   };
 
   return (
-    <Link href={`/cars/car?id=${car.id}`} passHref legacyBehavior>
+    <Link href={`/car?id=${car.id}`} passHref legacyBehavior>
       <ChakraLink display="block" _hover={{ textDecoration: 'none' }}>
         <Flex
           direction={["column", "column", "row"]}

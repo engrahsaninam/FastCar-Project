@@ -42,8 +42,13 @@ export default function CarsDetails1() {
 	const [slider2, setSlider2] = useState(null)
 	const [activeTab, setActiveTab] = useState("details")
 	const [activeStep, setActiveStep] = useState(1)
+	const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+	const carId = searchParams.get('id');
 
 	useEffect(() => {
+		console.log('Car ID:', carId);
+		// Here you would fetch the car data based on the ID
+
 		setNav1(slider1)
 		setNav2(slider2)
 
@@ -229,7 +234,7 @@ export default function CarsDetails1() {
 				carousel.removeEventListener('touchend', handleTouchEnd);
 			}
 		};
-	}, [slider2, slider1]);
+	}, [slider2, slider1, carId]);
 
 	const settingsMain = {
 		slidesToShow: 1,
@@ -277,7 +282,7 @@ export default function CarsDetails1() {
 									</span>
 								</li>
 								<li>
-									<Link href="/destination">Cars Rental</Link>
+									<Link href="/cars">Cars</Link>
 									<span className="arrow-right">
 										<svg width={7} height={12} viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 											<path d="M1 11L6 6L1 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
