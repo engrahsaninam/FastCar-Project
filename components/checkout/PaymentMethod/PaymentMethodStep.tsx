@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Heading, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Box, Heading, Stack, FormControl, FormLabel, useColorModeValue, useBreakpointValue } from '@chakra-ui/react';
 import { PaymentMethodStepProps } from '../types/forms';
 import RadioOption from './RadioOption';
 
@@ -8,6 +8,9 @@ export const PaymentMethodStep: React.FC<PaymentMethodStepProps> = ({
     onSelect,
     applicationSent = false
 }) => {
+    const headingColor = useColorModeValue("gray.900", "white");
+    const isMobile = useBreakpointValue({ base: true, sm: false });
+
     const options = [
         {
             id: 'financing',
@@ -25,12 +28,18 @@ export const PaymentMethodStep: React.FC<PaymentMethodStepProps> = ({
     };
 
     return (
-        <Box w="full" as="section" aria-labelledby="payment-method-heading">
+        <Box
+            w="full"
+            as="section"
+            aria-labelledby="payment-method-heading"
+            px={isMobile ? 0 : undefined}
+            mb={isMobile ? 6 : 4}
+        >
             <Heading
                 as="h3"
-                fontSize="15px"
+                fontSize={{ base: "md", sm: "15px" }}
                 fontWeight="semibold"
-                color="gray.900"
+                color={headingColor}
                 mb={4}
                 id="payment-method-heading"
             >
@@ -40,7 +49,11 @@ export const PaymentMethodStep: React.FC<PaymentMethodStepProps> = ({
             <form onSubmit={handleSubmit}>
                 <FormControl as="fieldset" role="radiogroup" aria-labelledby="payment-method-heading">
                     <FormLabel as="legend" srOnly>Payment Method Options</FormLabel>
-                    <Stack direction={{ base: 'column', sm: 'row' }} spacing={3}>
+                    <Stack
+                        direction={{ base: 'column', sm: 'row' }}
+                        spacing={3}
+                        width="100%"
+                    >
                         {options.map((option) => (
                             <RadioOption
                                 key={option.id}
@@ -50,6 +63,7 @@ export const PaymentMethodStep: React.FC<PaymentMethodStepProps> = ({
                                 onChange={onSelect}
                                 isDisabled={applicationSent && option.id === 'financing'}
                                 applicationSent={applicationSent && option.id === 'financing'}
+                                isMobile={isMobile}
                             />
                         ))}
                     </Stack>

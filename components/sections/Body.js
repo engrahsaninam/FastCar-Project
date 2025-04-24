@@ -63,6 +63,7 @@ const CarCard = ({ car }) => {
   const cardBg = useColorModeValue("white", "#1a1a1a");
   const cardBorderColor = useColorModeValue("gray.100", "#333333");
   const headingColor = useColorModeValue("red.500", "red.400");
+  const priceColor = useColorModeValue("black", "white");
   const textColor = useColorModeValue("gray.700", "gray.300");
   const buttonLinkColor = useColorModeValue("red.600", "red.300");
   // Fix: separate the useColorModeValue calls from the conditional logic
@@ -175,7 +176,7 @@ const CarCard = ({ car }) => {
           </Box>
 
           {/* Content Section - maintain size but reduce spacing */}
-          <Flex flex="1" p="3" flexDir="column" justifyContent="space-between">
+          <Flex flex="1" p="3" flexDir="column" justifyContent="space-between" mt="10px">
             <Box>
               <Flex justify="space-between" align="center" mb="2">
                 <Heading
@@ -184,6 +185,7 @@ const CarCard = ({ car }) => {
                   fontWeight="bold"
                   color={headingColor}
                   letterSpacing="wide"
+                  fontFamily="inter"
                 >
                   {car.name}
                 </Heading>
@@ -284,9 +286,14 @@ const CarCard = ({ car }) => {
                 </Button>
               </HStack>
 
-              <Text fontSize="lg" fontWeight="bold">
-                €{car.price.toLocaleString()}
-              </Text>
+              <Box bg="red.50" p={2} borderRadius="md">
+                <Text fontSize="2xl" fontWeight="bold" color={priceColor} textAlign="right">
+                  €{car.price.toLocaleString()}
+                </Text>
+                <Text fontSize="xs" color="gray.500" textAlign="right">
+                  €{(car.price * 0.79).toFixed(2)} without VAT
+                </Text>
+              </Box>
             </Flex>
           </Flex>
         </Flex>

@@ -17,6 +17,7 @@ import {
     HStack,
     useBreakpointValue,
     Slide,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { Info, ChevronDown, X, ChevronUp } from 'lucide-react';
 
@@ -41,9 +42,32 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
         { label: 'Extended warranty', price: 'FREE', isFree: true }
     ];
 
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.100", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const mutedTextColor = useColorModeValue("gray.600", "gray.400");
+    const lightMutedTextColor = useColorModeValue("gray.500", "gray.500");
+    const redTextColor = useColorModeValue("red.600", "red.300");
+    const redBgLight = useColorModeValue("red.50", "red.900");
+    const redBorderLight = useColorModeValue("red.100", "red.800");
+    const greenBgLight = useColorModeValue("green.50", "green.900");
+    const greenTextColor = useColorModeValue("green.600", "green.300");
+    const greenBorderLight = useColorModeValue("green.100", "green.800");
+    const hoverBgColor = useColorModeValue("gray.50", "gray.700");
+
+    // Additional color values
+    const premiumHeaderBgGradient = useColorModeValue(
+        "linear(to-br, red.500, red.600, red.700)",
+        "linear(to-br, red.700, red.600, red.500)"
+    );
+    const gray50BgColor = useColorModeValue("gray.50", "gray.700");
+    const grayTextColor = useColorModeValue("gray.700", "gray.300");
+    const darkGrayTextColor = useColorModeValue("gray.800", "gray.200");
+
     return (
         <Box
-            bg="white"
+            bg={bgColor}
             borderRadius={isMobile ? "none" : "xl"}
             boxShadow={isMobile ? "none" : "xl"}
             p={7}
@@ -51,7 +75,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
         >
             {/* Premium Header */}
             <Box
-                bgGradient="linear(to-br, red.500, red.600, red.700)"
+                bgGradient={premiumHeaderBgGradient}
                 borderRadius="xl"
                 p={6}
                 mb={3}
@@ -94,38 +118,38 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
             </Box>
 
             {/* Car details */}
-            <Box borderBottom="1px" borderColor="gray.100" mb={1}>
-                <Text fontSize="md" fontWeight="semibold" color="gray.900" mb={3}>
+            <Box borderBottom="1px" borderColor={borderColor} mb={1}>
+                <Text fontSize="md" fontWeight="semibold" color={textColor} mb={3}>
                     Mercedes-Benz A 200 d 110 kW
                 </Text>
                 <VStack spacing={1} align="stretch">
                     <Flex justify="space-between" align="center">
-                        <Text fontSize="sm" color="gray.600">Price incl. necessary import services</Text>
-                        <Text fontSize="sm" fontWeight="semibold" color="gray.900">CZK 634,490</Text>
+                        <Text fontSize="sm" color={mutedTextColor}>Price incl. necessary import services</Text>
+                        <Text fontSize="sm" fontWeight="semibold" color={textColor}>CZK 634,490</Text>
                     </Flex>
                     <Flex justify="space-between" align="center">
-                        <Text fontSize="sm" color="gray.500">Price without VAT</Text>
-                        <Text fontSize="sm" color="gray.500">CZK 447,915</Text>
+                        <Text fontSize="sm" color={lightMutedTextColor}>Price without VAT</Text>
+                        <Text fontSize="sm" color={lightMutedTextColor}>CZK 447,915</Text>
                     </Flex>
-                    <Flex align="center" gap={1} mt={2} bg="gray.50" rounded="lg">
-                        <Text fontSize="xs" color="gray.600">The price is recalculated from 25.65 €/CZK</Text>
-                        <Icon as={Info} w={3.5} h={3.5} color="gray.400" aria-label="info-Icon" />
+                    <Flex align="center" gap={1} mt={2} bg={gray50BgColor} rounded="lg">
+                        <Text fontSize="xs" color={mutedTextColor}>The price is recalculated from 25.65 €/CZK</Text>
+                        <Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
                     </Flex>
                 </VStack>
             </Box>
 
             {/* CarAudit */}
-            <Box borderBottom="1px" borderColor="gray.100" >
+            <Box borderBottom="1px" borderColor={borderColor} >
                 <Flex
                     justify="space-between"
                     align="center"
                     p={1}
                     rounded="lg"
-                    _hover={{ bg: 'red.50', opacity: 0.4 }}
+                    _hover={{ bg: hoverBgColor, opacity: 0.4 }}
                     transition="all 0.3s"
                 >
-                    <Text fontSize="sm" fontWeight="medium" color="gray.800">CarAudit™</Text>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.900">CZK 1,990</Text>
+                    <Text fontSize="sm" fontWeight="medium" color={darkGrayTextColor}>CarAudit™</Text>
+                    <Text fontSize="sm" fontWeight="semibold" color={textColor}>CZK 1,990</Text>
                 </Flex>
             </Box>
 
@@ -134,7 +158,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                 <Text
                     fontSize="xs"
                     fontWeight="semibold"
-                    color="gray.500"
+                    color={lightMutedTextColor}
                     textTransform="uppercase"
                     letterSpacing="wider"
                     mb={1}
@@ -148,14 +172,14 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                             justify="space-between"
                             align="center"
                             p={1}
-                            _hover={{ bg: 'gray.50' }}
+                            _hover={{ bg: hoverBgColor }}
                             rounded="lg"
                             transition="all 0.3s"
                         >
                             <HStack spacing={2}>
-                                <Text fontSize="sm" color="gray.700">{service.label}</Text>
+                                <Text fontSize="sm" color={grayTextColor}>{service.label}</Text>
                                 {service.hasDropdown && (
-                                    <Icon as={ChevronDown} w={4} h={4} color="gray.400" />
+                                    <Icon as={ChevronDown} w={4} h={4} color={lightMutedTextColor} />
                                 )}
                             </HStack>
                             {service.isFree ? (
@@ -170,7 +194,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                                     {service.price}
                                 </Badge>
                             ) : (
-                                <Text fontSize="sm" fontWeight="medium" color="gray.900">
+                                <Text fontSize="sm" fontWeight="medium" color={textColor}>
                                     {service.price}
                                 </Text>
                             )}
@@ -181,7 +205,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
 
             {/* Optional Services */}
             <Box
-                bgGradient="linear(to-br, gray.50, gray.100)"
+                bg={gray50BgColor}
                 opacity={0.5}
                 rounded="xl"
                 p={4}
@@ -189,24 +213,24 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                 <Text
                     fontSize="xs"
                     fontWeight="semibold"
-                    color="gray.500"
+                    color={lightMutedTextColor}
                     textTransform="uppercase"
                     letterSpacing="wider"
                 >
                     Optional Services
                 </Text>
-                <Text fontSize="xs" color="gray.600">
+                <Text fontSize="xs" color={mutedTextColor}>
                     Other recommended services can be selected in the car order
                 </Text>
             </Box>
 
             {/* Total Price */}
-            <Box borderTop="1px" borderColor="gray.100"  >
+            <Box borderTop="1px" borderColor={borderColor} >
                 <Flex justify="space-between" align="center">
-                    <Text fontSize="md" fontWeight="medium" color="gray.800">
+                    <Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
                         Total price
                     </Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="red.600">
+                    <Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
                         CZK 667,765
                     </Text>
                 </Flex>
@@ -214,26 +238,26 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
 
             {/* Financing Note */}
             <Box
-                bgGradient="linear(to-br, red.50, red.50, transparent)"
+                bg={redBgLight}
                 rounded="xl"
                 p={5}
                 border="1px"
-                borderColor="red.100"
+                borderColor={redBorderLight}
                 opacity={0.5}
             >
                 <Flex justify="space-between" align="center" mb={2}>
-                    <Text fontSize="sm" color="gray.700">
+                    <Text fontSize="sm" color={grayTextColor}>
                         You are financing car for example for
                     </Text>
-                    <Text fontSize="md" fontWeight="bold" color="red.600">
+                    <Text fontSize="md" fontWeight="bold" color={redTextColor}>
                         CZK 5,557/mo
                     </Text>
                 </Flex>
                 <Flex align="center" gap={0.5}>
-                    <Text fontSize="xs" color="gray.600">
+                    <Text fontSize="xs" color={mutedTextColor}>
                         120%, 48 instalments
                     </Text>
-                    <Icon as={Info} w={3.5} h={3.5} color="gray.400" aria-label="info-Icon" />
+                    <Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
                 </Flex>
             </Box>
         </Box>
@@ -248,12 +272,19 @@ interface MobileDrawerProps {
 }
 
 const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }) => {
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.200", "gray.700");
+    const overlayBg = useColorModeValue("blackAlpha.600", "blackAlpha.800");
+    const textColor = useColorModeValue("gray.900", "white");
+    const handleBgColor = useColorModeValue("gray.300", "gray.600");
+    const boxShadowColor = useColorModeValue("0 -4px 6px -1px rgba(0, 0, 0, 0.05)", "0 -4px 6px -1px rgba(0, 0, 0, 0.3)");
+
     return (
         <>
             <Box
                 position="fixed"
                 inset="0"
-                bg="blackAlpha.600"
+                bg={overlayBg}
                 zIndex={50}
                 transition="all 0.3s"
                 opacity={isOpen ? 1 : 0}
@@ -266,7 +297,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }
                 bottom="0"
                 left="0"
                 right="0"
-                bg="white"
+                bg={bgColor}
                 borderTopRadius="2xl"
                 transition="transform 0.3s"
                 transform={isOpen ? "translateY(0)" : "translateY(100%)"}
@@ -279,15 +310,15 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }
                 <Box
                     width="36px"
                     height="4px"
-                    bg="gray.300"
+                    bg={handleBgColor}
                     borderRadius="full"
                     mx="auto"
                     mt={2}
                     mb={2}
                 />
 
-                <Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor="gray.200">
-                    <Text fontSize="lg" fontWeight="semibold">Price Summary</Text>
+                <Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor={borderColor}>
+                    <Text fontSize="lg" fontWeight="semibold" color={textColor}>Price Summary</Text>
                     <Button variant="ghost" p={1} onClick={onClose} aria-label="Close drawer">
                         <Icon as={X} w={5} h={5} />
                     </Button>
@@ -298,28 +329,30 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }
 
                 {/* Bottom close button for easier mobile access */}
                 <Box
-                    py={5}
+                    py={2}
                     px={4}
-                    pb={10} /* Extra padding to avoid the app bar */
+                    pb={3}
                     borderTop="1px"
-                    borderColor="gray.200"
-                    bg="white"
+                    borderColor={borderColor}
+                    bg={bgColor}
                     position="sticky"
                     bottom="0"
                     width="100%"
                     textAlign="center"
-                    boxShadow="0 -4px 6px -1px rgba(0, 0, 0, 0.05)"
+                    boxShadow={boxShadowColor}
                 >
                     <Button
                         onClick={onClose}
                         colorScheme="red"
-                        size="lg"
-                        width="100%"
+                        size="xs"
+                        width="auto"
+                        minW="80px"
+                        height="20px"
+                        fontSize="xs"
                         borderRadius="full"
-                        boxShadow="lg"
-                        marginTop='100px'
-                        _hover={{ transform: "translateY(-1px)", boxShadow: "xl" }}
-                        _active={{ transform: "translateY(1px)", boxShadow: "md" }}
+                        boxShadow="sm"
+                        _hover={{ transform: "translateY(-1px)", boxShadow: "md" }}
+                        _active={{ transform: "translateY(1px)" }}
                         aria-label="Close summary"
                     >
                         Close
@@ -333,6 +366,13 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }
 const PriceSummary: React.FC = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const isMobile = useBreakpointValue({ base: true, md: false });
+
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.200", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const mutedTextColor = useColorModeValue("gray.500", "gray.400");
+    const boxShadow = useColorModeValue("0 -4px 6px -1px rgba(0, 0, 0, 0.05)", "0 -4px 6px -1px rgba(0, 0, 0, 0.3)");
+    const hoverBgColor = useColorModeValue("gray.50", "gray.700");
 
     return (
         <>
@@ -352,21 +392,21 @@ const PriceSummary: React.FC = () => {
             >
                 {/* Floating Price Bar */}
                 <Box
-                    bg="white"
+                    bg={bgColor}
                     borderTop="1px"
-                    borderColor="gray.200"
+                    borderColor={borderColor}
                     p={4}
                     cursor="pointer"
                     onClick={() => setIsDrawerOpen(true)}
-                    boxShadow="0 -4px 6px -1px rgba(0, 0, 0, 0.05)"
+                    boxShadow={boxShadow}
                     borderTopRadius="lg"
                     transition="all 0.2s"
-                    _hover={{ bg: "gray.50" }}
+                    _hover={{ bg: hoverBgColor }}
                 >
                     <Flex justify="space-between" align="center">
                         <Box>
-                            <Text fontSize="xs" color="gray.500">Total price</Text>
-                            <Text fontSize="lg" fontWeight="bold">CZK 667,765</Text>
+                            <Text fontSize="xs" color={mutedTextColor}>Total price</Text>
+                            <Text fontSize="lg" fontWeight="bold" color={textColor}>CZK 667,765</Text>
                         </Box>
                         <Button
                             colorScheme="red"

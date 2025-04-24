@@ -7,6 +7,8 @@ import {
     Stack,
     Text,
     VStack,
+    useColorModeValue,
+    useBreakpointValue,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ChevronUpIcon, ChevronDownIcon, TimeIcon } from '@chakra-ui/icons';
@@ -25,15 +27,35 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
     onFullPayment,
     onToggleSpecs
 }) => {
+    // Responsive values
+    const containerPadding = useBreakpointValue({ base: 2, sm: 3, md: 5 });
+    const containerMarginTop = useBreakpointValue({ base: 2, sm: 4, md: 6 });
+
+    const sectionSpacing = useBreakpointValue({ base: 4, sm: 5, md: 6 });
+    const headingSize = useBreakpointValue({ base: "sm", sm: "md", md: "15px" });
+    const iconSize = useBreakpointValue({ base: "16px", sm: "18px", md: "20px" });
+    const gapSize = useBreakpointValue({ base: 1, sm: 2, md: 2 });
+    const borderRadius = useBreakpointValue({ base: "md", md: "lg" });
+    const flexDirection = useBreakpointValue({ base: "column", md: "row" }) as "column" | "row";
+
     const [isFinancingSpecsExpanded, setIsFinancingSpecsExpanded] = useState(true);
     const [selectedOption, setSelectedOption] = useState<string>('regular-loan');
     const [paybackPeriod, setPaybackPeriod] = useState<number>(12);
     const [downPayment, setDownPayment] = useState<number>(12);
 
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.200", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const iconColor = useColorModeValue("red.500", "red.300");
+    const mutedIconColor = useColorModeValue("gray.500", "gray.400");
+    const hoverBgColor = useColorModeValue("gray.100", "gray.700");
+
     const totalPrice = 27440;
     const grayborderstyle = {
-        border: '1px solid #D3D3D3',
-        borderRadius: 'lg',
+        border: `1px solid`,
+        borderColor: useColorModeValue("#D3D3D3", "#4A5568"),
+        borderRadius: borderRadius,
         shadow: 'md'
     }
     const options: FinancingOption[] = [
@@ -114,54 +136,70 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            p={5}
-            bg="white"
-            mt={6}
+            p={containerPadding}
+            bg={bgColor}
+            mt={containerMarginTop}
             borderWidth="1px"
-            borderColor="gray.500"
-            borderRadius="lg"
+            borderColor={borderColor}
+            borderRadius={borderRadius}
             style={grayborderstyle}
+            width="100%"
+            maxW="100%"
+            overflow="hidden"
         >
             <Flex
                 align="center"
                 justify="space-between"
                 borderBottomWidth={isFinancingSpecsExpanded ? "1px" : "0"}
-                pb={isFinancingSpecsExpanded ? 5 : 0}
-                mb={isFinancingSpecsExpanded ? 6 : 0}
+                borderBottomColor={borderColor}
+                pb={isFinancingSpecsExpanded ? containerPadding : 0}
+                mb={isFinancingSpecsExpanded ? sectionSpacing : 0}
+                width="100%"
+                flexWrap="wrap"
+                gap={2}
             >
-                <Flex align="center" gap={2}>
-                    <TimeIcon w="20px" h="20px" color="red.500" aria-label="time-Icon" />
-                    <Heading as="h4" fontSize="15px" fontWeight="semibold" color="gray.900">
+                <Flex align="center" gap={gapSize} flex={1} minW="200px">
+                    <TimeIcon w={iconSize} h={iconSize} color={iconColor} aria-label="time-Icon" />
+                    <Heading as="h4" fontSize={headingSize} fontWeight="semibold" color={textColor} noOfLines={1}>
                         Financing specifications
                     </Heading>
                 </Flex>
                 <Button
                     onClick={handleFinancingSpecsToggle}
                     p={1}
-                    _hover={{ bg: 'gray.100' }}
+                    _hover={{ bg: hoverBgColor }}
                     borderRadius="full"
                     variant="ghost"
+                    minW="auto"
                 >
                     {isFinancingSpecsExpanded ? (
-                        <ChevronUpIcon w="20px" h="20px" color="gray.500" aria-label="chevron-up-Icon" />
+                        <ChevronUpIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-up-Icon" />
                     ) : (
-                        <ChevronDownIcon w="20px" h="20px" color="gray.500" aria-label="chevron-down-Icon" />
+                        <ChevronDownIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-down-Icon" />
                     )}
                 </Button>
             </Flex>
 
             {isFinancingSpecsExpanded && (
-                <VStack spacing={6} align="stretch">
-                    <Flex w="full" gap={{ base: 1, sm: 4 }}>
-                        {options.map((option) => (
-                            <FinancingOptionComponent
-                                key={option.id}
-                                option={option}
-                                selectedOption={selectedOption}
-                                onSelect={handleOptionSelect}
-                            />
-                        ))}
-                    </Flex>
+                <VStack spacing={sectionSpacing} align="stretch" w="100%">
+                    <Box w="100%" overflowX="hidden">
+                        <Flex
+                            w="100%"
+                            gap={gapSize}
+                            flexDirection={flexDirection}
+                            flexWrap="wrap"
+                        >
+                            {options.map((option) => (
+                                <Box key={option.id} w={{ base: "100%", md: "auto" }} flex={{ base: "unset", md: 1 }}>
+                                    <FinancingOptionComponent
+                                        option={option}
+                                        selectedOption={selectedOption}
+                                        onSelect={handleOptionSelect}
+                                    />
+                                </Box>
+                            ))}
+                        </Flex>
+                    </Box>
 
                     <PaybackPeriodSlider
                         paybackPeriod={paybackPeriod}

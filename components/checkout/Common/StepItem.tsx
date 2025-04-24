@@ -1,97 +1,76 @@
 import React from 'react';
-import { Box, Flex, Text, useColorModeValue, Badge } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-import { ChevronDownIcon, TimeIcon, CheckIcon } from '@chakra-ui/icons';
+import { Box, Flex, Text, Icon, useColorModeValue } from '@chakra-ui/react';
+import { ChevronRight, Check } from 'lucide-react';
 import { StepItemProps } from '../types/steps';
 
-const MotionFlex = motion(Flex);
-const MotionBox = motion(Box);
-const MotionBadge = motion(Badge);
-
-export const StepItem: React.FC<StepItemProps> = ({
+const StepItem = ({
     title,
-    badge,
-    isLocked,
     isFirst,
+    isLocked,
     showChevron,
     isActive,
     onClick,
-    isCompleted
-}) => {
+    isCompleted,
+}: StepItemProps) => {
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.100", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const mutedTextColor = useColorModeValue("gray.600", "gray.400");
+    const activeBgColor = useColorModeValue("gray.50", "gray.700");
+    const checkBgColor = useColorModeValue("green.500", "green.400");
+    const lockedColor = useColorModeValue("gray.300", "gray.600");
+
     const handleClick = () => {
-        if (!isLocked && showChevron && onClick) {
+        if (!isLocked && onClick) {
             onClick(!isActive);
         }
     };
 
-    const bgColor = useColorModeValue('white', 'gray.800');
-    const hoverBgColor = useColorModeValue('gray.50', 'gray.700');
-    const textColor = isLocked ? 'gray.400' : 'gray.800';
-
     return (
-        <MotionFlex
+        <Flex
+            py={3}
+            px={6}
+            alignItems="center"
+            justifyContent="space-between"
+            borderTop={!isFirst ? "1px solid" : undefined}
+            borderColor={borderColor}
+            bg={isActive ? activeBgColor : bgColor}
+            cursor={isLocked ? "not-allowed" : "pointer"}
+            opacity={isLocked ? 0.5 : 1}
             onClick={handleClick}
-            align="center"
-            justify="space-between"
-            p={4}
-            pl={8}
-            cursor={isLocked ? 'not-allowed' : 'pointer'}
-            bg={bgColor}
-            shadow={isFirst ? 'sm' : 'none'}
-            borderBottomWidth={isFirst ? '1px' : '0'}
-            pb={isFirst ? 5 : 4}
-            opacity={isLocked ? 0.7 : 1}
+            transition="all 0.2s ease"
             _hover={{
-                bg: isLocked ? bgColor : hoverBgColor,
+                bg: !isLocked ? activeBgColor : undefined,
             }}
         >
-            <Flex align="center" gap={3}>
+            <Flex gap={3} alignItems="center">
                 {isCompleted ? (
                     <Flex
                         w="24px"
                         h="24px"
                         borderRadius="full"
-                        bg="green.500"
-                        align="center"
-                        justify="center"
+                        bg={checkBgColor}
+                        alignItems="center"
+                        justifyContent="center"
                     >
-                        <CheckIcon w="16px" h="16px" color="white" aria-label="Icon" />
+                        <Icon as={Check} color="white" boxSize="16px" />
                     </Flex>
-                ) : (
-                    <TimeIcon w="20px" h="20px" color={isLocked ? 'gray.400' : 'red.500'} aria-label="Icon" />
-                )}
-                <Text fontSize="15px" fontWeight="semibold" color={textColor}>
+                ) : null}
+                <Text fontWeight="medium" fontSize="sm" color={isLocked ? lockedColor : textColor}>
                     {title}
                 </Text>
             </Flex>
-
-            <Flex align="center" gap={2}>
-                {badge && (
-                    <MotionBadge
-                        px={2}
-                        py={0.5}
-                        fontSize="11px"
-                        fontWeight="medium"
-                        bg="#ffeef6"
-                        color="#f88181"
-                        borderRadius="md"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        {badge}
-                    </MotionBadge>
-                )}
-                {showChevron && (
-                    <MotionBox
-                        animate={{ rotate: isActive ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <ChevronDownIcon w="20px" h="20px" color="gray.400" aria-label="Icon"   />
-                    </MotionBox>
-                )}
-            </Flex>
-        </MotionFlex>
+            {showChevron && (
+                <Icon
+                    as={ChevronRight}
+                    boxSize="20px"
+                    color={isLocked ? lockedColor : mutedTextColor}
+                    transform={isActive ? "rotate(90deg)" : undefined}
+                    transition="transform 0.2s ease"
+                />
+            )}
+        </Flex>
     );
 };
 

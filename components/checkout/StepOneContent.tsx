@@ -22,7 +22,9 @@ import {
     Divider,
     Center,
     Image,
-    Checkbox
+    Checkbox,
+    useColorModeValue,
+    useBreakpointValue
 } from '@chakra-ui/react';
 import StepHeader from './Common/StepHeader';
 import StepItem from './Common/StepItem';
@@ -42,7 +44,124 @@ import { Check, Clock, ChevronLeft, Lock } from 'lucide-react';
 type StepStatus = 'locked' | 'active' | 'completed';
 type StepKey = 'payment' | 'inspection' | 'delivery' | 'additionalServices' | 'finalPayment';
 
+// Custom hook for breakpoint values
+const useBreakpointValues = () => {
+    // Text and layout sizes
+    const baseSmMd = useBreakpointValue({ base: 'sm', md: 'md' });
+    const baseMdLg = useBreakpointValue({ base: 'md', md: 'lg' });
+    const baseLgXl = useBreakpointValue({ base: 'lg', md: 'xl' });
+    const baseXsSm = useBreakpointValue({ base: 'xs', md: 'sm' });
+    const base2xsxs = useBreakpointValue({ base: '2xs', md: 'xs' });
+    const baseColumnRow = useBreakpointValue({ base: 'column', md: 'row' }) as "column" | "row";
+
+    // Spacing values
+    const base2Md4 = useBreakpointValue({ base: 2, md: 4 });
+    const base3Md4 = useBreakpointValue({ base: 3, md: 4 });
+    const base4Md6 = useBreakpointValue({ base: 4, md: 6 });
+    const base6Md8 = useBreakpointValue({ base: 6, md: 8 });
+    const base3Sm0 = useBreakpointValue({ base: 3, sm: 0 });
+    const base1Md2 = useBreakpointValue({ base: 1, md: 2 });
+    const base5Md6 = useBreakpointValue({ base: 5, md: 6 });
+    const base0Sm1 = useBreakpointValue({ base: 0, sm: 1 });
+
+    // Width/height values
+    const base20px24px = useBreakpointValue({ base: '20px', md: '24px' });
+    const base40px48px = useBreakpointValue({ base: '40px', md: '48px' });
+    const base10px12px = useBreakpointValue({ base: '10px', md: '12px' });
+    const base28px30px = useBreakpointValue({ base: '28px', md: '30px' });
+    const base45px50px = useBreakpointValue({ base: '45px', md: '50px' });
+    const base5px = useBreakpointValue({ base: '5px', md: '5px' });
+    const base18px20px = useBreakpointValue({ base: '18px', md: '20px' });
+    const base16px18px = useBreakpointValue({ base: '16px', md: '18px' });
+    const base16px20px = useBreakpointValue({ base: '16px', md: '20px' });
+    const base25px30px = useBreakpointValue({ base: '25px', md: '30px' });
+    const base14px16px = useBreakpointValue({ base: 14, md: 16 });
+
+    // Layout values
+    const baseCenterSmLeft = useBreakpointValue({ base: 'center', sm: 'left' }) as "center" | "left";
+    const baseCenterSmFlexEnd = useBreakpointValue({ base: 'center', sm: 'flex-end' });
+    const baseFlexStartCenter = useBreakpointValue({ base: 'flex-start', sm: 'center' });
+    const base100smAuto = useBreakpointValue({ base: '100%', sm: 'auto' });
+    const base95md500px = useBreakpointValue({ base: '95%', md: '500px' });
+
+    return {
+        baseSmMd,
+        baseMdLg,
+        baseLgXl,
+        baseXsSm,
+        base2xsxs,
+        baseColumnRow,
+        base2Md4,
+        base3Md4,
+        base4Md6,
+        base6Md8,
+        base3Sm0,
+        base1Md2,
+        base5Md6,
+        base0Sm1,
+        base20px24px,
+        base40px48px,
+        base10px12px,
+        base28px30px,
+        base45px50px,
+        base5px,
+        base18px20px,
+        base16px18px,
+        base16px20px,
+        base25px30px,
+        base14px16px,
+        baseCenterSmLeft,
+        baseCenterSmFlexEnd,
+        baseFlexStartCenter,
+        base100smAuto,
+        base95md500px
+    };
+};
+
 const StepOneContent: React.FC = () => {
+    // Get all breakpoint values at the component top level
+    const breakpointValues = useBreakpointValues();
+
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("gray.100", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const mutedTextColor = useColorModeValue("gray.600", "gray.400");
+    const lightMutedTextColor = useColorModeValue("gray.500", "gray.500");
+
+    // Status colors
+    const redBgLight = useColorModeValue("red.50", "red.900");
+    const redTextColor = useColorModeValue("red.500", "red.300");
+    const redBorderLight = useColorModeValue("red.100", "red.800");
+
+    const greenBgLight = useColorModeValue("green.50", "green.900");
+    const greenTextColor = useColorModeValue("green.500", "green.300");
+    const greenBorderLight = useColorModeValue("green.100", "green.800");
+
+    // Payment modal colors
+    const modalBg = useColorModeValue("white", "gray.800");
+    const modalBorderColor = useColorModeValue("gray.100", "gray.700");
+    const googlePayHoverColor = useColorModeValue("gray.500", "gray.400");
+    const dividerColor = useColorModeValue("gray.300", "gray.600");
+    const formLabelColor = useColorModeValue("gray.600", "gray.400");
+    const formBorderColor = useColorModeValue("gray.300", "gray.600");
+    const formTextColor = useColorModeValue("gray.500", "gray.300");
+    const saveCardBg = useColorModeValue("gray.50", "gray.700");
+    const iconBgColor = useColorModeValue("blue.50", "blue.900");
+    const iconTextColor = useColorModeValue("blue.500", "blue.300");
+    const visaColor = useColorModeValue("blue.600", "blue.300");
+
+    // More color values used in the component
+    const checkboxBorderColor = useColorModeValue('gray.400', 'gray.500');
+    const activeCheckboxBg = useColorModeValue('red.500', 'red.400');
+    const activeCheckboxBorder = useColorModeValue('red.500', 'red.300');
+    const greenLightBg = useColorModeValue("green.100", "green.800");
+
+    // Additional shared styles
+    const buttonHoverBg = useColorModeValue("red.600", "red.600");
+    const buttonBg = useColorModeValue("red.500", "red.500");
+    const fallbackImageBg = useColorModeValue("gray.100", "gray.600");
+
     // Track the current active step
     const [activeStep, setActiveStep] = useState<StepKey>('payment');
 
@@ -204,10 +323,12 @@ const StepOneContent: React.FC = () => {
         <Box display="flex" flexDirection="column" gap={8}>
             {/* Step 1: Payment Method */}
             <Box
-                bg="white"
+                bg={bgColor}
                 borderRadius="xl"
                 overflow="hidden"
                 ref={stepRefs.payment}
+                borderWidth="1px"
+                borderColor={borderColor}
             >
                 <Box p={6}>
                     <StepHeader
@@ -276,7 +397,7 @@ const StepOneContent: React.FC = () => {
 
                         {selectedPaymentMethod === 'financing' && !applicationSent && (
                             <>
-                                <Box mt={6}>
+                                <Box mt={6} maxW="100%" overflow="hidden">
                                     <FinancingSpecs
                                         onFinancingRequest={handleWantFinancing}
                                         onFullPayment={handlePayInFull}
@@ -305,13 +426,15 @@ const StepOneContent: React.FC = () => {
 
             {/* Step 2: Car Inspection */}
             <Box
-                bg="white"
+                bg={bgColor}
                 borderRadius="xl"
                 overflow="hidden"
                 ref={stepRefs.inspection}
                 opacity={stepStatuses.inspection === 'locked' ? 0.7 : 1}
                 filter={stepStatuses.inspection === 'locked' ? 'grayscale(1)' : 'none'}
                 transition="all 0.3s ease"
+                borderWidth="1px"
+                borderColor={borderColor}
             >
                 <Box p={6}>
                     <StepHeader
@@ -358,13 +481,15 @@ const StepOneContent: React.FC = () => {
 
             {/* Step 3: Delivery */}
             <Box
-                bg="white"
+                bg={bgColor}
                 borderRadius="xl"
                 overflow="hidden"
                 ref={stepRefs.delivery}
                 opacity={stepStatuses.delivery === 'locked' ? 0.7 : 1}
                 filter={stepStatuses.delivery === 'locked' ? 'grayscale(1)' : 'none'}
                 transition="all 0.3s ease"
+                borderWidth="1px"
+                borderColor={borderColor}
             >
                 <Box p={6}>
                     <StepHeader
@@ -396,13 +521,15 @@ const StepOneContent: React.FC = () => {
 
             {/* Step 4: Additional Services */}
             <Box
-                bg="white"
+                bg={bgColor}
                 borderRadius="xl"
                 overflow="hidden"
                 ref={stepRefs.additionalServices}
                 opacity={stepStatuses.additionalServices === 'locked' ? 0.7 : 1}
                 filter={stepStatuses.additionalServices === 'locked' ? 'grayscale(1)' : 'none'}
                 transition="all 0.3s ease"
+                borderWidth="1px"
+                borderColor={borderColor}
             >
                 <Box p={6}>
                     <StepHeader
@@ -432,7 +559,7 @@ const StepOneContent: React.FC = () => {
 
             {/* Step 5: Payment */}
             <Box
-                bg="white"
+                bg={bgColor}
                 borderRadius="xl"
                 overflow="hidden"
                 mb={8}
@@ -440,6 +567,8 @@ const StepOneContent: React.FC = () => {
                 opacity={stepStatuses.finalPayment === 'locked' ? 0.7 : 1}
                 filter={stepStatuses.finalPayment === 'locked' ? 'grayscale(1)' : 'none'}
                 transition="all 0.3s ease"
+                borderWidth="1px"
+                borderColor={borderColor}
             >
                 <Box p={6}>
                     <StepHeader
@@ -465,44 +594,46 @@ const StepOneContent: React.FC = () => {
                         <Box p={6}>
                             <Flex
                                 p={6}
-                                bg="green.50"
+                                bg={greenBgLight}
                                 borderRadius="md"
                                 alignItems="center"
                                 gap={4}
                                 border="1px solid"
-                                borderColor="green.100"
+                                borderColor={greenBorderLight}
+                                flexDirection={breakpointValues.baseColumnRow}
                             >
                                 <Flex
-                                    w="48px"
-                                    h="48px"
+                                    w={breakpointValues.base40px48px}
+                                    h={breakpointValues.base40px48px}
                                     borderRadius="full"
-                                    bg="green.100"
+                                    bg={greenLightBg}
                                     alignItems="center"
                                     justifyContent="center"
+                                    flexShrink={0}
                                 >
-                                    <Icon as={Check} color="green.500" boxSize="24px" />
+                                    <Icon as={Check} color={greenTextColor} boxSize={breakpointValues.base20px24px} />
                                 </Flex>
-                                <Box>
-                                    <Text fontWeight="bold" color="green.500" mb={1}>
+                                <Box textAlign={breakpointValues.baseCenterSmLeft}>
+                                    <Text fontWeight="bold" color={greenTextColor} mb={1} fontSize={breakpointValues.baseMdLg}>
                                         Payment Successful
                                     </Text>
-                                    <Text fontSize="sm" color="gray.700">
+                                    <Text fontSize={breakpointValues.baseXsSm} color={textColor}>
                                         Thank you for your purchase. Your order has been confirmed.
                                     </Text>
-                                    <Text fontSize="xs" color="gray.500" mt={1}>
+                                    <Text fontSize={breakpointValues.baseXsSm} color={mutedTextColor} mt={1}>
                                         You will receive a confirmation email with your order details shortly.
                                     </Text>
                                 </Box>
                             </Flex>
                         </Box>
                     ) : (
-                        <Box p={6}>
+                        <Box p={breakpointValues.base4Md6}>
                             {/* Payment Method Section */}
-                            <Box mb={8}>
-                                <Text fontWeight="bold" mb={4}>
+                            <Box mb={breakpointValues.base6Md8}>
+                                <Text fontWeight="bold" mb={breakpointValues.base2Md4} color={textColor} fontSize={breakpointValues.baseMdLg}>
                                     Method of payment
                                 </Text>
-                                <Text color="gray.600" mb={4}>
+                                <Text color={mutedTextColor} mb={breakpointValues.base3Md4} fontSize={breakpointValues.baseXsSm}>
                                     Select your payment method to complete the purchase.
                                 </Text>
 
@@ -511,69 +642,81 @@ const StepOneContent: React.FC = () => {
                                     borderWidth="1px"
                                     borderColor="transparent"
                                     borderRadius="md"
-                                    bg="red.500"
+                                    bg={buttonBg}
                                     color="white"
-                                    p={4}
+                                    p={breakpointValues.base3Md4}
                                     mb={6}
                                 >
-                                    <Flex justifyContent="space-between" alignItems="center">
+                                    <Flex
+                                        justifyContent={breakpointValues.baseColumnRow}
+                                        alignItems="center"
+                                        gap={breakpointValues.base3Sm0}
+                                    >
                                         <Flex alignItems="center">
                                             <Box
                                                 borderWidth="2px"
                                                 borderColor="white"
                                                 borderRadius="full"
-                                                width="24px"
-                                                height="24px"
+                                                width={breakpointValues.base20px24px}
+                                                height={breakpointValues.base20px24px}
                                                 mr={3}
                                                 display="flex"
                                                 alignItems="center"
                                                 justifyContent="center"
+                                                flexShrink={0}
                                             >
                                                 <Box
                                                     bg="white"
                                                     borderRadius="full"
-                                                    width="12px"
-                                                    height="12px"
+                                                    width={breakpointValues.base10px12px}
+                                                    height={breakpointValues.base10px12px}
                                                 />
                                             </Box>
-                                            <Text fontSize="xl" fontWeight="medium">Online payment</Text>
+                                            <Text fontSize={breakpointValues.baseMdLg} fontWeight="medium">Online payment</Text>
                                         </Flex>
 
                                         {/* Payment Logos */}
-                                        <Flex gap={2} alignItems="center">
-                                            <Box bg="white" borderRadius="md" p={1} height="30px" width="50px" display="flex" alignItems="center" justifyContent="center">
-                                                <Text fontSize="xs" fontWeight="bold" color="blue.500">PayPal</Text>
+                                        <Flex
+                                            gap={breakpointValues.base1Md2}
+                                            alignItems="center"
+                                            flexWrap="wrap"
+                                            justifyContent={breakpointValues.baseCenterSmFlexEnd}
+                                            width={breakpointValues.base100smAuto}
+                                        >
+                                            <Box bg="white" borderRadius="md" p={1} height={breakpointValues.base28px30px} width={breakpointValues.base45px50px} display="flex" alignItems="center" justifyContent="center">
+                                                <Text fontSize={breakpointValues.base2xsxs} fontWeight="bold" color="blue.500">PayPal</Text>
                                             </Box>
-                                            <Box bg="white" borderRadius="md" p={1} height="30px" width="50px" display="flex" alignItems="center" justifyContent="center">
-                                                <Text fontSize="xs" fontWeight="bold" color="gray.700">G Pay</Text>
+                                            <Box bg="white" borderRadius="md" p={1} height={breakpointValues.base28px30px} width={breakpointValues.base45px50px} display="flex" alignItems="center" justifyContent="center">
+                                                <Text fontSize={breakpointValues.base2xsxs} fontWeight="bold" color="gray.700">G Pay</Text>
                                             </Box>
-                                            <Box bg="white" borderRadius="md" p={1} height="30px" width="50px" display="flex" alignItems="center" justifyContent="center">
-                                                <Text fontSize="xs" fontWeight="bold" color="black">Apple</Text>
+                                            <Box bg="white" borderRadius="md" p={1} height={breakpointValues.base28px30px} width={breakpointValues.base45px50px} display="flex" alignItems="center" justifyContent="center">
+                                                <Text fontSize={breakpointValues.base2xsxs} fontWeight="bold" color="black">Apple</Text>
                                             </Box>
-                                            <Box bg="white" borderRadius="md" p={1} height="30px" width="50px" display="flex" alignItems="center" justifyContent="center">
+                                            <Box bg="white" borderRadius="md" p={1} height={breakpointValues.base28px30px} width={breakpointValues.base45px50px} display="flex" alignItems="center" justifyContent="center">
                                                 <Box position="relative" height="full" width="full">
-                                                    <Box position="absolute" top="3px" left="5px" width="20px" height="20px" bg="red.500" borderRadius="full" />
-                                                    <Box position="absolute" top="3px" left="20px" width="20px" height="20px" bg="yellow.500" borderRadius="full" opacity={0.8} />
+                                                    <Box position="absolute" top={breakpointValues.base5px} left={breakpointValues.base5px} width={breakpointValues.base18px20px} height={breakpointValues.base18px20px} bg="red.500" borderRadius="full" />
+                                                    <Box position="absolute" top={breakpointValues.base5px} left={breakpointValues.base18px20px} width={breakpointValues.base18px20px} height={breakpointValues.base18px20px} bg="yellow.500" borderRadius="full" opacity={0.8} />
                                                 </Box>
                                             </Box>
-                                            <Box bg="white" borderRadius="md" p={1} height="30px" width="50px" display="flex" alignItems="center" justifyContent="center">
-                                                <Text fontSize="xs" fontWeight="bold" color="blue.600">VISA</Text>
+                                            <Box bg="white" borderRadius="md" p={1} height={breakpointValues.base28px30px} width={breakpointValues.base45px50px} display="flex" alignItems="center" justifyContent="center">
+                                                <Text fontSize={breakpointValues.base2xsxs} fontWeight="bold" color="blue.600">VISA</Text>
                                             </Box>
                                         </Flex>
                                     </Flex>
                                 </Box>
 
                                 {/* Continue Button */}
-                                <Flex justifyContent="center" mt={8}>
+                                <Flex justifyContent={breakpointValues.baseCenterSmFlexEnd} mt={breakpointValues.base6Md8}>
                                     <Button
-                                        bg="red.500"
+                                        bg={buttonBg}
                                         color="white"
-                                        size="lg"
-                                        px={12}
-                                        py={6}
+                                        size={breakpointValues.baseMdLg}
+                                        px={breakpointValues.base3Md4}
+                                        py={breakpointValues.base5Md6}
                                         onClick={openPaymentModal}
                                         aria-label="Process payment"
-                                        _hover={{ bg: "red.600" }}
+                                        _hover={{ bg: buttonHoverBg }}
+                                        width={breakpointValues.base100smAuto}
                                     >
                                         Process payment
                                     </Button>
@@ -581,100 +724,103 @@ const StepOneContent: React.FC = () => {
                             </Box>
 
                             {/* Payment Modal */}
-                            <Modal isOpen={isPaymentModalOpen} onClose={closePaymentModal} size="md" isCentered>
+                            <Modal isOpen={isPaymentModalOpen} onClose={closePaymentModal} size={breakpointValues.baseXsSm} isCentered>
                                 <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(5px)" />
-                                <ModalContent borderRadius="md" p={0} maxW="500px">
-                                    <ModalHeader p={4} display="flex" alignItems="center" justifyContent="space-between" borderBottom="1px solid" borderColor="gray.100">
+                                <ModalContent borderRadius="md" p={0} maxW={breakpointValues.base95md500px} bg={modalBg}>
+                                    <ModalHeader p={breakpointValues.base3Md4} display="flex" alignItems="center" justifyContent="space-between" borderBottom="1px solid" borderColor={modalBorderColor}>
                                         <Flex alignItems="center">
-                                            <Button variant="ghost" size="sm" leftIcon={<ChevronLeft size={16} />} mr={2} onClick={closePaymentModal}>
+                                            <Button variant="ghost" size={breakpointValues.baseXsSm} leftIcon={<ChevronLeft size={breakpointValues.base14px16px} />} mr={2} onClick={closePaymentModal}>
                                                 Back
                                             </Button>
                                         </Flex>
-                                        <Flex justifyContent="center" flex={1}>
-                                            <Text fontSize="xl" fontWeight="bold" color="red.500">Fast4Car</Text>
+                                        <Flex justifyContent={breakpointValues.baseCenterSmFlexEnd} flex={1}>
+                                            <Text fontSize={breakpointValues.baseMdLg} fontWeight="bold" color={redTextColor}>Fast4Car</Text>
                                         </Flex>
                                         <Box>
                                             <ModalCloseButton position="static" />
                                         </Box>
                                     </ModalHeader>
-                                    <ModalBody p={6}>
+                                    <ModalBody p={breakpointValues.base4Md6}>
                                         {/* Google Pay Button */}
                                         <Button
                                             variant="solid"
                                             bg="black"
                                             color="white"
-                                            size="lg"
+                                            size={breakpointValues.baseMdLg}
                                             width="100%"
-                                            mb={6}
+                                            mb={breakpointValues.base4Md6}
                                             borderRadius="10px"
-                                            height="50px"
-                                            _hover={{ color: "gray.500" }}
+                                            height={breakpointValues.base40px48px}
+                                            _hover={{ color: googlePayHoverColor }}
                                         >
                                             <Flex alignItems="center" justifyContent="center">
-                                                <Text fontSize="md" fontWeight="medium" mr={2}>Buy with</Text>
-                                                <img src='/search.png' width="18px" height="18px" color="white" />
-                                                <Text fontSize="lg" fontWeight="bold" ml={1}>Pay</Text>
+                                                <Text fontSize={breakpointValues.baseXsSm} fontWeight="medium" mr={2}>Buy with</Text>
+                                                <img src='/search.png' width={breakpointValues.base16px18px} height={breakpointValues.base16px18px} color="white" alt="Google Pay icon" />
+                                                <Text fontSize={breakpointValues.baseMdLg} fontWeight="bold" ml={1}>Pay</Text>
                                             </Flex>
                                         </Button>
 
                                         {/* Or Divider */}
-                                        <Flex align="center" my={6}>
-                                            <Divider flex={1} borderColor="gray.300" />
-                                            <Text px={4} color="gray.500" fontSize="sm">or</Text>
-                                            <Divider flex={1} borderColor="gray.300" />
+                                        <Flex align="center" my={breakpointValues.base4Md6}>
+                                            <Divider flex={1} borderColor={dividerColor} />
+                                            <Text px={breakpointValues.baseXsSm} color={mutedTextColor} fontSize={breakpointValues.baseXsSm}>or</Text>
+                                            <Divider flex={1} borderColor={dividerColor} />
                                         </Flex>
 
                                         {/* Card Form */}
-                                        <VStack spacing={6} align="stretch">
+                                        <VStack spacing={breakpointValues.base4Md6} align={breakpointValues.baseCenterSmLeft}>
                                             {/* Card Number */}
                                             <FormControl>
-                                                <FormLabel fontSize="md" color="gray.600">Card number</FormLabel>
+                                                <FormLabel fontSize={breakpointValues.baseXsSm} color={formLabelColor}>Card number</FormLabel>
                                                 <Input
                                                     value={cardNumber}
                                                     onChange={(e) => setCardNumber(e.target.value)}
                                                     placeholder="Card number"
-                                                    fontSize="md"
-                                                    height="50px"
-                                                    borderColor="gray.300"
-                                                    focusBorderColor="red.500"
-                                                    color="gray.500"
+                                                    fontSize={breakpointValues.baseXsSm}
+                                                    height={breakpointValues.base40px48px}
+                                                    borderColor={formBorderColor}
+                                                    focusBorderColor={redTextColor}
+                                                    color={formTextColor}
+                                                    bg={bgColor}
                                                 />
                                             </FormControl>
 
                                             {/* Expiry and CVV */}
-                                            <Flex gap={4}>
+                                            <Flex gap={breakpointValues.base2Md4} flexDirection={breakpointValues.baseColumnRow}>
                                                 <FormControl flex={1}>
-                                                    <FormLabel fontSize="md" color="gray.600">Expiration date</FormLabel>
+                                                    <FormLabel fontSize={breakpointValues.baseXsSm} color={formLabelColor}>Expiration date</FormLabel>
                                                     <Input
                                                         value={expiryDate}
                                                         onChange={(e) => setExpiryDate(e.target.value)}
                                                         placeholder="MM/YY"
-                                                        fontSize="md"
-                                                        height="50px"
-                                                        borderColor="gray.300"
-                                                        focusBorderColor="red.500"
-                                                        color="gray.500"
+                                                        fontSize={breakpointValues.baseXsSm}
+                                                        height={breakpointValues.base40px48px}
+                                                        borderColor={formBorderColor}
+                                                        focusBorderColor={redTextColor}
+                                                        color={formTextColor}
+                                                        bg={bgColor}
                                                     />
                                                 </FormControl>
 
                                                 <FormControl flex={1}>
-                                                    <FormLabel fontSize="md" color="gray.600">CVC/CVV</FormLabel>
+                                                    <FormLabel fontSize={breakpointValues.baseXsSm} color={formLabelColor}>CVC/CVV</FormLabel>
                                                     <InputGroup>
                                                         <Input
                                                             value={cvv}
                                                             onChange={(e) => setCvv(e.target.value)}
                                                             placeholder="123"
-                                                            fontSize="md"
-                                                            height="50px"
-                                                            borderColor="gray.300"
-                                                            focusBorderColor="red.500"
-                                                            color="gray.500"
+                                                            fontSize={breakpointValues.baseXsSm}
+                                                            height={breakpointValues.base40px48px}
+                                                            borderColor={formBorderColor}
+                                                            focusBorderColor={redTextColor}
+                                                            color={formTextColor}
+                                                            bg={bgColor}
                                                         />
-                                                        <InputRightElement height="50px">
+                                                        <InputRightElement height={breakpointValues.base40px48px}>
                                                             <Image
                                                                 src="/img/cvv-icon.png"
                                                                 alt="CVV"
-                                                                fallback={<Box bg="gray.100" w="30px" h="20px" borderRadius="sm" />}
+                                                                fallback={<Box bg={fallbackImageBg} w={breakpointValues.base25px30px} h={breakpointValues.base16px20px} borderRadius="sm" />}
                                                             />
                                                         </InputRightElement>
                                                     </InputGroup>
@@ -682,31 +828,33 @@ const StepOneContent: React.FC = () => {
                                             </Flex>
 
                                             {/* Save Card Option */}
-                                            <Box bg="gray.50" p={4} borderRadius="md">
-                                                <Flex alignItems="flex-start">
+                                            <Box bg={saveCardBg} p={breakpointValues.base3Md4} borderRadius="md">
+                                                <Flex alignItems="flex-start" flexDirection={breakpointValues.baseColumnRow} gap={breakpointValues.base3Sm0}>
                                                     <Checkbox
                                                         isChecked={saveCard}
                                                         onChange={(e) => setSaveCard(e.target.checked)}
                                                         mr={3}
                                                         colorScheme="red"
-                                                        size="md"
+                                                        size={breakpointValues.baseXsSm}
                                                         sx={{
                                                             '.chakra-checkbox__control': {
-                                                                borderColor: saveCard ? 'red.500' : 'gray.400',
-                                                                backgroundColor: saveCard ? 'red.500' : 'transparent',
+                                                                borderColor: saveCard ? activeCheckboxBorder : checkboxBorderColor,
+                                                                backgroundColor: saveCard ? activeCheckboxBg : 'transparent',
                                                             },
                                                         }}
+                                                        alignSelf={breakpointValues.baseFlexStartCenter}
+                                                        mt={breakpointValues.base0Sm1}
                                                     />
                                                     <Box>
-                                                        <Text fontWeight="medium" fontSize="md">Save card</Text>
-                                                        <Flex alignItems="center">
-                                                            <Text fontSize="sm" color="gray.600">Pay faster and securely via </Text>
-                                                            <Text fontWeight="bold" mx={1}>GoPay</Text>
-                                                            <Box w="20px" h="20px" display="inline-flex" alignItems="center" justifyContent="center" bg="blue.50" borderRadius="full" ml={1}>
-                                                                <Text fontSize="xs" fontWeight="bold" color="blue.500">G</Text>
+                                                        <Text fontWeight="medium" fontSize={breakpointValues.baseXsSm} color={textColor}>Save card</Text>
+                                                        <Flex alignItems="center" flexWrap="wrap">
+                                                            <Text fontSize={breakpointValues.baseXsSm} color={mutedTextColor}>Pay faster and securely via </Text>
+                                                            <Text fontWeight="bold" mx={1} color={textColor} fontSize={breakpointValues.baseXsSm}>GoPay</Text>
+                                                            <Box w={breakpointValues.base16px20px} h={breakpointValues.base16px20px} display="inline-flex" alignItems="center" justifyContent="center" bg={iconBgColor} borderRadius="full" ml={1}>
+                                                                <Text fontSize={breakpointValues.base2xsxs} fontWeight="bold" color={iconTextColor}>G</Text>
                                                             </Box>
                                                         </Flex>
-                                                        <Text fontSize="sm" color="gray.600">in thousands of e-shops. <Text as="span" color="red.500">Learn more</Text></Text>
+                                                        <Text fontSize={breakpointValues.baseXsSm} color={mutedTextColor}>in thousands of e-shops. <Text as="span" color={redTextColor}>Learn more</Text></Text>
                                                     </Box>
                                                 </Flex>
                                             </Box>
@@ -714,27 +862,28 @@ const StepOneContent: React.FC = () => {
                                             {/* Pay Button */}
                                             <Button
                                                 onClick={handleFinalPaymentComplete}
-                                                height="50px"
+                                                height={breakpointValues.base40px48px}
                                                 width="100%"
                                                 borderRadius="full"
-                                                bg="red.500"
+                                                bg={buttonBg}
                                                 color="white"
-                                                _hover={{ bg: "red.600" }}
-                                                leftIcon={<Lock size={16} />}
+                                                _hover={{ bg: buttonHoverBg }}
+                                                leftIcon={<Lock size={breakpointValues.base14px16px} />}
+                                                fontSize={breakpointValues.baseXsSm}
                                             >
                                                 Pay 119,00 €
                                             </Button>
 
                                             {/* Card Logos */}
-                                            <Flex justifyContent="center" mt={2}>
-                                                <HStack spacing={4}>
+                                            <Flex justifyContent={breakpointValues.baseCenterSmFlexEnd} mt={breakpointValues.base1Md2}>
+                                                <HStack spacing={breakpointValues.base4Md6}>
                                                     <Box>
-                                                        <Text fontSize="md" fontWeight="bold" color="blue.600">VISA</Text>
+                                                        <Text fontSize={breakpointValues.baseXsSm} fontWeight="bold" color={visaColor}>VISA</Text>
                                                     </Box>
                                                     <Box>
                                                         <Flex>
-                                                            <Box w="20px" h="20px" bg="red.500" borderRadius="full" />
-                                                            <Box w="20px" h="20px" bg="yellow.500" borderRadius="full" ml="-8px" />
+                                                            <Box w={breakpointValues.base16px18px} h={breakpointValues.base16px18px} bg="red.500" borderRadius="full" />
+                                                            <Box w={breakpointValues.base16px18px} h={breakpointValues.base16px18px} bg="yellow.500" borderRadius="full" ml="-8px" />
                                                         </Flex>
                                                     </Box>
                                                 </HStack>

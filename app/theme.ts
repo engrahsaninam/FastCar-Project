@@ -16,7 +16,8 @@ const theme = extendTheme({
   },
   fonts: {
     heading: `var(--urbanist)`,
-    body: `var(--urbanist)`
+    body: `var(--urbanist)`,
+    inter: `'Inter', sans-serif`,
   },
   styles: {
     global: {
@@ -31,3 +32,4 @@ const theme = extendTheme({
 });
 
 export default theme;
+

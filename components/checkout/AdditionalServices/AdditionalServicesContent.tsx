@@ -17,6 +17,7 @@ import {
     ListIcon,
     Divider,
     Icon,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { CheckCircle, Shield, Clock, DollarSign, Award, User, Car, Map } from 'lucide-react';
 
@@ -38,171 +39,41 @@ interface ServiceOption {
     };
 }
 
-// Custom styles for consistent red borders
-const redBorderStyle = {
-    border: '1px solid #E53E3E',
-    boxShadow: '0 0 0 3px rgba(229, 62, 62, 0.1)'
-};
-
-const ServiceOptionComponent = ({ service, isSelected, onToggle }: {
-    service: ServiceOption;
-    isSelected: boolean;
-    onToggle: (key: string) => void;
-}) => (
-    <Box>
-        <Box
-            as="label"
-            borderRadius="md"
-            p={5}
-            cursor="pointer"
-            transition="all 0.2s"
-            onClick={() => onToggle(service.key)}
-            bg={isSelected ? "red.500" : "white"}
-            color={isSelected ? "white" : "inherit"}
-            shadow="md"
-            _hover={{
-                bg: isSelected ? "red.500" : "red.50",
-                shadow: "lg"
-            }}
-            _active={{
-                transform: "scale(0.98)",
-                shadow: "sm"
-            }}
-            htmlFor={`service-${service.key}`}
-            role="checkbox"
-            aria-checked={isSelected}
-            style={redBorderStyle}
-            borderBottomRadius={isSelected && service.details ? 0 : "md"}
-            width={"100%"}
-        >
-            <VStack align="stretch" spacing={3}>
-                <Flex justify="space-between" align="center">
-                    <HStack spacing={4}>
-                        <Flex
-                            w="20px"
-                            h="20px"
-                            borderRadius="full"
-                            borderWidth="2px"
-                            borderColor={isSelected ? "white" : "#E53E3E"}
-                            bg={isSelected ? "#E53E3E" : "white"}
-                            alignItems="center"
-                            justifyContent="center"
-                            transition="all 0.2s"
-                            aria-hidden="true"
-                            style={{ borderColor: isSelected ? "white" : "#E53E3E" }}
-                        >
-                            {isSelected && (
-                                <Box
-                                    w="10px"
-                                    h="10px"
-                                    borderRadius="full"
-                                    bg="white"
-                                />
-                            )}
-                        </Flex>
-                        <Text fontSize="sm" fontWeight="medium" color={isSelected ? "white" : "#1A202C"}>
-                            {service.label}
-                        </Text>
-                    </HStack>
-                    <Badge
-                        px={2}
-                        py={1}
-                        fontSize="sm"
-                        fontWeight="bold"
-                        bg={isSelected ? "white" : "red.100"}
-                        color={isSelected ? "red.500" : "gray.800"}
-                        borderRadius="md"
-                    >
-                        {service.price}
-                    </Badge>
-                </Flex>
-                <Text fontSize="sm" color={isSelected ? "white" : "gray.600"} ml={8}>
-                    {service.description}
-                </Text>
-            </VStack>
-            <input
-                type="checkbox"
-                id={`service-${service.key}`}
-                checked={isSelected}
-                onChange={() => onToggle(service.key)}
-                style={{ position: 'absolute', opacity: 0 }}
-                aria-label={`Select ${service.label} for ${service.price}`}
-            />
-        </Box>
-        {service.details && (
-            <Collapse in={isSelected} animateOpacity>
-                <Box
-                    p={5}
-                    bg="white"
-                    borderWidth="1px"
-                    borderTop="none"
-                    borderColor="#E53E3E"
-                    borderBottomRadius="md"
-                    boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
-                >
-                    <VStack align="start" spacing={4}>
-                        <Flex align="center" width="100%">
-                            <Box mr={3}>
-                                {service.details.icon}
-                            </Box>
-                            <Text fontWeight="bold" fontSize="md" color="gray.800">
-                                {service.details.tagline}
-                            </Text>
-                        </Flex>
-
-                        <Divider />
-
-                        <Box width="100%">
-                            <Text fontWeight="bold" fontSize="sm" color="red.500" mb={2}>
-                                ✅ Package Includes:
-                            </Text>
-                            <List spacing={2}>
-                                {service.details.coverage.map((item, index) => (
-                                    <ListItem key={index} fontSize="sm" color="gray.700">
-                                        <ListIcon as={CheckCircle} color="green.500" />
-                                        {item}
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Box>
-
-                        <Box width="100%">
-                            <Text fontWeight="bold" fontSize="sm" color="red.500" mb={2}>
-                                🔒 Key Benefits:
-                            </Text>
-                            <List spacing={2}>
-                                {service.details.benefits.map((item, index) => (
-                                    <ListItem key={index} fontSize="sm" color="gray.700">
-                                        <ListIcon as={CheckCircle} color="green.500" />
-                                        {item}
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Box>
-
-                        <Box width="100%">
-                            <Text fontWeight="bold" fontSize="sm" color="red.500" mb={2}>
-                                🧰 Perfect For:
-                            </Text>
-                            <List spacing={2}>
-                                {service.details.idealFor.map((item, index) => (
-                                    <ListItem key={index} fontSize="sm" color="gray.700">
-                                        <ListIcon as={CheckCircle} color="green.500" />
-                                        {item}
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Box>
-                    </VStack>
-                </Box>
-            </Collapse>
-        )}
-    </Box>
-);
-
-ServiceOptionComponent.displayName = 'ServiceOption';
-
 const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ onContinue }) => {
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("#D3D3D3", "gray.600");
+    const textColor = useColorModeValue("gray.700", "gray.300");
+    const headingColor = useColorModeValue("gray.800", "white");
+
+    const buttonBgColor = useColorModeValue("red.500", "red.600");
+    const buttonHoverBgColor = useColorModeValue("red.600", "red.500");
+
+    const serviceBgSelected = useColorModeValue("red.500", "red.600");
+    const serviceBgUnselected = useColorModeValue("white", "gray.800");
+    const serviceBgHover = useColorModeValue("red.50", "gray.700");
+
+    const detailCardBg = useColorModeValue("white", "gray.800");
+    const detailBorderColor = useColorModeValue("#E53E3E", "#FC8181");
+    const detailTextColor = useColorModeValue("gray.800", "gray.200");
+    const detailLabelColor = useColorModeValue("red.500", "red.300");
+    const detailItemColor = useColorModeValue("gray.700", "gray.300");
+
+    const badgeBgSelected = useColorModeValue("white", "gray.700");
+    const badgeBgUnselected = useColorModeValue("red.100", "red.900");
+    const badgeColorSelected = useColorModeValue("red.500", "red.300");
+    const badgeColorUnselected = useColorModeValue("gray.800", "gray.200");
+
+    const iconColor = useColorModeValue("red.500", "red.300");
+    const checkIconColor = useColorModeValue("green.500", "green.300");
+    const dividerColor = useColorModeValue("gray.200", "gray.600");
+
+    // Custom styles for consistent red borders with dark mode support
+    const redBorderStyle = {
+        border: `1px solid ${useColorModeValue('#E53E3E', '#FC8181')}`,
+        boxShadow: useColorModeValue('0 0 0 3px rgba(229, 62, 62, 0.1)', '0 0 0 3px rgba(252, 129, 129, 0.2)')
+    };
+
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
     const services: ServiceOption[] = [
@@ -233,7 +104,7 @@ const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ o
                     "Long-distance commuters",
                     "Buyers of used cars seeking reliability"
                 ],
-                icon: <Icon as={Shield} size={24} color="red.500" />
+                icon: <Icon as={Shield} size={24} color={iconColor} />
             }
         },
         {
@@ -265,7 +136,7 @@ const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ o
                     "Anyone who values that 'new car' experience",
                     "Drivers sensitive to odors or allergens"
                 ],
-                icon: <Icon as={Car} size={24} color="red.500" />
+                icon: <Icon as={Car} size={24} color={iconColor} />
             }
         },
         {
@@ -298,10 +169,185 @@ const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ o
                     "Special occasion timing (birthday, anniversary, vacation)",
                     "Anyone who values time as their most precious resource"
                 ],
-                icon: <Icon as={Clock} size={24} color="red.500" />
+                icon: <Icon as={Clock} size={24} color={iconColor} />
             }
         }
     ];
+
+    const ServiceOptionComponent = ({ service, isSelected, onToggle }: {
+        service: ServiceOption;
+        isSelected: boolean;
+        onToggle: (key: string) => void;
+    }) => {
+        const radioBorderColor = useColorModeValue(
+            isSelected ? "white" : "#E53E3E",
+            isSelected ? "white" : "#FC8181"
+        );
+
+        const titleColor = useColorModeValue(
+            isSelected ? "white" : "#1A202C",
+            isSelected ? "white" : "gray.200"
+        );
+
+        const descriptionColor = useColorModeValue(
+            isSelected ? "white" : "gray.600",
+            isSelected ? "white" : "gray.400"
+        );
+
+        const cardBg = isSelected ? serviceBgSelected : serviceBgUnselected;
+        const cardHoverBg = isSelected ? serviceBgSelected : serviceBgHover;
+
+        return (
+            <Box>
+                <Box
+                    as="label"
+                    borderRadius="md"
+                    p={5}
+                    cursor="pointer"
+                    transition="all 0.2s"
+                    onClick={() => onToggle(service.key)}
+                    bg={cardBg}
+                    color={isSelected ? "white" : "inherit"}
+                    shadow="md"
+                    _hover={{
+                        bg: cardHoverBg,
+                        shadow: "lg"
+                    }}
+                    _active={{
+                        transform: "scale(0.98)",
+                        shadow: "sm"
+                    }}
+                    htmlFor={`service-${service.key}`}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    style={redBorderStyle}
+                    borderBottomRadius={isSelected && service.details ? 0 : "md"}
+                    width={"100%"}
+                >
+                    <VStack align="stretch" spacing={3}>
+                        <Flex justify="space-between" align="center">
+                            <HStack spacing={4}>
+                                <Flex
+                                    w="20px"
+                                    h="20px"
+                                    borderRadius="full"
+                                    borderWidth="2px"
+                                    borderColor={radioBorderColor}
+                                    bg={isSelected ? buttonBgColor : "transparent"}
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    transition="all 0.2s"
+                                    aria-hidden="true"
+                                >
+                                    {isSelected && (
+                                        <Box
+                                            w="10px"
+                                            h="10px"
+                                            borderRadius="full"
+                                            bg="white"
+                                        />
+                                    )}
+                                </Flex>
+                                <Text fontSize="sm" fontWeight="medium" color={titleColor}>
+                                    {service.label}
+                                </Text>
+                            </HStack>
+                            <Badge
+                                px={2}
+                                py={1}
+                                fontSize="sm"
+                                fontWeight="bold"
+                                bg={isSelected ? badgeBgSelected : badgeBgUnselected}
+                                color={isSelected ? badgeColorSelected : badgeColorUnselected}
+                                borderRadius="md"
+                            >
+                                {service.price}
+                            </Badge>
+                        </Flex>
+                        <Text fontSize="sm" color={descriptionColor} ml={8}>
+                            {service.description}
+                        </Text>
+                    </VStack>
+                    <input
+                        type="checkbox"
+                        id={`service-${service.key}`}
+                        checked={isSelected}
+                        onChange={() => onToggle(service.key)}
+                        style={{ position: 'absolute', opacity: 0 }}
+                        aria-label={`Select ${service.label} for ${service.price}`}
+                    />
+                </Box>
+                {service.details && (
+                    <Collapse in={isSelected} animateOpacity>
+                        <Box
+                            p={5}
+                            bg={detailCardBg}
+                            borderWidth="1px"
+                            borderTop="none"
+                            borderColor={detailBorderColor}
+                            borderBottomRadius="md"
+                            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                        >
+                            <VStack align="start" spacing={4}>
+                                <Flex align="center" width="100%">
+                                    <Box mr={3}>
+                                        {service.details.icon}
+                                    </Box>
+                                    <Text fontWeight="bold" fontSize="md" color={detailTextColor}>
+                                        {service.details.tagline}
+                                    </Text>
+                                </Flex>
+
+                                <Divider borderColor={dividerColor} />
+
+                                <Box width="100%">
+                                    <Text fontWeight="bold" fontSize="sm" color={detailLabelColor} mb={2}>
+                                        ✅ Package Includes:
+                                    </Text>
+                                    <List spacing={2}>
+                                        {service.details.coverage.map((item, index) => (
+                                            <ListItem key={index} fontSize="sm" color={detailItemColor}>
+                                                <ListIcon as={CheckCircle} color={checkIconColor} />
+                                                {item}
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Box>
+
+                                <Box width="100%">
+                                    <Text fontWeight="bold" fontSize="sm" color={detailLabelColor} mb={2}>
+                                        🔒 Key Benefits:
+                                    </Text>
+                                    <List spacing={2}>
+                                        {service.details.benefits.map((item, index) => (
+                                            <ListItem key={index} fontSize="sm" color={detailItemColor}>
+                                                <ListIcon as={CheckCircle} color={checkIconColor} />
+                                                {item}
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Box>
+
+                                <Box width="100%">
+                                    <Text fontWeight="bold" fontSize="sm" color={detailLabelColor} mb={2}>
+                                        🧰 Perfect For:
+                                    </Text>
+                                    <List spacing={2}>
+                                        {service.details.idealFor.map((item, index) => (
+                                            <ListItem key={index} fontSize="sm" color={detailItemColor}>
+                                                <ListIcon as={CheckCircle} color={checkIconColor} />
+                                                {item}
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Box>
+                            </VStack>
+                        </Box>
+                    </Collapse>
+                )}
+            </Box>
+        );
+    };
 
     const toggleService = (key: string) => {
         setSelectedServices(prev =>
@@ -317,11 +363,19 @@ const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ o
     };
 
     return (
-        <Box p={6} as="section" aria-labelledby="additional-services-title" border="1px solid #D3D3D3" borderRadius="lg">
+        <Box
+            p={6}
+            as="section"
+            aria-labelledby="additional-services-title"
+            border="1px solid"
+            borderColor={borderColor}
+            borderRadius="lg"
+            bg={bgColor}
+        >
             <form onSubmit={handleSubmit}>
                 <VStack spacing={6} align="stretch">
                     {/* Description */}
-                    <Text color="gray.700" fontSize="sm" id="additional-services-title">
+                    <Text color={textColor} fontSize="sm" id="additional-services-title">
                         Enhance your purchase with optional add-ons. All services are designed to provide extra peace of mind and convenience.
                     </Text>
 
@@ -347,11 +401,13 @@ const AdditionalServicesContent: React.FC<AdditionalServicesContentProps> = ({ o
                     <Flex justify="center" mt={6}>
                         <Button
                             type="submit"
-                            colorScheme="red"
+                            bg={buttonBgColor}
+                            color="white"
                             size="lg"
                             px={12}
                             shadow="md"
                             _hover={{
+                                bg: buttonHoverBgColor,
                                 shadow: "lg",
                                 transform: "translateY(-1px)"
                             }}

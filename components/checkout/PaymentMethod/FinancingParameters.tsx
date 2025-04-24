@@ -2,245 +2,151 @@ import React from 'react';
 import {
     Box,
     Flex,
+    Text,
     Grid,
     GridItem,
-    Heading,
-    Link,
-    Text,
+    Divider,
+    useColorModeValue,
     useBreakpointValue,
 } from '@chakra-ui/react';
-import { FinancingParametersProps } from '../types/financing';
+
+interface FinancingParametersProps {
+    downPayment: number;
+    downPaymentAmount: number;
+    installmentPeriod: number;
+    interestRate: string;
+    APR: string;
+    monthlyPayment: number;
+}
 
 const FinancingParameters: React.FC<FinancingParametersProps> = ({
     downPayment,
     downPaymentAmount,
     installmentPeriod,
     interestRate,
-    // APR,
-    monthlyPayment
+    APR,
+    monthlyPayment,
 }) => {
-    // Use responsive layout based on screen size
-    const layout = useBreakpointValue({
-        base: "mobile", // Android/mobile style (stacked)
-        md: "desktop"   // Desktop style (horizontal)
+    // Responsive values
+    const isMobile = useBreakpointValue({ base: true, sm: false });
+    const fontSize = useBreakpointValue({ base: "xs", sm: "sm" });
+    const titleSize = useBreakpointValue({ base: "sm", sm: "md" });
+    const amountSize = useBreakpointValue({ base: "md", sm: "lg" });
+    const gridTemplateColumns = useBreakpointValue({
+        base: "1fr",
+        sm: "repeat(2, 1fr)",
+        md: "repeat(3, 1fr)"
     });
+    const padding = useBreakpointValue({ base: 3, sm: 4 });
+    const spacing = useBreakpointValue({ base: 2, sm: 3 });
 
-    // Mobile/Android layout (stacked two-column grid)
-    if (layout === "mobile") {
-        return (
-            <Box mt={8} width="100%">
-                <Heading
-                    as="h3"
-                    fontSize={{ base: "18px", sm: "20px" }}
-                    fontWeight="bold"
-                    color="#0E2160"
-                    mb={4}
-                >
-                    Parameters of your financing option.
-                </Heading>
+    // Color values
+    const bgColor = useColorModeValue("gray.50", "gray.700");
+    const textColor = useColorModeValue("gray.900", "white");
+    const mutedColor = useColorModeValue("gray.600", "gray.400");
+    const amountColor = useColorModeValue("red.500", "red.300");
+    const borderColor = useColorModeValue("gray.200", "gray.600");
 
-                <Box
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    borderColor="gray.200"
-                    overflow="hidden"
-                    bg="white"
-                    p={4}
-                    width="100%"
-                >
-                    <Grid
-                        templateColumns="1fr 1fr"
-                        templateRows="repeat(4, auto)"
-                        gap={3}
-                        width="100%"
-                    >
-                        {/* Left column - labels */}
-                        <GridItem>
-                            <Text fontSize="xs" fontWeight="medium" color="#4B4B4BFF" mb={3}>
-                                DOWNPAYMENT ({downPayment} %)
-                            </Text>
-                        </GridItem>
-
-                        {/* Right column - values */}
-                        <GridItem textAlign="right">
-                            <Text fontSize="md" fontWeight="semibold" color="#1F2937" mb={3}>
-                                €{downPaymentAmount?.toLocaleString()}
-                            </Text>
-                        </GridItem>
-
-                        <GridItem>
-                            <Text fontSize="xs" fontWeight="medium" color="#4B4B4BFF" mb={3}>
-                                INSTALLMENT
-                            </Text>
-                        </GridItem>
-
-                        <GridItem textAlign="right">
-                            <Text fontSize="md" fontWeight="semibold" color="#1F2937" mb={3}>
-                                {installmentPeriod}
-                            </Text>
-                        </GridItem>
-
-                        <GridItem>
-                            <Text fontSize="xs" fontWeight="medium" color="#4B4B4BFF" mb={3}>
-                                INTEREST RATE / APR
-                            </Text>
-                        </GridItem>
-
-                        <GridItem textAlign="right">
-                            <Text fontSize="md" fontWeight="semibold" color="#1F2937" mb={3}>
-                                {interestRate} %
-                                {/* / {APR} % */}
-                            </Text>
-                        </GridItem>
-
-                        <GridItem>
-                            <Text fontSize="xs" fontWeight="medium" color="#E53E3E" mb={3}>
-                                MONTHLY
-                            </Text>
-                        </GridItem>
-
-                        <GridItem textAlign="right">
-                            <Text fontSize="md" fontWeight="semibold" color="#E53E3E" mb={3}>
-                                €{monthlyPayment}
-                            </Text>
-                        </GridItem>
-                    </Grid>
-                </Box>
-
-                <Box textAlign="center" mt={4}>
-                    <Link
-                        href="#"
-                        color="#E53E3E"
-                        fontWeight="medium"
-                        fontSize="14px"
-                        textDecoration="underline"
-                    >
-                        How does the Low Instalment Financing work?
-                    </Link>
-                </Box>
-            </Box>
-        );
-    }
-
-    // Desktop layout (horizontal flex)
     return (
-        <Box mt={8} px="15px">
-            <Heading
-                as="h3"
-                fontSize={{ base: "20px", lg: "24px" }}
-                fontWeight="bold"
-                color="#0E2160"
-                mb={4}
+        <Box
+            bg={bgColor}
+            p={padding}
+            borderRadius="md"
+            borderWidth="1px"
+            borderColor={borderColor}
+        >
+            <Grid
+                templateColumns={gridTemplateColumns}
+                gap={spacing}
             >
-                Parameters of your financing option.
-            </Heading>
+                <GridItem>
+                    <ParameterItem
+                        title="Down payment"
+                        value={`${downPayment}% (€${downPaymentAmount.toLocaleString()})`}
+                        fontSize={fontSize}
+                        titleSize={titleSize}
+                        textColor={textColor}
+                        mutedColor={mutedColor}
+                    />
+                </GridItem>
 
-            <Box
-                borderWidth="1px"
-                borderRadius="lg"
-                borderColor="gray.200"
-                overflow="hidden"
-                bg="white"
-            >
-                <Flex
-                    justify="space-between"
-                    alignItems="center"
-                    py={5}
-                    px={6}
-                    flexWrap={{ base: "wrap", lg: "nowrap" }}
-                    gap={{ base: 4, lg: 2 }}
+                <GridItem>
+                    <ParameterItem
+                        title="Installment period"
+                        value={`${installmentPeriod} months`}
+                        fontSize={fontSize}
+                        titleSize={titleSize}
+                        textColor={textColor}
+                        mutedColor={mutedColor}
+                    />
+                </GridItem>
+
+                <GridItem>
+                    <ParameterItem
+                        title="Interest rate"
+                        value={`${interestRate}%`}
+                        fontSize={fontSize}
+                        titleSize={titleSize}
+                        textColor={textColor}
+                        mutedColor={mutedColor}
+                    />
+                </GridItem>
+
+                <GridItem>
+                    <ParameterItem
+                        title="APR"
+                        value={`${APR}%`}
+                        fontSize={fontSize}
+                        titleSize={titleSize}
+                        textColor={textColor}
+                        mutedColor={mutedColor}
+                    />
+                </GridItem>
+            </Grid>
+
+            <Divider my={spacing} borderColor={borderColor} />
+
+            <Flex direction="column" align="flex-end">
+                <Text fontSize={fontSize} color={mutedColor}>
+                    Monthly payment
+                </Text>
+                <Text
+                    fontSize={amountSize}
+                    fontWeight="bold"
+                    color={amountColor}
                 >
-                    <Box flex="1" minW={{ base: "45%", lg: "auto" }}>
-                        <Text
-                            fontSize="xs"
-                            fontWeight="medium"
-                            color="#4B4B4BFF"
-                            textTransform="uppercase"
-                            mb={2}
-                        >
-                            DOWNPAYMENT ({downPayment} %)
-                        </Text>
-                        <Text
-                            fontSize={{ base: "md", lg: "lg" }}
-                            fontWeight="medium"
-                            color="#1F2937"
-                        >
-                            €{downPaymentAmount?.toLocaleString()}
-                        </Text>
-                    </Box>
-
-                    <Box flex="1" minW={{ base: "45%", lg: "auto" }}>
-                        <Text
-                            fontSize="xs"
-                            fontWeight="medium"
-                            color="#4B4B4BFF"
-                            textTransform="uppercase"
-                            mb={2}
-                        >
-                            INSTALLMENT 
-                        </Text>
-                        <Text
-                            fontSize={{ base: "md", lg: "lg" }}
-                            fontWeight="medium"
-                            color="#1F2937"
-                        >
-                            {installmentPeriod} months
-                        </Text>
-                    </Box>
-
-                    <Box flex="1" minW={{ base: "45%", lg: "auto" }}>
-                        <Text
-                            fontSize="xs"
-                            fontWeight="medium"
-                            color="#4B4B4BFF"
-                            textTransform="uppercase"
-                            mb={2}
-                        >
-                            INTEREST RATE 
-                            {/* / APR */}
-                        </Text>
-                        <Text
-                            fontSize={{ base: "md", lg: "lg" }}
-                            fontWeight="medium"
-                            color="#1F2937"
-                        >
-                            {interestRate} %
-                            {/* % / {APR} % */}
-                        </Text>
-                    </Box>
-
-                    <Box flex="1" minW={{ base: "45%", lg: "auto" }}>
-                        <Text
-                            fontSize="xs"
-                            fontWeight="medium"
-                            color="#E53E3E"
-                            textTransform="uppercase"
-                            mb={2}
-                        >
-                            MONTHLY
-                        </Text>
-                        <Text
-                            fontSize={{ base: "md", lg: "lg" }}
-                            fontWeight="medium"
-                            color="#E53E3E"
-                        >
-                            €{monthlyPayment}
-                        </Text>
-                    </Box>
-                </Flex>
-            </Box>
-
-            <Flex justify="center" mt={4}>
-                <Link
-                    href="#"
-                    color="#E53E3E"
-                    fontWeight="medium"
-                    fontSize="14px"
-                    textDecoration="underline"
-                >
-                    How does the Low Instalment Financing work?
-                </Link>
+                    €{monthlyPayment.toLocaleString()}
+                </Text>
             </Flex>
+        </Box>
+    );
+};
+
+interface ParameterItemProps {
+    title: string;
+    value: string;
+    fontSize: string | object | undefined;
+    titleSize: string | object | undefined;
+    textColor: string;
+    mutedColor: string;
+}
+
+const ParameterItem: React.FC<ParameterItemProps> = ({
+    title,
+    value,
+    fontSize,
+    titleSize,
+    textColor,
+    mutedColor,
+}) => {
+    return (
+        <Box>
+            <Text fontSize={fontSize} color={mutedColor}>
+                {title}
+            </Text>
+            <Text fontSize={titleSize} fontWeight="medium" color={textColor}>
+                {value}
+            </Text>
         </Box>
     );
 };

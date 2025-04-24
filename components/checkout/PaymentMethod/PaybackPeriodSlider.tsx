@@ -7,7 +7,8 @@ import {
     SliderTrack,
     SliderFilledTrack,
     SliderThumb,
-    SliderMark
+    SliderMark,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { PaybackPeriodSliderProps } from '../types/financing';
 
@@ -20,6 +21,14 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
     const periods = selectedOption === 'low-installment'
         ? [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
         : [12, 24, 36, 48, 60, 72, 84, 96, 108, 120];
+
+    // Color mode values
+    const textColor = useColorModeValue("gray.900", "white");
+    const sliderTrackBg = useColorModeValue("gray.200", "gray.600");
+    const sliderFilledTrackBg = useColorModeValue("red.500", "red.400");
+    const thumbBorderColor = useColorModeValue("red.500", "red.400");
+    const activeMarkColor = useColorModeValue("red.500", "red.300");
+    const inactiveMarkColor = useColorModeValue("gray.500", "gray.400");
 
     // Find the index of the current period in the periods array
     const currentIndex = periods.indexOf(paybackPeriod);
@@ -50,10 +59,10 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
     return (
         <Box mt={8} px="20px">
             <Flex justify="space-between" align="center" mb={4}>
-                <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="medium" color="gray.900">
+                <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="medium" color={textColor}>
                     Payback period
                 </Text>
-                <Text fontWeight="bold" color="gray.900">
+                <Text fontWeight="bold" color={textColor}>
                     {getYearsDisplay(paybackPeriod)}
                 </Text>
             </Flex>
@@ -62,18 +71,19 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                     value={sliderValue}
                     onChange={handleSliderChange}
                     min={0}
+                    
                     max={100}
                     step={100 / (periods.length - 1)}
                     aria-label="payback-period-slider"
                 >
-                    <SliderTrack bg="gray.200" h="8px" borderRadius="full">
-                        <SliderFilledTrack bg="red.500" />
+                    <SliderTrack bg={sliderTrackBg} h="8px" borderRadius="full">
+                        <SliderFilledTrack bg={sliderFilledTrackBg} />
                     </SliderTrack>
                     <SliderThumb
                         boxSize={5}
-                        bg="white"
+                        bg={useColorModeValue("white", "gray.800")}
                         borderWidth="2px"
-                        borderColor="red.500"
+                        borderColor={thumbBorderColor}
                         boxShadow="md"
                         _focus={{
                             boxShadow: "outline"
@@ -89,14 +99,14 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                                 key={period}
                                 value={percentage}
                                 mt={8}
-                                ml={-2.5}
+                                ml={-1.5}
                                 fontSize="xs"
-                                color={paybackPeriod === period ? "red.500" : "gray.500"}
+                                color={paybackPeriod === period ? activeMarkColor : inactiveMarkColor}
                                 fontWeight={paybackPeriod === period ? "bold" : "normal"}
                                 cursor="pointer"
                                 onClick={() => handlePeriodClick(period)}
                                 _hover={{
-                                    color: "red.500"
+                                    color: activeMarkColor
                                 }}
                             >
                                 {years}

@@ -19,7 +19,11 @@ import {
     Center,
     InputGroup,
     InputLeftElement,
+    InputRightElement,
+    Textarea,
     useToast,
+    useColorModeValue,
+    useBreakpointValue
 } from '@chakra-ui/react';
 import { Package, Info, MapPin, Search, Car, Route } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -130,19 +134,205 @@ const geocodeAddress = async (address: string) => {
 };
 
 const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
+    // State for the delivery form
     const [selected, setSelected] = useState<'home' | 'pickup'>('home');
-    const [sameAddress, setSameAddress] = useState(true);
     const [selectedStore, setSelectedStore] = useState<number | null>(null);
-    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const [sameAddress, setSameAddress] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [deliveryAddress, setDeliveryAddress] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     const [homeLocation, setHomeLocation] = useState<[number, number] | null>(null);
-    const [deliveryAddress, setDeliveryAddress] = useState("");
-    const [searchQuery, setSearchQuery] = useState("");
+    const [isMapLoaded, setIsMapLoaded] = useState(true);
+
+    // Common values based on breakpoints
+    const isMobile = useBreakpointValue({ base: true, md: false });
+    const mapHeight = { base: '250px', md: '350px' };
+    const buttonSize = isMobile ? "md" : "lg";
+    const buttonPadding = isMobile ? 4 : 8;
+    const headingSize = isMobile ? "xs" : "sm";
+
+    // Colors
+    const bgColor = useColorModeValue("white", "gray.800");
+    const textColor = useColorModeValue("gray.900", "white");
+    const subTextColor = useColorModeValue("gray.600", "gray.400");
+    const headingColor = useColorModeValue("gray.800", "white");
+    const buttonBgColor = useColorModeValue("red.500", "red.500");
+    const buttonHoverBgColor = useColorModeValue("red.600", "red.400");
+    const borderColor = useColorModeValue("gray.200", "gray.700");
+    const dividerColor = useColorModeValue("gray.200", "gray.700");
+    const inputBgColor = useColorModeValue("white", "gray.800");
+    const inputBorderColor = useColorModeValue("gray.300", "gray.600");
+    const mapLoadingBg = useColorModeValue("gray.100", "gray.700");
+    const infoBoxBg = useColorModeValue("blue.50", "blue.900");
+    const infoIconColor = useColorModeValue("blue.500", "blue.300");
+    const searchIconColor = useColorModeValue("gray.400", "gray.500");
+
+    // Store specific colors - move these out of the map callback
+    const selectedStoreBg = useColorModeValue("red.500", "red.600");
+    const unselectedStoreBg = useColorModeValue("white", "gray.800");
+
+    const selectedStoreColor = useColorModeValue("white", "white");
+    const unselectedStoreColor = useColorModeValue("inherit", "gray.300");
+
+    const selectedStoreHoverBg = useColorModeValue("red.600", "red.700");
+    const unselectedStoreHoverBg = useColorModeValue("red.50", "gray.700");
+
+    const selectedStoreDetailColor = useColorModeValue("white", "white");
+    const unselectedStoreDetailColor = useColorModeValue("gray.600", "gray.400");
+
+    const selectedStoreDetailSmallColor = useColorModeValue("white", "white");
+    const unselectedStoreDetailSmallColor = useColorModeValue("gray.500", "gray.500");
+
+    // Placeholder colors
+    const placeholderColor = useColorModeValue("gray.400", "gray.500");
+
+    // Form focus colors
+    const inputHoverBorderColor = useColorModeValue("gray.400", "gray.500");
+    const inputFocusBorderColor = useColorModeValue("blue.500", "blue.300");
+
+    // Checkbox border color
+    const checkboxUncheckedBorderColor = useColorModeValue("gray.400", "gray.500");
+
+    // Info box border color
+    const infoBoxBorderColor = useColorModeValue("gray.200", "gray.600");
+
+    // Error notification colors
+    const errorBg = useColorModeValue("red.50", "red.900");
+    const errorColor = useColorModeValue("red.600", "red.300");
+    const errorBorderColor = useColorModeValue("red.100", "red.800");
+
+    // Success notification colors
+    const successBg = useColorModeValue("green.50", "green.900");
+    const successColor = useColorModeValue("green.600", "green.300");
+    const successBorderColor = useColorModeValue("green.100", "green.800");
+
+    // Delivery option colors for home
+    const homeOptionBg = useColorModeValue(
+        selected === 'home' ? "red.500" : "white",
+        selected === 'home' ? "red.600" : "gray.800"
+    );
+    const homeOptionColor = useColorModeValue(
+        selected === 'home' ? "white" : "inherit",
+        selected === 'home' ? "white" : "gray.300"
+    );
+    const homeHoverBg = useColorModeValue(
+        selected === 'home' ? "red.500" : "red.50",
+        selected === 'home' ? "red.600" : "gray.700"
+    );
+    const homeTitleColor = useColorModeValue(
+        selected === 'home' ? "white" : "#1A202C",
+        selected === 'home' ? "white" : "gray.200"
+    );
+    const homeBadgeBg = useColorModeValue(
+        selected === 'home' ? "white" : "red.100",
+        selected === 'home' ? "white" : "red.900"
+    );
+    const homeBadgeColor = useColorModeValue(
+        selected === 'home' ? "red.500" : "gray.800",
+        selected === 'home' ? "red.600" : "gray.200"
+    );
+    const homeRadioBorderColor = useColorModeValue(
+        selected === 'home' ? "white" : "#E53E3E",
+        selected === 'home' ? "white" : "#FC8181"
+    );
+
+    // Delivery option colors for pickup
+    const pickupOptionBg = useColorModeValue(
+        selected === 'pickup' ? "red.500" : "white",
+        selected === 'pickup' ? "red.600" : "gray.800"
+    );
+    const pickupOptionColor = useColorModeValue(
+        selected === 'pickup' ? "white" : "inherit",
+        selected === 'pickup' ? "white" : "gray.300"
+    );
+    const pickupHoverBg = useColorModeValue(
+        selected === 'pickup' ? "red.500" : "red.50",
+        selected === 'pickup' ? "red.600" : "gray.700"
+    );
+    const pickupTitleColor = useColorModeValue(
+        selected === 'pickup' ? "white" : "#1A202C",
+        selected === 'pickup' ? "white" : "gray.200"
+    );
+    const pickupBadgeBg = useColorModeValue(
+        selected === 'pickup' ? "white" : "red.100",
+        selected === 'pickup' ? "white" : "red.900"
+    );
+    const pickupBadgeColor = useColorModeValue(
+        selected === 'pickup' ? "red.500" : "gray.800",
+        selected === 'pickup' ? "red.600" : "gray.200"
+    );
+    const pickupRadioBorderColor = useColorModeValue(
+        selected === 'pickup' ? "white" : "#E53E3E",
+        selected === 'pickup' ? "white" : "#FC8181"
+    );
+
     const [distance, setDistance] = useState<number | null>(null);
     const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
-    const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState<string | null>(null);
     const mapRef = useRef(null);
     const toast = useToast();
+
+    // Custom styles for selected store
+    const redBorderStyle = {
+        borderColor: buttonBgColor,
+        borderWidth: "2px"
+    };
+
+    // Home delivery variables
+    const homeDeliveryColors = {
+        optionBg: homeOptionBg,
+        optionColor: homeOptionColor,
+        hoverBg: homeHoverBg,
+        titleColor: homeTitleColor,
+        badgeBg: homeBadgeBg,
+        badgeColor: homeBadgeColor,
+        radioBorderColor: homeRadioBorderColor
+    };
+
+    // Pickup delivery variables
+    const pickupDeliveryColors = {
+        optionBg: pickupOptionBg,
+        optionColor: pickupOptionColor,
+        hoverBg: pickupHoverBg,
+        titleColor: pickupTitleColor,
+        badgeBg: pickupBadgeBg,
+        badgeColor: pickupBadgeColor,
+        radioBorderColor: pickupRadioBorderColor
+    };
+
+    // More border colors
+    const addressInfoBorderColor = useColorModeValue("gray.200", "gray.600");
+    const inputPlaceholderColor = useColorModeValue('gray.400', 'gray.500');
+
+    // Additional border colors for info boxes
+    const infoBoxStyle = {
+        bg: infoBoxBg,
+        borderColor: useColorModeValue("gray.200", "gray.600"),
+        borderWidth: "1px",
+        borderRadius: "md"
+    };
+
+    // Pickup store info box border
+    const pickupInfoBorderColor = useColorModeValue("gray.200", "gray.600");
+
+    // Checkbox styling
+    const checkboxActiveColor = useColorModeValue('red.500', 'red.300');
+    const checkboxBorderStyle = {
+        '.chakra-checkbox__control': {
+            borderColor: checkboxUncheckedBorderColor,
+            backgroundColor: 'transparent',
+        },
+        '.chakra-checkbox__control[data-checked]': {
+            borderColor: buttonBgColor,
+            backgroundColor: buttonBgColor,
+        }
+    };
+
+    // Input placeholder style
+    const placeholderStyle = {
+        color: inputPlaceholderColor,
+        fontSize: isMobile ? 'xs' : 'sm'
+    };
 
     // Load the Leaflet CSS when component mounts
     useEffect(() => {
@@ -274,145 +464,125 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
         }
     };
 
+    // Use the pre-calculated color objects instead of the function
     const DeliveryOption = ({
         type,
         title,
         price,
-        // deliveryDate,
-        // note
     }: {
         type: 'home' | 'pickup';
         title: string;
         price: string;
-        // deliveryDate: string;
-        // note: string;
-    }) => (
-        <Box
-            as="label"
-            borderWidth="1px"
-            borderRadius="md"
-            p={5}
-            cursor="pointer"
-            transition="all 0.2s"
-            onClick={() => setSelected(type)}
-            bg={selected === type ? "red.500" : "white"}
-            color={selected === type ? "white" : "inherit"}
-            shadow="md"
-            _hover={{
-                bg: selected === type ? "red.500" : "red.50",
-                shadow: "lg"
-            }}
-            _active={{
-                transform: "scale(0.98)",
-                shadow: "sm"
-            }}
-            htmlFor={`delivery-${type}`}
-            role="radio"
-            aria-checked={selected === type}
-            style={redBorderStyle}
-            width="100%"
-            height="100%"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-        >
-            <Flex justify="space-between" align="center">
-                <HStack spacing={4}>
-                    <Flex
-                        w="20px"
-                        h="20px"
-                        borderRadius="full"
-                        borderWidth="2px"
-                        borderColor={selected === type ? "white" : "#E53E3E"}
-                        bg={selected === type ? "#E53E3E" : "white"}
-                        alignItems="center"
-                        justifyContent="center"
-                        transition="all 0.2s"
-                        aria-hidden="true"
-                        style={{ borderColor: selected === type ? "white" : "#E53E3E" }}
-                    >
-                        {selected === type && (
-                            <Box
-                                w="10px"
-                                h="10px"
-                                borderRadius="full"
-                                bg="white"
-                            />
-                        )}
-                    </Flex>
-                    <Box>
-                        <Text
-                            fontSize="sm"
-                            fontWeight="medium"
-                            color={selected === type ? "white" : "#1A202C"}
-                        >
-                            {title}
-                        </Text>
-                        {/* <Text
-                            color={selected === type ? "white" : "gray.700"}
-                            mt={2}
-                        >
-                            {description}
-                        </Text> */}
-                        {/* <Flex align="center" gap={2} mt={3}>
-                            <Icon
-                                as={Package}
-                                w={4}
-                                h={4}
-                                color={selected === type ? "white" : "gray.500"}
-                                aria-hidden="true"
-                            />
-                            <Text
-                                fontSize="sm"
-                                color={selected === type ? "white" : "gray.600"}
-                            >
-                                {deliveryDate}
-                            </Text>
-                        </Flex> */}
-                        {/* <Text
-                            fontSize="xs"
-                            color={selected === type ? "white" : "gray.500"}
-                            mt={1}
-                        >
-                            {note}
-                        </Text> */}
-                    </Box>
-                </HStack>
-                <Badge
-                    px={2}
-                    py={1}
-                    fontSize="sm"
-                    fontWeight="bold"
-                    bg={selected === type ? "white" : "red.100"}
-                    color={selected === type ? "red.500" : "gray.800"}
-                    borderRadius="md"
+    }) => {
+        const colors = type === 'home' ? homeDeliveryColors : pickupDeliveryColors;
+
+        return (
+            <Box
+                as="label"
+                borderWidth="1px"
+                borderRadius="md"
+                p={buttonPadding}
+                cursor="pointer"
+                transition="all 0.2s"
+                onClick={() => setSelected(type)}
+                bg={colors.optionBg}
+                color={colors.optionColor}
+                shadow="md"
+                _hover={{
+                    bg: colors.hoverBg,
+                    shadow: "lg"
+                }}
+                _active={{
+                    transform: "scale(0.98)",
+                    shadow: "sm"
+                }}
+                htmlFor={`delivery-${type}`}
+                role="radio"
+                aria-checked={selected === type}
+                style={redBorderStyle}
+                width="100%"
+                height="100%"
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+            >
+                <Flex
+                    justify="space-between"
+                    align="center"
+                    flexDir={isMobile ? "column" : "row"}
+                    gap={isMobile ? 2 : 0}
                 >
-                    {price}
-                </Badge>
-            </Flex>
-            <input
-                type="radio"
-                id={`delivery-${type}`}
-                name="delivery-option"
-                value={type}
-                checked={selected === type}
-                onChange={() => setSelected(type)}
-                style={{ position: 'absolute', opacity: 0 }}
-                aria-label={`${title} delivery option for ${price}`}
-            />
-        </Box>
-    );
+                    <HStack spacing={4} align="center" justify={isMobile ? "center" : "flex-start"} width={isMobile ? "100%" : "auto"}>
+                        <Flex
+                            w={isMobile ? "18px" : "20px"}
+                            h={isMobile ? "18px" : "20px"}
+                            borderRadius="full"
+                            borderWidth="2px"
+                            borderColor={colors.radioBorderColor}
+                            bg={selected === type ? buttonBgColor : "transparent"}
+                            alignItems="center"
+                            justifyContent="center"
+                            transition="all 0.2s"
+                            aria-hidden="true"
+                            flexShrink={0}
+                        >
+                            {selected === type && (
+                                <Box
+                                    w={isMobile ? "8px" : "10px"}
+                                    h={isMobile ? "8px" : "10px"}
+                                    borderRadius="full"
+                                    bg="white"
+                                />
+                            )}
+                        </Flex>
+                        <Box>
+                            <Text
+                                fontSize={isMobile ? "sm" : "md"}
+                                fontWeight="medium"
+                                color={colors.titleColor}
+                                textAlign={isMobile ? "center" : "left"}
+                            >
+                                {title}
+                            </Text>
+                        </Box>
+                    </HStack>
+                    <Badge
+                        px={2}
+                        py={1}
+                        fontSize={isMobile ? "xs" : "sm"}
+                        fontWeight="bold"
+                        bg={colors.badgeBg}
+                        color={colors.badgeColor}
+                        borderRadius="md"
+                        mt={isMobile ? 1 : 0}
+                    >
+                        {price}
+                    </Badge>
+                </Flex>
+                <input
+                    type="radio"
+                    id={`delivery-${type}`}
+                    name="delivery-option"
+                    value={type}
+                    checked={selected === type}
+                    onChange={() => setSelected(type)}
+                    style={{ position: 'absolute', opacity: 0 }}
+                    aria-label={`${title} delivery option for ${price}`}
+                />
+            </Box>
+        );
+    };
 
     // Render the map component for pickup locations
     const renderPickupMap = () => {
-        if (!isMapLoaded) return <Box height="400px" bg="gray.100" borderRadius="md" display="flex" alignItems="center" justifyContent="center">Loading map...</Box>;
+        if (!isMapLoaded) return <Box height={mapHeight} bg={mapLoadingBg} borderRadius="md" display="flex" alignItems="center" justifyContent="center" color={textColor}>Loading map...</Box>;
 
         const centerPosition: [number, number] = selectedStore !== null
             ? storeLocations.find(store => store.id === selectedStore)?.position || [47.516, 14.550]
             : [47.516, 14.550]; // Center of Austria
 
         return (
-            <Box height="400px" borderRadius="md" overflow="hidden" shadow="md">
+            <Box height={mapHeight} borderRadius="md" overflow="hidden" shadow="md">
                 <MapContainer
                     center={centerPosition}
                     zoom={selectedStore !== null ? 13 : 7}
@@ -432,8 +602,8 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                         >
                             <Popup>
                                 <Box p={1}>
-                                    <Text fontWeight="bold">{store.name}</Text>
-                                    <Text fontSize="sm">{store.address}</Text>
+                                    <Text fontWeight="bold" fontSize={isMobile ? "xs" : "sm"}>{store.name}</Text>
+                                    <Text fontSize={isMobile ? "xs" : "sm"}>{store.address}</Text>
                                     <Text fontSize="xs" mt={1}>{store.hours}</Text>
                                     <Text fontSize="xs">{store.phone}</Text>
                                 </Box>
@@ -445,15 +615,88 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
         );
     };
 
+    // Render the store list
+    const renderStoreList = () => (
+        <VStack spacing={3} align="stretch">
+            <Heading size="sm" mb={2} color={headingColor}>Select a pickup location</Heading>
+            {storeLocations.map((store) => {
+                const isSelected = selectedStore === store.id;
+                const storeBg = isSelected ? selectedStoreBg : unselectedStoreBg;
+                const storeColor = isSelected ? selectedStoreColor : unselectedStoreColor;
+                const storeHoverBg = isSelected ? selectedStoreHoverBg : unselectedStoreHoverBg;
+                const storeDetailColor = isSelected ? selectedStoreDetailColor : unselectedStoreDetailColor;
+                const storeDetailSmallColor = isSelected ? selectedStoreDetailSmallColor : unselectedStoreDetailSmallColor;
+
+                return (
+                    <Box
+                        key={store.id}
+                        p={isMobile ? 2 : 3}
+                        borderWidth="1px"
+                        borderRadius="md"
+                        style={isSelected ? redBorderStyle : undefined}
+                        bg={storeBg}
+                        color={storeColor}
+                        onClick={() => handleStoreSelect(store.id)}
+                        cursor="pointer"
+                        transition="all 0.2s"
+                        _hover={{ bg: storeHoverBg }}
+                        role="button"
+                        aria-pressed={isSelected}
+                        aria-label={`Select ${store.name} as pickup location`}
+                        shadow="md"
+                        borderColor={borderColor}
+                    >
+                        <Flex align="center">
+                            <Icon
+                                as={MapPin}
+                                color={isSelected ? "white" : buttonBgColor}
+                                mr={3}
+                                boxSize={isMobile ? 4 : 5}
+                            />
+                            <Box>
+                                <Text fontWeight="medium" fontSize={isMobile ? "sm" : "md"}>{store.name}</Text>
+                                <Text
+                                    fontSize={isMobile ? "xs" : "sm"}
+                                    color={storeDetailColor}
+                                >
+                                    {store.address}
+                                </Text>
+                                <Text
+                                    fontSize="xs"
+                                    color={storeDetailSmallColor}
+                                    mt={1}
+                                >
+                                    {store.hours}
+                                </Text>
+                            </Box>
+                        </Flex>
+                    </Box>
+                );
+            })}
+        </VStack>
+    );
+
     // Render the map component for home delivery
     const renderHomeDeliveryMap = () => {
-        if (!isMapLoaded) return <Box height="400px" bg="gray.100" borderRadius="md" display="flex" alignItems="center" justifyContent="center">Loading map...</Box>;
+        if (!isMapLoaded) return (
+            <Box
+                height={mapHeight}
+                bg={mapLoadingBg}
+                borderRadius="md"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color={textColor}
+            >
+                Loading map...
+            </Box>
+        );
 
         const centerPosition: [number, number] = homeLocation || carCurrentLocation.position;
 
         return (
             <Box
-                height="400px"
+                height={mapHeight}
                 borderRadius="md"
                 overflow="hidden"
                 shadow="md"
@@ -474,8 +717,8 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                     <Marker position={carCurrentLocation.position}>
                         <Popup>
                             <Box p={1}>
-                                <Text fontWeight="bold">{carCurrentLocation.name}</Text>
-                                <Text fontSize="sm">{carCurrentLocation.status}</Text>
+                                <Text fontWeight="bold" fontSize={isMobile ? "xs" : "sm"}>{carCurrentLocation.name}</Text>
+                                <Text fontSize={isMobile ? "xs" : "sm"}>{carCurrentLocation.status}</Text>
                             </Box>
                         </Popup>
                     </Marker>
@@ -485,8 +728,8 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                         <Marker position={homeLocation}>
                             <Popup>
                                 <Box p={1}>
-                                    <Text fontWeight="bold">Your Delivery Location</Text>
-                                    <Text fontSize="sm">{deliveryAddress || "Your delivery address"}</Text>
+                                    <Text fontWeight="bold" fontSize={isMobile ? "xs" : "sm"}>Your Delivery Location</Text>
+                                    <Text fontSize={isMobile ? "xs" : "sm"}>{deliveryAddress || "Your delivery address"}</Text>
                                 </Box>
                             </Popup>
                         </Marker>
@@ -508,60 +751,71 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                     position="absolute"
                     bottom="10px"
                     right="10px"
-                    bg="white"
-                    p={3}
+                    bg={bgColor}
+                    p={isMobile ? 2 : 3}
                     borderRadius="md"
                     shadow="md"
-                    maxWidth="200px"
+                    maxWidth={isMobile ? "150px" : "200px"}
                     zIndex={1000}
+                    borderWidth="1px"
+                    borderColor={borderColor}
                 >
-                    <Text fontSize="xs" fontWeight="bold">Select a delivery location below</Text>
+                    <Text fontSize="xs" fontWeight="bold" color={textColor}>Select a delivery location below</Text>
                 </Box>
 
                 {/* Example location buttons */}
                 <HStack
                     position="absolute"
-                    bottom="70px"
+                    bottom={isMobile ? "50px" : "70px"}
                     left="10px"
-                    spacing={2}
+                    spacing={isMobile ? 1 : 2}
                     zIndex={1000}
                 >
                     <Button
                         size="xs"
                         colorScheme="red"
-                        leftIcon={<Icon as={MapPin} />}
+                        leftIcon={<Icon as={MapPin} boxSize={isMobile ? 3 : 4} />}
                         onClick={(e) => {
                             e.stopPropagation();
                             const viennaLocation: [number, number] = [48.208, 16.373];
                             setHomeLocation(viennaLocation);
                             setDeliveryAddress("Vienna City Center");
                         }}
+                        fontSize={isMobile ? "xs" : "sm"}
+                        py={isMobile ? 1 : 2}
+                        px={isMobile ? 2 : 3}
                     >
                         Vienna
                     </Button>
                     <Button
                         size="xs"
                         colorScheme="red"
-                        leftIcon={<Icon as={MapPin} />}
+                        leftIcon={<Icon as={MapPin} boxSize={isMobile ? 3 : 4} />}
                         onClick={(e) => {
                             e.stopPropagation();
                             const grazLocation: [number, number] = [47.070, 15.439];
                             setHomeLocation(grazLocation);
                             setDeliveryAddress("Graz City Center");
                         }}
+                        fontSize={isMobile ? "xs" : "sm"}
+                        py={isMobile ? 1 : 2}
+                        px={isMobile ? 2 : 3}
                     >
                         Graz
                     </Button>
                     <Button
                         size="xs"
                         colorScheme="red"
-                        leftIcon={<Icon as={MapPin} />}
+                        leftIcon={<Icon as={MapPin} boxSize={isMobile ? 3 : 4} />}
                         onClick={(e) => {
                             e.stopPropagation();
                             const linzLocation: [number, number] = [48.306, 14.286];
                             setHomeLocation(linzLocation);
                             setDeliveryAddress("Linz City Center");
                         }}
+                        fontSize={isMobile ? "xs" : "sm"}
+                        py={isMobile ? 1 : 2}
+                        px={isMobile ? 2 : 3}
                     >
                         Linz
                     </Button>
@@ -570,110 +824,82 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
         );
     };
 
-    // Render the store list
-    const renderStoreList = () => (
-        <VStack spacing={3} align="stretch">
-            <Heading size="sm" mb={2}>Select a pickup location</Heading>
-            {storeLocations.map((store) => (
-                <Box
-                    key={store.id}
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    style={selectedStore === store.id ? redBorderStyle : undefined}
-                    bg={selectedStore === store.id ? "red.500" : "white"}
-                    color={selectedStore === store.id ? "white" : "inherit"}
-                    onClick={() => handleStoreSelect(store.id)}
-                    cursor="pointer"
-                    transition="all 0.2s"
-                    _hover={{ bg: selectedStore === store.id ? "red.600" : "red.50" }}
-                    role="button"
-                    aria-pressed={selectedStore === store.id}
-                    aria-label={`Select ${store.name} as pickup location`}
-                    shadow="md"
-                >
-                    <Flex align="center">
-                        <Icon as={MapPin} color={selectedStore === store.id ? "white" : "red.500"} mr={3} />
-                        <Box>
-                            <Text fontWeight="medium">{store.name}</Text>
-                            <Text
-                                fontSize="sm"
-                                color={selectedStore === store.id ? "white" : "gray.600"}
-                            >
-                                {store.address}
-                            </Text>
-                            <Text
-                                fontSize="xs"
-                                color={selectedStore === store.id ? "white" : "gray.500"}
-                                mt={1}
-                            >
-                                {store.hours}
-                            </Text>
-                        </Box>
-                    </Flex>
-                </Box>
-            ))}
-        </VStack>
-    );
-
     // Render home delivery search and details
     const renderHomeDeliveryDetails = () => (
         <VStack spacing={4} align="stretch">
-            <Heading size="sm" mb={2}>Set your delivery location</Heading>
+            {/* <Heading size="sm" mb={2} color={headingColor}>Set your delivery location</Heading> */}
 
             {/* Address search with loading state */}
-            <form onSubmit={handleSearchLocation}>
-                <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                        <Icon as={Search} color="gray.400" />
-                    </InputLeftElement>
-                    <Input
-                        placeholder="Search for your address"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        borderRadius="md"
-                        isDisabled={isSearching}
-                    />
+            <InputGroup>
+                <InputLeftElement pointerEvents="none" color={searchIconColor}>
+                    <Icon as={Search} />
+                </InputLeftElement>
+                <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for location by address"
+                    bg={inputBgColor}
+                    borderColor={inputBorderColor}
+                    _hover={{ borderColor: inputHoverBorderColor }}
+                    focusBorderColor={inputFocusBorderColor}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearchLocation(e);
+                        }
+                    }}
+                />
+                <InputRightElement>
                     <Button
-                        ml={2}
+                        size="sm"
                         colorScheme="red"
-                        type="submit"
+                        h="1.75rem"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleSearchLocation(e);
+                        }}
                         isLoading={isSearching}
-                        loadingText="Searching"
                     >
-                        Search
+                        {!isSearching && "Search"}
                     </Button>
-                </InputGroup>
-            </form>
+                </InputRightElement>
+            </InputGroup>
 
             {/* Error message if search fails */}
             {searchError && (
-                <Box p={2} bg="red.50" color="red.600" borderRadius="md" fontSize="sm">
+                <Box p={2} bg={errorBg} color={errorColor} borderRadius="md" fontSize={isMobile ? "xs" : "sm"} borderWidth="1px" borderColor={errorBorderColor}>
                     <Text>{searchError}</Text>
                 </Box>
             )}
 
             {/* Delivery information if location is selected */}
             {homeLocation && (
-                <Box bg="gray.50" p={4} borderRadius="md" borderLeft="4px solid" borderLeftColor="red.500">
-                    <VStack align="start" spacing={2}>
+                <Box
+                    bg={infoBoxBg}
+                    p={isMobile ? 3 : 4}
+                    borderRadius="md"
+                    borderLeft="4px solid"
+                    borderLeftColor={infoBoxBorderColor}
+                    borderWidth="1px"
+                    borderColor={addressInfoBorderColor}
+                >
+                    <VStack align="start" spacing={isMobile ? 1 : 2}>
                         <Flex align="center" gap={2}>
-                            <Icon as={Car} color="red.500" />
-                            <Text fontWeight="medium">Car Current Location</Text>
+                            <Icon as={Car} color={buttonBgColor} boxSize={isMobile ? 4 : 5} />
+                            <Text fontWeight="medium" color={textColor} fontSize={isMobile ? "sm" : "md"}>Car Current Location</Text>
                         </Flex>
-                        <Text fontSize="sm" ml={6}>Vienna, Austria</Text>
+                        <Text fontSize={isMobile ? "xs" : "sm"} ml={isMobile ? 5 : 6} color={subTextColor}>Vienna, Austria</Text>
 
                         <Flex align="center" gap={2}>
-                            <Icon as={MapPin} color="red.500" />
-                            <Text fontWeight="medium">Delivery Location</Text>
+                            <Icon as={MapPin} color={buttonBgColor} boxSize={isMobile ? 4 : 5} />
+                            <Text fontWeight="medium" color={textColor} fontSize={isMobile ? "sm" : "md"}>Delivery Location</Text>
                         </Flex>
-                        <Text fontSize="sm" ml={6} fontWeight="medium">{deliveryAddress || "Custom location selected on map"}</Text>
+                        <Text fontSize={isMobile ? "xs" : "sm"} ml={isMobile ? 5 : 6} fontWeight="medium" color={textColor}>{deliveryAddress || "Custom location selected on map"}</Text>
 
                         <Flex align="center" gap={2}>
-                            <Icon as={Route} color="red.500" />
-                            <Text fontWeight="medium">Distance & Delivery Time</Text>
+                            <Icon as={Route} color={buttonBgColor} boxSize={isMobile ? 4 : 5} />
+                            <Text fontWeight="medium" color={textColor} fontSize={isMobile ? "sm" : "md"}>Distance & Delivery Time</Text>
                         </Flex>
-                        <Text fontSize="sm" ml={6}>
+                        <Text fontSize={isMobile ? "xs" : "sm"} ml={isMobile ? 5 : 6} color={subTextColor}>
                             {distance && `${distance} km • Estimated delivery: ${estimatedTime}`}
                         </Text>
                     </VStack>
@@ -683,7 +909,15 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
     );
 
     return (
-        <Box p={6} as="section" aria-labelledby="delivery-content-title" border="1px solid #D3D3D3" borderRadius="lg">
+        <Box
+            p={buttonPadding}
+            as="section"
+            aria-labelledby="delivery-content-title"
+            border="1px solid"
+            borderColor={borderColor}
+            borderRadius="lg"
+            bg={bgColor}
+        >
             <form onSubmit={handleSubmit}>
                 <VStack spacing={6} align="stretch">
                     {/* Header (if needed) */}
@@ -692,14 +926,18 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                     {/* Delivery Options as RadioGroup */}
                     <FormControl as="fieldset" role="radiogroup" aria-labelledby="delivery-options-group">
                         <FormLabel as="legend" id="delivery-options-group" srOnly>Delivery Options</FormLabel>
-                        <HStack spacing={6} align="stretch" width="100%" minH="100px">
+                        <HStack
+                            spacing={{ base: 3, md: 6 }}
+                            align="stretch"
+                            width="100%"
+                            minH={{ base: "auto", md: "100px" }}
+                            flexDirection={{ base: "column", sm: "row" }}
+                        >
                             {/* Home Delivery */}
                             <DeliveryOption
                                 type="home"
                                 title="Home Delivery"
                                 price="€1,400"
-                            // deliveryDate="Estimated Delivery: Monday, April 29 – Monday, May 13"
-                            // note="No appointment needed. If your order includes extra services, delivery may align with the latest completion."
                             />
 
                             {/* Pick-Up Option */}
@@ -707,19 +945,17 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                                 type="pickup"
                                 title="Pick-Up at Our Location"
                                 price="€990"
-                            // deliveryDate="Ready for Pick-Up: Wednesday, May 1 – Wednesday, May 15"
-                            // note="You'll receive a notification once ready. Schedule your pick-up within 5 business days."
                             />
                         </HStack>
                     </FormControl>
 
                     {/* Map and Store Locations for Pickup Option */}
                     {selected === 'pickup' && (
-                        <Box pt={4} borderTop="1px" borderColor="gray.100" as="section" aria-labelledby="pickup-locations-section">
-                            <Heading as="h3" size="md" id="pickup-locations-section" mb={4}>
+                        <Box pt={4} borderTop="1px" borderColor={dividerColor} as="section" aria-labelledby="pickup-locations-section">
+                            <Heading as="h3" size={headingSize} id="pickup-locations-section" mb={4} color={headingColor}>
                                 Pickup Locations
                             </Heading>
-                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }}>
                                 <Box>
                                     {renderStoreList()}
                                 </Box>
@@ -728,10 +964,17 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                                 </Box>
                             </SimpleGrid>
                             {selectedStore && (
-                                <Box mt={4} p={3} bg="gray.50" borderRadius="md">
-                                    <Flex align="center">
-                                        <Icon as={Info} color="blue.500" mr={2} />
-                                        <Text fontSize="sm">
+                                <Box
+                                    mt={4}
+                                    p={3}
+                                    bg={infoBoxBg}
+                                    borderRadius="md"
+                                    borderWidth="1px"
+                                    borderColor={pickupInfoBorderColor}
+                                >
+                                    <Flex align={isMobile ? "flex-start" : "center"}>
+                                        <Icon as={Info} color={infoIconColor} mr={2} mt={isMobile ? "3px" : 0} />
+                                        <Text fontSize={isMobile ? "xs" : "sm"} color={textColor}>
                                             You've selected{" "}
                                             <Text as="span" fontWeight="bold">
                                                 {storeLocations.find(store => store.id === selectedStore)?.name}
@@ -746,11 +989,11 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
 
                     {/* Map and Address for Home Delivery Option */}
                     {selected === 'home' && (
-                        <Box pt={4} borderTop="1px" borderColor="gray.100" as="section" aria-labelledby="home-delivery-section">
-                            <Heading as="h3" size="md" id="home-delivery-section" mb={4}>
+                        <Box pt={4} borderTop="1px" borderColor={dividerColor} as="section" aria-labelledby="home-delivery-section">
+                            <Heading as="h3" size={headingSize} id="home-delivery-section" mb={4} color={headingColor}>
                                 Home Delivery Details
                             </Heading>
-                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }}>
                                 <Box>
                                     {renderHomeDeliveryDetails()}
                                 </Box>
@@ -763,26 +1006,21 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
 
                     {/* Address Confirmation (only shown if same address is unchecked) */}
                     {selected === 'home' && (
-                        <Box pt={4} borderTop="1px" borderColor="gray.100" as="section" aria-labelledby="address-section">
+                        <Box pt={4} borderTop="1px" borderColor={dividerColor} as="section" aria-labelledby="address-section">
                             <FormControl>
-                                <FormLabel htmlFor="same-address" id="address-section" fontSize="sm" fontWeight="medium" color="gray.700">
+                                <FormLabel htmlFor="same-address" id="address-section" fontSize={isMobile ? "xs" : "sm"} fontWeight="medium" color={textColor}>
                                     <Checkbox
                                         id="same-address"
                                         isChecked={sameAddress}
                                         onChange={(e) => setSameAddress(e.target.checked)}
                                         colorScheme="red"
-                                        size="md"
-                                        sx={{
-                                            '.chakra-checkbox__control': {
-                                                borderColor: sameAddress ? 'red.500' : 'gray.400',
-                                                backgroundColor: sameAddress ? 'red.500' : 'transparent',
-                                            },
-                                        }}
+                                        size={isMobile ? "sm" : "md"}
+                                        sx={checkboxBorderStyle}
                                         aria-describedby="same-address-description"
                                     >
                                         My billing and delivery address are the same
                                     </Checkbox>
-                                    <Text id="same-address-description" fontSize="xs" color="gray.500" mt={1} ml={8}>
+                                    <Text id="same-address-description" fontSize="xs" color={subTextColor} mt={1} ml={isMobile ? 6 : 8}>
                                         Uncheck this box if you need to provide a different delivery address
                                     </Text>
                                 </FormLabel>
@@ -791,56 +1029,66 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                             {!sameAddress && (
                                 <Box mt={4} as="fieldset">
                                     <VisuallyHidden as="legend">Delivery Address</VisuallyHidden>
-                                    <SimpleGrid columns={2} spacing={4}>
+                                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                         <FormControl>
-                                            <FormLabel htmlFor="delivery-address" fontSize="xs" color="gray.600">Delivery Address</FormLabel>
-                                            <Input
+                                            <FormLabel htmlFor="delivery-address" fontSize="xs" color={subTextColor}>Delivery Address</FormLabel>
+                                            <Textarea
                                                 id="delivery-address"
-                                                size="sm"
-                                                borderRadius="md"
-                                                placeholder="Enter delivery address"
-                                                _placeholder={{ color: 'gray.400', fontSize: 'sm' }}
-                                                aria-required="true"
-                                                autoComplete="shipping street-address"
                                                 value={deliveryAddress}
                                                 onChange={(e) => setDeliveryAddress(e.target.value)}
+                                                placeholder="Enter your full address (street, number, city, postal code)"
+                                                resize="vertical"
+                                                minH="100px"
+                                                bg={inputBgColor}
+                                                borderColor={inputBorderColor}
+                                                _hover={{ borderColor: inputHoverBorderColor }}
+                                                focusBorderColor={inputFocusBorderColor}
                                             />
                                         </FormControl>
                                         <FormControl>
-                                            <FormLabel htmlFor="delivery-city" fontSize="xs" color="gray.600">City</FormLabel>
+                                            <FormLabel htmlFor="delivery-city" fontSize="xs" color={subTextColor}>City</FormLabel>
                                             <Input
                                                 id="delivery-city"
-                                                size="sm"
+                                                size={isMobile ? "md" : "sm"}
                                                 borderRadius="md"
                                                 placeholder="Enter city"
-                                                _placeholder={{ color: 'gray.400', fontSize: 'sm' }}
+                                                _placeholder={placeholderStyle}
                                                 aria-required="true"
                                                 autoComplete="shipping address-level2"
+                                                bg={inputBgColor}
+                                                color={textColor}
+                                                borderColor={inputBorderColor}
                                             />
                                         </FormControl>
                                         <FormControl>
-                                            <FormLabel htmlFor="delivery-postal" fontSize="xs" color="gray.600">Postal Code</FormLabel>
+                                            <FormLabel htmlFor="delivery-postal" fontSize="xs" color={subTextColor}>Postal Code</FormLabel>
                                             <Input
                                                 id="delivery-postal"
-                                                size="sm"
+                                                size={isMobile ? "md" : "sm"}
                                                 borderRadius="md"
                                                 placeholder="Enter postal code"
-                                                _placeholder={{ color: 'gray.400', fontSize: 'sm' }}
+                                                _placeholder={placeholderStyle}
                                                 aria-required="true"
                                                 autoComplete="shipping postal-code"
                                                 inputMode="numeric"
+                                                bg={inputBgColor}
+                                                color={textColor}
+                                                borderColor={inputBorderColor}
                                             />
                                         </FormControl>
                                         <FormControl>
-                                            <FormLabel htmlFor="delivery-country" fontSize="xs" color="gray.600">Country</FormLabel>
+                                            <FormLabel htmlFor="delivery-country" fontSize="xs" color={subTextColor}>Country</FormLabel>
                                             <Input
                                                 id="delivery-country"
-                                                size="sm"
+                                                size={isMobile ? "md" : "sm"}
                                                 borderRadius="md"
                                                 placeholder="Enter country"
-                                                _placeholder={{ color: 'gray.400', fontSize: 'sm' }}
+                                                _placeholder={placeholderStyle}
                                                 aria-required="true"
                                                 autoComplete="shipping country-name"
+                                                bg={inputBgColor}
+                                                color={textColor}
+                                                borderColor={inputBorderColor}
                                             />
                                         </FormControl>
                                     </SimpleGrid>
@@ -853,11 +1101,14 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                     <Flex justify="center" mt={6}>
                         <Button
                             type="submit"
-                            colorScheme="red"
-                            size="lg"
-                            px={12}
+                            bg={buttonBgColor}
+                            color="white"
+                            size={buttonSize}
+                            px={buttonPadding}
+                            width={isMobile ? "100%" : "auto"}
                             shadow="md"
                             _hover={{
+                                bg: buttonHoverBgColor,
                                 shadow: "lg",
                                 transform: "translateY(-1px)"
                             }}

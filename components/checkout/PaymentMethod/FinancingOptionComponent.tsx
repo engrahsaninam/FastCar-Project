@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Badge, Flex } from '@chakra-ui/react';
+import { Box, Text, Badge, Flex, useColorModeValue } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { FinancingOption } from '../types/financing';
 
@@ -18,6 +18,20 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
 }) => {
     const isSelected = option.id === selectedOption;
 
+    // Color mode values
+    const selectedBg = useColorModeValue("red.500", "red.600");
+    const selectedHoverBg = useColorModeValue("red.600", "red.500");
+    const unselectedBg = useColorModeValue("gray.200", "gray.600");
+    const unselectedHoverBg = useColorModeValue("gray.300", "gray.500");
+    const selectedTextColor = "white";
+    const unselectedTextColor = useColorModeValue("gray.400", "gray.300");
+
+    const selectedDescriptionColor = useColorModeValue("gray.900", "white");
+    const unselectedDescriptionColor = useColorModeValue("gray.400", "gray.400");
+
+    const badgeBg = useColorModeValue("red.100", "red.800");
+    const badgeColor = useColorModeValue("gray.800", "white");
+
     return (
         <Box flex="1" display="flex" flexDirection="column" alignItems="center">
             <MotionBox
@@ -29,10 +43,10 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
                 px={{ base: 3, md: 6 }}
                 mb={{ base: 2, md: 4 }}
                 cursor="pointer"
-                bg={isSelected ? 'red.500' : 'gray.200'}
-                color={isSelected ? 'white' : 'gray.400'}
+                bg={isSelected ? selectedBg : unselectedBg}
+                color={isSelected ? selectedTextColor : unselectedTextColor}
                 _hover={{
-                    bg: isSelected ? 'red.500' : 'gray.300'
+                    bg: isSelected ? selectedHoverBg : unselectedHoverBg
                 }}
                 width="auto"
                 minWidth="150px"
@@ -48,8 +62,8 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
                             py={0.5}
                             fontSize={{ base: '9px', md: '11px' }}
                             fontWeight="medium"
-                            bg="red.100"
-                            color="gray.800"
+                            bg={badgeBg}
+                            color={badgeColor}
                             borderRadius="md"
                         >
                             NEW
@@ -62,7 +76,7 @@ const FinancingOptionComponent: React.FC<FinancingOptionComponentProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 textAlign="center"
                 mt={4}
-                color={isSelected ? 'gray.900' : 'gray.400'}
+                color={isSelected ? selectedDescriptionColor : unselectedDescriptionColor}
             >
                 <Text
                     fontSize={{ base: 'md', md: '2xl' }}

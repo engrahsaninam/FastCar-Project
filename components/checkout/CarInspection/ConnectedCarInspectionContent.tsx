@@ -11,7 +11,9 @@ import {
     Divider,
     SimpleGrid,
     GridItem,
-    Icon
+    Icon,
+    useColorModeValue,
+    useBreakpointValue
 } from '@chakra-ui/react';
 import { ChevronDownIcon, InfoIcon } from '@chakra-ui/icons';
 
@@ -20,6 +22,41 @@ interface ConnectedCarInspectionContentProps {
 }
 
 const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps> = ({ onComplete }) => {
+    // Color mode values
+    const bgColor = useColorModeValue("white", "gray.800");
+    const borderColor = useColorModeValue("#D3D3D3", "gray.600");
+    const textColor = useColorModeValue("gray.700", "gray.300");
+    const headingColor = useColorModeValue("gray.700", "white");
+    const inputBgColor = useColorModeValue("white", "gray.700");
+    const inputBorderColor = useColorModeValue("gray.200", "gray.600");
+    const labelColor = useColorModeValue("gray.700", "gray.400");
+
+    const redAccentColor = useColorModeValue("red.500", "red.400");
+    const redAccentHoverColor = useColorModeValue("red.600", "red.300");
+    const redLightBgColor = useColorModeValue("red.50", "red.900");
+    const redTextColor = useColorModeValue("red.600", "red.300");
+    const redTextDarkColor = useColorModeValue("red.800", "red.200");
+
+    const grayBgColor = useColorModeValue("gray.100", "gray.700");
+    const grayTextColor = useColorModeValue("gray.700", "gray.300");
+
+    const errorColor = useColorModeValue("red.500", "red.300");
+    const successColor = useColorModeValue("green.500", "green.300");
+
+    const connectionLineColor = useColorModeValue("#FFA9A9", "#FF6B6B");
+    const dividerColor = useColorModeValue("red.600", "red.400");
+
+    // Additional color values for conditional usage
+    const checkboxBorderUncheckedColor = useColorModeValue("gray.400", "gray.500");
+    const noteBorderColor = useColorModeValue("red.100", "red.800");
+
+    // Responsive values
+    const isMobile = useBreakpointValue({ base: true, md: false });
+    const formPadding = useBreakpointValue({ base: 4, md: 6 });
+    const headingFontSize = useBreakpointValue({ base: "md", md: "lg" });
+    const inputHeight = useBreakpointValue({ base: "44px", md: "40px" });
+    const buttonSize = useBreakpointValue({ base: "md", md: "lg" });
+
     // States
     const [accountType, setAccountType] = useState('consumer');
     const [isVatPayer, setIsVatPayer] = useState(false);
@@ -49,14 +86,14 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
 
         return errors[field] ? (
             <Box position="absolute" right="10px" top="50%" transform="translateY(-50%)" zIndex="1">
-                <Box bg="red.500" borderRadius="full" w="20px" h="20px" display="flex" alignItems="center" justifyContent="center">
+                <Box bg={errorColor} borderRadius="full" w={isMobile ? "18px" : "20px"} h={isMobile ? "18px" : "20px"} display="flex" alignItems="center" justifyContent="center">
                     <Text color="white" fontSize="xs" fontWeight="bold">!</Text>
                 </Box>
             </Box>
         ) : formData[field as keyof typeof formData] ? (
             <Box position="absolute" right="10px" top="50%" transform="translateY(-50%)" zIndex="1">
-                <Box bg="green.500" borderRadius="full" w="20px" h="20px" display="flex" alignItems="center" justifyContent="center">
-                    <Icon viewBox="0 0 24 24" color="white" boxSize={3} aria-label="Icon">
+                <Box bg={successColor} borderRadius="full" w={isMobile ? "18px" : "20px"} h={isMobile ? "18px" : "20px"} display="flex" alignItems="center" justifyContent="center">
+                    <Icon viewBox="0 0 24 24" color="white" boxSize={isMobile ? 2.5 : 3} aria-label="Icon">
                         <path
                             fill="currentColor"
                             d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"
@@ -78,44 +115,54 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
     };
 
     return (
-        <Box position="relative" ml={{ base: 10, md: 14 }} mt={4} border='1px solid #D3D3D3' borderRadius='lg'>
-            <Box position="absolute" top="-36px" left="-40px">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-                    <path d="M20,20 L20,80 C20,86.6 25.4,92 32,92 L40,92" stroke="#FFA9A9" strokeWidth="2" fill="none" />
+        <Box
+            position="relative"
+            ml={{ base: 6, md: 14 }}
+            mt={4}
+            border='1px solid'
+            borderColor={borderColor}
+            borderRadius='lg'
+            maxW={{ base: "calc(100vw - 50px)", md: "100%" }}
+        >
+            <Box position="absolute" top="-36px" left={{ base: "-25px", md: "-40px" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width={isMobile ? "70" : "100"} height={isMobile ? "70" : "100"}>
+                    <path d="M20,20 L20,80 C20,86.6 25.4,92 32,92 L40,92" stroke={connectionLineColor} strokeWidth="2" fill="none" />
                 </svg>
             </Box>
 
-            <Box bg="white" borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="1px solid #D3D3D3" boxShadow="sm">
-                <Box py={4} px={6} borderBottomWidth="1px" borderColor="gray.200">
-                    <Text fontSize="lg" fontWeight="bold" color="gray.700">Personal information</Text>
+            <Box bg={bgColor} borderRadius="md" overflow="hidden" borderWidth="1px" borderColor={borderColor} boxShadow="sm">
+                <Box py={4} px={formPadding} borderBottomWidth="1px" borderColor={borderColor}>
+                    <Text fontSize={headingFontSize} fontWeight="bold" color={headingColor}>Personal information</Text>
                 </Box>
 
                 {/* Account type toggle */}
-                <Flex borderRadius="md" overflow="hidden" mx={4} mt={4}>
+                <Flex borderRadius="md" overflow="hidden" mx={formPadding} mt={4}>
                     <Box
                         flex={1} py={3}
-                        bg={accountType === 'consumer' ? "red.500" : "gray.100"}
-                        color={accountType === 'consumer' ? "white" : "gray.700"}
+                        bg={accountType === 'consumer' ? redAccentColor : grayBgColor}
+                        color={accountType === 'consumer' ? "white" : grayTextColor}
                         textAlign="center" fontWeight={accountType === 'consumer' ? "bold" : "normal"}
                         cursor="pointer" onClick={() => handleAccountTypeChange('consumer')}
                         borderLeftRadius="md"
+                        fontSize={{ base: "sm", md: "md" }}
                     >
                         Consumer
                     </Box>
                     <Box
                         flex={1} py={3}
-                        bg={accountType === 'company' ? "red.500" : "gray.100"}
-                        color={accountType === 'company' ? "white" : "gray.700"}
+                        bg={accountType === 'company' ? redAccentColor : grayBgColor}
+                        color={accountType === 'company' ? "white" : grayTextColor}
                         textAlign="center" fontWeight={accountType === 'company' ? "bold" : "normal"}
                         cursor="pointer" onClick={() => handleAccountTypeChange('company')}
                         borderRightRadius="md"
+                        fontSize={{ base: "sm", md: "md" }}
                     >
                         Company
                     </Box>
                 </Flex>
 
                 {/* Form content */}
-                <Box p={6}>
+                <Box p={formPadding}>
                     {/* VAT Payer Checkbox */}
                     {accountType === 'company' && (
                         <Box mb={6}>
@@ -123,15 +170,15 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                                 isChecked={isVatPayer}
                                 onChange={(e) => setIsVatPayer(e.target.checked)}
                                 colorScheme="red"
-                                size="md"
+                                size={isMobile ? "sm" : "md"}
                                 sx={{
                                     '.chakra-checkbox__control': {
-                                        borderColor: isVatPayer ? 'red.500' : 'gray.400',
-                                        backgroundColor: isVatPayer ? 'red.500' : 'transparent',
+                                        borderColor: isVatPayer ? redAccentColor : checkboxBorderUncheckedColor,
+                                        backgroundColor: isVatPayer ? redAccentColor : 'transparent',
                                     },
                                 }}
                             >
-                                <Text ml={2} fontSize="md" color="gray.700">
+                                <Text ml={2} fontSize={isMobile ? "sm" : "md"} color={textColor}>
                                     I'm a VAT payer
                                 </Text>
                             </Checkbox>
@@ -140,85 +187,99 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
 
                     {/* Company fields */}
                     {accountType === 'company' && (
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} mb={6}>
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }} mb={6}>
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">COMPANY ID</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>COMPANY ID</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.companyId}
                                         onChange={handleChange('companyId')}
                                         placeholder="Company ID"
-                                        borderColor={touched.companyId && errors.companyId ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.companyId && errors.companyId ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="companyId" aria-label="Icon" />
+                                    <FieldIcon field="companyId" />
                                 </Box>
                             </FormControl>
 
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">COMPANY NAME</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>COMPANY NAME</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.companyName}
                                         onChange={handleChange('companyName')}
                                         placeholder="Company name"
-                                        borderColor={touched.companyName && errors.companyName ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.companyName && errors.companyName ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="companyName" aria-label="Icon" />
+                                    <FieldIcon field="companyName" />
                                 </Box>
                             </FormControl>
                         </SimpleGrid>
                     )}
 
                     {/* Personal Information Fields */}
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }}>
                         <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">NAME</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>NAME</FormLabel>
                             <Box position="relative">
                                 <Input
                                     value={formData.name}
                                     onChange={handleChange('name')}
                                     placeholder="Name"
-                                    borderColor={touched.name && errors.name ? "red.500" : "gray.200"}
-                                    borderRadius="md" height="40px"
+                                    borderColor={touched.name && errors.name ? errorColor : inputBorderColor}
+                                    borderRadius="md" height={inputHeight}
+                                    bg={inputBgColor}
+                                    color={textColor}
+                                    fontSize={isMobile ? "sm" : "md"}
                                 />
-                                <FieldIcon field="name" aria-label="Icon" />
+                                <FieldIcon field="name" />
                             </Box>
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">SURNAME</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>SURNAME</FormLabel>
                             <Box position="relative">
                                 <Input
                                     value={formData.surname}
                                     onChange={handleChange('surname')}
                                     placeholder="Surname"
-                                    borderColor={touched.surname && errors.surname ? "red.500" : "gray.200"}
-                                    borderRadius="md" height="40px"
+                                    borderColor={touched.surname && errors.surname ? errorColor : inputBorderColor}
+                                    borderRadius="md" height={inputHeight}
+                                    bg={inputBgColor}
+                                    color={textColor}
+                                    fontSize={isMobile ? "sm" : "md"}
                                 />
-                                <FieldIcon field="surname" aria-label="Icon" />
+                                <FieldIcon field="surname" />
                             </Box>
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">TELEPHONE NUMBER</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>TELEPHONE NUMBER</FormLabel>
                             <Flex>
-                                <Box width="90px" mr={2}>
+                                <Box width={{ base: "80px", md: "90px" }} mr={2}>
                                     <Flex
                                         borderWidth="1px"
-                                        borderColor="gray.200"
+                                        borderColor={inputBorderColor}
                                         borderRadius="md"
                                         alignItems="center"
-                                        height="40px"
+                                        height={inputHeight}
                                         px={2}
                                         justifyContent="space-between"
+                                        bg={inputBgColor}
+                                        color={textColor}
                                     >
                                         <Flex alignItems="center">
                                             <Box as="span" width="24px" height="16px" bg="red.500" mr={1.5} borderRadius="sm" />
-                                            <Text fontSize="sm">+39</Text>
+                                            <Text fontSize={isMobile ? "xs" : "sm"}>+39</Text>
                                         </Flex>
-                                        <ChevronDownIcon />
+                                        <ChevronDownIcon boxSize={isMobile ? 3 : 4} />
                                     </Flex>
                                 </Box>
                                 <Box position="relative" flex="1">
@@ -226,25 +287,31 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                                         value={formData.telephone}
                                         onChange={handleChange('telephone')}
                                         placeholder="Telephone number"
-                                        borderColor={touched.telephone && errors.telephone ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.telephone && errors.telephone ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="telephone" aria-label="Icon" />
+                                    <FieldIcon field="telephone" />
                                 </Box>
                             </Flex>
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">BIRTH DATE</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>BIRTH DATE</FormLabel>
                             <Box position="relative">
                                 <Input
                                     value={formData.birthDate}
                                     onChange={handleChange('birthDate')}
                                     placeholder="dd.mm.yyyy"
-                                    borderColor={touched.birthDate && errors.birthDate ? "red.500" : "gray.200"}
-                                    borderRadius="md" height="40px"
+                                    borderColor={touched.birthDate && errors.birthDate ? errorColor : inputBorderColor}
+                                    borderRadius="md" height={inputHeight}
+                                    bg={inputBgColor}
+                                    color={textColor}
+                                    fontSize={isMobile ? "sm" : "md"}
                                 />
-                                <FieldIcon field="birthDate" aria-label="Icon" />
+                                <FieldIcon field="birthDate" />
                             </Box>
                         </FormControl>
                     </SimpleGrid>
@@ -252,106 +319,119 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                     {/* Billing Address Divider */}
                     <Box py={4} my={4} position="relative" display="flex" alignItems="center" width="100%" shadow="md">
                         <Box flex="1">
-                            <Divider borderColor="red.600" />
+                            <Divider borderColor={dividerColor} />
                         </Box>
-                        <Text fontSize="md" fontWeight="600" color="red.600" mx={4}>
+                        <Text fontSize={isMobile ? "sm" : "md"} fontWeight="600" color={redTextColor} mx={4}>
                             Billing address
                         </Text>
                         <Box flex="1">
-                            <Divider borderColor="red.600" />
+                            <Divider borderColor={dividerColor} />
                         </Box>
                     </Box>
 
                     {/* Address Form */}
-                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6} >
-                        <GridItem colSpan={{ md: 1 }}>
+                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 4, md: 4 }} mb={6} >
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">STREET</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>STREET</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.street}
                                         onChange={handleChange('street')}
                                         placeholder="Street"
-                                        borderColor={touched.street && errors.street ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.street && errors.street ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="street" aria-label="Icon" />
+                                    <FieldIcon field="street" />
                                 </Box>
                             </FormControl>
                         </GridItem>
 
-                        <GridItem colSpan={{ md: 1 }} >
+                        <GridItem colSpan={{ base: 1, md: 1 }} >
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">HOUSE NUMBER</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>HOUSE NUMBER</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.houseNumber}
                                         onChange={handleChange('houseNumber')}
                                         placeholder="House number"
-                                        borderColor={touched.houseNumber && errors.houseNumber ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.houseNumber && errors.houseNumber ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="houseNumber" aria-label="Icon" />
+                                    <FieldIcon field="houseNumber" />
                                 </Box>
                             </FormControl>
                         </GridItem>
 
-                        <GridItem colSpan={{ md: 1 }}>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">POSTAL CODE</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>POSTAL CODE</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.postalCode}
                                         onChange={handleChange('postalCode')}
                                         placeholder="Postal code"
-                                        borderColor={touched.postalCode && errors.postalCode ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.postalCode && errors.postalCode ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="postalCode" aria-label="Icon" />
+                                    <FieldIcon field="postalCode" />
                                 </Box>
                             </FormControl>
                         </GridItem>
                     </SimpleGrid>
 
                     {/* City and Country */}
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
-                        <GridItem colSpan={{ md: 1 }}>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 4 }} mb={6}>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">CITY</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>CITY</FormLabel>
                                 <Box position="relative">
                                     <Input
                                         value={formData.city}
                                         onChange={handleChange('city')}
                                         placeholder="City"
-                                        borderColor={touched.city && errors.city ? "red.500" : "gray.200"}
-                                        borderRadius="md" height="40px"
+                                        borderColor={touched.city && errors.city ? errorColor : inputBorderColor}
+                                        borderRadius="md" height={inputHeight}
+                                        bg={inputBgColor}
+                                        color={textColor}
+                                        fontSize={isMobile ? "sm" : "md"}
                                     />
-                                    <FieldIcon field="city" aria-label="Icon" />
+                                    <FieldIcon field="city" />
                                 </Box>
                             </FormControl>
                         </GridItem>
 
-                        <GridItem colSpan={{ md: 1 }}>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
                             <FormControl>
-                                <FormLabel fontSize="xs" fontWeight="bold" color="gray.700">COUNTRY</FormLabel>
+                                <FormLabel fontSize="xs" fontWeight="bold" color={labelColor}>COUNTRY</FormLabel>
                                 <Box position="relative">
                                     <Box
                                         borderWidth="1px"
-                                        borderColor="gray.200"
+                                        borderColor={inputBorderColor}
                                         borderRadius="md"
-                                        height="40px"
+                                        height={inputHeight}
                                         display="flex"
                                         alignItems="center"
                                         px={3}
                                         justifyContent="space-between"
                                         cursor="not-allowed"
-                                        bg="white"
+                                        bg={inputBgColor}
+                                        color={textColor}
                                     >
                                         <Flex alignItems="center">
                                             <Box
                                                 as="span"
-                                                width="24px"
-                                                height="16px"
+                                                width={{ base: "22px", md: "24px" }}
+                                                height={{ base: "14px", md: "16px" }}
                                                 mr={2}
                                                 borderRadius="sm"
                                                 position="relative"
@@ -362,9 +442,9 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                                                 <Box as="span" width="34%" height="full" bg="white" />
                                                 <Box as="span" width="33%" height="full" bg="red.500" />
                                             </Box>
-                                            <Text>Italy</Text>
+                                            <Text fontSize={isMobile ? "sm" : "md"}>Italy</Text>
                                         </Flex>
-                                        <ChevronDownIcon />
+                                        <ChevronDownIcon boxSize={isMobile ? 3 : 4} />
                                     </Box>
                                 </Box>
                             </FormControl>
@@ -372,12 +452,12 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                     </SimpleGrid>
 
                     {/* Info box about country */}
-                    <Box bg="red.50" p={4} borderRadius="md" mb={4}>
-                        <Flex>
-                            <Box mr={3} mt="2px">
-                                <InfoIcon color="red.500" boxSize={5} aria-label="Icon" />
+                    <Box bg={redLightBgColor} p={formPadding} borderRadius="md" mb={4} borderWidth="1px" borderColor={noteBorderColor}>
+                        <Flex alignItems={isMobile ? "flex-start" : "center"}>
+                            <Box mr={3} mt={isMobile ? "3px" : "2px"} flexShrink={0}>
+                                <InfoIcon color={redAccentColor} boxSize={isMobile ? 4 : 5} />
                             </Box>
-                            <Text fontSize="sm" color="red.800">
+                            <Text fontSize={isMobile ? "xs" : "sm"} color={redTextDarkColor}>
                                 You cannot change the country any longer. If you need to make a change, please get in touch with our support.
                             </Text>
                         </Flex>
@@ -385,16 +465,22 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
 
                     {/* Contact Address Section */}
                     <Box mt={6} mb={4}>
-                        <Text fontSize="md" fontWeight="bold" color="gray.700">CONTACT ADDRESS</Text>
+                        <Text fontSize={isMobile ? "sm" : "md"} fontWeight="bold" color={headingColor}>CONTACT ADDRESS</Text>
                         <Flex mt={2} alignItems="center">
                             <Checkbox
                                 isChecked={sameContactAddress}
                                 onChange={(e) => setSameContactAddress(e.target.checked)}
                                 colorScheme="red"
-                                size="md"
+                                size={isMobile ? "sm" : "md"}
                                 iconColor="white"
+                                sx={{
+                                    '.chakra-checkbox__control': {
+                                        borderColor: sameContactAddress ? redAccentColor : checkboxBorderUncheckedColor,
+                                        backgroundColor: sameContactAddress ? redAccentColor : 'transparent',
+                                    },
+                                }}
                             >
-                                <Text ml={2} fontSize="md" color="red.600" fontWeight="medium">
+                                <Text ml={2} fontSize={isMobile ? "sm" : "md"} color={redTextColor} fontWeight="medium">
                                     Same as billing address
                                 </Text>
                             </Checkbox>
@@ -406,11 +492,14 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                         <Button
                             aria-label="Confirm the data"
                             type="submit"
-                            colorScheme="red"
-                            size="lg"
-                            px={12}
+                            bg={redAccentColor}
+                            color="white"
+                            size={buttonSize}
+                            px={{ base: 8, md: 12 }}
                             shadow="md"
+                            width={{ base: "100%", md: "auto" }}
                             _hover={{
+                                bg: redAccentHoverColor,
                                 shadow: "lg",
                                 transform: "translateY(-1px)"
                             }}

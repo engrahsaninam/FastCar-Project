@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Center, Flex, HStack, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, HStack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import { PhoneIcon } from '@chakra-ui/icons';
 import { FinancingCTAProps } from '../types/financing';
 
@@ -14,18 +14,32 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
     onPrimaryClick,
     // onSecondaryClick
 }) => {
+    // Color mode values
+    const headingColor = useColorModeValue("#0E2160", "blue.200");
+    const subTextColor = useColorModeValue("#4A5568", "gray.300");
+    const primaryButtonBg = useColorModeValue("#E53E3E", "red.500");
+    const primaryButtonHoverBg = useColorModeValue("#C53030", "red.600");
+    const adviceSectionBg = useColorModeValue("#F7FAFC", "gray.700");
+    const adviceTextColor = useColorModeValue("#4A5568", "gray.300");
+    const phoneBadgeBg = useColorModeValue("white", "gray.800");
+    const phoneIconColor = useColorModeValue("#E53E3E", "red.300");
+    const phoneHoursColor = useColorModeValue("#718096", "gray.400");
+    const phoneNumberColor = useColorModeValue("#1A202C", "white");
+
     const grayborderstyle = {
-        border: '1px solid #D3D3D3',
+        border: '1px solid',
+        borderColor: useColorModeValue('#D3D3D3', '#4A5568'),
         borderRadius: 'lg',
         shadow: 'md'
     }
+
     return (
         <Box mt={10} >
             {/* Heading and description */}
             <Text
                 fontSize="20px"
                 fontWeight="bold"
-                color="#0E2160"
+                color={headingColor}
                 mb="8px"
                 lineHeight="1.2"
             >
@@ -33,7 +47,7 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
             </Text>
             <Text
                 fontSize="16px"
-                color="#4A5568"
+                color={subTextColor}
                 mb="24px"
                 lineHeight="1.5"
             >
@@ -49,14 +63,14 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                 mb="32px"
             >
                 <Button
-                    bg="#E53E3E"
+                    bg={primaryButtonBg}
                     color="white"
                     height="48px"
                     fontSize="16px"
                     fontWeight="semibold"
                     borderRadius="4px"
                     width={{ base: "100%", sm: "50%" }}
-                    _hover={{ bg: "#C53030" }}
+                    _hover={{ bg: primaryButtonHoverBg }}
                     onClick={onPrimaryClick}
                 >
                     {primaryButtonText}
@@ -79,8 +93,9 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
 
             {/* Gray Background Advice Section */}
             <Box
-                bg="#F7FAFC"
-                border="#E53E3E"
+                bg={adviceSectionBg}
+                borderTop="1px solid"
+                borderColor={useColorModeValue("gray.200", "gray.600")}
                 py={4}
                 mx={-5}
                 mt={8}
@@ -100,7 +115,7 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                     px={5}
                 >
                     <Text
-                        color="#4A5568"
+                        color={adviceTextColor}
                         fontWeight="medium"
                         fontSize="16px"
                     >
@@ -108,17 +123,18 @@ const FinancingCTASection: React.FC<FinancingCTAProps> = ({
                     </Text>
                     <HStack
                         spacing="12px"
-                        bg="white"
+                        bg={phoneBadgeBg}
                         py="8px"
                         px="16px"
                         borderRadius="full"
+                        boxShadow="sm"
                     >
-                        <Icon as={PhoneIcon} color="#E53E3E" boxSize="18px" />
+                        <Icon as={PhoneIcon} color={phoneIconColor} boxSize="18px" />
                         <Box>
-                            <Text fontSize="12px" color="#718096" lineHeight="1.2">
+                            <Text fontSize="12px" color={phoneHoursColor} lineHeight="1.2">
                                 {phoneHours}
                             </Text>
-                            <Text fontWeight="bold" color="#1A202C" fontSize="16px">
+                            <Text fontWeight="bold" color={phoneNumberColor} fontSize="16px">
                                 {phoneNumber}
                             </Text>
                         </Box>

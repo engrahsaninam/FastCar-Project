@@ -26,6 +26,7 @@ export interface RadioOptionProps {
     onChange: (id: string) => void;
     isDisabled?: boolean;
     applicationSent?: boolean;
+    isMobile?: boolean;
 }
 
 export interface CarInspectionContentProps {
