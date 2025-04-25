@@ -181,7 +181,7 @@ const CarCard = ({ car }) => {
               <Flex justify="space-between" align="center" mb="2">
                 <Heading
                   as="h3"
-                  fontSize="lg"
+                  fontSize="xl"
                   fontWeight="bold"
                   color={headingColor}
                   letterSpacing="wide"
@@ -286,7 +286,7 @@ const CarCard = ({ car }) => {
                 </Button>
               </HStack>
 
-              <Box bg="red.50" p={2} borderRadius="md">
+              <Box p={2} borderRadius="md">
                 <Text fontSize="2xl" fontWeight="bold" color={priceColor} textAlign="right">
                   €{car.price.toLocaleString()}
                 </Text>

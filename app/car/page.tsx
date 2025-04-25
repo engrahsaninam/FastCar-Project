@@ -464,40 +464,7 @@ export default function CarsDetails1() {
 					</Box>
 
 					{/* Bottom action buttons */}
-					<Box
-						py={4}
-						px={4}
-						pb={10}
-						borderTop="1px"
-						borderColor={borderColor}
-						bg={bgColor}
-						position="sticky"
-						bottom="0"
-						width="100%"
-						boxShadow={useColorModeValue("0 -4px 6px -1px rgba(0, 0, 0, 0.05)", "0 -4px 6px -1px rgba(0, 0, 0, 0.3)")}
-					>
-						<Flex gap={3}>
-							<Button
-								onClick={onClose}
-								variant="outline"
-								colorScheme="gray"
-								size="lg"
-								flex={1}
-								borderRadius="xl"
-							>
-								More info
-							</Button>
-							<Button
-								colorScheme="red"
-								size="lg"
-								flex={2}
-								borderRadius="xl"
-								onClick={onClose}
-							>
-								Buy car
-							</Button>
-						</Flex>
-					</Box>
+
 				</Box>
 			</>
 		);
@@ -1327,11 +1294,11 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 								<div id="price-map" className="mt-5 pt-3">
-									<h3 className="mb-4">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h3>
+									<h3 className="mb-4 fs-5">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h3>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="d-flex justify-content-between align-items-center mb-3">
-												<h5 className="mb-0">Price vs Mileage Comparison</h5>
+												<h5 className="mb-0 fs-6">Price vs Mileage Comparison</h5>
 												<div className="d-flex gap-3 align-items-center">
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
@@ -1575,18 +1542,18 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="comparison" className="mt-5 pt-3">
-									<h3 className="mb-4">Comparison</h3>
+									<h3 className="mb-4 fs-5">Comparison</h3>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="text-center mb-4">
-												<p className="mb-2 fs-5">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
+												<p className="mb-2 fs-6">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
 												<p className="mb-5">We take in account <span className="fw-bold">up to 70 vehicle characteristics</span>.</p>
 
 												<div className="position-relative mt-5 pt-4">
 													<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
 														<div className="text-white text-center p-3 rounded-3 mb-5 position-relative" style={{ width: '200px', margin: '0 auto', backgroundColor: '#E53E3E' }}>
 															<div className="mb-1 fw-bold">THIS CAR</div>
-															<div className="fs-2 fw-bold">€24,999</div>
+															<div className="fs-4 fw-bold">€24,999</div>
 															<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
 																<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #E53E3E' }}></div>
 															</div>
@@ -1622,11 +1589,11 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="financing" className="mt-5 pt-3">
-									<h3 className="mb-4">Financing</h3>
+									<h3 className="mb-4 fs-5">Financing</h3>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="d-flex justify-content-between align-items-center mb-3">
-												<h5 className="mb-0">Financing options</h5>
+												<h5 className="mb-0 fs-6">Financing options</h5>
 												<div className="d-flex gap-3 align-items-center">
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
@@ -1780,136 +1747,6 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 							</div>
-							{/* <div className="col-lg-4">
-								<div className="sidebar-banner mb-4" style={{
-									position: 'sticky',
-									top: '20px',
-									zIndex: 100,
-									backgroundColor: 'white',
-									// boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-								}}>
-									<div className="p-4 background-body  rounded-3">
-										<div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
-											<div className="me-2">
-												<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-												<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-												<span className="d-inline-Fblock me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-												<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-												<span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
-											</div>
-											<p className="text-success m-0 fw-semibold">Very good price</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center mb-2">
-											<h6 className="text-lg-bold neutral-1000 m-0">Car price</h6>
-											<p className="text-xl-bold m-0 fs-3">€24,999</p>
-										</div>
-										<div className="d-flex justify-content-between align-items-center mb-4">
-											<p className="text-md-medium text-muted m-0">Price without VAT</p>
-											<p className="text-md-medium text-muted m-0">€20,491</p>
-										</div>
-
-										<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#C53030", color: "white" }}>
-											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
-												<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
-												<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
-												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-											</svg>
-											Buy
-										</Link>
-
-										<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
-											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
-												<path d="M19.5 3.75H4.5C4.08579 3.75 3.75 4.08579 3.75 4.5V19.5C3.75 19.9142 4.08579 20.25 4.5 20.25H19.5C19.9142 20.25 20.25 19.9142 20.25 19.5V4.5C20.25 4.08579 19.9142 3.75 19.5 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												<path d="M16.5 7.5C15.6716 7.5 15 8.17157 15 9C15 9.82843 15.6716 10.5 16.5 10.5C17.3284 10.5 18 9.82843 18 9C18 8.17157 17.3284 7.5 16.5 7.5Z" fill="currentColor" />
-												<path d="M8.25 12L5.25 15.75H18.75L14.25 9.75L11.25 13.5L8.25 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-											</svg>
-											Financing €327/mo
-										</Link>
-
-										<div className="d-flex justify-content-between align-items-center mb-3">
-											<h6 className="m-0 d-flex align-items-center">
-												Services total
-												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
-													<path d="M8 10.6667L4 6.66675H12L8 10.6667Z" fill="currentColor" />
-												</svg>
-											</h6>
-											<p className="text-md-bold m-0">€1,111</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0">CarAudit™</p>
-											<p className="text-md-medium m-0">€119</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-											<p className="text-md-medium m-0 d-flex align-items-center">
-												Delivery
-												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-primary">
-													<path d="M12.6667 6.00008H10.6667V2.66675H12L12.6667 6.00008ZM12.6667 6.00008H3.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M11.9999 10H12.6666C13.0348 10 13.3333 9.70152 13.3333 9.33333V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M3.99992 13.3333C4.73626 13.3333 5.33325 12.7363 5.33325 12C5.33325 11.2636 4.73626 10.6666 3.99992 10.6666C3.26359 10.6666 2.66659 11.2636 2.66659 12C2.66659 12.7363 3.26359 13.3333 3.99992 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M11.9999 13.3333C12.7363 13.3333 13.3333 12.7363 13.3333 12C13.3333 11.2636 12.7363 10.6666 11.9999 10.6666C11.2636 10.6666 10.6666 11.2636 10.6666 12C10.6666 12.7363 11.2636 13.3333 11.9999 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M10.6667 12H5.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M2.66659 12H1.99992V4.66667C1.99992 4.29848 2.29841 4 2.66659 4H10.6666V9.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</p>
-											<Link href="#" className="text-primary text-decoration-none">Enter ZIP code</Link>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0 d-flex align-items-center">
-												Registration / Province Tax
-												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</p>
-											<p className="text-md-medium m-0">€293</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0 d-flex align-items-center">
-												Preparing the car for delivery (with a license plate)
-												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</p>
-											<p className="text-md-medium m-0">€699</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0 d-flex align-items-center">
-												10 liters of fuel
-												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-													<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</p>
-											<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0">Extended warranty</p>
-											<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
-										</div>
-									</div>
-								</div>
-
-								<div className="sidebar-banner mb-4">
-
-								</div>
-
-								<div className="sidebar-banner mb-4">
-									<div className="p-4 background-body border rounded-3">
-
-									</div>
-								</div>
-							</div> */}
 						</div>
 					</div>
 				</section>

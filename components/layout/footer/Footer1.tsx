@@ -1,15 +1,64 @@
 import Link from 'next/link'
+import { Link as ChakraLink, Text, Flex, HStack } from '@chakra-ui/react';
+import Dropdown from 'react-bootstrap/Dropdown'
+import dynamic from 'next/dynamic'
+const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
+	ssr: false,
+})
 
 export default function Footer1() {
 	return (
 		<>
+			<div className="top-bar top-bar-2 top-bar-3 bg-black" >
+				<div className="container">
+					<div className="text-header">
+						<Text className="text-unlock text-sm-medium text-white">Get a <span className="text-pink">10% </span>
+							discount on your first car</Text>
+						<Link className="btn btn-brand-2 btn-small px-3 py-2 text-xs-medium" href="/cars">
+							Register
+							<svg className="ms-1" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
+								<path fillRule="evenodd" clipRule="evenodd" d="M1 7.99965C1 7.86705 1.05268 7.73987 1.14645 7.6461C1.24021 7.55233 1.36739 7.49965 1.5 7.49965H13.293L10.146 4.35366C10.0521 4.25977 9.99937 4.13243 9.99937 3.99966C9.99937 3.86688 10.0521 3.73954 10.146 3.64565C10.2399 3.55177 10.3672 3.49902 10.5 3.49902C10.6328 3.49902 10.7601 3.55177 10.854 3.64565L14.854 7.64565C14.9006 7.6921 14.9375 7.74728 14.9627 7.80802C14.9879 7.86877 15.0009 7.93389 15.0009 7.99965C15.0009 8.06542 14.9879 8.13054 14.9627 8.19129C14.9375 8.25203 14.9006 8.30721 14.854 8.35365L10.854 12.3537C10.7601 12.4475 10.6328 12.5003 10.5 12.5003C10.3672 12.5003 10.2399 12.4475 10.146 12.3537C10.0521 12.2598 9.99937 12.1324 9.99937 11.9997C9.99937 11.8669 10.0521 11.7395 10.146 11.6457L13.293 8.49965H1.5C1.36739 8.49965 1.24021 8.44698 1.14645 8.35321C1.05268 8.25944 1 8.13226 1 7.99965Z" fill="white" />
+							</svg>
+						</Link>
+					</div>
+					<div className="top-right-header">
+						{/* <Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle mr-15 head-lang">
+							<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-account icon-lang">
+								<span className="text-14-medium arrow-down">EN</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu className="dropdown-account" style={{ visibility: 'visible' }}>
+								<ul>
+									<li><Link className="text-sm-medium" href="#">English</Link></li>
+									<li><Link className="text-sm-medium" href="#">French</Link></li>
+									<li><Link className="text-sm-medium" href="#">Chinese</Link></li>
+								</ul>
+							</Dropdown.Menu>
+						</Dropdown>
+						<Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle head-currency">
+							<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-cart">
+								<span className="text-14-medium arrow-down">USD</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu style={{ visibility: 'visible' }} className="dropdown-cart">
+								<ul>
+									<li><Link className="text-sm-medium" href="#">USD</Link></li>
+									<li><Link className="text-sm-medium" href="#">EUR</Link></li>
+									<li><Link className="text-sm-medium" href="#">SGP</Link></li>
+								</ul>
+							</Dropdown.Menu>
+						</Dropdown> */}
+						<div className="top-button-mode">
+							<ThemeSwitch />
+						</div>
+					</div>
+				</div>
+			</div>
 			<footer className="footer">
+				
 				<div className="container">
 					<div className="footer-top">
 						<div className="row align-items-center">
 							<div className="col-lg-5 col-md-6 text-center text-md-start">
-								<h5 className="color-white wow fadeInDown">Subscribe to see secret deals prices drop the moment you
-									sign up!</h5>
+								<h5 className="color-white wow fadeInDown">Subscribe to see secret deals prices drop the moment you sign up!</h5>
 							</div>
 							<div className="col-lg-7 col-md-6 text-center text-md-end mt-md-0 mt-4">
 								<div className="d-flex align-items-center justify-content-center justify-content-md-end">
@@ -29,14 +78,12 @@ export default function Footer1() {
 									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
 								</Link>
 								<div className="box-info-contact mt-0">
-									{/* <p className="text-md neutral-400 icon-address">2356 Oakwood Drive, Suite 18, San Francisco,
-										California 94111, US</p> */}
 									<p className="text-md neutral-400 icon-worktime">Hours: 8:00 - 17:00, Mon - Sat</p>
 									<p className="text-md neutral-400 icon-email">support@Fast4Car.com</p>
 								</div>
 								<div className="box-need-help">
 									<p className="need-help text-md-medium mb-5">Need help? Call us</p>
-									<br /><Link className="heading-6 phone-support" href="/tel:‪‪+34 618 00 73 25">‪‪+34 618 00 73 25</Link>
+									<br /><Link className="heading-6 phone-support" href="/tel:‪‪+34 618 00 73 25">‪‪+34 618 00 73 25</Link>
 								</div>
 							</div>
 						</div>
@@ -124,7 +171,6 @@ export default function Footer1() {
 					</div>
 				</div>
 			</footer>
-
 		</>
 	)
 }
