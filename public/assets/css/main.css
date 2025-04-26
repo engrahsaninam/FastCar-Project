@@ -7129,7 +7129,9 @@ a.icon-socials:hover svg path {
 .footer-5 {
 	width: 17.5%;
 }
-
+.btn-red{
+	background-color: #E53E3E;
+}
 .footer {
 	background-color: var(--bs-background-1000);
 	padding: 40px 0px 0px 0px;

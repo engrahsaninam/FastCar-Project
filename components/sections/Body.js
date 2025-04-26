@@ -176,7 +176,7 @@ const CarCard = ({ car }) => {
           </Box>
 
           {/* Content Section - maintain size but reduce spacing */}
-          <Flex flex="1" p="3" flexDir="column" justifyContent="space-between" mt="10px">
+          <Flex flex="1" p="3" flexDir="column" justifyContent="space-between" mt="0">
             <Box>
               <Flex justify="space-between" align="center" mb="2">
                 <Heading
@@ -202,19 +202,24 @@ const CarCard = ({ car }) => {
 
               {/* Specs Row - inline with minimal spacing */}
               <Flex wrap="wrap" mb="3" align="center">
-                <HStack spacing="1" mr="2">
+                <HStack spacing="1" mr="3">
                   <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
                   <Text fontSize="sm" color={textColor}>{car.mileage}</Text>
                 </HStack>
-                <HStack spacing="1" mr="2">
+                <HStack spacing="1" mr="3">
+                  <LucideIcon icon={MapPin} boxSize="4" color={textColor} />
+
+                  <Text fontSize="sm" color={textColor}>Germany</Text>
+                </HStack>
+                <HStack spacing="1" mr="3">
                   <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
                   <Text fontSize="sm" color={textColor}>{car.date}</Text>
                 </HStack>
-                <HStack spacing="1" mr="2">
+                <HStack spacing="1" mr="3">
                   <LucideIcon icon={Power} boxSize="4" color={textColor} />
                   <Text fontSize="sm" color={textColor}>{car.power}</Text>
                 </HStack>
-                <HStack spacing="1" mr="2">
+                <HStack spacing="1" mr="3">
                   <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
                   <Text fontSize="sm" color={textColor}>{car.transmission}</Text>
                 </HStack>
@@ -236,6 +241,7 @@ const CarCard = ({ car }) => {
                     borderRadius="md"
                     fontSize="sm"
                     fontWeight="medium"
+                    style={{ textTransform: "none" }}
                   >
                     {feature}
                   </Badge>
@@ -252,6 +258,7 @@ const CarCard = ({ car }) => {
                     mt="0.5"
                     _hover={{ textDecoration: "underline" }}
                     onClick={(e) => e.preventDefault()}
+                    style={{ textTransform: "none" }}
                   >
                     + {car.features.length - 4} more
                   </Button>
@@ -264,67 +271,42 @@ const CarCard = ({ car }) => {
               justify="space-between"
               align="center"
               pt="1.5"
+              // py="2z"
+              px="2"
               borderTopWidth="1px"
               borderColor={cardBorderColor}
               mt="1"
             >
-              <HStack spacing="1">
-                <div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
-                  <div className="me-2">
-                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-                    <span className="d-inline-Fblock me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-                    <span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
-                  </div>
-                  <p className="text-success m-0 fw-semibold">Very good price</p>
-                </div>
-              </HStack>
-              {/* <HStack spacing="1">
-                <LucideIcon icon={MapPin} boxSize="4" color={textColor} />
-                <Text fontSize="sm" color={textColor}>Germany, delivery:</Text>
-                <Button
-                  variant="unstyled"
-                  color={buttonLinkColor}
-                  fontSize="sm"
-                  fontWeight="medium"
-                  textDecoration="underline"
-                  height="auto"
-                  padding="0"
-                  _hover={{ color: "red.500" }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  Enter ZIP code
-                </Button>
-              </HStack> */}
+              <VStack align="flex-start" spacing="0.5">
+                <HStack spacing="1">
+                  {[...Array(5)].map((_, i) => (
+                    <Box key={i} w="6px" h="6px" borderRadius="full" bg="#64E364" />
+                  ))}
+                  <Text fontSize="sm" color="red.500" fontWeight="semibold" mb="0">
+                    Very Good Price
+                  </Text>
+                </HStack>
+                <HStack align="baseline" spacing="2">
+                  <Text fontSize="xl" color="red.500" fontWeight="bold" lineHeight="1">
+                    € 5043
+                  </Text>
+                  <Text fontSize="sm" color="red.500">
+                    Cheaper than Spain!
+                  </Text>
+                </HStack>
+              </VStack>
 
-              <Box p={2} borderRadius="md">
+              <Box borderRadius="md">
                 <Text fontSize="2xl" fontWeight="bold" color={priceColor} textAlign="right">
-                  €{car.price.toLocaleString()}
+                  € {car.price.toLocaleString()}
                 </Text>
                 <Text fontSize="xs" color="gray.500" textAlign="right">
-                  €{(car.price * 0.79).toFixed(2)} without VAT
+                  €{(car.price / 4).toFixed(2)} without VAT
                 </Text>
               </Box>
-              
+
             </Flex>
-            <HStack spacing="1">
-              <LucideIcon icon={MapPin} boxSize="2" color={textColor} />
-              <Text fontSize="sm" color={textColor}>Germany</Text>
-              {/* <Button
-                variant="unstyled"
-                color={buttonLinkColor}
-                fontSize="sm"
-                fontWeight="medium"
-                textDecoration="underline"
-                height="auto"
-                padding="0"
-                _hover={{ color: "red.500" }}
-                onClick={(e) => e.preventDefault()}
-              >
-                Enter ZIP code
-              </Button> */}
-            </HStack>
+
           </Flex>
         </Flex>
       </ChakraLink>
@@ -900,7 +882,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     fuels.forEach(fuel => {
       filters.push({
         id: `fuel-${fuel}`,
-        label: fuel.charAt(0).toUpperCase() + fuel.slice(1)
+        // label: fuel.charAt(0).toUpperCase() + fuel.slice(1)
       });
     });
 
@@ -918,7 +900,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     if (hybridType) {
       filters.push({
         id: 'hybrid',
-        label: `${hybridType.charAt(0).toUpperCase() + hybridType.slice(1)} hybrid`
+        // label: `${hybridType.charAt(0).toUpperCase() + hybridType.slice(1)} hybrid`
       });
     }
 
@@ -929,7 +911,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     if (powerFrom || powerTo) {
       filters.push({
         id: 'power',
-        label: `${powerFrom || '0'} - ${powerTo || '0'} ${powerUnit.toUpperCase()}`
+        // label: `${powerFrom || '0'} - ${powerTo || '0'} ${powerUnit.toUpperCase()}`
       });
     }
 
@@ -979,7 +961,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
   }, [searchParams]);
 
   return (
-    <Box w="full">
+    <Box w="full" maxW="100vw" overflowX="hidden" px={[0, 2, 4]}>
       <Flex flexDir="column" overflow="hidden" bg={["mobileBg", "mobileBg", "transparent"]}>
         {/* Filter Bar for Mobile */}
         <Flex

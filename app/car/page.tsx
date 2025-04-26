@@ -300,6 +300,12 @@ export default function CarsDetails1() {
 		const redColor = useColorModeValue("red.500", "red.400")
 		const greenBg = useColorModeValue("green.50", "green.900")
 		const greenText = useColorModeValue("green.600", "green.300")
+		const includedBg = useColorModeValue("green.100", "green.800")
+		const includedText = useColorModeValue("green.700", "green.200")
+		const sectionBorder = useColorModeValue("gray.100", "gray.700")
+		const highlightBg = useColorModeValue("red.50", "red.900")
+		const highlightBorder = useColorModeValue("red.200", "red.700")
+		const highlightText = useColorModeValue("red.600", "red.300")
 
 		return (
 			<>
@@ -340,7 +346,7 @@ export default function CarsDetails1() {
 					/>
 
 					<Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor={borderColor}>
-						<Text fontSize="lg" fontWeight="semibold" color={textColor}>Purchase Summary</Text>
+						<Text fontSize="lg" fontWeight="semibold" color={textColor}>Toyota C-HR 2.0 Hybrid 135 kW</Text>
 						<IconButton
 							variant="ghost"
 							icon={<Icon as={X} w={5} h={5} />}
@@ -349,122 +355,82 @@ export default function CarsDetails1() {
 						/>
 					</Flex>
 
-					<Box p={2} overflowY="auto" maxHeight="calc(90vh - 160px)">
-						{/* Price Section */}
-						<div className="p-2 background-body  rounded-3">
-							<div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
-								<div className="me-2">
-									<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-									<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-									<span className="d-inline-Fblock me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-									<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
-									<span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
-								</div>
-								<p className="text-success m-0 fw-semibold">Very good price</p>
-							</div>
+					<Box p={0} overflowY="auto" maxHeight="calc(90vh - 100px)" pb="80px">
+						{/* Price Card */}
+						<Box bgGradient="linear(to-br, red.500, red.600, red.700)" borderRadius="xl" p={5} mx={3} mt={3} mb={4} color="white" textAlign="left">
+							<Text fontSize="sm" opacity={0.9}>PRICE INCL SERVICES</Text>
+							<Text fontSize="3xl" fontWeight="bold" mt={1}>24 999 €</Text>
+							<Text fontSize="sm" opacity={0.8} mt={1}>20 491 € without VAT</Text>
+						</Box>
 
-							<div className="d-flex justify-content-between align-items-center mb-2">
-								<h6 className="text-lg-bold neutral-1000 m-0">Car price</h6>
-								<p className="text-xl-bold m-0 fs-3">€24,999</p>
-							</div>
-							<div className="d-flex justify-content-between align-items-center mb-4">
-								<p className="text-md-medium text-muted m-0">Price without VAT</p>
-								<p className="text-md-medium text-muted m-0">€20,491</p>
-							</div>
+						{/* Vehicle details */}
+						<Box px={4}>
+							<Text fontWeight="semibold" color={textColor} mb={2}>Vehicle details</Text>
+							<Flex justify="space-between" align="center" mb={1}>
+								<Flex align="center" gap={2}><Icon as={Calendar} w={4} h={4} />First registration</Flex>
+								<Text>12/2020</Text>
+							</Flex>
+							<Flex justify="space-between" align="center" mb={2}>
+								<Flex align="center" gap={2}><Icon as={Gauge} w={4} h={4} />Mileage</Flex>
+								<Text>46,042 km</Text>
+							</Flex>
+							<Badge bg={greenBg} color={greenText} px={3} py={2} borderRadius="md" fontWeight="bold" mb={3}>VERY GOOD PRICE</Badge>
+						</Box>
 
-							<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#C53030", color: "white" }}>
-								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
-									<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
-									<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
-									<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-								</svg>
-								Buy
-							</Link>
+						{/* Included in price */}
+						<Box px={4} pt={2} pb={2} borderTop="1px" borderColor={sectionBorder}>
+							<Text fontWeight="semibold" color={textColor} mb={2}>Included in price</Text>
+							<Flex justify="space-between" align="center" mb={1}>
+								<Text>CarAudit™ inspection</Text>
+								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
+							</Flex>
+							<Flex justify="space-between" align="center" mb={1}>
+								<Text>6-month warranty</Text>
+								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
+							</Flex>
+							<Flex justify="space-between" align="center" mb={2}>
+								<Text>Full service check</Text>
+								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
+							</Flex>
+						</Box>
 
-							<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
-								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
-									<path d="M19.5 3.75H4.5C4.08579 3.75 3.75 4.08579 3.75 4.5V19.5C3.75 19.9142 4.08579 20.25 4.5 20.25H19.5C19.9142 20.25 20.25 19.9142 20.25 19.5V4.5C20.25 4.08579 19.9142 3.75 19.5 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									<path d="M16.5 7.5C15.6716 7.5 15 8.17157 15 9C15 9.82843 15.6716 10.5 16.5 10.5C17.3284 10.5 18 9.82843 18 9C18 8.17157 17.3284 7.5 16.5 7.5Z" fill="currentColor" />
-									<path d="M8.25 12L5.25 15.75H18.75L14.25 9.75L11.25 13.5L8.25 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-								</svg>
-								Financing €327/mo
-							</Link>
-
-							<div className="d-flex justify-content-between align-items-center mb-3">
-								<h6 className="m-0 d-flex align-items-center">
-									Services total
-									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
-										<path d="M8 10.6667L4 6.66675H12L8 10.6667Z" fill="currentColor" />
-									</svg>
-								</h6>
-								<p className="text-md-bold m-0">€1,111</p>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2">
-								<p className="text-md-medium m-0">CarAudit™</p>
-								<p className="text-md-medium m-0">€119</p>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-								<p className="text-md-medium m-0 d-flex align-items-center">
-									Delivery
-									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-primary">
-										<path d="M12.6667 6.00008H10.6667V2.66675H12L12.6667 6.00008ZM12.6667 6.00008H3.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M11.9999 10H12.6666C13.0348 10 13.3333 9.70152 13.3333 9.33333V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M3.99992 13.3333C4.73626 13.3333 5.33325 12.7363 5.33325 12C5.33325 11.2636 4.73626 10.6666 3.99992 10.6666C3.26359 10.6666 2.66659 11.2636 2.66659 12C2.66659 12.7363 3.26359 13.3333 3.99992 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M11.9999 13.3333C12.7363 13.3333 13.3333 12.7363 13.3333 12C13.3333 11.2636 12.7363 10.6666 11.9999 10.6666C11.2636 10.6666 10.6666 11.2636 10.6666 12C10.6666 12.7363 11.2636 13.3333 11.9999 13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M10.6667 12H5.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M2.66659 12H1.99992V4.66667C1.99992 4.29848 2.29841 4 2.66659 4H10.6666V9.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</p>
-								<Link href="#" className="text-primary text-decoration-none">Enter ZIP code</Link>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2">
-								<p className="text-md-medium m-0 d-flex align-items-center">
-									Registration / Province Tax
-									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-										<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</p>
-								<p className="text-md-medium m-0">€293</p>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2">
-								<p className="text-md-medium m-0 d-flex align-items-center">
-									Preparing the car for delivery (with a license plate)
-									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-										<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</p>
-								<p className="text-md-medium m-0">€699</p>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2">
-								<p className="text-md-medium m-0 d-flex align-items-center">
-									10 liters of fuel
-									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
-										<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</p>
-								<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
-							</div>
-
-							<div className="d-flex justify-content-between align-items-center py-2">
-								<p className="text-md-medium m-0">Extended warranty</p>
-								<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
-							</div>
-						</div>
+						{/* Payment options */}
+						<Box px={4} pt={2} pb={4} borderTop="1px" borderColor={sectionBorder}>
+							<Text fontWeight="semibold" color={textColor} mb={2}>Payment options</Text>
+							<VStack spacing={3} align="stretch">
+								<Flex align="center" justify="space-between" p={3} borderRadius="lg" borderWidth="1px" borderColor={highlightBorder} bg={highlightBg} cursor="pointer">
+									<Box>
+										<Text color={highlightText} fontWeight="bold">Financing</Text>
+										<Text color={highlightText} fontSize="sm">From 199€/month</Text>
+									</Box>
+									<Icon as={ArrowRight} color={highlightText} w={5} h={5} />
+								</Flex>
+								<Flex align="center" justify="space-between" p={3} borderRadius="lg" borderWidth="1px" borderColor={borderColor} bg={bgColor}>
+									<Box>
+										<Text color={textColor} fontWeight="bold">Cash payment</Text>
+										<Text color={mutedTextColor} fontSize="sm">Pay online or at dealership</Text>
+									</Box>
+								</Flex>
+							</VStack>
+						</Box>
 					</Box>
-
-					{/* Bottom action buttons */}
-
+					<Box
+						position="absolute"
+						bottom="0"
+						left="0"
+						right="0"
+						bg={bgColor}
+						borderTop="1px solid"
+						borderColor={borderColor}
+						p={4}
+						zIndex={2}
+					>
+						<Link href="/checkout" passHref legacyBehavior>
+							<Button as="a" colorScheme="red" size="lg" w="100%">
+								Buy for 24 999 €
+							</Button>
+						</Link>
+					</Box>
 				</Box>
 			</>
 		);
@@ -524,7 +490,7 @@ export default function CarsDetails1() {
 											</div>
 										</Slider>
 										<div className="box-button-abs">
-											<Link className="btn btn-success rounded-pill" href="#">
+											<Link className="btn btn-red rounded-pill text-white" href="#">
 												<svg className="me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 													<path d="M4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6Z" fill="currentColor" />
 													<path d="M20 2H8C6.9 2 6 2.9 6 4V16C6 17.1 6.9 18 8 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H8V4H20V16ZM13 15H15V11H19V9H15V5H13V9H9V11H13V15Z" fill="currentColor" />
@@ -609,7 +575,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">MILEAGE</div>
+																		<div className="text-muted small">MILEAGE</div>
 																		<div className="fw-bold">46,042 km</div>
 																	</div>
 																</div>
@@ -625,7 +591,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">FIRST REGISTRATION</div>
+																		<div className="text-muted small">FIRST REGISTRATION</div>
 																		<div className="fw-bold">12/2020</div>
 																	</div>
 																</div>
@@ -640,7 +606,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">POWER</div>
+																		<div className="text-muted small">POWER</div>
 																		<div className="fw-bold">181 hp</div>
 																	</div>
 																</div>
@@ -656,7 +622,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">TRANSMISSION</div>
+																		<div className="text-muted small">TRANSMISSION</div>
 																		<div className="fw-bold">Automatic</div>
 																	</div>
 																</div>
@@ -669,7 +635,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">DRIVE TYPE</div>
+																		<div className="text-muted small">DRIVE TYPE</div>
 																		<div className="fw-bold">4x2</div>
 																	</div>
 																</div>
@@ -686,7 +652,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">CONSUMPTION</div>
+																		<div className="text-muted small">CONSUMPTION</div>
 																		<div className="fw-bold">4 l/100km</div>
 																	</div>
 																</div>
@@ -704,7 +670,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">CO2 EMISSIONS</div>
+																		<div className="text-muted small">CO2 EMISSIONS</div>
 																		<div className="fw-bold">92 g/km</div>
 																	</div>
 																</div>
@@ -720,7 +686,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">LOCATION</div>
+																		<div className="text-muted small">LOCATION</div>
 																		<div className="fw-bold">Germany</div>
 																	</div>
 																</div>
@@ -746,7 +712,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">BATTERY CAPACITY</div>
+																		<div className="text-muted small">BATTERY CAPACITY</div>
 																		<div className="fw-bold">2 kWh</div>
 																	</div>
 																</div>
@@ -759,7 +725,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
+																		<div className="text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
 																		<div className="fw-bold">80 kW</div>
 																	</div>
 																</div>
@@ -776,7 +742,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
+																		<div className="text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
 																		<div className="fw-bold">112 kW</div>
 																	</div>
 																</div>
@@ -793,7 +759,7 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-uppercase text-muted small">SECONDARY FUEL ⓘ</div>
+																		<div className="text-muted small">SECONDARY FUEL ⓘ</div>
 																		<div className="fw-bold">Petrol</div>
 																	</div>
 																</div>
@@ -803,7 +769,7 @@ export default function CarsDetails1() {
 														<div className="row mt-4">
 															<div className="col-md-4">
 																<div className="mb-3">
-																	<div className="text-uppercase text-muted small">Battery type</div>
+																	<div className="text-muted small">Battery type</div>
 																	<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
 																</div>
 															</div>
@@ -1846,44 +1812,46 @@ export default function CarsDetails1() {
 					zIndex={999}
 					display={{ base: 'block', md: 'none' }}
 				>
-					{/* Floating Buy Car Bar */}
+					{/* Floating Buy Car Bar with Arrow */}
 					<Box
 						bg={useColorModeValue("white", "gray.800")}
 						borderTop="1px"
 						borderColor={useColorModeValue("gray.200", "gray.700")}
 						p={4}
 						boxShadow={useColorModeValue("0 -4px 6px -1px rgba(0, 0, 0, 0.05)", "0 -4px 6px -1px rgba(0, 0, 0, 0.3)")}
+						position="relative"
 					>
-						<Flex direction="column" gap={2}>
-							{/* Price and Rating Section */}
-							<Flex justify="space-between" align="center" mb={1}>
-								<Box>
-									<Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>Price incl. services</Text>
-									<VStack spacing={2} align="baseline">
-										<Text fontSize="xl" fontWeight="bold" color={useColorModeValue("gray.900", "white")}>24 999 €</Text>
-										<Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>20 491 € without VAT</Text>
-									</VStack>
-								</Box>
-								<Box>
-									<Badge colorScheme="green" px={2} py={1} borderRadius="md">
-										Very good price
-									</Badge>
-								</Box>
-							</Flex>
-
-							{/* Action Buttons */}
-							<Flex gap={2}>
-								<Button
-									flex={2}
-									colorScheme="red"
-									size="lg"
-									borderRadius="xl"
-									onClick={() => setDrawerOpen(true)}
-								>
-									Buy car
-								</Button>
-							</Flex>
+						{/* Arrow Tab */}
+						<Flex justify="center" position="absolute" top={-18} left={0} right={0} zIndex={2}>
+							<IconButton
+								aria-label="Show details"
+								icon={<Icon as={ChevronUp} boxSize={6} />}
+								borderRadius="full"
+								bg={useColorModeValue('white', 'gray.700')}
+								// boxShadow="md"
+								onClick={() => setDrawerOpen(true)}
+								size="lg"
+							// border="1px solid #E2E8F0"
+							/>
 						</Flex>
+						<Box pt={3} display="flex" flexDirection="row" justifyContent="space-between" alignItems="center">
+							<div>
+								<Text fontWeight="bold" fontSize="xl" color={useColorModeValue('gray.800', 'white')}>
+									€28,149 <Text as="span" fontWeight="normal" fontSize="lg" color={useColorModeValue('gray.700', 'gray.300')}>+ services</Text>
+								</Text>
+								<Text as="a" href="#" color="red" fontWeight="bold" fontSize="md" mt={2} display="block" textDecoration="underline">
+									€406/mo
+								</Text>
+							</div>
+							<div>
+								<Link href="/checkout" passHref legacyBehavior>
+									<Button as="a" colorScheme="red" size="lg" w="100%">
+										Buy
+									</Button>
+								</Link>
+							</div>
+						</Box>
+
 					</Box>
 					<MobileBuyCarDrawer isOpen={isDrawerOpen} onClose={() => setDrawerOpen(false)} />
 				</Box>

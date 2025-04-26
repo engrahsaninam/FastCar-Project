@@ -26,6 +26,8 @@ import {
     useBreakpointValue,
     GridItem
 } from '@chakra-ui/react';
+import { Edit2, CreditCard, ChevronLeft, Lock, X } from 'lucide-react';
+
 import { Package, Info, MapPin, Search, Car, Route } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -100,41 +102,43 @@ const redRadio = {
     border: '1px solid #E53E3E',
 };
 
-// Add a utility function for geocoding using OpenStreetMap's Nominatim service
-const geocodeAddress = async (address: string) => {
-    try {
-        // Nominatim API URL (free, but should be used with care in production)
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
+const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
+    const editButtonColor = useColorModeValue("blue.600", "blue.400");
+    const editButtonHoverBg = useColorModeValue("blue.50", "blue.800");
+    // Add a utility function for geocoding using OpenStreetMap's Nominatim service
+    const geocodeAddress = async (address: string) => {
+        try {
+            // Nominatim API URL (free, but should be used with care in production)
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
 
-        if (!response.ok) {
-            throw new Error('Geocoding service unavailable');
-        }
+            if (!response.ok) {
+                throw new Error('Geocoding service unavailable');
+            }
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data && data.length > 0) {
-            const location = data[0];
-            return {
-                success: true as const,
-                position: [parseFloat(location.lat), parseFloat(location.lon)] as [number, number],
-                displayName: location.display_name as string
-            };
-        } else {
+            if (data && data.length > 0) {
+                const location = data[0];
+                return {
+                    success: true as const,
+                    position: [parseFloat(location.lat), parseFloat(location.lon)] as [number, number],
+                    displayName: location.display_name as string
+                };
+            } else {
+                return {
+                    success: false as const,
+                    error: 'No results found'
+                };
+            }
+        } catch (error) {
+            console.error('Geocoding error:', error);
             return {
                 success: false as const,
-                error: 'No results found'
+                error: error instanceof Error ? error.message : 'Unknown error'
             };
         }
-    } catch (error) {
-        console.error('Geocoding error:', error);
-        return {
-            success: false as const,
-            error: error instanceof Error ? error.message : 'Unknown error'
-        };
-    }
-};
+    };
 
-const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
     // State for the delivery form
     const [selected, setSelected] = useState<'home' | 'pickup'>('home');
     const [selectedStore, setSelectedStore] = useState<number | null>(null);
@@ -892,7 +896,20 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                     </VStack>
                 </Box>
             )}
+
+            <Flex justifyContent="flex-end" mb={6}>
+                <Button
+                    rightIcon={<Icon as={Edit2} boxSize={isMobile ? 3.5 : 4} />}
+                    variant="ghost"
+                    color={editButtonColor}
+                    size={isMobile ? "sm" : "md"}
+                    _hover={{ bg: editButtonHoverBg }}
+                >
+                    Edit the data
+                </Button>
+            </Flex>
         </VStack>
+
     );
 
     return (
