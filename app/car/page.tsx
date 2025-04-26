@@ -442,7 +442,7 @@ export default function CarsDetails1() {
 				<section className="box-section box-breadcrumb background-body">
 					<div className="container">
 						<ul className="breadcrumbs">
-							<li>
+							{/* <li>
 								<Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" className="dark:text-white">
 										<path d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -457,7 +457,7 @@ export default function CarsDetails1() {
 										<path d="M1 11L6 6L1 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 									</svg>
 								</span>
-							</li>
+							</li> */}
 							<li><span className="text-breadcrumb">Hyundai Accent 2025</span></li>
 						</ul>
 					</div>
