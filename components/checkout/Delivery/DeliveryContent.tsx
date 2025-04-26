@@ -23,7 +23,8 @@ import {
     Textarea,
     useToast,
     useColorModeValue,
-    useBreakpointValue
+    useBreakpointValue,
+    GridItem
 } from '@chakra-ui/react';
 import { Package, Info, MapPin, Search, Car, Route } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -150,12 +151,22 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
     const buttonSize = isMobile ? "md" : "lg";
     const buttonPadding = isMobile ? 4 : 8;
     const headingSize = isMobile ? "xs" : "sm";
-
+    const contactData = {
+        name: "Laraib khan",
+        address: "st 9 Fazal town phase 2, Rawalpindi, 37139",
+        email: "517laraibkhan@gmail.com",
+        phone: "+39 3471234567"
+    }
     // Colors
     const bgColor = useColorModeValue("white", "gray.800");
     const textColor = useColorModeValue("gray.900", "white");
     const subTextColor = useColorModeValue("gray.600", "gray.400");
     const headingColor = useColorModeValue("gray.800", "white");
+    const contentPadding = useBreakpointValue({ base: 4, md: 6 });
+    const subheadingSize = useBreakpointValue({ base: "lg", md: "xl" });
+    const textSize = useBreakpointValue({ base: "sm", md: "md" });
+    const paymentIconSize = useBreakpointValue({ base: "24px", md: "30px" });
+    const paymentIconWidth = useBreakpointValue({ base: "40px", md: "50px" });
     const buttonBgColor = useColorModeValue("red.500", "red.500");
     const buttonHoverBgColor = useColorModeValue("red.600", "red.400");
     const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -830,40 +841,16 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
             {/* <Heading size="sm" mb={2} color={headingColor}>Set your delivery location</Heading> */}
 
             {/* Address search with loading state */}
-            <InputGroup>
-                <InputLeftElement pointerEvents="none" color={searchIconColor}>
-                    <Icon as={Search} />
-                </InputLeftElement>
-                <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search for location by address"
-                    bg={inputBgColor}
-                    borderColor={inputBorderColor}
-                    _hover={{ borderColor: inputHoverBorderColor }}
-                    focusBorderColor={inputFocusBorderColor}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSearchLocation(e);
-                        }
-                    }}
-                />
-                <InputRightElement>
-                    <Button
-                        size="sm"
-                        colorScheme="red"
-                        h="1.75rem"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleSearchLocation(e);
-                        }}
-                        isLoading={isSearching}
-                    >
-                        {!isSearching && "Search"}
-                    </Button>
-                </InputRightElement>
-            </InputGroup>
+            <GridItem>
+                <VStack align="stretch" spacing={{ base: 2, md: 3 }} alignContent="center">
+                    {/* <Text color={subTextColor} fontSize={textSize}>Contact data, where we can reach you regarding your purchase</Text> */}
 
+                    <Text fontWeight="medium" mt={2} color={textColor}>{contactData.name}</Text>
+                    <Text color={textColor}>{contactData.address}</Text>
+                    <Text color={textColor}>{contactData.email}</Text>
+                    <Text color={textColor}>{contactData.phone}</Text>
+                </VStack>
+            </GridItem>
             {/* Error message if search fails */}
             {searchError && (
                 <Box p={2} bg={errorBg} color={errorColor} borderRadius="md" fontSize={isMobile ? "xs" : "sm"} borderWidth="1px" borderColor={errorBorderColor}>
@@ -1032,17 +1019,19 @@ const DeliveryContent: React.FC<DeliveryContentProps> = ({ onContinue }) => {
                                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                         <FormControl>
                                             <FormLabel htmlFor="delivery-address" fontSize="xs" color={subTextColor}>Delivery Address</FormLabel>
-                                            <Textarea
+                                            <Input
                                                 id="delivery-address"
                                                 value={deliveryAddress}
                                                 onChange={(e) => setDeliveryAddress(e.target.value)}
-                                                placeholder="Enter your full address (street, number, city, postal code)"
-                                                resize="vertical"
-                                                minH="100px"
+                                                placeholder="Enter address"
+                                                _placeholder={placeholderStyle}
+                                                aria-required="true"
+                                                autoComplete="shipping postal-code"
+                                                inputMode="numeric"
                                                 bg={inputBgColor}
+                                                color={textColor}
                                                 borderColor={inputBorderColor}
-                                                _hover={{ borderColor: inputHoverBorderColor }}
-                                                focusBorderColor={inputFocusBorderColor}
+                                                size={isMobile ? "md" : "sm"}
                                             />
                                         </FormControl>
                                         <FormControl>

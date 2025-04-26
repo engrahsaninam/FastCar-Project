@@ -16,12 +16,6 @@ const page = () => {
         <div className=''>
             <CheckoutCarDetails />
             <CheckoutSteps />
-            <GridItem
-                colSpan={1}
-                display={{ base: 'block', lg: 'none' }}
-            >
-                <PriceSummary />
-            </GridItem>
             <Box w="full" maxW="7xl" mx="auto">
                 <Grid
                     templateColumns={{ base: '1fr', lg: '2fr 1fr' }}
@@ -43,6 +37,9 @@ const page = () => {
                         <PriceSummary />
                     </GridItem>
                 </Grid>
+            </Box>
+            <Box display={{ base: 'block', md: 'none' }}>
+                <PriceSummary />
             </Box>
         </div>
     )

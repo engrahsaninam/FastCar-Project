@@ -364,16 +364,6 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, children }
 };
 
 const PriceSummary: React.FC = () => {
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const isMobile = useBreakpointValue({ base: true, md: false });
-
-    const bgColor = useColorModeValue("white", "gray.800");
-    const borderColor = useColorModeValue("gray.200", "gray.700");
-    const textColor = useColorModeValue("gray.900", "white");
-    const mutedTextColor = useColorModeValue("gray.500", "gray.400");
-    const boxShadow = useColorModeValue("0 -4px 6px -1px rgba(0, 0, 0, 0.05)", "0 -4px 6px -1px rgba(0, 0, 0, 0.3)");
-    const hoverBgColor = useColorModeValue("gray.50", "gray.700");
-
     return (
         <>
             {/* Desktop Version */}
@@ -381,47 +371,9 @@ const PriceSummary: React.FC = () => {
                 <PriceSummaryContent />
             </Box>
 
-            {/* Mobile Version - Fixed bottom bar that opens drawer */}
-            <Box
-                position="fixed"
-                bottom={0}
-                left={0}
-                right={0}
-                zIndex={40}
-                display={{ md: 'none' }}
-            >
-                {/* Floating Price Bar */}
-                <Box
-                    bg={bgColor}
-                    borderTop="1px"
-                    borderColor={borderColor}
-                    p={4}
-                    cursor="pointer"
-                    onClick={() => setIsDrawerOpen(true)}
-                    boxShadow={boxShadow}
-                    borderTopRadius="lg"
-                    transition="all 0.2s"
-                    _hover={{ bg: hoverBgColor }}
-                >
-                    <Flex justify="space-between" align="center">
-                        <Box>
-                            <Text fontSize="xs" color={mutedTextColor}>Total price</Text>
-                            <Text fontSize="lg" fontWeight="bold" color={textColor}>CZK 667,765</Text>
-                        </Box>
-                        <Button
-                            colorScheme="red"
-                            size="sm"
-                            rightIcon={<Icon as={ChevronUp} w={4} h={4} />}
-                        >
-                            View Details
-                        </Button>
-                    </Flex>
-                </Box>
-
-                {/* Mobile Drawer */}
-                <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-                    <PriceSummaryContent isMobile />
-                </MobileDrawer>
+            {/* Mobile Version - Inline above footer */}
+            <Box display={{ base: 'block', md: 'none' }}>
+                <PriceSummaryContent isMobile />
             </Box>
         </>
     );

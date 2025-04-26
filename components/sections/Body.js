@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo  } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
@@ -21,7 +21,7 @@ import {
   TagLabel,
   TagCloseButton,
   useDisclosure,
-  Link as ChakraLink, 
+  Link as ChakraLink,
   Select,
   AspectRatio,
   useColorModeValue,
@@ -74,7 +74,7 @@ const CarCard = ({ car }) => {
   const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
   const badgeColor = useColorModeValue("red.400", "red.300");
   const navBtnBg = useColorModeValue("white", "#333333");
-  
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % car.images.length);
   };
@@ -269,6 +269,18 @@ const CarCard = ({ car }) => {
               mt="1"
             >
               <HStack spacing="1">
+                <div className="bg-light-green rounded-2 py-2 px-3 mb-3 d-flex align-items-center">
+                  <div className="me-2">
+                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+                    <span className="d-inline-Fblock me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+                    <span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
+                    <span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
+                  </div>
+                  <p className="text-success m-0 fw-semibold">Very good price</p>
+                </div>
+              </HStack>
+              {/* <HStack spacing="1">
                 <LucideIcon icon={MapPin} boxSize="4" color={textColor} />
                 <Text fontSize="sm" color={textColor}>Germany, delivery:</Text>
                 <Button
@@ -284,7 +296,7 @@ const CarCard = ({ car }) => {
                 >
                   Enter ZIP code
                 </Button>
-              </HStack>
+              </HStack> */}
 
               <Box p={2} borderRadius="md">
                 <Text fontSize="2xl" fontWeight="bold" color={priceColor} textAlign="right">
@@ -294,7 +306,25 @@ const CarCard = ({ car }) => {
                   €{(car.price * 0.79).toFixed(2)} without VAT
                 </Text>
               </Box>
+              
             </Flex>
+            <HStack spacing="1">
+              <LucideIcon icon={MapPin} boxSize="2" color={textColor} />
+              <Text fontSize="sm" color={textColor}>Germany</Text>
+              {/* <Button
+                variant="unstyled"
+                color={buttonLinkColor}
+                fontSize="sm"
+                fontWeight="medium"
+                textDecoration="underline"
+                height="auto"
+                padding="0"
+                _hover={{ color: "red.500" }}
+                onClick={(e) => e.preventDefault()}
+              >
+                Enter ZIP code
+              </Button> */}
+            </HStack>
           </Flex>
         </Flex>
       </ChakraLink>
@@ -697,7 +727,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
   const buttonHoverBg = useColorModeValue("red.500", "red.600");
   const closeIconColor = useColorModeValue("red.400", "red.300");
   const closeIconHoverBg = useColorModeValue("red.200", "rgba(255, 69, 58, 0.3)");
-  
+
   const removeFilter = (filterId) => {
     const params = new URLSearchParams(searchParams.toString());
 

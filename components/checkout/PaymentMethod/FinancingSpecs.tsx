@@ -158,12 +158,19 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                 flexWrap="wrap"
                 gap={2}
             >
-                <Flex align="center" gap={gapSize} flex={1} minW="200px">
-                    <TimeIcon w={iconSize} h={iconSize} color={iconColor} aria-label="time-Icon" />
+                <Flex
+                    align="center"
+                    gap={gapSize}
+                    flex="1 1 200px"
+                    minW="0"
+                    flexDirection={{ base: "column", md: "row" }}
+                >
+                    <TimeIcon w={iconSize} h={iconSize} color={iconColor} aria-label="time-icon" />
                     <Heading as="h4" fontSize={headingSize} fontWeight="semibold" color={textColor} noOfLines={1}>
                         Financing specifications
                     </Heading>
                 </Flex>
+
                 <Button
                     onClick={handleFinancingSpecsToggle}
                     p={1}
@@ -173,24 +180,29 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                     minW="auto"
                 >
                     {isFinancingSpecsExpanded ? (
-                        <ChevronUpIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-up-Icon" />
+                        <ChevronUpIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-up-icon" />
                     ) : (
-                        <ChevronDownIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-down-Icon" />
+                        <ChevronDownIcon w={iconSize} h={iconSize} color={mutedIconColor} aria-label="chevron-down-icon" />
                     )}
                 </Button>
             </Flex>
 
             {isFinancingSpecsExpanded && (
                 <VStack spacing={sectionSpacing} align="stretch" w="100%">
-                    <Box w="100%" overflowX="hidden">
+                    <Box w="100%" overflowX="auto">
                         <Flex
                             w="100%"
                             gap={gapSize}
-                            flexDirection={flexDirection}
+                            flexDirection={{ base: "column", md: "row" }}
                             flexWrap="wrap"
                         >
                             {options.map((option) => (
-                                <Box key={option.id} w={{ base: "100%", md: "auto" }} flex={{ base: "unset", md: 1 }}>
+                                <Box
+                                    key={option.id}
+                                    w={{ base: "100%", md: "auto" }}
+                                    flex={{ base: "unset", md: "1 1 auto" }}
+                                    maxW="100%"
+                                >
                                     <FinancingOptionComponent
                                         option={option}
                                         selectedOption={selectedOption}
@@ -218,17 +230,12 @@ const FinancingSpecs: React.FC<FinancingSpecsProps> = ({
                         downPayment={downPayment}
                         downPaymentAmount={downPaymentAmount}
                         installmentPeriod={paybackPeriod}
-                        interestRate={selectedOption === 'regular-loan' ? '8.99' : '9.50'}
-                        APR={selectedOption === 'low-installment' ? '11.55' : '10.25'}
+                        interestRate={selectedOption === "regular-loan" ? "8.99" : "9.50"}
+                        APR={selectedOption === "low-installment" ? "11.55" : "10.25"}
                         monthlyPayment={monthlyPayment}
                     />
 
                     <FinancingInfoSection />
-                    {/* 
-                    <FinancingCTASection
-                        onPrimaryClick={onFinancingRequest}
-                        onSecondaryClick={onFullPayment}
-                    /> */}
                 </VStack>
             )}
         </MotionBox>

@@ -320,7 +320,7 @@ const StepOneContent: React.FC = () => {
     };
 
     return (
-        <Box display="flex" flexDirection="column" gap={8}>
+        <Box display="flex" flexDirection="column" gap={8} w="100%" maxW="100%">
             {/* Step 1: Payment Method */}
             <Box
                 bg={bgColor}
@@ -329,6 +329,8 @@ const StepOneContent: React.FC = () => {
                 ref={stepRefs.payment}
                 borderWidth="1px"
                 borderColor={borderColor}
+                w="100%"
+                maxW="100%"
             >
                 <Box p={6}>
                     <StepHeader
@@ -397,7 +399,7 @@ const StepOneContent: React.FC = () => {
 
                         {selectedPaymentMethod === 'financing' && !applicationSent && (
                             <>
-                                <Box mt={6} maxW="100%" overflow="hidden">
+                                <Box mt={6} w="100%" maxW="100%" overflow="hidden">
                                     <FinancingSpecs
                                         onFinancingRequest={handleWantFinancing}
                                         onFullPayment={handlePayInFull}
@@ -435,6 +437,8 @@ const StepOneContent: React.FC = () => {
                 transition="all 0.3s ease"
                 borderWidth="1px"
                 borderColor={borderColor}
+                w="100%"
+                maxW="100%"
             >
                 <Box p={6}>
                     <StepHeader
@@ -490,6 +494,8 @@ const StepOneContent: React.FC = () => {
                 transition="all 0.3s ease"
                 borderWidth="1px"
                 borderColor={borderColor}
+                w="100%"
+                maxW="100%"
             >
                 <Box p={6}>
                     <StepHeader
@@ -530,6 +536,8 @@ const StepOneContent: React.FC = () => {
                 transition="all 0.3s ease"
                 borderWidth="1px"
                 borderColor={borderColor}
+                w="100%"
+                maxW="100%"
             >
                 <Box p={6}>
                     <StepHeader
@@ -569,6 +577,8 @@ const StepOneContent: React.FC = () => {
                 transition="all 0.3s ease"
                 borderWidth="1px"
                 borderColor={borderColor}
+                w="100%"
+                maxW="100%"
             >
                 <Box p={6}>
                     <StepHeader

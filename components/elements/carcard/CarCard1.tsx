@@ -19,7 +19,7 @@ export default function CarCard1({ car }: any) {
 					<div className="card-title mt-6 sm:mt-3"><Link className="text-lg-bold neutral-1000 text-nowrap" href={`/car?id=${car.id}`}>{car.name}</Link></div>
 					<div className="card-program mt-2">
 						<div className="card-location mb-2">
-							<p className="text-location text-sm-medium neutral-500">New South Wales, Australia</p>
+							<p className="text-locbation text-sm-medium neutral-500">New South Wales, Australia</p>
 						</div>
 						<div className="card-facitlities gap-2">
 							<p className="card-miles text-md-medium">25,100 miles</p>

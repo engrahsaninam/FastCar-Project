@@ -5614,9 +5614,6 @@ label {
 	position: relative;
 }
 
-.top-bar-3 {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
 
 .header {
 	padding: 0;
@@ -7137,7 +7134,10 @@ a.icon-socials:hover svg path {
 	background-color: var(--bs-background-1000);
 	padding: 40px 0px 0px 0px;
 }
+.get{
+	background-color: var(--bs-background-1000);
 
+}
 .footer .phone-support {
 	color: var(--bs-brand-2);
 }
