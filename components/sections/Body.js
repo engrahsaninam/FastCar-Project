@@ -98,7 +98,7 @@ const CarCard = ({ car }) => {
           w="full"
         >
           {/* Image Section */}
-          <Box position="relative" w={["full", "full", "260px"]} h={["200px", "200px", "full"]}>
+          <Box position="relative" w={["full", "full", "260px"]} h={["200px", "160px", "full"]}>
             <AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
               <Box position="relative" w="full" h="full">
                 {/* Heart/Favorite Button */}
@@ -176,20 +176,33 @@ const CarCard = ({ car }) => {
           </Box>
 
           {/* Content Section - maintain size but reduce spacing */}
-          <Flex flex="1" p="3" flexDir="column" justifyContent="space-between" mt="0">
+          <Flex
+            flex="1"
+            p={["4", "4", "3"]}
+            flexDir="column"
+            justifyContent="space-between"
+            mt={["3", "3", "0"]}
+          >
             <Box>
-              <Flex justify="space-between" align="center" mb="2">
+              <Flex
+                direction={["row", "row", "row"]}
+                justify="space-between"
+                align="center"
+                mb={["3", "3", "2"]}
+                mt={["2", "2", "0"]}
+              >
                 <Heading
                   as="h3"
-                  fontSize="xl"
+                  fontSize={["lg", "lg", "xl"]}
                   fontWeight="bold"
                   color={headingColor}
                   letterSpacing="wide"
                   fontFamily="inter"
+                  mb={["1", "1", "0"]}
                 >
                   {car.name}
                 </Heading>
-                <Box>
+                <Box mt={["1", "1", "0"]}>
                   <Image
                     src={logo.src}
                     alt="Logo"
@@ -201,36 +214,35 @@ const CarCard = ({ car }) => {
               </Flex>
 
               {/* Specs Row - inline with minimal spacing */}
-              <Flex wrap="wrap" mb="3" align="center">
-                <HStack spacing="1" mr="3">
-                  <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-                  <Text fontSize="sm" color={textColor}>{car.mileage}</Text>
-                </HStack>
-                <HStack spacing="1" mr="3">
-                  <LucideIcon icon={MapPin} boxSize="4" color={textColor} />
-
-                  <Text fontSize="sm" color={textColor}>Germany</Text>
-                </HStack>
-                <HStack spacing="1" mr="3">
-                  <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-                  <Text fontSize="sm" color={textColor}>{car.date}</Text>
-                </HStack>
-                <HStack spacing="1" mr="3">
-                  <LucideIcon icon={Power} boxSize="4" color={textColor} />
-                  <Text fontSize="sm" color={textColor}>{car.power}</Text>
-                </HStack>
-                <HStack spacing="1" mr="3">
-                  <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-                  <Text fontSize="sm" color={textColor}>{car.transmission}</Text>
-                </HStack>
-                <HStack spacing="1">
-                  <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-                  <Text fontSize="sm" color={textColor}>{car.fuelType}</Text>
-                </HStack>
-              </Flex>
+              <Box mb={["4", "4", "3"]}>
+                <Flex direction="row" gap={6} mb={1}>
+                  <HStack spacing="1">
+                    <LucideIcon icon={Power} boxSize="4" color={textColor} />
+                    <Text fontSize="sm" color={textColor}>{car.power}</Text>
+                  </HStack>
+                  <HStack spacing="1">
+                    <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+                    <Text fontSize="sm" color={textColor}>{car.date}</Text>
+                  </HStack>
+                  <HStack spacing="1">
+                    <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+                    <Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+                  </HStack>
+                </Flex>
+                <Flex direction="row" gap={6}>
+                  <HStack spacing="1">
+                    <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+                  </HStack>
+                  <HStack spacing="1">
+                    <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+                  </HStack>
+                </Flex>
+              </Box>
 
               {/* Features - keeping size with less vertical space */}
-              <Flex wrap="wrap" gap="1.5" mt="0">
+              <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]}>
                 {car.features.slice(0, 4).map((feature, index) => (
                   <Badge
                     key={index}
@@ -267,45 +279,42 @@ const CarCard = ({ car }) => {
             </Box>
 
             {/* Location and Price - maintain size with reduced space */}
-            <Flex
-              justify="space-between"
-              align="center"
-              pt="1.5"
-              // py="2z"
-              px="2"
+            <Box
+              pt={["3", "3", "1.5"]}
+              px={["0", "0", "2"]}
               borderTopWidth="1px"
               borderColor={cardBorderColor}
-              mt="1"
+              mt={["2", "2", "1"]}
             >
-              <VStack align="flex-start" spacing="0.5">
+              {/* Top row: Very Good Price (left) and Main Price (right) */}
+              <Flex direction="row" justify="space-between" align="center" w="100%">
                 <HStack spacing="1">
                   {[...Array(5)].map((_, i) => (
                     <Box key={i} w="6px" h="6px" borderRadius="full" bg="#64E364" />
                   ))}
-                  <Text fontSize="sm" color="red.500" fontWeight="semibold" mb="0">
+                  <Text fontSize="sm" color="gray.700" fontWeight="semibold" mb="0">
                     Very Good Price
                   </Text>
                 </HStack>
-                <HStack align="baseline" spacing="2">
-                  <Text fontSize="xl" color="red.500" fontWeight="bold" lineHeight="1">
-                    € 5043
+                <Box borderRadius="md" textAlign="right">
+                  <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+                    € {car.price.toLocaleString()}
                   </Text>
-                  <Text fontSize="sm" color="red.500">
-                    Cheaper than Spain!
+                  <Text fontSize="xs" color="gray.500">
+                    €{(car.price / 4).toFixed(2)} without VAT
                   </Text>
-                </HStack>
-              </VStack>
-
-              <Box borderRadius="md">
-                <Text fontSize="2xl" fontWeight="bold" color={priceColor} textAlign="right">
-                  € {car.price.toLocaleString()}
+                </Box>
+              </Flex>
+              {/* Bottom row: Cheaper than in Spain! */}
+              <Flex mt="2" align="center" gap="2">
+                <Text fontSize="xl" color="black" fontWeight="bold" lineHeight="1">
+                  € 5043
                 </Text>
-                <Text fontSize="xs" color="gray.500" textAlign="right">
-                  €{(car.price / 4).toFixed(2)} without VAT
+                <Text fontSize="sm" color="gray.700" display="flex" alignItems="center" gap="1">
+                  Cheaper than in <LucideIcon icon={MapPin} boxSize="4" color={textColor} /> Spain!
                 </Text>
-              </Box>
-
-            </Flex>
+              </Flex>
+            </Box>
 
           </Flex>
         </Flex>

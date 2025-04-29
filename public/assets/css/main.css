@@ -10553,7 +10553,7 @@ a.icon-socials:hover svg path {
 	display: none !important;
 }
 
-.slider-nav-thumbnails .banner-slide {
+-thumbnails .banner-slide {
 	margin-bottom: 16px;
 	border: 3px solid var(--bs-neutral-0);
 	border-radius: 16px;
@@ -11877,7 +11877,12 @@ a.icon-socials:hover svg path {
 	padding: 12px;
 	min-height: 85px;
 }
-
+@media (max-width: 768px) {
+  .slider-nav-thumbnails-activities-detail .banner-slide {
+    padding: 4px; /* smaller padding */
+    min-height: 50px; /* smaller height for phones */
+  }
+}
 .slider-nav-thumbnails-activities-detail .banner-slide img {
 	border-radius: 8px;
 	display: block;

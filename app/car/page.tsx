@@ -564,7 +564,7 @@ export default function CarsDetails1() {
 												<div className="car-details-specifications py-4">
 													<h4 className="mb-4">Details</h4>
 
-													<div className="bg-light p-4 rounded mb-4">
+													<div className="bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4">
 														<div className="row g-4">
 															<div className="col-md-4">
 																<div className="d-flex align-items-center">
@@ -575,8 +575,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">MILEAGE</div>
-																		<div className="fw-bold">46,042 km</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">MILEAGE</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">46,042 km</div>
 																	</div>
 																</div>
 															</div>
@@ -591,8 +591,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">FIRST REGISTRATION</div>
-																		<div className="fw-bold">12/2020</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">FIRST REGISTRATION</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">12/2020</div>
 																	</div>
 																</div>
 															</div>
@@ -606,8 +606,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">POWER</div>
-																		<div className="fw-bold">181 hp</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">POWER</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">181 hp</div>
 																	</div>
 																</div>
 															</div>
@@ -622,8 +622,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">TRANSMISSION</div>
-																		<div className="fw-bold">Automatic</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">TRANSMISSION</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">Automatic</div>
 																	</div>
 																</div>
 															</div>
@@ -635,8 +635,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">DRIVE TYPE</div>
-																		<div className="fw-bold">4x2</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">DRIVE TYPE</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">4x2</div>
 																	</div>
 																</div>
 															</div>
@@ -652,8 +652,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">CONSUMPTION</div>
-																		<div className="fw-bold">4 l/100km</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">CONSUMPTION</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">4 l/100km</div>
 																	</div>
 																</div>
 															</div>
@@ -670,8 +670,8 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">CO2 EMISSIONS</div>
-																		<div className="fw-bold">92 g/km</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">CO2 EMISSIONS</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">92 g/km</div>
 																	</div>
 																</div>
 															</div>
@@ -686,15 +686,15 @@ export default function CarsDetails1() {
 																		</svg>
 																	</div>
 																	<div>
-																		<div className="text-muted small">LOCATION</div>
-																		<div className="fw-bold">Germany</div>
+																		<div className="text-gray-500 dark:text-gray-400 small">LOCATION</div>
+																		<div className="fw-bold text-gray-900 dark:text-white">Germany</div>
 																	</div>
 																</div>
 															</div>
 														</div>
 													</div>
 
-													<div className="electric-specs p-4 rounded mb-4" style={{ background: 'linear-gradient(to right, #f0f6ff, #ffffff)' }}>
+													<div className="electric-specs bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4" >
 														<div className="d-flex justify-content-between mb-3">
 															<h5>Electric motor specifications for a new car</h5>
 															<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
@@ -791,11 +791,11 @@ export default function CarsDetails1() {
 														</div>
 													</div>
 
-													<div className="general-engine-info">
+													<div className="general-engine-info ">
 														<div className="row">
-															<div className="col-md-6">
+															<div className="col-md-6 ">
 																<div className="card border-0 mb-4">
-																	<div className="card-header bg-light">General</div>
+																	<div className="card-header bg-gray-50 dark:bg-gray-800">General</div>
 																	<div className="card-body p-0">
 																		<table className="table table-striped mb-0">
 																			<tbody>
@@ -814,7 +814,7 @@ export default function CarsDetails1() {
 															</div>
 															<div className="col-md-6">
 																<div className="card border-0 mb-4">
-																	<div className="card-header bg-light">Engine</div>
+																	<div className="card-header bg-gray-50 dark:bg-gray-800">Engine</div>
 																	<div className="card-body p-0">
 																		<table className="table table-striped mb-0">
 																			<tbody>
@@ -886,65 +886,67 @@ export default function CarsDetails1() {
 
 										<div className="row">
 											<div className="col-md-6 mb-4">
-												<div className="card border-0 h-100">
+												<div className="card border-0 h-100 bg-gray-50 dark:bg-gray-800">
 													<div className="card-body p-4">
-														<h5 className="card-title text-dark dark:text-white mb-4">Security, Safety and Assistance</h5>
+														<h5 className="card-title text-gray-900 dark:text-white mb-4">Security, Safety and Assistance</h5>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
 																	<li className="mb-2">
-																		<a href="#" className="text-primary text-decoration-none">Parking camera</a>
+																		<span className="text-gray-900 dark:text-white rounded">
+																			Parking camera
+																		</span>
 																	</li>
 																	<li className="mb-2">
-																		<a href="#" className="text-primary text-decoration-none">Parking assist system self-steering</a>
+																		<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Parking assist system self-steering</a>
 																	</li>
 																	<li className="mb-2">
-																		<a href="#" className="text-primary text-decoration-none">Blind spot assist</a>
+																		<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Blind spot assist</a>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">ABS</span>
+																		<span className="text-gray-900 dark:text-white">ABS</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Emergency braking assist (EBA, BAS)</span>
+																		<span className="text-gray-900 dark:text-white">Emergency braking assist (EBA, BAS)</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Emergency call</span>
+																		<span className="text-gray-900 dark:text-white">Emergency call</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Fatigue warning system</span>
+																		<span className="text-gray-900 dark:text-white">Fatigue warning system</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Front collision warning system</span>
+																		<span className="text-gray-900 dark:text-white">Front collision warning system</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Hill-start assist</span>
+																		<span className="text-gray-900 dark:text-white">Hill-start assist</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Immobilizer</span>
+																		<span className="text-gray-900 dark:text-white">Immobilizer</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Lane assist</span>
+																		<span className="text-gray-900 dark:text-white">Lane assist</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Front and rear parking sensors</span>
+																		<span className="text-gray-900 dark:text-white">Front and rear parking sensors</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Power assisted steering</span>
+																		<span className="text-gray-900 dark:text-white">Power assisted steering</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Rain sensor</span>
+																		<span className="text-gray-900 dark:text-white">Rain sensor</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Rear seats ISOFIX points</span>
+																		<span className="text-gray-900 dark:text-white">Rear seats ISOFIX points</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Traction control (TC, ASR)</span>
+																		<span className="text-gray-900 dark:text-white">Traction control (TC, ASR)</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Traffic sign recognition</span>
+																		<span className="text-gray-900 dark:text-white">Traffic sign recognition</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Tyre pressure monitoring</span>
+																		<span className="text-gray-900 dark:text-white">Tyre pressure monitoring</span>
 																	</li>
 																</ul>
 															</div>
@@ -956,100 +958,100 @@ export default function CarsDetails1() {
 											<div className="col-md-6 mb-4">
 												<div className="card border-0 h-100">
 													<div className="card-body p-4">
-														<h5 className="card-title text-dark dark:text-white mb-4">Comfort and Convenience</h5>
+														<h5 className="card-title text-gray-900 dark:text-white mb-4">Comfort and Convenience</h5>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
 																	<li className="mb-2">
-																		<span className="text-dark">USB</span>
+																		<span className="text-gray-900 dark:text-white">USB</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Navigation system</span>
+																		<span className="text-gray-900 dark:text-white">Navigation system</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Keyless entry</span>
+																		<span className="text-gray-900 dark:text-white">Keyless entry</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Heated steering wheel</span>
+																		<span className="text-gray-900 dark:text-white">Heated steering wheel</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Heated front seats</span>
+																		<span className="text-gray-900 dark:text-white">Heated front seats</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Apple CarPlay</span>
+																		<span className="text-gray-900 dark:text-white">Apple CarPlay</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Android Auto</span>
+																		<span className="text-gray-900 dark:text-white">Android Auto</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Automatic 2-zones air conditioning</span>
+																		<span className="text-gray-900 dark:text-white">Automatic 2-zones air conditioning</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Alloy wheels</span>
+																		<span className="text-gray-900 dark:text-white">Alloy wheels</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Armrest front</span>
+																		<span className="text-gray-900 dark:text-white">Armrest front</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">JBL audio</span>
+																		<span className="text-gray-900 dark:text-white">JBL audio</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Automatic parking brake</span>
+																		<span className="text-gray-900 dark:text-white">Automatic parking brake</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Bluetooth</span>
+																		<span className="text-gray-900 dark:text-white">Bluetooth</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Central locking</span>
+																		<span className="text-gray-900 dark:text-white">Central locking</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Adaptive cruise control</span>
+																		<span className="text-gray-900 dark:text-white">Adaptive cruise control</span>
 																	</li>
 																</ul>
 															</div>
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
 																	<li className="mb-2">
-																		<span className="text-dark">DAB radio</span>
+																		<span className="text-gray-900 dark:text-white">DAB radio</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Daytime running lights</span>
+																		<span className="text-gray-900 dark:text-white">Daytime running lights</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Front electric windows</span>
+																		<span className="text-gray-900 dark:text-white">Front electric windows</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Front Fog lights</span>
+																		<span className="text-gray-900 dark:text-white">Front Fog lights</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Hands-free</span>
+																		<span className="text-gray-900 dark:text-white">Hands-free</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">LED headlights</span>
+																		<span className="text-gray-900 dark:text-white">LED headlights</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">High beam assist</span>
+																		<span className="text-gray-900 dark:text-white">High beam assist</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Integrated music streaming</span>
+																		<span className="text-gray-900 dark:text-white">Integrated music streaming</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Keyless ignition</span>
+																		<span className="text-gray-900 dark:text-white">Keyless ignition</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Leather steering wheel</span>
+																		<span className="text-gray-900 dark:text-white">Leather steering wheel</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Light sensor</span>
+																		<span className="text-gray-900 dark:text-white">Light sensor</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Multifunctional steering wheel</span>
+																		<span className="text-gray-900 dark:text-white">Multifunctional steering wheel</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">On-board computer</span>
+																		<span className="text-gray-900 dark:text-white">On-board computer</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Radio</span>
+																		<span className="text-gray-900 dark:text-white">Radio</span>
 																	</li>
 																</ul>
 															</div>
@@ -1061,30 +1063,30 @@ export default function CarsDetails1() {
 											<div className="col-md-6 mb-4">
 												<div className="card border-0">
 													<div className="card-body p-4">
-														<h5 className="card-title text-dark dark:text-white mb-4">Accessories and Extra features</h5>
+														<h5 className="card-title text-gray-900 dark:text-white mb-4">Accessories and Extra features</h5>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
 																	<li className="mb-2">
-																		<span className="text-dark">Tyre repair kit</span>
+																		<span className="text-gray-900 dark:text-white">Tyre repair kit</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Divided rear seats</span>
+																		<span className="text-gray-900 dark:text-white">Divided rear seats</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Side mirrors with electric adjustment</span>
+																		<span className="text-gray-900 dark:text-white">Side mirrors with electric adjustment</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Start-stop system</span>
+																		<span className="text-gray-900 dark:text-white">Start-stop system</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Tinted windows</span>
+																		<span className="text-gray-900 dark:text-white">Tinted windows</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Touch screen</span>
+																		<span className="text-gray-900 dark:text-white">Touch screen</span>
 																	</li>
 																	<li className="mb-2">
-																		<span className="text-dark">Voice control</span>
+																		<span className="text-gray-900 dark:text-white">Voice control</span>
 																	</li>
 																</ul>
 															</div>
@@ -1097,11 +1099,11 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="how-it-works" className="mt-5 pt-3 w-full">
-									<h3 className="mb-4">How it works</h3>
+									<h3 className="mb-4 text-gray-900 dark:text-white">How it works</h3>
 									<div className="card border-0 rounded-4 overflow-hidden bg-white dark:bg-gray-800">
 										<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="carousel">
 											<div className="carousel-inner">
-												<div className="carousel-item active bg-light dark:bg-gray-800 p-4">
+												<div className="carousel-item active bg-gray-50 dark:bg-gray-800 p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1111,14 +1113,13 @@ export default function CarsDetails1() {
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
-																<h4 className="text-navy dark:text-white mb-3">Check the car first, decide later</h4>
-																<p className="mb-4">
+																<h4 className="text-gray-900 dark:text-white mb-3">Check the car first, decide later</h4>
+																<p className="mb-4 text-gray-900 dark:text-gray-200">
 																	For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.
 																</p>
-																<p className="text-muted">
+																<p className="text-gray-500 dark:text-gray-400">
 																	Only then do you decide whether you want to buy the car.
 																</p>
-
 																<div className="mt-4 position-relative">
 																	<div className="rounded-circle d-flex align-items-center justify-content-center"
 																		style={{
@@ -1136,7 +1137,7 @@ export default function CarsDetails1() {
 														</div>
 													</div>
 												</div>
-												<div className="carousel-item bg-light dark:bg-gray-800 p-4">
+												<div className="carousel-item bg-gray-50 dark:bg-gray-800 p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1146,18 +1147,18 @@ export default function CarsDetails1() {
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
-																<h4 className="text-navy dark:text-white mb-3">We keep the guarantee!</h4>
-																<p className="mb-4">
+																<h4 className="text-gray-900 dark:text-white mb-3">We keep the guarantee!</h4>
+																<p className="mb-4 text-gray-900 dark:text-gray-200">
 																	We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
 																</p>
-																<p className="text-muted">
+																<p className="text-gray-500 dark:text-gray-400">
 																	If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong>
 																</p>
 															</div>
 														</div>
 													</div>
 												</div>
-												<div className="carousel-item bg-light dark:bg-gray-800 p-4">
+												<div className="carousel-item bg-gray-50 dark:bg-gray-800 p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1167,11 +1168,11 @@ export default function CarsDetails1() {
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
-																<h4 className="text-navy dark:text-white mb-3">Delivery time</h4>
-																<p className="mb-4">
+																<h4 className="text-gray-900 dark:text-white mb-3">Delivery time</h4>
+																<p className="mb-4 text-gray-900 dark:text-gray-200">
 																	We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.
 																</p>
-																<p className="text-muted">
+																<p className="text-gray-500 dark:text-gray-400">
 																	Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.
 																</p>
 															</div>
@@ -1179,8 +1180,7 @@ export default function CarsDetails1() {
 													</div>
 												</div>
 											</div>
-
-											<div className="position-relative border-top py-3">
+											<div className="position-relative border-top py-3 dark:border-gray-700">
 												<div className="container-fluid px-4">
 													<div className="d-flex justify-content-between align-items-center">
 														<div className="d-flex align-items-center">
@@ -1198,7 +1198,7 @@ export default function CarsDetails1() {
 																			borderRadius: '50%',
 																			border: 'none',
 																			padding: 0,
-																			backgroundColor: '#F5F5F5',    // ← light gray
+																			backgroundColor: '#F5F5F5',
 																			opacity: activeStep === step ? 1 : 0.5,
 																			transition: 'all 0.2s ease'
 																		}}
@@ -1206,11 +1206,10 @@ export default function CarsDetails1() {
 																	></button>
 																))}
 															</div>
-															<div className="ms-4 text-muted">
+															<div className="ms-4 text-gray-500 dark:text-gray-400">
 																{activeStep} / 3
 															</div>
 														</div>
-
 														<div className="d-flex">
 															<button
 																className="btn btn-sm me-2 d-flex align-items-center justify-content-center shadow"
@@ -1218,7 +1217,6 @@ export default function CarsDetails1() {
 																	width: '40px',
 																	height: '40px',
 																	backgroundColor: '#f5f5f5',
-
 																	color: 'black',
 																	borderRadius: '20%',
 																	fontSize: '15px',
@@ -1231,7 +1229,6 @@ export default function CarsDetails1() {
 																data-bs-slide="prev"
 															>
 																<p><IoIosArrowBack style={{ fontWeight: 'bold' }} /></p>
-
 															</button>
 															<button
 																className="btn btn-sm d-flex align-items-center justify-content-center shadow"

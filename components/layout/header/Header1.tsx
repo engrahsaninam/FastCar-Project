@@ -72,18 +72,25 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 									</ul>
 								</Dropdown.Menu>
 							</Dropdown>
-							<Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle head-currency">
-								<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-cart">
-									<span className="text-14-medium arrow-down">USD</span>
-								</Dropdown.Toggle>
-								<Dropdown.Menu style={{ visibility: 'visible' }} className="dropdown-cart">
-									<ul>
-										<li><Link className="text-sm-medium" href="#">USD</Link></li>
-										<li><Link className="text-sm-medium" href="#">EUR</Link></li>
-										<li><Link className="text-sm-medium" href="#">SGP</Link></li>
-									</ul>
-								</Dropdown.Menu>
-							</Dropdown>
+							<Link href="/login" className="d-none d-xl-inline-flex align-items-center text-14-medium mr-15 text-white">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									className="me-2"
+								>
+									<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+									<circle cx="12" cy="7" r="4"></circle>
+								</svg>
+								Sign In
+							</Link>
+
 							<div className="top-button-mode">
 								<ThemeSwitch />
 							</div>
@@ -194,12 +201,6 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 							<div className="header-right">
 								<HStack className="d-none d-xxl-inline-block align-middle mr-15" spacing={3}>
 									<div style={{ display: "flex", alignItems: "center" }}>
-										<Link className="btn btn-signin" style={{ display: "flex", alignItems: "center" }} href="/login">
-											<svg className="me-1" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
-												<path d="M3 14C3 14 2 14 2 13C2 12 3 9 8 9C13 9 14 12 14 13C14 14 13 14 13 14H3ZM8 8C8.79565 8 9.55871 7.68393 10.1213 7.12132C10.6839 6.55871 11 5.79565 11 5C11 4.20435 10.6839 3.44129 10.1213 2.87868C9.55871 2.31607 8.79565 2 8 2C7.20435 2 6.44129 2.31607 5.87868 2.87868C5.31607 3.44129 5 4.20435 5 5C5 5.79565 5.31607 6.55871 5.87868 7.12132C6.44129 7.68393 7.20435 8 8 8Z" fill="white" />
-											</svg>
-											Sign in
-										</Link>
 										<Link className="btn btn-signin bg-white text-dark" href="/pricing">Add Listing</Link>
 									</div>
 								</HStack>
