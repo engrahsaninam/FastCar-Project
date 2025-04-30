@@ -88,6 +88,8 @@ export default function Calculator() {
 							<div className="bg-overlay position-absolute bottom-0 end-0 h-75 background-brand-2 opacity-25 z-0 rounded-start-pill" />
 						</div>
 					</section>
+					<FinancingWorkflow />
+
 					<div className="container">
 						<FinancingCard />
 					</div>
@@ -139,7 +141,6 @@ export default function Calculator() {
 							</div>
 						</div>
 					</section>
-					<FinancingWorkflow />
 
 					{/* FAQs 2 */}
 					<section className="section-faqs-2 pt-80 pb-80 border-bottom background-body position-relative">

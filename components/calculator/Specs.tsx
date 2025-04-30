@@ -61,7 +61,7 @@ const Specs: React.FC<FinancingSpecsProps> = ({
     const options: FinancingOption[] = [
         {
             id: 'regular-loan',
-            title: 'Regular loan',
+            title: 'Enter Your Desired Loan Amount',
             percentage: '8.45 %',
             description: 'choose to avoid an increased final payment'
         }

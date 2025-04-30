@@ -1411,7 +1411,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             }}
           />
         </Button>
-  
+
         <Collapse in={isOpen} animateOpacity>
           <Box
             mb={3}  // Increased from 2
@@ -1639,7 +1639,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
       case 'all':
         return (
           <VStack spacing={6} marginTop={5} align="stretch">
-            <Category title="MAKE AND MODEL">
+            <Category title="MAKE AND MODEL" defaultOpen={true}>
               <Box>
                 <Button
                   onClick={() => setIsMakeModelOpen(true)}
@@ -1660,10 +1660,10 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
                   bg={bgColor}
                 >
                   <Flex align="center">
-                    <LucideIcon icon={Plus} boxSize="4" mr="1.5" strokeWidth={2.5} /> 
-                    <Text fontWeight="medium" fontSize="sm">Add a car</Text>  
+                    <LucideIcon icon={Plus} boxSize="4" mr="1.5" strokeWidth={2.5} />
+                    <Text fontWeight="medium" fontSize="sm">Add a car</Text>
                   </Flex>
-                  <LucideIcon icon={ChevronDown} boxSize="4" strokeWidth={2.5} /> 
+                  <LucideIcon icon={ChevronDown} boxSize="4" strokeWidth={2.5} />
                 </Button>
 
                 {/* Show selected make/model filters */}
@@ -1699,59 +1699,60 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="PRICE (€)"
               badge={priceFrom || priceTo ? '1' : null}
+              defaultOpen={true}
             >
               <Box>
                 <Flex justify="flex-end" align="center" mb={3}>
-                <Flex shadow="sm" borderRadius="md" overflow="hidden">
-  <Button
-    onClick={() => setPriceType('instalments')}
-    px={3}
-    py={1}
-    height="28px"
-    fontSize="sm"
-    fontWeight="medium"
-    transition="colors 0.2s"
-    borderRadius="md"
-    borderRightRadius="0"
-    bg={priceType === 'instalments' ? accentColor : toggleBgInactive}
-    color={priceType === 'instalments' ? "white" : toggleTextInactive}
-    _hover={priceType !== 'instalments' ? { bg: hoverBgColor } : {}}
-    _focus={{ boxShadow: "none" }}
-    border="none"
-    sx={{
-      padding: "0 0.75rem !important",
-      height: "28px !important",
-      fontSize: "var(--chakra-fontSizes-sm) !important",
-      borderRadius: "var(--chakra-radii-md) 0 0 var(--chakra-radii-md) !important"
-    }}
-  >
-    Instalments
-  </Button>
-  <Button
-    onClick={() => setPriceType('cash')}
-    px={2}
-    py={1}
-    height="28px"
-    fontSize="sm"
-    fontWeight="medium"
-    transition="colors 0.2s"
-    borderRadius="md"
-    borderLeftRadius="0"
-    bg={priceType === 'cash' ? accentColor : toggleBgInactive}
-    color={priceType === 'cash' ? "white" : toggleTextInactive}
-    _hover={priceType !== 'cash' ? { bg: hoverBgColor } : {}}
-    _focus={{ boxShadow: "none" }}
-    border="none"
-    sx={{
-      padding: "0 0.5rem !important",
-      height: "28px !important",
-      fontSize: "var(--chakra-fontSizes-sm) !important",
-      borderRadius: "0 var(--chakra-radii-md) var(--chakra-radii-md) 0 !important"
-    }}
-  >
-    Cash
-  </Button>
-</Flex>
+                  <Flex shadow="sm" borderRadius="md" overflow="hidden">
+                    <Button
+                      onClick={() => setPriceType('instalments')}
+                      px={3}
+                      py={1}
+                      height="28px"
+                      fontSize="sm"
+                      fontWeight="medium"
+                      transition="colors 0.2s"
+                      borderRadius="md"
+                      borderRightRadius="0"
+                      bg={priceType === 'instalments' ? accentColor : toggleBgInactive}
+                      color={priceType === 'instalments' ? "white" : toggleTextInactive}
+                      _hover={priceType !== 'instalments' ? { bg: hoverBgColor } : {}}
+                      _focus={{ boxShadow: "none" }}
+                      border="none"
+                      sx={{
+                        padding: "0 0.75rem !important",
+                        height: "28px !important",
+                        fontSize: "var(--chakra-fontSizes-sm) !important",
+                        borderRadius: "var(--chakra-radii-md) 0 0 var(--chakra-radii-md) !important"
+                      }}
+                    >
+                      Instalments
+                    </Button>
+                    <Button
+                      onClick={() => setPriceType('cash')}
+                      px={2}
+                      py={1}
+                      height="28px"
+                      fontSize="sm"
+                      fontWeight="medium"
+                      transition="colors 0.2s"
+                      borderRadius="md"
+                      borderLeftRadius="0"
+                      bg={priceType === 'cash' ? accentColor : toggleBgInactive}
+                      color={priceType === 'cash' ? "white" : toggleTextInactive}
+                      _hover={priceType !== 'cash' ? { bg: hoverBgColor } : {}}
+                      _focus={{ boxShadow: "none" }}
+                      border="none"
+                      sx={{
+                        padding: "0 0.5rem !important",
+                        height: "28px !important",
+                        fontSize: "var(--chakra-fontSizes-sm) !important",
+                        borderRadius: "0 var(--chakra-radii-md) var(--chakra-radii-md) 0 !important"
+                      }}
+                    >
+                      Cash
+                    </Button>
+                  </Flex>
                 </Flex>
 
                 <Flex gap={2}>
@@ -1782,6 +1783,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="REGISTRATION"
               badge={registrationFrom || registrationTo ? '1' : null}
+              defaultOpen={true}
             >
               <Flex gap={2}>
                 <CustomSelect
@@ -1803,6 +1805,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="MILEAGE"
               badge={mileageFrom || mileageTo ? '1' : null}
+              defaultOpen={true}
             >
               <Flex gap={2}>
                 <CustomSelect
@@ -1824,6 +1827,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="TRANSMISSION"
               badge={transmission ? '1' : null}
+              defaultOpen={true}
             >
               <ToggleButton
                 options={['Automatic', 'Manual']}
@@ -1835,6 +1839,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="FUEL"
               badge={selectedFuels.length > 0 ? selectedFuels.length : null}
+              defaultOpen={true}
             >
               <MultiSelect
                 selected={selectedFuels}
@@ -1851,6 +1856,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="ELECTRIC & HYBRID"
               badge={(isElectricVehicle || hybridType) ? '1' : null}
+              defaultOpen={true}
             >
               <Box bg={hybridBoxBg} p={4} borderRadius="lg">
                 <VStack spacing={4} align="stretch">
@@ -1906,6 +1912,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="POWER"
               badge={powerFrom || powerTo ? '1' : null}
+              defaultOpen={true}
             >
               <Flex justify="flex-end" mb={3}>
                 <PowerUnitToggle
@@ -1932,6 +1939,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="VEHICLE TYPE"
               badge={selectedVehicleTypes.length ? selectedVehicleTypes.length : null}
+              defaultOpen={true}
             >
               <MultiSelect
                 selected={selectedVehicleTypes.map(type => ({
@@ -1959,6 +1967,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="EXTERIOR COLOR"
               badge={selectedColors.length ? selectedColors.length : null}
+              defaultOpen={true}
             >
               <MultiColorSelector
                 selectedColors={selectedColors}
@@ -1969,6 +1978,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             <Category
               title="FEATURES"
               badge={selectedFeatures.length ? selectedFeatures.length : null}
+              defaultOpen={true}
             >
               <FeaturesSection />
               <Button
@@ -2032,10 +2042,11 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   };
 
   const FilterContent = () => (
-    <Box 
+    <Box
       p={4}
-      bg={bgColor} 
-      h="full" 
+      bg={bgColor}
+      h="full"
+      borderRadius="xl"
       overflowY="auto"
       sx={{
         padding: "1rem !important",
@@ -2045,9 +2056,9 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08) !important"
       }}
     >
-      <Flex 
-        justify="space-between" 
-        align="center" 
+      <Flex
+        justify="space-between"
+        align="center"
         mb={4}
         sx={{
           display: "flex !important",
@@ -2056,10 +2067,10 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
           marginBottom: "1rem !important"
         }}
       >
-        <Heading 
-          as="h1" 
-          fontSize="xl" 
-          fontWeight="bold" 
+        <Heading
+          as="h1"
+          fontSize="xl"
+          fontWeight="bold"
           color={headingColor}
           sx={{
             fontSize: "var(--chakra-fontSizes-xl) !important",
@@ -2070,7 +2081,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
         >
           Filter
         </Heading>
-        <HStack 
+        <HStack
           spacing={2}
           sx={{
             display: "flex !important",
@@ -2113,10 +2124,10 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
           />
         </HStack>
       </Flex>
-  
-      <Flex 
-        borderBottomWidth="1px" 
-        borderColor={borderColor} 
+
+      <Flex
+        borderBottomWidth="1px"
+        borderColor={borderColor}
         mb={4}
         pb={1}
         position="relative"
@@ -2184,8 +2195,8 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
                   background: `${isActive ? accentBgLight : "transparent"} !important`
                 }}
               >
-                <LucideIcon 
-                  icon={Icon} 
+                <LucideIcon
+                  icon={Icon}
                   boxSize="5"
                   strokeWidth={2}
                   sx={{
@@ -2195,7 +2206,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
                   }}
                 />
               </Box>
-              <Text 
+              <Text
                 fontSize="sm"
                 fontWeight="medium"
                 sx={{
@@ -2229,8 +2240,8 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
           );
         })}
       </Flex>
-  
-      <Box 
+
+      <Box
         mb={3}
         sx={{
           marginBottom: "0.75rem !important"
@@ -2240,7 +2251,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
       </Box>
     </Box>
   );
-  
+
 
   return (
     <>

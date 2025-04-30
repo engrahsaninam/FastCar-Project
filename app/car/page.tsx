@@ -458,7 +458,7 @@ export default function CarsDetails1() {
 									</svg>
 								</span>
 							</li> */}
-							<li><span className="text-breadcrumb">Hyundai Accent 2025</span></li>
+							<li><span className="text-breadcrumb " style={{ fontSize: "2rem" }}>Hyundai Accent 2025</span></li>
 						</ul>
 					</div>
 				</section>

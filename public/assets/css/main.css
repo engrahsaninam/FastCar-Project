@@ -2005,7 +2005,7 @@ body {
 .btn.btn-mode {
 	padding: 11px 18px;
 	border-radius: 12px;
-	background-color: var(--bs-neutral-100);
+	/* background-color: var(--bs-neutral-100); */
 	color: var(--bs-neutral-1000);
 	font-size: 14px;
 	line-height: 22px;
@@ -3182,7 +3182,9 @@ label {
 .card-journey-small.card-grid-real .card-info .card-location {
 	margin-bottom: 27px;
 }
-
+.card-location{
+	color:red
+}
 .card-journey-small.card-grid-car {
 	border: 1px solid var(--bs-border-color);
 	background-color: var(--bs-neutral-0) !important;
@@ -3564,7 +3566,9 @@ label {
 	color: var(--bs-neutral-600);
 	margin-bottom: 8px;
 }
-
+.card-price{
+	color:red
+}
 .card-flight .card-info .card-price .card-price-1::before {
 	content: "";
 	height: 42px;
@@ -5661,6 +5665,7 @@ label {
 	min-width: 405px;
 	text-align: right;
 	display: flex;
+	gap: 10px;
 	align-items: center;
 	position: relative;
 	justify-content: flex-end;

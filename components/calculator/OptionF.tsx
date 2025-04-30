@@ -43,7 +43,7 @@ const OptionF: React.FC<OptionFProps> = ({
                 p={4}
             >
                 <Flex align="center" justify="space-between" gap={4}>
-                    <Text fontWeight="semibold" fontSize="lg">
+                    <Text fontWeight="semibold" fontSize="md">
                         {option.title}
                     </Text>
                     <Flex align="center" gap={2}>

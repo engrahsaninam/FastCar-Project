@@ -62,7 +62,7 @@ const CarCard = ({ car }) => {
 
   const cardBg = useColorModeValue("white", "#1a1a1a");
   const cardBorderColor = useColorModeValue("gray.100", "#333333");
-  const headingColor = useColorModeValue("red.500", "red.400");
+  const headingColor = useColorModeValue("black", "red.400");
   const priceColor = useColorModeValue("black", "white");
   const textColor = useColorModeValue("gray.700", "gray.300");
   const buttonLinkColor = useColorModeValue("red.600", "red.300");
@@ -93,9 +93,15 @@ const CarCard = ({ car }) => {
           overflow="hidden"
           borderWidth="1px"
           borderColor={cardBorderColor}
-          transition="all 0.2s"
-          _hover={{ boxShadow: "sm" }}
+          transition="all 0.3s ease"
+          _hover={{
+            boxShadow: "xl",
+            transform: "scale(1.02)",
+            borderColor: "red.200"
+          }}
           w="full"
+          position="relative"
+          zIndex="1"
         >
           {/* Image Section */}
           <Box position="relative" w={["full", "full", "260px"]} h={["200px", "160px", "full"]}>
@@ -181,7 +187,7 @@ const CarCard = ({ car }) => {
             p={["4", "4", "3"]}
             flexDir="column"
             justifyContent="space-between"
-            mt={["3", "3", "0"]}
+          // mt={["3", "3", "0"]}
           >
             <Box>
               <Flex
@@ -189,16 +195,18 @@ const CarCard = ({ car }) => {
                 justify="space-between"
                 align="center"
                 mb={["3", "3", "2"]}
-                mt={["2", "2", "0"]}
+              // mt={["2", "2", "0"]}
               >
                 <Heading
                   as="h3"
+                  ml='1'
                   fontSize={["lg", "lg", "xl"]}
                   fontWeight="bold"
                   color={headingColor}
                   letterSpacing="wide"
                   fontFamily="inter"
-                  mb={["1", "1", "0"]}
+                  _hover={{ color: "red.500" }}
+                // mb={["1", "1", "0"]}
                 >
                   {car.name}
                 </Heading>
@@ -214,7 +222,7 @@ const CarCard = ({ car }) => {
               </Flex>
 
               {/* Specs Row - inline with minimal spacing */}
-              <Box mb={["4", "4", "3"]}>
+              <Box mb={["2", "2", "1"]} ml="1">
                 <Flex direction="row" gap={6} mb={1}>
                   <HStack spacing="1">
                     <LucideIcon icon={Power} boxSize="4" color={textColor} />
@@ -242,12 +250,12 @@ const CarCard = ({ car }) => {
               </Box>
 
               {/* Features - keeping size with less vertical space */}
-              <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]}>
+              <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
                 {car.features.slice(0, 4).map((feature, index) => (
                   <Badge
                     key={index}
                     px="2"
-                    py="0.5"
+                    // py="0.5"
                     bg={badgeBg}
                     color={badgeColor}
                     borderRadius="md"
@@ -267,7 +275,7 @@ const CarCard = ({ car }) => {
                     height="auto"
                     padding="0"
                     lineHeight="1.5"
-                    mt="0.5"
+                    // mt="0.5"
                     _hover={{ textDecoration: "underline" }}
                     onClick={(e) => e.preventDefault()}
                     style={{ textTransform: "none" }}
@@ -280,23 +288,35 @@ const CarCard = ({ car }) => {
 
             {/* Location and Price - maintain size with reduced space */}
             <Box
-              pt={["3", "3", "1.5"]}
+              // pt={["3", "3", "1.5"]}
               px={["0", "0", "2"]}
               borderTopWidth="1px"
               borderColor={cardBorderColor}
-              mt={["2", "2", "1"]}
+            // mt={["2", "2", "1"]}
             >
               {/* Top row: Very Good Price (left) and Main Price (right) */}
-              <Flex direction="row" justify="space-between" align="center" w="100%">
-                <HStack spacing="1">
-                  {[...Array(5)].map((_, i) => (
-                    <Box key={i} w="6px" h="6px" borderRadius="full" bg="#64E364" />
-                  ))}
-                  <Text fontSize="sm" color="gray.700" fontWeight="semibold" mb="0">
-                    Very Good Price
-                  </Text>
-                </HStack>
-                <Box borderRadius="md" textAlign="right">
+
+              <Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+                <VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+                  <HStack spacing="1" >
+                    {[...Array(5)].map((_, i) => (
+                      <Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+                    ))}
+                    <Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+                      Very Good Price
+                    </Text>
+                  </HStack>
+                  <HStack> <Flex align="center" gap="1">
+                    <Text fontSize="md" color="black" fontWeight="bold" lineHeight="1">
+                      € 5043
+                    </Text>
+                    <Text fontSize="xs" color="gray.700" display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+                      Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+                    </Text>
+                  </Flex>
+                  </HStack>
+                </VStack>
+                <Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
                   <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
                     € {car.price.toLocaleString()}
                   </Text>
@@ -306,14 +326,7 @@ const CarCard = ({ car }) => {
                 </Box>
               </Flex>
               {/* Bottom row: Cheaper than in Spain! */}
-              <Flex mt="2" align="center" gap="2">
-                <Text fontSize="xl" color="black" fontWeight="bold" lineHeight="1">
-                  € 5043
-                </Text>
-                <Text fontSize="sm" color="gray.700" display="flex" alignItems="center" gap="1">
-                  Cheaper than in <LucideIcon icon={MapPin} boxSize="4" color={textColor} /> Spain!
-                </Text>
-              </Flex>
+
             </Box>
 
           </Flex>
@@ -710,7 +723,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
 
   // Color mode values
   const bg = useColorModeValue("transparent", "#0e0e0e");
-  const mobileBg = useColorModeValue("white", "#121212");
+  const mobileBg = useColorModeValue("transparent", "#121212");
   const chipBg = useColorModeValue("red.100", "rgba(255, 69, 58, 0.2)");
   const chipColor = useColorModeValue("red.500", "red.300");
   const buttonBg = useColorModeValue("red.400", "red.500");

@@ -60,18 +60,18 @@ const steps = [
 const guarantees = [
     {
         icon: "/cashback.png",
-        title: "Money back guarantee",
-        description: "If you don't fall in love with the vehicle, simply return it to us."
+        title: "Comprehensive Warranty",
+        description: "Every vehicle comes with our premium warranty package covering major mechanical components for complete peace of mind."
     },
     {
         icon: "/payment-method.png",
-        title: "Safe purchase",
-        description: "We guarantee the technical condition of every vehicle sold."
+        title: "Quality Verified",
+        description: "Each car undergoes rigorous 150-point inspection by certified technicians to ensure top-tier quality and reliability."
     },
     {
         icon: "/guarantee.png",
-        title: "12-month warranty",
-        description: "In addition, with every car you receive an extended warranty."
+        title: "Secure Transaction",
+        description: "Your purchase is protected with our secure payment system and transparent documentation process."
     }
 ];
 
@@ -156,42 +156,80 @@ export default function HowItWorks() {
                     <Container maxW="container.xl">
                         <SimpleGrid
                             columns={{ base: 1, md: 3 }}
-                            spacing={6}
+                            spacing={8}
                             bg="white"
-                            p={8}
-                            rounded="xl"
-                            shadow="xl"
+                            p={10}
+                            rounded="3xl"
+                            shadow="2xl"
                         >
                             {guarantees.map((item, index) => (
-                                <Flex
+                                <Box
                                     key={index}
-                                    align="start"
-                                    gap={4}
-                                    p={4}
+                                    position="relative"
+                                    overflow="hidden"
+                                    bg="white"
+                                    p={8}
+                                    rounded="2xl"
+                                    border="1px solid"
+                                    borderColor="gray.100"
+                                    transition="all 0.4s ease"
+                                    _hover={{
+                                        transform: 'translateY(-8px)',
+                                        shadow: '2xl',
+                                        borderColor: 'red.300',
+                                        bg: 'gray.50'
+                                    }}
                                 >
-                                    <Image
-                                        src={item.icon}
-                                        alt={item.title}
-                                        w="24px"
-                                        h="24px"
+                                    <Box
+                                        position="absolute"
+                                        top="0"
+                                        right="0"
+                                        w="100px"
+                                        h="100px"
+                                        bg="red.50"
+                                        opacity="0.1"
+                                        transform="rotate(45deg) translate(30%, -30%)"
+                                        rounded="full"
                                     />
-                                    <Box>
-                                        <Text
-                                            fontSize="lg"
-                                            fontWeight="bold"
-                                            color="red"
-                                            mb={2}
+                                    <Flex
+                                        direction="column"
+                                        align="start"
+                                        gap={6}
+                                    >
+                                        <Box
+                                            bg="red.50"
+                                            p={4}
+                                            rounded="xl"
+                                            transform="rotate(-5deg)"
                                         >
-                                            {item.title}
-                                        </Text>
-                                        <Text
-                                            color="gray.600"
-                                            fontSize="md"
-                                        >
-                                            {item.description}
-                                        </Text>
-                                    </Box>
-                                </Flex>
+                                            <Image
+                                                src={item.icon}
+                                                alt={item.title}
+                                                w="32px"
+                                                h="32px"
+                                                objectFit="contain"
+                                            />
+                                        </Box>
+                                        <Box>
+                                            <Heading
+                                                size="md"
+                                                color="red.500"
+                                                fontWeight="bold"
+                                                mb={3}
+                                                fontSize="xl"
+                                            >
+                                                {item.title}
+                                            </Heading>
+                                            <Text
+                                                color="gray.600"
+                                                fontSize="md"
+                                                lineHeight="1.7"
+                                            >
+                                                {item.description}
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+                                </Box>
                             ))}
                         </SimpleGrid>
                     </Container>

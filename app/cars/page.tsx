@@ -80,7 +80,7 @@ export default function CarsList1() {
 
   // Responsive values
   const sidebarWidth = "320px";
-  const maxContentWidth = "1700px"; // Maximum width
+  const maxContentWidth = "1400px"; // Maximum width
 
   return (
     <Layout footerStyle={1}>

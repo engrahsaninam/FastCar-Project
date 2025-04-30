@@ -2,11 +2,241 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link"
 import { swiperGroup3 } from '@/util/swiperOptions'
+import {
+	Heart,
+	MapPin,
+	ParkingMeterIcon,
+	Calendar,
+	Gauge,
+	Power,
+	Fuel,
+	X,
+	SlidersHorizontal,
+	ChevronLeft,
+	ChevronRight,
+	Bell,
+	LucideIcon as LucideIconType
+} from 'lucide-react';
+import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+
+// Car interface
+interface Car {
+	id: number;
+	image: string;
+	rating: string;
+	reviews: string;
+	title: string;
+	location: string;
+	power: string;
+	date: string;
+	mileage: string;
+	fuelType: string;
+	link: string;
+	transmission: string;
+	price: string;
+}
+
+interface LucideIconProps {
+	icon: LucideIconType;
+	[key: string]: any;
+}
+
+// CarCard Component
+const CarCard = ({ car }: { car: Car }) => {
+	const textColor = useColorModeValue("gray.700", "gray.300");
+	const cardBorderColor = useColorModeValue("gray.100", "#333333");
+	const priceColor = useColorModeValue("black", "white");
+
+	const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
+		return <Box as={Icon} {...props} />;
+	};
+	return (
+		<div className="card-journey-small background-card hover-up">
+			<div className="card-image">
+				<Link href={car.link}>
+					<img src={car.image} alt="Fast4Car" />
+				</Link>
+			</div>
+			<div className="card-info">
+				{/* <div className="card-rating">
+					<div className="card-left" />
+					<div className="card-right">
+						<span className="rating">
+							{car.rating} <span className="text-sm-medium neutral-500">({car.reviews} reviews)</span>
+						</span>
+					</div>
+				</div> */}
+				<div className="card-title ">
+					<Link className="heading-6 neutral-1000" href={car.link}>
+						{car.title}
+					</Link>
+				</div>
+				<div className="card-program">
+					<div className="card-location">
+						<p className="text-location  text-md-medium ">{car.location}</p>
+					</div>
+					{/* Specs Row - inline with minimal spacing */}
+					<Box mb={["2", "2", "1"]} ml="1">
+						<SimpleGrid columns={2} spacingX={6} spacingY={2} mb="2">
+							<HStack spacing="1">
+								<LucideIcon icon={Power} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.power}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.date}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+							</HStack>
+						</SimpleGrid>
+					</Box>
+
+					<Box
+						// pt={["3", "3", "1.5"]}
+						px={["0", "0", "2"]}
+						borderTopWidth="1px"
+						borderColor={cardBorderColor}
+					// mt={["2", "2", "1"]}
+					>
+						{/* Top row: Very Good Price (left) and Main Price (right) */}
+
+						<Flex direction="row" justify="space-between" alignItems="center" align="center" w="100%">
+							<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+								<HStack spacing="1" >
+									{[...Array(5)].map((_, i) => (
+										<Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+									))}
+									<Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+										Very Good Price
+									</Text>
+								</HStack>
+								
+							</VStack>
+							<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+								<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+									€ {car.price.toLocaleString()}
+								</Text>
+								<Text fontSize="xs" color="gray.500">
+									€ {car.price.toLocaleString()} without VAT
+								</Text>
+							</Box>
+						</Flex>
+						{/* Bottom row: Cheaper than in Spain! */}
+
+					</Box>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+// Car data array
+const carsData = [
+	{
+		id: 1,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-1.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Audi A3 1.6 TDI S line",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	},
+	{
+		id: 2,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-2.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Volvo S60 D4 R-Design",
+		location: "New South Wales, Australia",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	},
+	{
+		id: 3,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-3.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Mercedes-Benz C220d",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	},
+	{
+		id: 4,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-4.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Jaguar XE 2.0d R-Sport",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	},
+	{
+		id: 5,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-5.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Volkswagen Golf GTD 2.0 TDI",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	},
+	{
+		id: 6,
+		image: "/assets/imgs/cars-listing/cars-listing-1/car-6.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Lexus IS 300h F Sport",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "18,496 km",
+		transmission: "Automatic",
+		fuelType: "Petrol",
+		price: "498.25",
+		link: "/car"
+	}
+];
 
 export default function CarsListing1() {
 	return (
 		<>
-
 			<section className="section-box box-flights background-body">
 				<div className="container">
 					<div className="row align-items-end">
@@ -33,228 +263,14 @@ export default function CarsListing1() {
 						<div className="box-swiper mt-30">
 							<Swiper {...swiperGroup3} className="swiper-container swiper-group-3 swiper-group-journey">
 								<div className="swiper-wrapper">
-									<SwiperSlide>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-1.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000" href="/car">Audi A3 1.6 TDI S line</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">Manchester,
-															England</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-2.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000" href="/car">Volvo S60 D4 R-Design</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">New South Wales,
-															Australia</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</SwiperSlide>
-									<SwiperSlide>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-3.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000" href="/car">Mercedes-Benz C220d</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">Manchester,
-															England</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-4.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000" href="/car">Jaguar XE 2.0d R-Sport</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">Manchester,
-															England</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</SwiperSlide>
-									<SwiperSlide>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-5.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000 text-nowrap" href="/car">Volkswagen Golf GTD 2.0 TDI</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">Manchester,
-															England</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div className="card-journey-small background-card hover-up">
-											<div className="card-image">
-												<Link href="/car">
-													<img src="/assets/imgs/cars-listing/cars-listing-1/car-6.png" alt="Fast4Car" />
-												</Link>
-											</div>
-											<div className="card-info">
-												<div className="card-rating">
-													<div className="card-left" />
-													<div className="card-right">
-														<span className="rating">4.96 <span className="text-sm-medium neutral-500">(672
-															reviews)</span></span>
-													</div>
-												</div>
-												<div className="card-title"><Link className="heading-6 neutral-1000" href="/car">Lexus IS 300h F Sport</Link></div>
-												<div className="card-program">
-													<div className="card-location">
-														<p className="text-location text-md-medium neutral-500">Manchester,
-															England</p>
-													</div>
-													<div className="card-facitlities">
-														<p className="card-miles text-md-medium">25,100 miles</p>
-														<p className="card-gear text-md-medium">Automatic</p>
-														<p className="card-fuel text-md-medium">Diesel</p>
-														<p className="card-seat text-md-medium">7 seats</p>
-													</div>
-													<div className="endtime">
-														<div className="card-price">
-															<p className="text-md-medium neutral-500 me-2">From</p>
-															<h6 className="heading-6 neutral-1000">$498.25</h6>
-														</div>
-														<div className="card-button"><Link className="btn btn-gray" href="/car">Book Now</Link></div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</SwiperSlide>
+									{/* Group cars into pairs for SwiperSlides */}
+									{Array.from({ length: Math.ceil(carsData.length / 2) }, (_, index) => (
+										<SwiperSlide key={index}>
+											{carsData.slice(index * 2, index * 2 + 2).map((car) => (
+												<CarCard key={car.id} car={car} />
+											))}
+										</SwiperSlide>
+									))}
 								</div>
 							</Swiper>
 						</div>

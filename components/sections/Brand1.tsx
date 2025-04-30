@@ -8,7 +8,7 @@ export default function Brand1() {
 			<div className="background-100 pb-70 pt-70">
 				<div className="container">
 					<div className="box-search-category">
-						<h3 className="heading-3 neutral-1000 text-center wow fadeInUp">Offical Partners</h3>
+						<h4 className="heading-3 neutral-1000 text-center wow fadeInUp">Offical Partner</h4>
 						<div className="d-flex flex-column align-items-center justify-content-center">
 							<p className="text-lg-medium neutral-500 text-center wow fadeInUp mb-0">Exclusive partner of AutoScout24</p>
 						</div>

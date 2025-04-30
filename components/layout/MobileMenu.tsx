@@ -99,7 +99,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
 											</ul>
 										</li> */}
 										<li><Link href="/cars">Buy</Link></li>
-										<li><Link href="/deals">Trending Cars 🔥</Link></li>
+										<li><Link href="/deals">Daily Deals 🔥</Link></li>
 										<li><Link href="/how-it-works">How it Works</Link></li>
 										<li><Link href="/reviews">Reviews</Link></li>
 										<li><Link href="/calculator">Loan Calculator</Link></li>									</ul>

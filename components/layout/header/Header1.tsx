@@ -10,7 +10,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 	return (
 		<>
 			<header className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}>
-				<div className="top-bar top-bar-2 top-bar-3 bg-transparent">
+				{/* <div className="top-bar top-bar-2 top-bar-3 bg-transparent">
 					<div className="container-fluid">
 						<Flex className="text-header-info" align="center" gap={4}>
 							<ChakraLink
@@ -96,7 +96,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> */}
 				<div className="container-fluid">
 					<div className="main-header">
 						<div className="header-left">
@@ -191,7 +191,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 											</div>
 										</li> */}
 										<li><Link className="color-white" href="/cars">Buy</Link></li>
-										<li><Link className="color-white" href="/deals">Trending Cars 🔥</Link></li>
+										<li><Link className="color-white" href="/deals">Daily Deals 🔥</Link></li>
 										<li><Link className="color-white" href="/how-it-works">How it Works</Link></li>
 										<li><Link className="color-white" href="/reviews">Reviews</Link></li>
 										<li><Link className="color-white" href="/calculator">Loan Calculator</Link></li>
@@ -199,15 +199,43 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 								</nav>
 							</div>
 							<div className="header-right">
-								<HStack className="d-none d-xxl-inline-block align-middle mr-15" spacing={3}>
-									<div style={{ display: "flex", alignItems: "center" }}>
-										<Link className="btn btn-signin bg-white text-dark" href="/pricing">Add Listing</Link>
+								<div className="header-right mr-40">
+									<Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle  head-lang">
+										<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-account icon-lang">
+											<span className="text-14-medium arrow-down">EN</span>
+										</Dropdown.Toggle>
+										<Dropdown.Menu className="dropdown-account" style={{ visibility: 'visible' }}>
+											<ul>
+												<li><Link className="text-sm-medium" href="#">English</Link></li>
+												<li><Link className="text-sm-medium" href="#">French</Link></li>
+												<li><Link className="text-sm-medium" href="#">Chinese</Link></li>
+											</ul>
+										</Dropdown.Menu>
+									</Dropdown>
+									<Link href="/login" className="d-none d-xl-inline-flex align-items-center text-14-medium mr-15 text-white">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="24"
+											height="24"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="me-2"
+										>
+											<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+											<circle cx="12" cy="7" r="4"></circle>
+										</svg>
+										Sign In
+									</Link>
+
+									<div className="top-button-mode">
+										<ThemeSwitch />
 									</div>
-								</HStack>
-								<div className="burger-icon-2 burger-icon-white" onClick={handleOffcanvas}>
-									<img src="/assets/imgs/template/icons/menu.svg" alt="Fast4Car" />
 								</div>
-								<div className="burger-icon burger-icon-white" onClick={handleMobileMenu}>
+								<div className="burger-icon burger-icon-white " onClick={handleMobileMenu} >
 									<span className="burger-icon-top" />
 									<span className="burger-icon-mid"> </span>
 									<span className="burger-icon-bottom"> </span>
