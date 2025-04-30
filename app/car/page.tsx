@@ -381,7 +381,7 @@ export default function CarsDetails1() {
 						<Box px={4} pt={2} pb={2} borderTop="1px" borderColor={sectionBorder}>
 							<Text fontWeight="semibold" color={textColor} mb={2}>Included in price</Text>
 							<Flex justify="space-between" align="center" mb={1}>
-								<Text>CarAudit™ inspection</Text>
+								<Text>Car inspection</Text>
 								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
 							</Flex>
 							<Flex justify="space-between" align="center" mb={1}>
@@ -1619,7 +1619,7 @@ export default function CarsDetails1() {
 											<p className="text-md-medium text-muted m-0">€20,491</p>
 										</div>
 
-										<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#C53030", color: "white" }}>
+										<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#E53E3E", color: "white" }} >
 											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
 												<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
 												<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
@@ -1648,7 +1648,7 @@ export default function CarsDetails1() {
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0">CarAudit™</p>
+											<p className="text-md-medium m-0">Car Inspection</p>
 											<p className="text-md-medium m-0">€119</p>
 										</div>
 

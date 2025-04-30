@@ -450,7 +450,7 @@ const StepOneContent: React.FC = () => {
                 </Box>
 
                 <StepItem
-                    title="CarAudit™ vehicle inspection"
+                    title="Car vehicle inspection"
                     isLocked={stepStatuses.inspection === 'locked'}
                     isFirst={true}
                     showChevron={true}

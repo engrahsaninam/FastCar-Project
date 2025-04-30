@@ -9,7 +9,7 @@ export const carData: CarData = {
     deliveryInfo:
         'The usual delivery time is 20 working days. We will let you know the exact date during the order process.',
     support: {
-        phone: '+420 246 034 700',
+        phone: '+34 618007325',
         hours: 'Mo-Su 8 am-8 pm',
     },
 };

@@ -15,7 +15,7 @@ export const slides = [
         icon: CreditCard,
         tag: "Step 1",
         subTitle: "Secure Payment",
-        price: "CZK 567,265",
+        price: "EUR 567,265",
         priceLabel: "TOTAL PRICE INCLUDING ALL SERVICES",
         content: "Select your preferred payment method for a smooth and secure transaction.",
         image: "/2.png",
@@ -26,7 +26,7 @@ export const slides = [
         icon: Car,
         tag: "Step 2",
         subTitle: "Thorough Check",
-        content: "Get a full technical report on the car's condition for CZK 1,990. Our comprehensive inspection ensures transparency and helps you make an informed decision.",
+        content: "Get a full technical report on the car's condition for EUR 1,990. Our comprehensive inspection ensures transparency and helps you make an informed decision.",
         image: "/3.png",
     },
     {

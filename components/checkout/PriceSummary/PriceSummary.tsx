@@ -34,11 +34,11 @@ interface ServiceItem {
 
 const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = false }) => {
     const services: ServiceItem[] = [
-        { label: 'Home delivery', price: 'CZK 15,005', hasDropdown: true },
+        { label: 'Home delivery', price: 'EUR 15,005', hasDropdown: true },
         { label: '12 liters of fuel', price: 'FREE', isFree: true },
-        { label: 'Import MOT', price: 'CZK 4,490' },
-        { label: 'Administration Fee', price: 'CZK 800' },
-        { label: 'Car registration', price: 'CZK 1,990' },
+        { label: 'Import MOT', price: 'EUR 4,490' },
+        { label: 'Administration Fee', price: 'EUR 800' },
+        { label: 'Car registration', price: 'EUR 1,990' },
         { label: 'Extended warranty', price: 'FREE', isFree: true }
     ];
 
@@ -109,10 +109,10 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                         TOTAL PRICE INCL. SERVICES
                     </Text>
                     <Text fontSize="3xl" fontWeight="bold" mt={2} color="white" letterSpacing="tight">
-                        CZK 647,765
+                        EUR 647,765
                     </Text>
                     <Text fontSize="xs" color="red.100" opacity={0.8} mt={1.5}>
-                        CZK 542,965 without VAT
+                        EUR 542,965 without VAT
                     </Text>
                 </Box>
             </Box>
@@ -125,14 +125,14 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                 <VStack spacing={1} align="stretch">
                     <Flex justify="space-between" align="center">
                         <Text fontSize="sm" color={mutedTextColor}>Price incl. necessary import services</Text>
-                        <Text fontSize="sm" fontWeight="semibold" color={textColor}>CZK 634,490</Text>
+                        <Text fontSize="sm" fontWeight="semibold" color={textColor}>EUR 634,490</Text>
                     </Flex>
                     <Flex justify="space-between" align="center">
                         <Text fontSize="sm" color={lightMutedTextColor}>Price without VAT</Text>
-                        <Text fontSize="sm" color={lightMutedTextColor}>CZK 447,915</Text>
+                        <Text fontSize="sm" color={lightMutedTextColor}>EUR 447,915</Text>
                     </Flex>
                     <Flex align="center" gap={1} mt={2} bg={gray50BgColor} rounded="lg">
-                        <Text fontSize="xs" color={mutedTextColor}>The price is recalculated from 25.65 €/CZK</Text>
+                        <Text fontSize="xs" color={mutedTextColor}>The price is recalculated from 25.65 €</Text>
                         <Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
                     </Flex>
                 </VStack>
@@ -149,7 +149,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                     transition="all 0.3s"
                 >
                     <Text fontSize="sm" fontWeight="medium" color={darkGrayTextColor}>CarAudit™</Text>
-                    <Text fontSize="sm" fontWeight="semibold" color={textColor}>CZK 1,990</Text>
+                    <Text fontSize="sm" fontWeight="semibold" color={textColor}>EUR 1,990</Text>
                 </Flex>
             </Box>
 
@@ -231,7 +231,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                         Total price
                     </Text>
                     <Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
-                        CZK 667,765
+                        EUR 667,765
                     </Text>
                 </Flex>
             </Box>
@@ -250,7 +250,7 @@ const PriceSummaryContent: React.FC<PriceSummaryContentProps> = ({ isMobile = fa
                         You are financing car for example for
                     </Text>
                     <Text fontSize="md" fontWeight="bold" color={redTextColor}>
-                        CZK 5,557/mo
+                        EUR 5,557/mo
                     </Text>
                 </Flex>
                 <Flex align="center" gap={0.5}>

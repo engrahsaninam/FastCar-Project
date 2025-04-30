@@ -16,11 +16,11 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
     const containerStyles = isMobile ? { bg: 'white' } : { bg: 'white', rounded: '2xl', boxShadow: 'xl' };
 
     const additionalServices = [
-        { label: 'Home delivery', price: 'CZK 15,005', hasDropdown: true },
+        { label: 'Home delivery', price: 'EUR 15,005', hasDropdown: true },
         { label: '12 liters of fuel', price: 'FREE', isFree: true },
-        { label: 'Import MOT', price: 'CZK 4,490' },
-        { label: 'Administration Fee', price: 'CZK 800' },
-        { label: 'Car registration', price: 'CZK 1,990' },
+        { label: 'Import MOT', price: 'EUR 4,490' },
+        { label: 'Administration Fee', price: 'EUR 800' },
+        { label: 'Car registration', price: 'EUR 1,990' },
         { label: 'Extended warranty', price: 'FREE', isFree: true },
     ];
 
@@ -43,10 +43,10 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
                         TOTAL PRICE INCL. SERVICES
                     </Text>
                     <Heading mt={2} size="xl" color="white">
-                        CZK 647,765
+                        EUR 647,765
                     </Heading>
                     <Text mt={1.5} fontSize="xs" color="red.100">
-                        CZK 542,965 without VAT
+                        EUR 542,965 without VAT
                     </Text>
                 </Box>
             </Box>
@@ -59,14 +59,14 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
                 <VStack spacing={2.5} align="stretch">
                     <Flex justify="space-between">
                         <Text fontSize="sm" color="gray.600">Price incl. necessary import services</Text>
-                        <Text fontSize="sm" fontWeight="semibold">CZK 634,490</Text>
+                        <Text fontSize="sm" fontWeight="semibold">EUR 634,490</Text>
                     </Flex>
                     <Flex justify="space-between">
                         <Text fontSize="sm" color="gray.500">Price without VAT</Text>
-                        <Text fontSize="sm" color="gray.500">CZK 447,915</Text>
+                        <Text fontSize="sm" color="gray.500">EUR 447,915</Text>
                     </Flex>
                     <Flex align="center" gap={1.5} p={2.5} bg="gray.50" borderRadius="lg">
-                        <Text fontSize="xs" color="gray.600">The price is recalculated from 25.65 €/CZK</Text>
+                        <Text fontSize="xs" color="gray.600">The price is recalculated from 25.65</Text>
                         <Icon as={Info} w={3.5} h={3.5} color="gray.400" aria-label="Icon" />
                     </Flex>
                 </VStack>
@@ -76,7 +76,7 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
             <Box borderBottom="1px" borderColor="gray.100" pb={5} mb={5}>
                 <Flex justify="space-between" p={2.5} borderRadius="lg" _hover={{ bg: 'red.50' }}>
                     <Text fontSize="sm" fontWeight="medium">CarAudit™</Text>
-                    <Text fontSize="sm" fontWeight="semibold">CZK 1,990</Text>
+                    <Text fontSize="sm" fontWeight="semibold">EUR 1,990</Text>
                 </Flex>
             </Box>
 
@@ -132,7 +132,7 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
             <Box borderTop="1px" borderColor="gray.100" pt={5} mb={7}>
                 <Flex justify="space-between" align="center">
                     <Text fontSize="md" fontWeight="medium">Total price</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="red.600">CZK 667,765</Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="red.600">EUR 667,765</Text>
                 </Flex>
             </Box>
 
@@ -140,7 +140,7 @@ const PriceSummaryContent = ({ isMobile = false }: { isMobile?: boolean }) => {
             <Box bgGradient="linear(to-br, red.50, red.50, transparent)" borderRadius="xl" p={5} border="1px" borderColor="red.100">
                 <Flex justify="space-between" mb={2}>
                     <Text fontSize="sm">You are financing car for example for</Text>
-                    <Text fontSize="base" fontWeight="bold" color="red.600">CZK 5,557/mo</Text>
+                    <Text fontSize="base" fontWeight="bold" color="red.600">EUR 5,557/mo</Text>
                 </Flex>
                 <Flex align="center" gap={1.5} fontSize="xs" color="gray.600">
                     <Text>120%, 48 instalments</Text>
