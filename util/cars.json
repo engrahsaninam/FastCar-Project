@@ -9,7 +9,11 @@
         "fuelType": "Plug-in Hybrid (PHEV)",
         "location": "Machu Picchu",
         "image": "car-1.png",
-        "name": "GMC Sierra 2500HD Denali"
+        "name": "GMC Sierra 2500HD Denali",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 2,
@@ -21,7 +25,11 @@
         "fuelType": "Hybrid (HEV)",
         "location": "Great Wall",
         "image": "car-2.png",
-        "name": "Ford Mustang GT Premium"
+        "name": "Ford Mustang GT Premium",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 3,
@@ -33,7 +41,11 @@
         "fuelType": "Electric Vehicle (EV)",
         "location": "Eiffel Tower",
         "image": "car-3.png",
-        "name": "Mazda MX-5 Miata Club"
+        "name": "Mazda MX-5 Miata Club",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 4,
@@ -45,7 +57,11 @@
         "fuelType": "Diesel",
         "location": "Statue of Liberty",
         "image": "car-4.png",
-        "name": "Subaru Impreza WRX STI"
+        "name": "Subaru Impreza WRX STI",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 5,
@@ -57,7 +73,11 @@
         "fuelType": "Gasoline/Petrol",
         "location": "Taj Mahal",
         "image": "car-5.png",
-        "name": "Porsche 911 Carrera S"
+        "name": "Porsche 911 Carrera S",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 6,
@@ -69,7 +89,11 @@
         "fuelType": "Hydrogen",
         "location": "Great Wall",
         "image": "car-6.png",
-        "name": "Toyota Camry LE Hybrid"
+        "name": "Toyota Camry LE Hybrid",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 7,
@@ -81,7 +105,11 @@
         "fuelType": "Plug-in Hybrid (PHEV)",
         "location": "Eiffel Tower",
         "image": "car-7.png",
-        "name": "Hyundai Sonata SEL Plus"
+        "name": "Hyundai Sonata SEL Plus",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 8,
@@ -93,7 +121,11 @@
         "fuelType": "Hybrid (HEV)",
         "location": "Statue of Liberty",
         "image": "car-8.png",
-        "name": "Buick Enclave Avenir"
+        "name": "Buick Enclave Avenir",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 9,
@@ -105,7 +137,11 @@
         "fuelType": "Electric Vehicle (EV)",
         "location": "Machu Picchu",
         "image": "car-9.png",
-        "name": "Chevrolet Silverado"
+        "name": "Chevrolet Silverado",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 10,
@@ -117,7 +153,11 @@
         "fuelType": "Diesel",
         "location": "Taj Mahal",
         "image": "car-10.png",
-        "name": "Subaru Outback Limited XT"
+        "name": "Subaru Outback Limited XT",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 11,
@@ -129,7 +169,11 @@
         "fuelType": "Electric Vehicle (EV)",
         "location": "Colosseum",
         "image": "car-11.png",
-        "name": "Jeep Wrangler Rubicon Unlimited"
+        "name": "Jeep Wrangler Rubicon Unlimited",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 12,
@@ -141,7 +185,11 @@
         "fuelType": "Plug-in Hybrid (PHEV)",
         "location": "Pyramids of Giza",
         "image": "car-12.png",
-        "name": "Kia Telluride SX"
+        "name": "Kia Telluride SX",
+        "transmission": "Automatic",
+        "mileage": "10000",
+        "power": "200",
+        "reviews": "672"
     },
     {
         "id": 13,
@@ -153,7 +201,11 @@
         "fuelType": "Hybrid (HEV)",
         "location": "Pompeii",
         "image": "car-13.png",
-        "name": "Mini Cooper S Hardtop 2 Door"
+        "name": "Mini Cooper S Hardtop 2 Door",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 14,
@@ -165,7 +217,11 @@
         "fuelType": "Diesel",
         "location": "Buckingham Palace",
         "image": "car-14.png",
-        "name": "Subaru Impreza WRX STI"
+        "name": "Subaru Impreza WRX STI",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 15,
@@ -177,7 +233,11 @@
         "fuelType": "Plug-in Hybrid (PHEV)",
         "location": "Eiffel Tower",
         "image": "car-15.png",
-        "name": "Audi Q5 2.0T Premium Plus"
+        "name": "Audi Q5 2.0T Premium Plus",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 16,
@@ -189,7 +249,11 @@
         "fuelType": "Hybrid (HEV)",
         "location": "Statue of Liberty",
         "image": "car-16.png",
-        "name": "Cadillac XT6 Premium Luxury"
+        "name": "Cadillac XT6 Premium Luxury",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 17,
@@ -201,7 +265,11 @@
         "fuelType": "Electric Vehicle (EV)",
         "location": "Machu Picchu",
         "image": "car-17.png",
-        "name": "Chevrolet Bolt EV Premier"
+        "name": "Chevrolet Bolt EV Premier",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 18,
@@ -213,7 +281,11 @@
         "fuelType": "Diesel",
         "location": "Taj Mahal",
         "image": "car-18.png",
-        "name": "Ford Explorer Limited"
+        "name": "Ford Explorer Limited",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 19,
@@ -225,7 +297,11 @@
         "fuelType": "Plug-in Hybrid (PHEV)",
         "location": "Colosseum",
         "image": "car-19.png",
-        "name": "Lexus RC 300 F Sport"
+        "name": "Lexus RC 300 F Sport",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     },
     {
         "id": 20,
@@ -237,6 +313,10 @@
         "fuelType": "Hybrid (HEV)",
         "location": "Pyramids of Giza",
         "image": "car-20.png",
-        "name": "Nissan Rogue SV AWD"
+        "name": "Nissan Rogue SV AWD",
+        "transmission": "Automatic",
+        "mileage": "18,496 km",
+        "power": "100 kW (136 hp)",
+        "reviews": "672"
     }
 ]

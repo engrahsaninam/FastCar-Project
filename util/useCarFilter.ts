@@ -11,6 +11,10 @@ interface Car {
 	fuelType: string
 	location: string
 	image: string
+	mileage: string
+	transmission: string
+	reviews: string
+	power: string,
 }
 
 export interface Filter {
@@ -21,6 +25,9 @@ export interface Filter {
 	priceRange: [number, number]
 	ratings: number[]
 	carType: string[]
+	transmission: string[]
+	mileage: string[]
+	power: string[]
 }
 
 type SortCriteria = "name" | "price" | "rating"
@@ -34,6 +41,9 @@ const useCarFilter = (carsData: Car[]) => {
 		priceRange: [0, 500],
 		ratings: [],
 		carType: [],
+		transmission: [],
+		mileage: [],
+		power: [],
 	})
 	const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name")
 	const [itemsPerPage, setItemsPerPage] = useState<number>(10)
@@ -54,7 +64,10 @@ const useCarFilter = (carsData: Car[]) => {
 			(filter.locations.length === 0 || filter.locations.includes(car.location)) &&
 			(car.price >= filter.priceRange[0] && car.price <= filter.priceRange[1]) &&
 			(filter.ratings.length === 0 || filter.ratings.includes(car.rating)) &&
-			(filter.carType.length === 0 || filter.carType.includes(car.carType))
+			(filter.carType.length === 0 || filter.carType.includes(car.carType)) &&
+			(filter.transmission.length === 0 || filter.transmission.includes(car.transmission)) &&
+			(filter.mileage.length === 0 || filter.mileage.includes(car.mileage)) &&
+			(filter.power.length === 0 || filter.power.includes(car.power))
 		)
 	})
 
@@ -130,6 +143,9 @@ const useCarFilter = (carsData: Car[]) => {
 			priceRange: [0, 500],
 			ratings: [],
 			carType: [],
+			transmission: [],
+			mileage: [],
+			power: [],
 		})
 		setSortCriteria("name")
 		setItemsPerPage(4)

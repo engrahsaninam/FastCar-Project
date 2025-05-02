@@ -8,6 +8,9 @@ import rawCarsData from "@/util/cars.json"
 import useCarFilter from '@/util/useCarFilter'
 import Link from "next/link"
 import Marquee from 'react-fast-marquee'
+import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Power, Calendar, ParkingMeterIcon, Gauge, Fuel } from 'lucide-react';
+
 const carsData = rawCarsData.map(car => ({
 	...car,
 	rating: parseFloat(car.rating as string)
@@ -46,6 +49,10 @@ export default function CarsList3() {
 		startItemIndex,
 		endItemIndex,
 	} = useCarFilter(carsData)
+
+	const textColor = useColorModeValue("gray.700", "gray.300");
+	const cardBorderColor = useColorModeValue("gray.100", "#333333");
+	const priceColor = useColorModeValue("black", "white");
 
 	return (
 		<>
@@ -121,10 +128,89 @@ export default function CarsList3() {
 										/>
 									</div>
 									<div className="box-grid-tours wow fadeIn">
-											<div className="row">
+										<div className="row">
 											{paginatedCars.map((car) => (
 												<div className="col-lg-4 col-md-6" key={car.id}>
-													<CarCard1 car={car} />
+													<div className="card-journey-small background-card hover-up">
+														<div className="card-image">
+															<Link href={`/car?id=${car.id}`}>
+																<img src={`/assets/imgs/cars-listing/cars-listing-6/${car.image}`} alt="Fast4Car" />
+															</Link>
+														</div>
+														<div className="card-info px-3 py-4 sm:p-4 sm:px-10">
+															{/* <div className="card-rating">
+																<div className="card-left" />
+																<div className="card-right">
+																	<span className="rating text-xs-medium rounded-pill">{car.rating} <span className="text-xs-medium neutral-500">({car.reviews} reviews)</span></span>
+																</div>
+															</div> */}
+															<div className="card-title mt-6 sm:mt-3">
+																<Link className="text-lg-bold neutral-1000 text-nowrap" href={`/car?id=${car.id}`}>{car.name}</Link>
+															</div>
+															<div className="card-program mt-2">
+																<div className="card-location mb-2">
+																	<p className="text-location text-sm-medium text-red-500">{car.location}</p>
+																</div>
+																<Box mb={["2", "2", "1"]} ml="1">
+																	<SimpleGrid columns={2} spacingX={6} spacingY={2} mb="2">
+																		<HStack spacing="1">
+																			<Box as={Power} boxSize="4" color={textColor} />
+																			<Text fontSize="sm" color={textColor}>{car.power}</Text>
+																		</HStack>
+																		<HStack spacing="1">
+																			<Box as={Calendar} boxSize="4" color={textColor} />
+																			<Text fontSize="sm" color={textColor}>{car.carType}</Text>
+																		</HStack>
+																		<HStack spacing="1">
+																			<Box as={ParkingMeterIcon} boxSize="4" color={textColor} />
+																			<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+																		</HStack>
+																		<HStack spacing="1">
+																			<Box as={Gauge} boxSize="4" color={textColor} />
+																			<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+																		</HStack>
+																		<HStack spacing="1">
+																			<Box as={Fuel} boxSize="4" color={textColor} />
+																			<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+																		</HStack>
+																	</SimpleGrid>
+																</Box>
+																<Box
+																	// pt={["3", "3", "1.5"]}
+																	px={["0", "0", "2"]}
+																	borderTopWidth="1px"
+																	borderColor={cardBorderColor}
+																// mt={["2", "2", "1"]}
+																>
+																	{/* Top row: Very Good Price (left) and Main Price (right) */}
+
+																	<Flex direction="row" justify="space-between" alignItems="center" align="center" w="100%">
+																		<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+																			<HStack spacing="1" >
+																				{[...Array(5)].map((_, i) => (
+																					<Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+																				))}
+																				<Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+																					Very Good Price
+																				</Text>
+																			</HStack>
+
+																		</VStack>
+																		<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+																			<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+																				€ {car.price.toLocaleString()}
+																			</Text>
+																			<Text fontSize="xs" color="gray.500">
+																				€ {car.price.toLocaleString()} without VAT
+																			</Text>
+																		</Box>
+																	</Flex>
+																	{/* Bottom row: Cheaper than in Spain! */}
+
+																</Box>
+															</div>
+														</div>
+													</div>
 												</div>
 											))}
 										</div>

@@ -1,3 +1,5 @@
+'use client'
+import Specs from '../calculator/Specs'
 import CounterUp from '../elements/CounterUp'
 
 
@@ -15,7 +17,7 @@ export default function Cta2() {
 								rate available with no markups, no fees, and no obligations.</p>
 						</div>
 						<div className="col-lg-6 offset-lg-1">
-							<div className="mb-30 background-card p-md-5 p-4 rounded-3 mt-lg-0 mt-30 wow fadeIn">
+							{/* <div className="mb-30 background-card p-md-5 p-4 rounded-3 mt-lg-0 mt-30 wow fadeIn">
 								<h5 className="neutral-1000 mb-2">Car Loan Calculator</h5>
 								<p className="text-sm-medium neutral-500 mb-25">Estimate your monthly auto loan payments with
 									this calculator.</p>
@@ -67,6 +69,13 @@ export default function Cta2() {
 										</div>
 									</div>
 								</div>
+							</div> */}
+							<div className="ps-lg-4">
+								<Specs
+									onFinancingRequest={() => { }}
+									onFullPayment={() => { }}
+									onToggleSpecs={() => { }}
+								/>
 							</div>
 						</div>
 					</div>

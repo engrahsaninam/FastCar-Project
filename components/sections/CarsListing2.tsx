@@ -1,10 +1,172 @@
-
+'use client'
 import Link from "next/link"
+import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack } from "@chakra-ui/react";
+import { Power, Calendar, ParkingMeterIcon, Gauge, Fuel } from 'lucide-react';
+
+// Car interface
+interface Car {
+	id: number;
+	image: string;
+	rating: string;
+	reviews: string;
+	title: string;
+	location: string;
+	power: string;
+	date: string;
+	mileage: string;
+	fuelType: string;
+	link: string;
+	transmission: string;
+	price: string;
+}
+
+// CarCard Component
+const CarCard = ({ car }: { car: Car }) => {
+	const textColor = useColorModeValue("gray.700", "gray.300");
+	const cardBorderColor = useColorModeValue("gray.100", "#333333");
+	const priceColor = useColorModeValue("black", "white");
+
+	return (
+		<div className="card-journey-small background-card hover-up">
+			<div className="card-image">
+				<Link href={car.link}>
+					<img src={car.image} alt="Fast4Car" />
+				</Link>
+			</div>
+			<div className="card-info">
+				<div className="card-title">
+					<Link className="heading-6 neutral-1000" href={car.link}>
+						{car.title}
+					</Link>
+				</div>
+				<div className="card-program">
+					<div className="card-location">
+						<p className="text-location text-md-medium">{car.location}</p>
+					</div>
+					<Box mb={["2", "2", "1"]} ml="1">
+						<SimpleGrid columns={2} spacingX={6} spacingY={2} mb="2">
+							<HStack spacing="1">
+								<Box as={Power} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.power}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<Box as={Calendar} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.date}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<Box as={ParkingMeterIcon} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<Box as={Gauge} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+							</HStack>
+							<HStack spacing="1">
+								<Box as={Fuel} boxSize="4" color={textColor} />
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+							</HStack>
+						</SimpleGrid>
+					</Box>
+
+					<Box
+						px={["0", "0", "2"]}
+						borderTopWidth="1px"
+						borderColor={cardBorderColor}
+					>
+						<Flex direction="row" justify="space-between" alignItems="center" align="center" w="100%">
+							<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+								<HStack spacing="1">
+									{[...Array(5)].map((_, i) => (
+										<Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+									))}
+									<Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+										Very Good Price
+									</Text>
+								</HStack>
+							</VStack>
+							<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+								<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+									€ {car.price.toLocaleString()}
+								</Text>
+								<Text fontSize="xs" color="gray.500">
+									€ {car.price.toLocaleString()} without VAT
+								</Text>
+							</Box>
+						</Flex>
+					</Box>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+// Car data array
+const carsData = [
+	{
+		id: 1,
+		image: "/assets/imgs/cars-listing/cars-listing-2/car-1.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Volkswagen Golf GTD",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "25,100 miles",
+		transmission: "Automatic",
+		fuelType: "Diesel",
+		price: "498.25",
+		link: "/cars-details-2"
+	},
+	{
+		id: 2,
+		image: "/assets/imgs/cars-listing/cars-listing-2/car-2.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Volvo S60 D4 R-Design",
+		location: "New South Wales, Australia",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "25,100 miles",
+		transmission: "Automatic",
+		fuelType: "Diesel",
+		price: "498.25",
+		link: "/cars-details-2"
+	},
+	{
+		id: 3,
+		image: "/assets/imgs/cars-listing/cars-listing-2/car-3.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Jaguar XE 2.0d R-Sport",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "25,100 miles",
+		transmission: "Automatic",
+		fuelType: "Diesel",
+		price: "498.25",
+		link: "/cars-details-2"
+	},
+	{
+		id: 4,
+		image: "/assets/imgs/cars-listing/cars-listing-2/car-4.png",
+		rating: "4.96",
+		reviews: "672",
+		title: "Lexus IS 300h F Sport",
+		location: "Manchester, England",
+		power: "100 kW (136 hp)",
+		date: "9/2021",
+		mileage: "25,100 miles",
+		transmission: "Automatic",
+		fuelType: "Diesel",
+		price: "498.25",
+		link: "/cars-details-2"
+	}
+];
 
 export default function CarsListing2() {
 	return (
 		<>
-
 			<section className="section-box box-flights background-body">
 				<div className="container">
 					<div className="row align-items-end mb-10">
@@ -24,155 +186,11 @@ export default function CarsListing2() {
 						</div>
 					</div>
 					<div className="row pt-30">
-						<div className="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.1s">
-							<div className="card-journey-small background-card hover-up">
-								<div className="card-image">
-									<Link href="/cars-details-2">
-										<img src="/assets/imgs/cars-listing/cars-listing-2/car-1.png" alt="Fast4Car" />
-									</Link>
-								</div>
-								<div className="card-info p-4 pt-30">
-									<div className="card-rating">
-										<div className="card-left" />
-										<div className="card-right">
-											<span className="rating text-xs-medium py-1 rounded-pill">4.96 <span className="text-xs-medium neutral-500">(672 reviews)</span></span>
-										</div>
-									</div>
-									<div className="card-title"><Link className="text-lg-bold neutral-1000 text-nowrap" href="/cars-details-2">Volkswagen Golf GTD</Link></div>
-									<div className="card-program">
-										<div className="card-location">
-											<p className="text-location text-sm-medium neutral-500">Manchester, England</p>
-										</div>
-										<div className="card-facitlities">
-											<p className="card-miles text-md-medium">25,100 miles</p>
-											<p className="card-gear text-md-medium">Automatic</p>
-											<p className="card-fuel text-md-medium">Diesel</p>
-											<p className="card-seat text-md-medium">7 seats</p>
-										</div>
-										<div className="endtime">
-											<div className="card-price">
-												<h6 className="text-lg-bold neutral-1000">$498.25</h6>
-												<p className="text-md-medium neutral-500" />
-											</div>
-											<div className="card-button"><Link className="btn btn-gray" href="/cars-details-2">Book
-												Now</Link></div>
-										</div>
-									</div>
-								</div>
+						{carsData.map((car) => (
+							<div className="col-lg-3 col-md-6 wow fadeIn" key={car.id} data-wow-delay={`${car.id * 0.1}s`}>
+								<CarCard car={car} />
 							</div>
-						</div>
-						<div className="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.2s">
-							<div className="card-journey-small background-card hover-up">
-								<div className="card-image">
-									<Link href="/cars-details-2">
-										<img src="/assets/imgs/cars-listing/cars-listing-2/car-2.png" alt="Fast4Car" />
-									</Link>
-								</div>
-								<div className="card-info p-4 pt-30">
-									<div className="card-rating">
-										<div className="card-left" />
-										<div className="card-right">
-											<span className="rating text-xs-medium py-1 rounded-pill">4.96 <span className="text-xs-medium neutral-500">(672 reviews)</span></span>
-										</div>
-									</div>
-									<div className="card-title"><Link className="text-lg-bold neutral-1000" href="/cars-details-2">Volvo S60 D4 R-Design</Link></div>
-									<div className="card-program">
-										<div className="card-location">
-											<p className="text-location text-sm-medium neutral-500">New South Wales, Australia
-											</p>
-										</div>
-										<div className="card-facitlities">
-											<p className="card-miles text-md-medium">25,100 miles</p>
-											<p className="card-gear text-md-medium">Automatic</p>
-											<p className="card-fuel text-md-medium">Diesel</p>
-											<p className="card-seat text-md-medium">7 seats</p>
-										</div>
-										<div className="endtime">
-											<div className="card-price">
-												<h6 className="text-lg-bold neutral-1000">$498.25</h6>
-												<p className="text-md-medium neutral-500" />
-											</div>
-											<div className="card-button"><Link className="btn btn-gray" href="/cars-details-2">Book
-												Now</Link></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.3s">
-							<div className="card-journey-small background-card hover-up">
-								<div className="card-image">
-									<Link href="/cars-details-2">
-										<img src="/assets/imgs/cars-listing/cars-listing-2/car-3.png" alt="Fast4Car" />
-									</Link>
-								</div>
-								<div className="card-info p-4 pt-30">
-									<div className="card-rating">
-										<div className="card-left" />
-										<div className="card-right">
-											<span className="rating text-xs-medium py-1 rounded-pill">4.96 <span className="text-xs-medium neutral-500">(672 reviews)</span></span>
-										</div>
-									</div>
-									<div className="card-title"><Link className="text-lg-bold neutral-1000" href="/cars-details-2">Jaguar XE 2.0d R-Sport</Link></div>
-									<div className="card-program">
-										<div className="card-location">
-											<p className="text-location text-sm-medium neutral-500">Manchester, England</p>
-										</div>
-										<div className="card-facitlities">
-											<p className="card-miles text-md-medium">25,100 miles</p>
-											<p className="card-gear text-md-medium">Automatic</p>
-											<p className="card-fuel text-md-medium">Diesel</p>
-											<p className="card-seat text-md-medium">7 seats</p>
-										</div>
-										<div className="endtime">
-											<div className="card-price">
-												<h6 className="text-lg-bold neutral-1000">$498.25</h6>
-												<p className="text-md-medium neutral-500" />
-											</div>
-											<div className="card-button"><Link className="btn btn-gray" href="/cars-details-2">Book
-												Now</Link></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.4s">
-							<div className="card-journey-small background-card hover-up">
-								<div className="card-image">
-									<Link href="/cars-details-2">
-										<img src="/assets/imgs/cars-listing/cars-listing-2/car-4.png" alt="Fast4Car" />
-									</Link>
-								</div>
-								<div className="card-info p-4 pt-30">
-									<div className="card-rating">
-										<div className="card-left" />
-										<div className="card-right">
-											<span className="rating text-xs-medium py-1 rounded-pill">4.96 <span className="text-xs-medium neutral-500">(672 reviews)</span></span>
-										</div>
-									</div>
-									<div className="card-title"><Link className="text-lg-bold neutral-1000" href="/cars-details-2">Lexus IS 300h F Sport</Link></div>
-									<div className="card-program">
-										<div className="card-location">
-											<p className="text-location text-sm-medium neutral-500">Manchester, England</p>
-										</div>
-										<div className="card-facitlities">
-											<p className="card-miles text-md-medium">25,100 miles</p>
-											<p className="card-gear text-md-medium">Automatic</p>
-											<p className="card-fuel text-md-medium">Diesel</p>
-											<p className="card-seat text-md-medium">7 seats</p>
-										</div>
-										<div className="endtime">
-											<div className="card-price">
-												<h6 className="text-lg-bold neutral-1000">$498.25</h6>
-												<p className="text-md-medium neutral-500" />
-											</div>
-											<div className="card-button"><Link className="btn btn-gray" href="/cars-details-2">Book
-												Now</Link></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+						))}
 					</div>
 				</div>
 			</section>
