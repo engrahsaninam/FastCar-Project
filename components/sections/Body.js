@@ -49,7 +49,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import logo from '@/public/assets/imgs/template/logo-d.svg';
-
+import logoDark from '@/public/assets/imgs/template/logo-w.svg';
 // Custom Lucide icon wrapper for Chakra UI
 const LucideIcon = ({ icon: Icon, ...props }) => {
   return <Box as={Icon} {...props} />;
@@ -195,7 +195,7 @@ const CarCard = ({ car }) => {
                 justify="space-between"
                 align="center"
                 mb={["3", "3", "2"]}
-              // mt={["2", "2", "0"]}
+              mt={["2", "2", "0"]}
               >
                 <Heading
                   as="h3"
@@ -210,9 +210,18 @@ const CarCard = ({ car }) => {
                 >
                   {car.name}
                 </Heading>
-                <Box mt={["1", "1", "0"]}>
+                <Box mt={["1", "1", "0"]} className='light-mode'>
                   <Image
                     src={logo.src}
+                    alt="Logo"
+                    width={70}
+                    height={35}
+                    style={{ display: "inline-block" }}
+                  />
+                </Box>
+                <Box mt={["1", "1", "0"]} className='dark-mode'>
+                  <Image
+                    src={logoDark.src}
                     alt="Logo"
                     width={70}
                     height={35}
@@ -300,17 +309,17 @@ const CarCard = ({ car }) => {
                 <VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
                   <HStack spacing="1" >
                     {[...Array(5)].map((_, i) => (
-                      <Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+                      <Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
                     ))}
-                    <Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+                    <Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
                       Very Good Price
                     </Text>
                   </HStack>
                   <HStack> <Flex align="center" gap="1">
-                    <Text fontSize="md" color="black" fontWeight="bold" lineHeight="1">
+                    <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
                       € 5043
                     </Text>
-                    <Text fontSize="xs" color="gray.700" display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+                    <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
                       Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
                     </Text>
                   </Flex>
@@ -320,7 +329,7 @@ const CarCard = ({ car }) => {
                   <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
                     € {car.price.toLocaleString()}
                   </Text>
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color={textColor}>
                     €{(car.price / 4).toFixed(2)} without VAT
                   </Text>
                 </Box>

@@ -2,12 +2,42 @@
 import MyDatePicker from '@/components/elements/MyDatePicker'
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import Marquee from 'react-fast-marquee'
 import ModalVideo from 'react-modal-video'
 import Slider from "react-slick"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useColorModeValue } from "@chakra-ui/react"
+import logo from '@/public/assets/imgs/template/logo-d.svg';
+import {
+	Heart,
+	MapPin,
+	ParkingMeterIcon,
+
+	Power,
+
+	SlidersHorizontal,
+	ChevronLeft,
+	ChevronRight,
+	Bell,
+} from 'lucide-react';
+import logoDark from '@/public/assets/imgs/template/logo-w.svg';
+import {
+
+	Skeleton,
+	SkeletonText,
+
+	Heading,
+	Container,
+	Wrap,
+	WrapItem,
+	Tag,
+	TagLabel,
+	TagCloseButton,
+	Link as ChakraLink,
+	Select,
+	AspectRatio,
+} from '@chakra-ui/react';
 import {
 	Box,
 	Text,
@@ -28,34 +58,63 @@ import {
 	IconButton,
 	SimpleGrid,
 } from "@chakra-ui/react"
+import Image from 'next/image'
 import { ChevronUp, X, ArrowRight, Calendar, Clock, Info, Gauge, Fuel } from "lucide-react"
 
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
+
+const arrowButtonStyle = {
+	width: 36,
+	height: 36,
+	borderRadius: '50%',
+	background: 'rgba(255,255,255,0.85)',
+	border: '1px solid #ddd',
+	boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	position: 'absolute',
+	top: '50%',
+	transform: 'translateY(-50%)',
+	zIndex: 2,
+	cursor: 'pointer',
+	transition: 'background 0.2s, box-shadow 0.2s',
+};
+
 const SlickArrowLeft = ({ currentSlide, slideCount, ...props }: any) => (
 	<button
 		{...props}
-		className={
-			"slick-prev slick-arrow" +
-			(currentSlide === 0 ? " slick-disabled" : "")
-		}
+		style={{
+			...arrowButtonStyle,
+			left: 12,
+			opacity: currentSlide === 0 ? 0.5 : 1,
+		}}
+		aria-label="Previous"
 		type="button"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666" stroke="" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+		<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+			<path d="M13 16L8 10L13 4" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+		</svg>
 	</button>
-)
+);
+
 const SlickArrowRight = ({ currentSlide, slideCount, ...props }: any) => (
 	<button
 		{...props}
-		className={
-			"slick-next slick-arrow" +
-			(currentSlide === slideCount - 1 ? " slick-disabled" : "")
-		}
+		style={{
+			...arrowButtonStyle,
+			right: 12,
+			opacity: currentSlide === slideCount - 1 ? 0.5 : 1,
+		}}
+		aria-label="Next"
 		type="button"
 	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33301 7.99992" strokeLinecap="round" strokeLinejoin="round" />
+		<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+			<path d="M7 4L12 10L7 16" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 		</svg>
 	</button>
-)
+);
+
 export default function CarsDetails1() {
 	const [isOpen, setOpen] = useState(false)
 	const [nav1, setNav1] = useState(null)
@@ -306,7 +365,7 @@ export default function CarsDetails1() {
 		const highlightBg = useColorModeValue("red.50", "red.900")
 		const highlightBorder = useColorModeValue("red.200", "red.700")
 		const highlightText = useColorModeValue("red.600", "red.300")
-
+		const priceColor = useColorModeValue("black", "white");
 		return (
 			<>
 				<Box
@@ -435,39 +494,57 @@ export default function CarsDetails1() {
 			</>
 		);
 	};
+	const headingColor = useColorModeValue("black", "red.400");
+	const cars = useMemo(() => [
+		{
+			id: 1,
+			name: "BMW Cooper 100 kW",
+			images: [
+				"https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+				"https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+				"https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+				"https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+				"https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
+			],
+			power: "100 kW (136 hp)",
+			date: "9/2021",
+			mileage: "18,496 km",
+			transmission: "Automatic",
+			fuelType: "Petrol",
+			features: [
+				"Digital cockpit",
+				"Keyless entry",
+				"Apple CarPlay",
+				"Navigation system",
+				"Cruise control",
+				"LED headlights"
+			],
+			price: 25749,
+			logo: "/Logo/logo.png"
+		}
+	], []);
+	const LucideIcon = ({ icon: Icon, ...props }: { icon: React.ElementType;[key: string]: any }) => {
+		return <Box as={Icon} {...props} />;
+	};
+	const textColor = useColorModeValue("gray.900", "white");
+	const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
+
+	const badgeColor = useColorModeValue("red.400", "red.300");
+
+	const buttonLinkColor = useColorModeValue("red.500", "red.300");
+	const car = cars[0];
+
 
 	return (
 		<Layout footerStyle={1}>
 			<div>
-				<section className="box-section box-breadcrumb background-body">
-					<div className="container">
-						<ul className="breadcrumbs">
-							{/* <li>
-								<Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" className="dark:text-white">
-										<path d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-									</svg>
-									Back to search
-								</Link>
-							</li>
-							<li>
-								<Link href="/cars">Cars</Link>
-								<span className="arrow-right">
-									<svg width={7} height={12} viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path d="M1 11L6 6L1 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</span>
-							</li> */}
-							<li><span className="text-breadcrumb " style={{ fontSize: "2rem" }}>Hyundai Accent 2025</span></li>
-						</ul>
-					</div>
-				</section>
+
 				<section className="section-box box-banner-home2 background-body">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-8">
 								<div className="container-banner-activities">
-									<div className="box-banner-activities">
+									<div className="box-banner-activities mt-4">
 										<Slider
 											{...settingsMain}
 											asNavFor={nav2 as any}
@@ -506,7 +583,7 @@ export default function CarsDetails1() {
 											</a>
 										</div>
 									</div>
-									<div className="slider-thumnail-activities">
+									<div className="slider-thumnail-activities d-none d-md-block">
 										<Slider
 											{...settingsThumbs}
 											asNavFor={nav1 as any}
@@ -523,28 +600,145 @@ export default function CarsDetails1() {
 										</Slider>
 									</div>
 								</div>
+								<div>
+									<Flex
+										flex="1"
+										// p={["4", "4", "3"]} 
+										flexDir="column"
+										justifyContent="space-between"
+									// mt={["3", "3", "0"]}
+									>
+										<Box>
+											<Flex
+												direction={["row", "row", "row"]}
+												justify="space-between"
+												align="center"
+												mb={["3", "3", "2"]}
+												mt={["2", "2", "0"]}
+											>
+												<Heading
+													as="h3"
+													ml='1'
+													fontSize={["lg", "lg", "xl"]}
+													fontWeight="bold"
+													color={headingColor}
+													letterSpacing="wide"
+													fontFamily="inter"
+													_hover={{ color: "red.500" }}
+												// mb={["1", "1", "0"]}
+												>
+													BMW Cooper 100 kW
+												</Heading>
+												<Box mt={["1", "1", "0"]} className='light-mode'>
+													<Image
+														src={logo.src}
+														alt="Logo"
+														width={70}
+														height={35}
+														style={{ display: "inline-block" }}
+													/>
+												</Box>
+												<Box mt={["1", "1", "0"]} className='dark-mode'>
+													<Image
+														src={logoDark.src}
+														alt="Logo"
+														width={70}
+														height={35}
+														style={{ display: "inline-block" }}
+													/>
+												</Box>
+											</Flex>
 
-								<div className="car-nav-tabs mt-4 mb-4 position-sticky" style={{ top: "0", zIndex: "100" }}>
+											{/* Specs Row - inline with minimal spacing */}
+											<Box mb={["2", "2", "1"]} ml="1">
+												<Flex direction="row" gap={6} mb={1}>
+													<HStack spacing="1">
+														<LucideIcon icon={Power} boxSize="4" color={textColor} />
+														<Text fontSize="sm" color={textColor}>100 kW (136 hp)</Text>
+													</HStack>
+													<HStack spacing="1">
+														<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+														<Text fontSize="sm" color={textColor}>9/2021</Text>
+													</HStack>
+													<HStack spacing="1">
+														<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+														<Text fontSize="sm" color={textColor}>18,496 km</Text>
+													</HStack>
+												</Flex>
+												<Flex direction="row" gap={6}>
+													<HStack spacing="1">
+														<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+														<Text fontSize="sm" color={textColor} fontWeight="semibold">Automatic</Text>
+													</HStack>
+													<HStack spacing="1">
+														<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+														<Text fontSize="sm" color={textColor} fontWeight="semibold">Petrol</Text>
+													</HStack>
+												</Flex>
+											</Box>
+
+											{/* Features - keeping size with less vertical space */}
+											<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+												{car.features.slice(0, 4).map((feature: string, index: number) => (
+													<Badge
+														key={index}
+														px="2"
+														bg={badgeBg}
+														className="bg-gray-100"
+														color={badgeColor}
+														borderRadius="md"
+														fontSize="sm"
+														fontWeight="medium"
+														style={{ textTransform: "none" }}
+													>
+														{feature}
+													</Badge>
+												))}
+												{car.features.length > 4 && (
+													<Button
+														variant="unstyled"
+														color={buttonLinkColor}
+														fontSize="sm"
+														fontWeight="medium"
+														height="auto"
+														padding="0"
+														lineHeight="1.5"
+														_hover={{ textDecoration: "underline" }}
+														onClick={(e) => e.preventDefault()}
+														style={{ textTransform: "none" }}
+													>
+														+ {car.features.length - 4} more
+													</Button>
+												)}
+											</Flex>
+										</Box>
+
+										{/* Location and Price - maintain size with reduced space */}
+
+
+									</Flex>
+								</div>
+								<div className="car-nav-tabs mt-4 mb-4 " style={{ top: "0", zIndex: "100" }}>
 									<div className="container-fluid px-0">
 										<div className="nav-scroll py-3 bg-light dark:bg-gray-800 rounded" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
-											<ul className="nav nav-pills d-flex px-3">
-												<li className="nav-item">
-													<a href="#details" className={`nav-link px-4 ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+											<ul className="nav nav-pills px-1 nav-tabs-grid">
+												<li className="nav-item ">
+													<a href="#details" className={` font-bold nav-link ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 												</li>
 												<li className="nav-item">
-													<a href="#features" className={`nav-link px-4 ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a href="#features" className={`nav-link ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 												</li>
 												<li className="nav-item">
-													<a href="#how-it-works" className={`nav-link px-4 ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a href="#how-it-works" className={`nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 												</li>
 												<li className="nav-item">
-													<a href="#price-map" className={`nav-link px-4 ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a href="#price-map" className={`nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 												</li>
 												<li className="nav-item">
-													<a href="#comparison" className={`nav-link px-4 ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
+													<a href="#comparison" className={`nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 												</li>
 												<li className="nav-item">
-													<a href="#financing" className={`nav-link px-4 ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a href="#financing" className={`nav-link ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 												</li>
 											</ul>
 										</div>
@@ -553,282 +747,274 @@ export default function CarsDetails1() {
 
 								<div className="box-collapse-expand mt-4" id="details">
 									<div className="group-collapse-expand border-none">
-										<button className={isAccordion == 1 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverview" aria-expanded="false" aria-controls="collapseOverview" onClick={() => handleAccordion(1)}>
-											<h6>Overview</h6>
-											<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
-												<path d="M1 1L6 6L11 1" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-											</svg>
-										</button>
-										<div className={isAccordion == 1 ? "collapse" : "collapse show"} id="collapseOverview">
-											<div className="card card-body">
-												<div className="car-details-specifications py-4">
-													<h4 className="mb-4">Details</h4>
+										<div className="card card-body">
+											<div className="car-details-specifications py-4">
+												<h2 className="mb-4 text-gray-900 dark:text-white">Details</h2>
 
-													<div className="bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4">
-														<div className="row g-4">
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0z"></path>
-																			<path d="M12 7v5l3 3"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">MILEAGE</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">46,042 km</div>
-																	</div>
+												<div className="bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4">
+													<div className="row g-4">
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0z"></path>
+																		<path d="M12 7v5l3 3"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">MILEAGE</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">46,042 km</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-																			<line x1="16" y1="2" x2="16" y2="6"></line>
-																			<line x1="8" y1="2" x2="8" y2="6"></line>
-																			<line x1="3" y1="10" x2="21" y2="10"></line>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">FIRST REGISTRATION</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">12/2020</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+																		<line x1="16" y1="2" x2="16" y2="6"></line>
+																		<line x1="8" y1="2" x2="8" y2="6"></line>
+																		<line x1="3" y1="10" x2="21" y2="10"></line>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">FIRST REGISTRATION</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">12/2020</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M4 20h16a2 2 0 0 1 2-2V8a2 2 0 0 0-2-2h-2V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>
-																			<path d="M12 8v8"></path>
-																			<path d="M8 12h8"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">POWER</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">181 hp</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M4 20h16a2 2 0 0 1 2-2V8a2 2 0 0 0-2-2h-2V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>
+																		<path d="M12 8v8"></path>
+																		<path d="M8 12h8"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">POWER</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">181 hp</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M5 16l2.5-7.5L10 16"></path>
-																			<path d="M14 16l2-4 2 4"></path>
-																			<path d="M4 19h4"></path>
-																			<path d="M14 19h6"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">TRANSMISSION</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">Automatic</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M5 16l2.5-7.5L10 16"></path>
+																		<path d="M14 16l2-4 2 4"></path>
+																		<path d="M4 19h4"></path>
+																		<path d="M14 19h6"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">TRANSMISSION</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">Automatic</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">DRIVE TYPE</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">4x2</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">DRIVE TYPE</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">4x2</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M6 10H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"></path>
-																			<path d="M6 14H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"></path>
-																			<path d="M6 6h.01"></path>
-																			<path d="M6 18h.01"></path>
-																			<path d="M13 12l-3-3m0 6l3-3"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">CONSUMPTION</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">4 l/100km</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M6 10H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"></path>
+																		<path d="M6 14H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"></path>
+																		<path d="M6 6h.01"></path>
+																		<path d="M6 18h.01"></path>
+																		<path d="M13 12l-3-3m0 6l3-3"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">CONSUMPTION</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">4 l/100km</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M9 20L3 17V7l6 3"></path>
-																			<path d="M9 20v-9"></path>
-																			<path d="M15 20l6-3V7l-6 3"></path>
-																			<path d="M15 20v-9"></path>
-																			<path d="M9 11L15 8"></path>
-																			<path d="M9 4l6-3"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">CO2 EMISSIONS</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">92 g/km</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M9 20L3 17V7l6 3"></path>
+																		<path d="M9 20v-9"></path>
+																		<path d="M15 20l6-3V7l-6 3"></path>
+																		<path d="M15 20v-9"></path>
+																		<path d="M9 11L15 8"></path>
+																		<path d="M9 4l6-3"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">CO2 EMISSIONS</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">92 g/km</div>
 																</div>
 															</div>
-															<div className="col-md-4">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
-																			<path d="M8.5 8.5v.01"></path>
-																			<path d="M16 12v.01"></path>
-																			<path d="M12 16v.01"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-gray-500 dark:text-gray-400 small">LOCATION</div>
-																		<div className="fw-bold text-gray-900 dark:text-white">Germany</div>
-																	</div>
+														</div>
+														<div className="col-md-4">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+																		<path d="M8.5 8.5v.01"></path>
+																		<path d="M16 12v.01"></path>
+																		<path d="M12 16v.01"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-gray-500 dark:text-gray-400 small">LOCATION</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">Germany</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div className="electric-specs bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4" >
+													<div className="d-flex justify-content-between mb-3">
+														<h6 className='sm:text-md md:text-lg lg:text-xl text-gray-900 dark:text-white'>Electric motor specifications for a new car</h6>
+														<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
+													</div>
+
+													<div className="row g-4 mt-2">
+														<div className="col-md-6">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3 text-primary">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+																		<path d="M12 4v16"></path>
+																		<path d="M6 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+																		<path d="M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-muted small">BATTERY CAPACITY</div>
+																	<div className="fw-bold">2 kWh</div>
+																</div>
+															</div>
+														</div>
+														<div className="col-md-6">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3 text-primary">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
+																	<div className="fw-bold">80 kW</div>
+																</div>
+															</div>
+														</div>
+														<div className="col-md-6">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3 text-primary">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																		<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																		<path d="M8 10h6"></path>
+																		<path d="M4 15l4 5"></path>
+																		<path d="M16 20l4-5"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
+																	<div className="fw-bold">112 kW</div>
+																</div>
+															</div>
+														</div>
+														<div className="col-md-6">
+															<div className="d-flex align-items-center">
+																<div className="icon-container me-3 text-primary">
+																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																		<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																		<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+																		<path d="M8 10h6"></path>
+																		<path d="M4 15l4 5"></path>
+																		<path d="M16 20l4-5"></path>
+																	</svg>
+																</div>
+																<div>
+																	<div className="text-muted small">SECONDARY FUEL ⓘ</div>
+																	<div className="fw-bold">Petrol</div>
 																</div>
 															</div>
 														</div>
 													</div>
 
-													<div className="electric-specs bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4" >
-														<div className="d-flex justify-content-between mb-3">
-															<h5>Electric motor specifications for a new car</h5>
-															<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
-														</div>
-
-														<div className="row g-4 mt-2">
-															<div className="col-md-6">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3 text-primary">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<rect x="2" y="4" width="20" height="16" rx="2"></rect>
-																			<path d="M12 4v16"></path>
-																			<path d="M6 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
-																			<path d="M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-muted small">BATTERY CAPACITY</div>
-																		<div className="fw-bold">2 kWh</div>
-																	</div>
-																</div>
+													<div className="row mt-4">
+														<div className="col-md-4">
+															<div className="mb-3">
+																<div className="text-muted small">Battery type</div>
+																<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
 															</div>
-															<div className="col-md-6">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3 text-primary">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
-																		<div className="fw-bold">80 kW</div>
-																	</div>
-																</div>
-															</div>
-															<div className="col-md-6">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3 text-primary">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
-																			<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
-																			<path d="M8 10h6"></path>
-																			<path d="M4 15l4 5"></path>
-																			<path d="M16 20l4-5"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
-																		<div className="fw-bold">112 kW</div>
-																	</div>
-																</div>
-															</div>
-															<div className="col-md-6">
-																<div className="d-flex align-items-center">
-																	<div className="icon-container me-3 text-primary">
-																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-																			<path d="M5 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
-																			<path d="M16 4h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
-																			<path d="M8 10h6"></path>
-																			<path d="M4 15l4 5"></path>
-																			<path d="M16 20l4-5"></path>
-																		</svg>
-																	</div>
-																	<div>
-																		<div className="text-muted small">SECONDARY FUEL ⓘ</div>
-																		<div className="fw-bold">Petrol</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-
-														<div className="row mt-4">
-															<div className="col-md-4">
-																<div className="mb-3">
-																	<div className="text-muted small">Battery type</div>
-																	<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
-																</div>
-															</div>
-														</div>
-
-														<div className="mt-2">
-															<a href="#" className="text-primary d-flex align-items-center">
-																<span>More about electric cars</span>
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ms-2">
-																	<path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
-																	<path d="M14 2h6v6"></path>
-																	<path d="M18 8L8 18"></path>
-																</svg>
-															</a>
-														</div>
-
-														<div className="mt-4 pt-3 border-top text-muted small">
-															<p className="mb-0">The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.</p>
 														</div>
 													</div>
 
-													<div className="general-engine-info ">
-														<div className="row">
-															<div className="col-md-6 ">
-																<div className="card border-0 mb-4">
-																	<div className="card-header bg-gray-50 dark:bg-gray-800">General</div>
-																	<div className="card-body p-0">
-																		<table className="table table-striped mb-0">
-																			<tbody>
-																				<tr>
-																					<td className="text-muted">Vehicle ID</td>
-																					<td className="fw-medium">74002238</td>
-																				</tr>
-																				<tr>
-																					<td className="text-muted">Make</td>
-																					<td className="fw-medium">Toyota</td>
-																				</tr>
-																			</tbody>
-																		</table>
-																	</div>
+													<div className="mt-2">
+														<a href="#" className="text-primary d-flex align-items-center">
+															<span>More about electric cars</span>
+															<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ms-2">
+																<path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
+																<path d="M14 2h6v6"></path>
+																<path d="M18 8L8 18"></path>
+															</svg>
+														</a>
+													</div>
+
+													<div className="mt-4 pt-3 border-top text-muted small">
+														<p className="mb-0">The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.</p>
+													</div>
+												</div>
+
+												<div className="general-engine-info ">
+													<div className="row">
+														<div className="col-md-6 ">
+															<div className="card border-0 mb-4">
+																<div className="card-header bg-gray-50 dark:bg-gray-800">General</div>
+																<div className="card-body p-0">
+																	<table className="table table-striped mb-0">
+																		<tbody>
+																			<tr>
+																				<td className="text-muted">Vehicle ID</td>
+																				<td className="fw-medium">74002238</td>
+																			</tr>
+																			<tr>
+																				<td className="text-muted">Make</td>
+																				<td className="fw-medium">Toyota</td>
+																			</tr>
+																		</tbody>
+																	</table>
 																</div>
 															</div>
-															<div className="col-md-6">
-																<div className="card border-0 mb-4">
-																	<div className="card-header bg-gray-50 dark:bg-gray-800">Engine</div>
-																	<div className="card-body p-0">
-																		<table className="table table-striped mb-0">
-																			<tbody>
-																				<tr>
-																					<td className="text-muted">Engine capacity</td>
-																					<td className="fw-medium">1,987 ccm</td>
-																				</tr>
-																				<tr>
-																					<td className="text-muted">Consumption (comb.)</td>
-																					<td className="fw-medium">4 l/100km</td>
-																				</tr>
-																			</tbody>
-																		</table>
-																	</div>
+														</div>
+														<div className="col-md-6">
+															<div className="card border-0 mb-4">
+																<div className="card-header bg-gray-50 dark:bg-gray-800">Engine</div>
+																<div className="card-body p-0">
+																	<table className="table table-striped mb-0">
+																		<tbody>
+																			<tr>
+																				<td className="text-muted">Engine capacity</td>
+																				<td className="fw-medium">1,987 ccm</td>
+																			</tr>
+																			<tr>
+																				<td className="text-muted">Consumption (comb.)</td>
+																				<td className="fw-medium">4 l/100km</td>
+																			</tr>
+																		</tbody>
+																	</table>
 																</div>
 															</div>
 														</div>
@@ -837,58 +1023,17 @@ export default function CarsDetails1() {
 											</div>
 										</div>
 									</div>
-
-									{/* <div className="group-collapse-expand" id="price-history">
-											<button className={isAccordion == 3 ? "btn btn-collapse collapsed" : "btn btn-collapse"} type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuestion" aria-expanded="false" aria-controls="collapseQuestion" onClick={() => handleAccordion(3)}>
-												<h6>Question  Answers</h6>
-												<svg width={12} height={7} viewBox="0 0 12 7" xmlns="http://www.w3.org/2000/svg">
-													<path d="M1 1L6 6L11 1" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg>
-											</button>
-											<div className={isAccordion == 3 ? "collapse" : "collapse show"} id="collapseQuestion">
-												<div className="card card-body">
-													<div className="list-questions">
-														<div className="item-question">
-															<div className="head-question">
-																<p className="text-md-bold neutral-1000">Is The High Roller suitable for all ages?</p>
-															</div>
-															<div className="content-question">
-																<p className="text-sm-medium neutral-800">Absolutely! The High Roller offers a family-friendly experience suitable for visitors of all ages. Children must be accompanied by an adult.</p>
-															</div>
-														</div>
-														<div className="item-question active">
-															<div className="head-question">
-																<p className="text-md-bold neutral-1000">Can I bring food or drinks aboard The High Roller?</p>
-															</div>
-															<div className="content-question">
-																<p className="text-sm-medium neutral-800">Outside food and beverages are not permitted on The High Roller. However, there are nearby dining options at The LINQ Promenade where you can enjoy a meal before or after your ride.</p>
-															</div>
-														</div>
-														<div className="item-question">
-															<div className="head-question">
-																<p className="text-md-bold neutral-1000">Is The High Roller wheelchair accessible?</p>
-															</div>
-															<div className="content-question">
-																<p className="text-sm-medium neutral-800">es, The High Roller cabins are wheelchair accessible, making it possible for everyone to enjoy the breathtaking views of Las Vegas.</p>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-
 								</div>
-
 
 								<div className="features-section py-5" id="features">
 									<div className="container-fluid px-0">
-										<h3 className="mb-4">Features</h3>
+										<h2 className="mb-4 text-gray-900 dark:text-white">Features</h2>
 
 										<div className="row">
 											<div className="col-md-6 mb-4">
 												<div className="card border-0 h-100 bg-gray-50 dark:bg-gray-800">
 													<div className="card-body p-4">
-														<h5 className="card-title text-gray-900 dark:text-white mb-4">Security, Safety and Assistance</h5>
+														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-md md:text-lg lg:text-xl">Security, Safety and Assistance</h6>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
@@ -958,7 +1103,7 @@ export default function CarsDetails1() {
 											<div className="col-md-6 mb-4">
 												<div className="card border-0 h-100">
 													<div className="card-body p-4">
-														<h5 className="card-title text-gray-900 dark:text-white mb-4">Comfort and Convenience</h5>
+														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-sm md:text-md lg:text-lg">Comfort and Convenience</h6>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
@@ -1063,7 +1208,7 @@ export default function CarsDetails1() {
 											<div className="col-md-6 mb-4">
 												<div className="card border-0">
 													<div className="card-body p-4">
-														<h5 className="card-title text-gray-900 dark:text-white mb-4">Accessories and Extra features</h5>
+														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-sm md:text-md lg:text-lg">Accessories and Extra features</h6>
 														<div className="row">
 															<div className="col-md-6">
 																<ul className="list-unstyled feature-list">
@@ -1137,7 +1282,7 @@ export default function CarsDetails1() {
 														</div>
 													</div>
 												</div>
-												<div className="carousel-item bg-gray-50 dark:bg-gray-800 p-4">
+												<div className="carousel-item bg-gray-50 dark:bg-white p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1146,33 +1291,33 @@ export default function CarsDetails1() {
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
-																<h4 className="text-gray-900 dark:text-white mb-3">We keep the guarantee!</h4>
-																<p className="mb-4 text-gray-900 dark:text-gray-200">
+															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }} color='black'>
+																<h4 className="text-gray-900 dark:text-black mb-3">We keep the guarantee!</h4>
+																<p className="mb-4 text-gray-900 dark:text-white">
 																	We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
 																</p>
-																<p className="text-gray-500 dark:text-gray-400">
+																<p className="text-gray-500 dark:text-white">
 																	If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong>
 																</p>
 															</div>
 														</div>
 													</div>
 												</div>
-												<div className="carousel-item bg-gray-50 dark:bg-gray-800 p-4">
+												<div className="carousel-item bg-gray-50 dark:bg-black p-4">
 													<div className="position-relative">
-														<div className="d-flex">
-															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
-																<div style={{ height: "400px" }}>
+														<div className="d-flex flex-column flex-md-row">
+															<div className="position-relative mb-3 mb-md-0" style={{ width: "100%", maxWidth: "350px", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																<div style={{ height: "220px" }}>
 																	<img src="/how_works_1.webp" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
-																<h4 className="text-gray-900 dark:text-white mb-3">Delivery time</h4>
-																<p className="mb-4 text-gray-900 dark:text-gray-200">
+															<div className="py-3 px-2 px-md-5" style={{ width: "100%", color: 'black' }}>
+																<h4 className="mb-2 text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-900 dark:text-white">Delivery time</h4>
+																<p className="mb-3 text-sm sm:text-base md:text-lg text-gray-900 dark:text-white">
 																	We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.
 																</p>
-																<p className="text-gray-500 dark:text-gray-400">
+																<p className="text-xs sm:text-sm md:text-base text-gray-500 dark:text-white">
 																	Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.
 																</p>
 															</div>
@@ -1257,7 +1402,7 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 								<div id="price-map" className="mt-5 pt-3">
-									<h3 className="mb-4 fs-5">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h3>
+									<h2 className="mb-4 text-gray-900 dark:text-white">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="d-flex justify-content-between align-items-center mb-3">
@@ -1505,7 +1650,7 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="comparison" className="mt-5 pt-3">
-									<h3 className="mb-4 fs-5">Comparison</h3>
+									<h2 className="mb-4 ">Comparison</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="text-center mb-4">
@@ -1514,7 +1659,7 @@ export default function CarsDetails1() {
 
 												<div className="position-relative mt-5 pt-4">
 													<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
-														<div className="text-white text-center p-3 rounded-3 mb-5 position-relative" style={{ width: '200px', margin: '0 auto', backgroundColor: '#E53E3E' }}>
+														<div className="text-white text-center p-3 rounded-3 mb-5 position-relative comparison-price-box" style={{ width: '200px', margin: '0 auto', backgroundColor: '#E53E3E' }}>
 															<div className="mb-1 fw-bold">THIS CAR</div>
 															<div className="fs-4 fw-bold">€24,999</div>
 															<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
@@ -1523,7 +1668,7 @@ export default function CarsDetails1() {
 														</div>
 													</div>
 
-													<div className="d-flex justify-content-between align-items-center mt-4 mb-2 px-4">
+													<div className="d-flex justify-content-between align-items-center mt-4 mb-2 px-4 comparison-labels">
 														<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Top offer</div>
 														<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Very good price</div>
 														<div className="text-warning fw-medium" style={{ fontSize: '14px' }}>Fair price</div>
@@ -1552,7 +1697,7 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="financing" className="mt-5 pt-3">
-									<h3 className="mb-4 fs-5">Financing</h3>
+									<h2 className="mb-4">Financing</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="d-flex justify-content-between align-items-center mb-3">
@@ -1843,7 +1988,7 @@ export default function CarsDetails1() {
 							<div>
 								<Link href="/checkout" passHref legacyBehavior>
 									<Button as="a" colorScheme="red" size="lg" w="100%">
-										Buy
+										Buy Now
 									</Button>
 								</Link>
 							</div>

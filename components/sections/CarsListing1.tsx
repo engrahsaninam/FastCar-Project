@@ -73,7 +73,8 @@ const CarCard = ({ car }: { car: Car }) => {
 				</div>
 				<div className="card-program">
 					<div className="card-location">
-						<p className="text-location  text-md-medium ">{car.location}</p>
+						<LucideIcon icon={MapPin} boxSize="4" color={textColor} />
+						<p className="text-md-medium ">{car.location}</p>
 					</div>
 					{/* Specs Row - inline with minimal spacing */}
 					<Box mb={["2", "2", "1"]} ml="1">
@@ -114,9 +115,9 @@ const CarCard = ({ car }: { car: Car }) => {
 							<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
 								<HStack spacing="1" >
 									{[...Array(5)].map((_, i) => (
-										<Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+										<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 									))}
-									<Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+									<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
 										Very Good Price
 									</Text>
 								</HStack>
@@ -126,7 +127,7 @@ const CarCard = ({ car }: { car: Car }) => {
 								<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
 									€ {car.price.toLocaleString()}
 								</Text>
-								<Text fontSize="xs" color="gray.500">
+								<Text fontSize="xs" color={textColor}>
 									€ {car.price.toLocaleString()} without VAT
 								</Text>
 							</Box>
@@ -245,13 +246,13 @@ export default function CarsListing1() {
 							<p className="text-lg-medium text-bold neutral-500">The world's leading car brands</p>
 						</div>
 						<div className="col-md-3 position-relative mb-30 wow fadeInUp">
-							<div className="box-button-slider box-button-slider-team justify-content-end">
-								<div className="swiper-button-prev swiper-button-prev-style-1 swiper-button-prev-2">
+							<div className="box-button-slider box-button-slider-team justify-content-end d-flex">
+								<div className="swiper-button-prev swiper-button-prev-style-1 swiper-button-prev-2 d-flex justify-content-center align-items-center">
 									<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
 										<path d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
 									</svg>
 								</div>
-								<div className="swiper-button-next swiper-button-next-style-1 swiper-button-next-2">
+								<div className="swiper-button-next swiper-button-next-style-1 swiper-button-next-2 d-flex justify-content-center align-items-center">
 									<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
 										<path d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33325 7.99992" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
 									</svg>

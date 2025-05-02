@@ -3019,8 +3019,9 @@ label {
 .card-journey-small .card-info .card-program .card-location {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	/* justify-content: space-between; */
 	margin-bottom: 40px;
+	gap: 10px;
 }
 
 .card-journey-small .card-info .card-program .card-location .text-location {
