@@ -14,6 +14,7 @@ import {
     GridItem,
     Icon,
     VStack,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
@@ -83,11 +84,20 @@ export default function HowItWorks() {
             content.scrollIntoView({ behavior: 'smooth' });
         }
     };
-
+    const bgColor = useColorModeValue("gray.50", "gray.900");
+    const cardBg = useColorModeValue("white", "gray.800");
+    const cardBorder = useColorModeValue("gray.100", "gray.700");
+    const textColor = useColorModeValue("gray.900", "gray.100");
+    const subTextColor = useColorModeValue("gray.600", "gray.300");
+    const hoverBgColor = useColorModeValue("gray.100", "gray.700");
+    const hovertextColor = useColorModeValue("gray.900", "gray.100");
+    const stepCardBg = useColorModeValue("white", "gray.800");
+    const stepCardShadow = useColorModeValue("md", "dark-lg");
+    const stepNumberColor = useColorModeValue("red.500", "red.300");
     return (
-        <Layout>
+        <Layout >
             {/* Hero Section */}
-            <Box position="relative" minH="100vh" bg="gray.50">
+            <Box position="relative" minH="100vh" bg={bgColor}>
                 <Container maxW="container.xl" h="full">
                     <Grid
                         templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
@@ -101,17 +111,15 @@ export default function HowItWorks() {
                                 <Heading
                                     as="h1"
                                     fontSize={{ base: "3xl", md: "5xl" }}
-                                    color="#232F5B"
+                                    color={textColor}
                                     fontWeight="bold"
-                                    mb={6}
-
                                     lineHeight="1.2"
                                 >
                                     How does Fast4Car work?
                                 </Heading>
                                 <Text
                                     fontSize={{ base: "lg", md: "xl" }}
-                                    color="#232F5B"
+                                    color={textColor}
                                     mb={8}
                                     p={6}
                                     lineHeight="1.6"
@@ -120,21 +128,19 @@ export default function HowItWorks() {
                                 </Text>
                                 <Button
                                     leftIcon={<ChevronDownIcon />}
-                                    colorScheme="blue"
+                                    colorScheme="red"
                                     size="lg"
+                                    bg="#F56565"
                                     onClick={scrollToContent}
-                                    bg="red"
-                                    _hover={{ bg: "#4338CA" }}
                                 >
                                     I want to know more
                                 </Button>
                             </Box>
                         </GridItem>
-
                         {/* Right Image */}
                         <GridItem display={{ base: 'none', lg: 'block' }}>
                             <Image
-                                src="/car-ins.jpg"
+                                src="/car-ins.png"
                                 alt="Car inspection"
                                 objectFit="cover"
                                 w="full"
@@ -144,21 +150,17 @@ export default function HowItWorks() {
                         </GridItem>
                     </Grid>
                 </Container>
-
                 {/* Guarantee Cards */}
                 <Box
-                    position="absolute"
-                    bottom="-100px"
-                    left="0"
-                    right="0"
+                    mt={{ base: 8, md: -20 }}
                     zIndex="1"
                 >
                     <Container maxW="container.xl">
                         <SimpleGrid
                             columns={{ base: 1, md: 3 }}
                             spacing={8}
-                            bg="white"
-                            p={10}
+                            bg={bgColor}
+                            p={{ base: 4, md: 10 }}
                             rounded="3xl"
                             shadow="2xl"
                         >
@@ -167,17 +169,18 @@ export default function HowItWorks() {
                                     key={index}
                                     position="relative"
                                     overflow="hidden"
-                                    bg="white"
+                                    bg={cardBg}
                                     p={8}
                                     rounded="2xl"
                                     border="1px solid"
-                                    borderColor="gray.100"
+                                    borderColor={cardBorder}
                                     transition="all 0.4s ease"
                                     _hover={{
                                         transform: 'translateY(-8px)',
                                         shadow: '2xl',
-                                        borderColor: 'red.300',
-                                        bg: 'gray.50'
+                                        // borderColor: 'red.300',
+                                        // bg: hoverBgColor,
+                                        color: hovertextColor
                                     }}
                                 >
                                     <Box
@@ -221,7 +224,7 @@ export default function HowItWorks() {
                                                 {item.title}
                                             </Heading>
                                             <Text
-                                                color="gray.600"
+                                                color={subTextColor}
                                                 fontSize="md"
                                                 lineHeight="1.7"
                                             >
@@ -235,20 +238,19 @@ export default function HowItWorks() {
                     </Container>
                 </Box>
             </Box>
-
             {/* Content sections will go here */}
-            <Box id="content" pt="150px">
+            <Box id="content" pt={{ base:0, md: 0 }}>
                 {/* Steps Section */}
-                <Box py={20}>
+                <Box py={20} bg={bgColor}>
                     <Container maxW="container.xl">
                         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10}>
                             {steps.map((step, index) => (
                                 <Box
                                     key={index}
-                                    bg="white"
+                                    bg={stepCardBg}
                                     p={0}
                                     borderRadius="xl"
-                                    shadow="md"
+                                    shadow={stepCardShadow}
                                     transition="all 0.3s"
                                     overflow="hidden"
                                     _hover={{ transform: 'translateY(-5px)', shadow: 'lg' }}
@@ -265,7 +267,7 @@ export default function HowItWorks() {
                                             position="absolute"
                                             top={4}
                                             left={4}
-                                            color="red"
+                                            color={stepNumberColor}
                                             fontSize="2xl"
                                             fontWeight="bold"
                                             textShadow="0 2px 4px rgba(0,0,0,0.3)"
@@ -277,12 +279,12 @@ export default function HowItWorks() {
                                         <Heading
                                             size="md"
                                             mb={4}
-                                            color="red"
+                                            color="red.500"
                                         >
                                             {step.title}
                                         </Heading>
                                         <Text
-                                            color="gray.600"
+                                            color={subTextColor}
                                             fontSize="sm"
                                             lineHeight="1.6"
                                         >
@@ -294,13 +296,12 @@ export default function HowItWorks() {
                         </SimpleGrid>
                     </Container>
                 </Box>
-
                 {/* CTA Section */}
-                <Box py={20} textAlign="center">
+                <Box py={20} textAlign="center" bg={bgColor}>
                     <Container maxW="container.xl">
                         <VStack spacing={6}>
-                            <Heading size="xl">Try out how Fast4Car works.</Heading>
-                            <Text fontSize="lg" color="gray.600">
+                            <Heading size="xl" color={textColor}>Try out how Fast4Car works.</Heading>
+                            <Text fontSize="lg" color={subTextColor}>
                                 Now all that's left is to choose your next car. We'll be delighted if it's from us.
                             </Text>
                             <Link href="/cars">
@@ -308,6 +309,7 @@ export default function HowItWorks() {
                                     size="lg"
                                     colorScheme="red"
                                     px={8}
+                                    bg="#F56565"
                                     py={6}
                                     fontSize="lg"
                                 >

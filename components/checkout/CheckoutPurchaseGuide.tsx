@@ -437,7 +437,7 @@ const CheckoutPurchaseGuide: React.FC = () => {
             setDirection(1);
             setCurrentSlide(prev => prev + 1);
         }
-    }, [currentSlide, slides.length]);
+    }, [currentSlide]);
 
     const prevSlide = React.useCallback(() => {
         if (currentSlide > 1) {

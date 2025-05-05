@@ -1,7 +1,9 @@
 import React from 'react';
-import { Box, Text, Container, Heading, SimpleGrid, Image, Flex } from '@chakra-ui/react';
+import { Box, Text, Container, Heading, SimpleGrid, Image, Flex, useColorModeValue } from '@chakra-ui/react';
 
 const FinancingWorkflow = () => {
+    const textColor = useColorModeValue("gray.900", "gray.100");
+    const bgColor = useColorModeValue("gray.50", "gray.900");
     const steps = [
         {
             number: "01.",
@@ -28,14 +30,14 @@ const FinancingWorkflow = () => {
 
 
     return (
-        <Box py={24} bg="gray.50">
+        <Box py={24} bg={bgColor}>
             <Container maxW="container.xl">
                 <Box mb={10} textAlign="center">
                     <Heading
                         as="h2"
                         fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }}
                         fontWeight="extrabold"
-                        color="#232F5B"
+                        color={textColor}
                         mb={4}
                     >
                         How does Fast4Car financing work?
@@ -78,14 +80,14 @@ const FinancingWorkflow = () => {
                                 <Text
                                     fontSize="xl"
                                     fontWeight="bold"
-                                    color="#232F5B"
+                                    color={textColor}
                                     mb={3}
                                     textAlign="center"
                                 >
                                     {step.title}
                                 </Text>
                                 <Text
-                                    color="gray.600"
+                                    color={textColor}
                                     textAlign="center"
                                     fontSize="md"
                                 >

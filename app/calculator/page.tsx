@@ -3,14 +3,14 @@ import FinancingCard from "@/components/calculator/Financing"
 import Specs from "@/components/calculator/Specs"
 import FinancingSpecs from "@/components/checkout/PaymentMethod/FinancingSpecs"
 import Layout from "@/components/layout/Layout"
-import { Box, Text } from "@chakra-ui/react"
+import { Box, Text, useColorModeValue } from "@chakra-ui/react"
 import Link from "next/link"
 import { useState } from 'react'
 import FinancingWorkflow from "@/components/calculator/FinancingWorkflow"
 
 export default function Calculator() {
 	const [isAccordion, setIsAccordion] = useState(1)
-
+	const textColor = useColorModeValue("gray.900", "gray.100");
 	const handleAccordion = (key: any) => {
 		setIsAccordion(prevState => prevState === key ? null : key)
 	}
@@ -50,10 +50,10 @@ export default function Calculator() {
 						<div className="box-cta-6">
 							<div className="container">
 								<Box mb={10} textAlign="center">
-									<Text as="h2" fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="extrabold" color="#232F5B" mb={4}>
+									<Text as="h2" fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="extrabold" color={textColor} mb={4}>
 										Financing through Fast4Car
 									</Text>
-									<Text fontSize={{ base: 'md', md: 'lg' }} color="#232F5B" fontWeight="semibold">
+									<Text fontSize={{ base: 'md', md: 'lg' }} color={textColor} fontWeight="semibold">
 										Our favourable financing makes car purchase affordable for anyone. Just choose your<br />
 										favourite car and a financing plan to suit your needs.
 									</Text>

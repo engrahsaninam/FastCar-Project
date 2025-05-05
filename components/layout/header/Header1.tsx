@@ -1,15 +1,36 @@
 'use client'
-import { Link as ChakraLink, Text, Flex, HStack } from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { Link as ChakraLink, Text, Flex, HStack, Menu, MenuButton, MenuList, MenuItem, Box, useColorModeValue, useToken } from '@chakra-ui/react';
 import dynamic from 'next/dynamic'
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
 })
 import Link from 'next/link'
+import { usePathname } from 'next/navigation';
 import Dropdown from 'react-bootstrap/Dropdown'
 export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handleOffcanvas, isOffcanvas }: any) {
+	const pathname = usePathname();
+	const isMainPage = pathname === '/';
+
+	// Move all useColorModeValue hooks to the top level
+	const lightTextColor = useColorModeValue('gray.900', 'gray.100');
+	const lightTextColorHover = useColorModeValue('gray.700', 'gray.200');
+	const lightBorderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
+	const lightBgColor = useColorModeValue('white', 'gray.900');
+	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
+
+	// Use the values conditionally
+	const textColor = isMainPage ? 'gray.100' : lightTextColor;
+	const textColorHover = isMainPage ? 'gray.300' : lightTextColorHover;
+	const borderColor = lightBorderColor;
+	const bgColor = isMainPage ? 'gray.900' : lightBgColor;
+	const burgerIconClass = isMainPage ? 'burger-icon-white' : lightBurgerIconClass;
+
+	const [resolvedBgColor] = useToken('colors', [bgColor]);
+
 	return (
 		<>
-			<header className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}>
+			<header style={{ backgroundColor: resolvedBgColor }} className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}>
 				{/* <div className="top-bar top-bar-2 top-bar-3 bg-transparent">
 					<div className="container-fluid">
 						<Flex className="text-header-info" align="center" gap={4}>
@@ -190,55 +211,73 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 												</div>
 											</div>
 										</li> */}
-										<li><Link className="color-white" href="/cars">Buy</Link></li>
-										<li><Link className="color-white" href="/deals">Daily Deals 🔥</Link></li>
-										<li><Link className="color-white" href="/how-it-works">How it Works</Link></li>
-										<li><Link className="color-white" href="/reviews">Reviews</Link></li>
-										<li><Link className="color-white" href="/calculator">Loan Calculator</Link></li>
+										<li><ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Buy</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/deals" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Daily Deals</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/how-it-works" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>How it Works</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/reviews" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Reviews</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/calculator" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Loan Calculator</ChakraLink></li>
 									</ul>
 								</nav>
 							</div>
 							<div className="header-right">
 								<div className="header-right mr-40">
-									<Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle  head-lang">
-										<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-account icon-lang">
-											<span className="text-14-medium arrow-down">EN</span>
-										</Dropdown.Toggle>
-										<Dropdown.Menu className="dropdown-account" style={{ visibility: 'visible' }}>
-											<ul>
-												<li><Link className="text-sm-medium" href="#">English</Link></li>
-												<li><Link className="text-sm-medium" href="#">French</Link></li>
-												<li><Link className="text-sm-medium" href="#">Chinese</Link></li>
-											</ul>
-										</Dropdown.Menu>
-									</Dropdown>
-									<Link href="/login" className="d-none d-xl-inline-flex align-items-center text-14-medium mr-15 text-white">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											className="me-2"
-										>
-											<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-											<circle cx="12" cy="7" r="4"></circle>
-										</svg>
-										Sign In
-									</Link>
+									<Box display={{ base: "flex", xl: "flex" }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+										<Menu>
+											<MenuButton
+												as={Text}
+												fontSize={["10px", "16px"]}
+												fontWeight="medium"
+												color={textColor}
+												_hover={{ color: textColorHover }}
+												cursor="pointer"
+												display="flex"
+												alignItems="center"
+											>
+												EN <ChevronDownIcon ml={1} />
+											</MenuButton>
+											<MenuList>
+												<MenuItem as={Link} href="#">English</MenuItem>
+												<MenuItem as={Link} href="#">French</MenuItem>
+												<MenuItem as={Link} href="#">Chinese</MenuItem>
+											</MenuList>
+										</Menu>
+									</Box>
+
+
+									{/* Sign In */}
+									<Box display="flex" px={["10px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+										<Link href="/login" passHref>
+											<Box as="a" display={{ base: "flex", xl: "flex" }} alignItems="center" fontSize={["10px", "16px"]}
+												fontWeight="medium" color={textColor} _hover={{ color: textColorHover }}>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="20"
+													height="20"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													style={{ marginRight: "8px" }}
+												>
+													<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+													<circle cx="12" cy="7" r="4"></circle>
+												</svg>
+												Sign In
+											</Box>
+										</Link>
+									</Box>
+
 
 									<div className="top-button-mode">
 										<ThemeSwitch />
 									</div>
 								</div>
-								<div className="burger-icon burger-icon-white " onClick={handleMobileMenu} >
+								<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
 									<span className="burger-icon-top" />
-									<span className="burger-icon-mid"> </span>
-									<span className="burger-icon-bottom"> </span>
+									<span className="burger-icon-mid" />
+									<span className="burger-icon-bottom" />
 								</div>
 							</div>
 						</div>

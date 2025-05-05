@@ -59,7 +59,7 @@ import {
 	SimpleGrid,
 } from "@chakra-ui/react"
 import Image from 'next/image'
-import { ChevronUp, X, ArrowRight, Calendar, Clock, Info, Gauge, Fuel } from "lucide-react"
+import { ChevronUp, X, ChevronDown, Calendar, Clock, Info, Gauge, Fuel } from "lucide-react"
 
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
 
@@ -116,6 +116,9 @@ const SlickArrowRight = ({ currentSlide, slideCount, ...props }: any) => (
 );
 
 export default function CarsDetails1() {
+	const borderColor = useColorModeValue("gray.100", "gray.700");
+	const darkGrayTextColor = useColorModeValue("gray.800", "gray.200");
+	const redTextColor = useColorModeValue("red.600", "red.300");
 	const [isOpen, setOpen] = useState(false)
 	const [nav1, setNav1] = useState(null)
 	const [nav2, setNav2] = useState(null)
@@ -355,17 +358,38 @@ export default function CarsDetails1() {
 		const borderColor = useColorModeValue("gray.200", "gray.700")
 		const overlayBg = useColorModeValue("blackAlpha.600", "blackAlpha.800")
 		const textColor = useColorModeValue("gray.900", "white")
-		const mutedTextColor = useColorModeValue("gray.600", "gray.400")
-		const redColor = useColorModeValue("red.500", "red.400")
-		const greenBg = useColorModeValue("green.50", "green.900")
-		const greenText = useColorModeValue("green.600", "green.300")
-		const includedBg = useColorModeValue("green.100", "green.800")
-		const includedText = useColorModeValue("green.700", "green.200")
-		const sectionBorder = useColorModeValue("gray.100", "gray.700")
-		const highlightBg = useColorModeValue("red.50", "red.900")
-		const highlightBorder = useColorModeValue("red.200", "red.700")
-		const highlightText = useColorModeValue("red.600", "red.300")
-		const priceColor = useColorModeValue("black", "white");
+		const mutedTextColor = useColorModeValue("gray.600", "gray.400");
+		const lightMutedTextColor = useColorModeValue("gray.500", "gray.500");
+		const redTextColor = useColorModeValue("red.600", "red.300");
+		const redBgLight = useColorModeValue("red.50", "red.900");
+		const redBorderLight = useColorModeValue("red.100", "red.800");
+		const greenBgLight = useColorModeValue("green.50", "green.900");
+		const greenTextColor = useColorModeValue("green.600", "green.300");
+		const greenBorderLight = useColorModeValue("green.100", "green.800");
+		const hoverBgColor = useColorModeValue("gray.50", "gray.700");
+
+		// Additional color values
+		const premiumHeaderBgGradient = useColorModeValue(
+			"linear(to-br, red.500, red.600, red.700)",
+			"linear(to-br, red.700, red.600, red.500)"
+		);
+		const gray50BgColor = useColorModeValue("gray.50", "gray.700");
+		const grayTextColor = useColorModeValue("gray.700", "gray.300");
+		const darkGrayTextColor = useColorModeValue("gray.800", "gray.200");
+		interface ServiceItem {
+			label: string;
+			price: string;
+			hasDropdown?: boolean;
+			isFree?: boolean;
+		}
+		const services: ServiceItem[] = [
+			{ label: 'Home delivery', price: 'EUR 15,005', hasDropdown: true },
+			{ label: '12 liters of fuel', price: 'FREE', isFree: true },
+			{ label: 'Import MOT', price: 'EUR 4,490' },
+			{ label: 'Administration Fee', price: 'EUR 800' },
+			{ label: 'Car registration', price: 'EUR 1,990' },
+			{ label: 'Extended warranty', price: 'FREE', isFree: true }
+		];
 		return (
 			<>
 				<Box
@@ -414,63 +438,164 @@ export default function CarsDetails1() {
 						/>
 					</Flex>
 
-					<Box p={0} overflowY="auto" maxHeight="calc(90vh - 100px)" pb="80px">
+					<Box p={2} overflowY="auto" maxHeight="calc(90vh - 100px)" pb="80px">
 						{/* Price Card */}
 						<Box bgGradient="linear(to-br, red.500, red.600, red.700)" borderRadius="xl" p={5} mx={3} mt={3} mb={4} color="white" textAlign="left">
-							<Text fontSize="sm" opacity={0.9}>PRICE INCL SERVICES</Text>
-							<Text fontSize="3xl" fontWeight="bold" mt={1}>24 999 €</Text>
-							<Text fontSize="sm" opacity={0.8} mt={1}>20 491 € without VAT</Text>
+							<Text fontSize="sm" fontWeight="medium" color="red.100" opacity={0.9}>
+								TOTAL PRICE INCL. SERVICES
+							</Text>
+							<Text fontSize="3xl" fontWeight="bold" mt={2} color="white" letterSpacing="tight">
+								EUR 647,765
+							</Text>
+							<Text fontSize="xs" color="red.100" opacity={0.8} mt={1.5}>
+								EUR 542,965 without VAT
+							</Text>
 						</Box>
 
 						{/* Vehicle details */}
-						<Box px={4}>
-							<Text fontWeight="semibold" color={textColor} mb={2}>Vehicle details</Text>
-							<Flex justify="space-between" align="center" mb={1}>
-								<Flex align="center" gap={2}><Icon as={Calendar} w={4} h={4} />First registration</Flex>
-								<Text>12/2020</Text>
-							</Flex>
-							<Flex justify="space-between" align="center" mb={2}>
-								<Flex align="center" gap={2}><Icon as={Gauge} w={4} h={4} />Mileage</Flex>
-								<Text>46,042 km</Text>
-							</Flex>
-							<Badge bg={greenBg} color={greenText} px={3} py={2} borderRadius="md" fontWeight="bold" mb={3}>VERY GOOD PRICE</Badge>
-						</Box>
-
-						{/* Included in price */}
-						<Box px={4} pt={2} pb={2} borderTop="1px" borderColor={sectionBorder}>
-							<Text fontWeight="semibold" color={textColor} mb={2}>Included in price</Text>
-							<Flex justify="space-between" align="center" mb={1}>
-								<Text>Car inspection</Text>
-								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
-							</Flex>
-							<Flex justify="space-between" align="center" mb={1}>
-								<Text>6-month warranty</Text>
-								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
-							</Flex>
-							<Flex justify="space-between" align="center" mb={2}>
-								<Text>Full service check</Text>
-								<Badge bg={includedBg} color={includedText} px={3} py={1} borderRadius="md">INCLUDED</Badge>
-							</Flex>
-						</Box>
-
-						{/* Payment options */}
-						<Box px={4} pt={2} pb={4} borderTop="1px" borderColor={sectionBorder}>
-							<Text fontWeight="semibold" color={textColor} mb={2}>Payment options</Text>
-							<VStack spacing={3} align="stretch">
-								<Flex align="center" justify="space-between" p={3} borderRadius="lg" borderWidth="1px" borderColor={highlightBorder} bg={highlightBg} cursor="pointer">
-									<Box>
-										<Text color={highlightText} fontWeight="bold">Financing</Text>
-										<Text color={highlightText} fontSize="sm">From 199€/month</Text>
-									</Box>
-									<Icon as={ArrowRight} color={highlightText} w={5} h={5} />
+						<Box borderBottom="1px" borderColor={borderColor} mb={1} p={2}>
+							<Text fontSize="md" fontWeight="semibold" color={textColor} mb={3}>
+								Mercedes-Benz A 200 d 110 kW
+							</Text>
+							<VStack spacing={1} align="stretch">
+								<Flex justify="space-between" align="center">
+									<Text fontSize="sm" color={mutedTextColor}>Price incl. necessary import services</Text>
+									<Text fontSize="sm" fontWeight="semibold" color={textColor}>EUR 634,490</Text>
 								</Flex>
-								<Flex align="center" justify="space-between" p={3} borderRadius="lg" borderWidth="1px" borderColor={borderColor} bg={bgColor}>
-									<Box>
-										<Text color={textColor} fontWeight="bold">Cash payment</Text>
-										<Text color={mutedTextColor} fontSize="sm">Pay online or at dealership</Text>
-									</Box>
+								<Flex justify="space-between" align="center">
+									<Text fontSize="sm" color={lightMutedTextColor}>Price without VAT</Text>
+									<Text fontSize="sm" color={lightMutedTextColor}>EUR 447,915</Text>
+								</Flex>
+								<Flex align="center" gap={1} mt={2} bg={gray50BgColor} rounded="lg">
+									<Text fontSize="xs" color={mutedTextColor}>The price is recalculated from 25.65 €</Text>
+									<Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
 								</Flex>
 							</VStack>
+						</Box>
+
+						{/* CarAudit */}
+						<Box borderBottom="1px" borderColor={borderColor} p={2}>
+							<Flex
+								justify="space-between"
+								align="center"
+								p={1}
+								rounded="lg"
+								_hover={{ bg: hoverBgColor, opacity: 0.4 }}
+								transition="all 0.3s"
+							>
+								<Text fontSize="sm" fontWeight="medium" color={darkGrayTextColor}>CarAudit™</Text>
+								<Text fontSize="sm" fontWeight="semibold" color={textColor}>EUR 1,990</Text>
+							</Flex>
+						</Box>
+
+						{/* Additional Services */}
+						<Box mb={2} p={2}>
+							<Text
+								fontSize="xs"
+								fontWeight="semibold"
+								color={lightMutedTextColor}
+								textTransform="uppercase"
+								letterSpacing="wider"
+								mb={1}
+							>
+								Additional Services
+							</Text>
+							<VStack spacing={1} align="stretch">
+								{services.map((service, index) => (
+									<Flex
+										key={index}
+										justify="space-between"
+										align="center"
+										p={1}
+										_hover={{ bg: hoverBgColor }}
+										rounded="lg"
+										transition="all 0.3s"
+									>
+										<HStack spacing={2}>
+											<Text fontSize="sm" color={grayTextColor}>{service.label}</Text>
+											{service.hasDropdown && (
+												<Icon as={ChevronDown} w={4} h={4} color={lightMutedTextColor} />
+											)}
+										</HStack>
+										{service.isFree ? (
+											<Badge
+												px={2.5}
+												py={1}
+												colorScheme="green"
+												variant="solid"
+												fontSize="xs"
+												fontWeight="medium"
+											>
+												{service.price}
+											</Badge>
+										) : (
+											<Text fontSize="sm" fontWeight="medium" color={textColor}>
+												{service.price}
+											</Text>
+										)}
+									</Flex>
+								))}
+							</VStack>
+						</Box>
+
+						{/* Optional Services */}
+						<Box
+							bg={gray50BgColor}
+							opacity={0.5}
+							mb={2}
+							rounded="xl"
+							p={4}
+						>
+							<Text
+								fontSize="xs"
+								fontWeight="semibold"
+								color={lightMutedTextColor}
+								textTransform="uppercase"
+								letterSpacing="wider"
+							>
+								Optional Services
+							</Text>
+							<Text fontSize="xs" color={mutedTextColor}>
+								Other recommended services can be selected in the car order
+							</Text>
+						</Box>
+
+						{/* Total Price */}
+						<Box borderTop="1px" borderColor={borderColor} p={2}>
+							<Flex justify="space-between" align="center">
+								<Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
+									Total price
+								</Text>
+								<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
+									EUR 667,765
+								</Text>
+							</Flex>
+						</Box>
+
+						{/* Financing Note */}
+						<Box
+							bg={redBgLight}
+							rounded="xl"
+							p={2}
+							border="1px"
+							borderColor={redBorderLight}
+							opacity={0.5}
+							mt={2}
+						>
+							<Flex justify="space-between" align="center" mb={2}>
+								<Text fontSize="sm" color={grayTextColor}>
+									You are financing car for example for
+								</Text>
+								<Text fontSize="md" fontWeight="bold" color={redTextColor}>
+									EUR 5,557/mo
+								</Text>
+							</Flex>
+							<Flex align="center" gap={0.5}>
+								<Text fontSize="xs" color={mutedTextColor}>
+									120%, 48 instalments
+								</Text>
+								<Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
+							</Flex>
 						</Box>
 					</Box>
 					<Box
@@ -485,8 +610,8 @@ export default function CarsDetails1() {
 						zIndex={2}
 					>
 						<Link href="/checkout" passHref legacyBehavior>
-							<Button as="a" colorScheme="red" size="lg" w="100%">
-								Buy for 24 999 €
+							<Button as="a" colorScheme="red" color="white" size="lg" w="100%">
+								Buy Now
 							</Button>
 						</Link>
 					</Box>
@@ -527,6 +652,8 @@ export default function CarsDetails1() {
 		return <Box as={Icon} {...props} />;
 	};
 	const textColor = useColorModeValue("gray.900", "white");
+	const priceColor = useColorModeValue("black", "white");
+
 	const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
 
 	const badgeColor = useColorModeValue("red.400", "red.300");
@@ -1028,215 +1155,278 @@ export default function CarsDetails1() {
 								<div className="features-section py-5" id="features">
 									<div className="container-fluid px-0">
 										<h2 className="mb-4 text-gray-900 dark:text-white">Features</h2>
-
 										<div className="row">
+											{/* Security, Safety and Assistance */}
 											<div className="col-md-6 mb-4">
 												<div className="card border-0 h-100 bg-gray-50 dark:bg-gray-800">
-													<div className="card-body p-4">
-														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-md md:text-lg lg:text-xl">Security, Safety and Assistance</h6>
-														<div className="row">
-															<div className="col-md-6">
-																<ul className="list-unstyled feature-list">
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white rounded">
-																			Parking camera
-																		</span>
-																	</li>
-																	<li className="mb-2">
-																		<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Parking assist system self-steering</a>
-																	</li>
-																	<li className="mb-2">
-																		<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Blind spot assist</a>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">ABS</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Emergency braking assist (EBA, BAS)</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Emergency call</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Fatigue warning system</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Front collision warning system</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Hill-start assist</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Immobilizer</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Lane assist</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Front and rear parking sensors</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Power assisted steering</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Rain sensor</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Rear seats ISOFIX points</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Traction control (TC, ASR)</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Traffic sign recognition</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Tyre pressure monitoring</span>
-																	</li>
-																</ul>
+													{/* Accordion Header */}
+													<div
+														className="d-flex align-items-center justify-content-between p-4"
+														style={{ cursor: isMobile ? 'pointer' : 'default' }}
+														onClick={() => isMobile && handleAccordion('security')}
+													>
+														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-md md:text-lg lg:text-xl">
+															Security, Safety and Assistance
+														</h6>
+														{/* Chevron for mobile */}
+														{isMobile && (
+															<Icon
+																as={ChevronUp}
+																boxSize={5}
+																style={{
+																	transform: isAccordion === 'security' ? 'rotate(180deg)' : 'rotate(0deg)',
+																	transition: 'transform 0.2s',
+																}}
+															/>
+														)}
+													</div>
+													{/* Accordion Content */}
+													{(!isMobile || isAccordion === 'security') && (
+														<div className="card-body p-4 pt-0">
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white rounded">Parking camera</span>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Parking assist system self-steering</a>
+																		</li>
+																		<li className="mb-2">
+																			<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Blind spot assist</a>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">ABS</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Emergency braking assist (EBA, BAS)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Emergency call</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Fatigue warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Front collision warning system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Hill-start assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Immobilizer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Lane assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Front and rear parking sensors</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Power assisted steering</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Rain sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Rear seats ISOFIX points</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Traction control (TC, ASR)</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Traffic sign recognition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Tyre pressure monitoring</span>
+																		</li>
+																	</ul>
+																</div>
 															</div>
 														</div>
-													</div>
+													)}
 												</div>
 											</div>
-
+											{/* Comfort and Convenience */}
 											<div className="col-md-6 mb-4">
 												<div className="card border-0 h-100">
-													<div className="card-body p-4">
-														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-sm md:text-md lg:text-lg">Comfort and Convenience</h6>
-														<div className="row">
-															<div className="col-md-6">
-																<ul className="list-unstyled feature-list">
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">USB</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Navigation system</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Keyless entry</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Heated steering wheel</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Heated front seats</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Apple CarPlay</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Android Auto</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Automatic 2-zones air conditioning</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Alloy wheels</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Armrest front</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">JBL audio</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Automatic parking brake</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Bluetooth</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Central locking</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Adaptive cruise control</span>
-																	</li>
-																</ul>
-															</div>
-															<div className="col-md-6">
-																<ul className="list-unstyled feature-list">
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">DAB radio</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Daytime running lights</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Front electric windows</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Front Fog lights</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Hands-free</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">LED headlights</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">High beam assist</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Integrated music streaming</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Keyless ignition</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Leather steering wheel</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Light sensor</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Multifunctional steering wheel</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">On-board computer</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Radio</span>
-																	</li>
-																</ul>
+													{/* Accordion Header */}
+													<div
+														className="d-flex align-items-center justify-content-between p-4"
+														style={{ cursor: isMobile ? 'pointer' : 'default' }}
+														onClick={() => isMobile && handleAccordion('comfort')}
+													>
+														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-sm md:text-md lg:text-lg">
+															Comfort and Convenience
+														</h6>
+														{isMobile && (
+															<Icon
+																as={ChevronUp}
+																boxSize={5}
+																style={{
+																	transform: isAccordion === 'comfort' ? 'rotate(180deg)' : 'rotate(0deg)',
+																	transition: 'transform 0.2s',
+																}}
+															/>
+														)}
+													</div>
+													{(!isMobile || isAccordion === 'comfort') && (
+														<div className="card-body p-4 pt-0">
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">USB</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Navigation system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Keyless entry</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Heated steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Heated front seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Apple CarPlay</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Android Auto</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Automatic 2-zones air conditioning</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Alloy wheels</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Armrest front</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">JBL audio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Automatic parking brake</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Bluetooth</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Central locking</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Adaptive cruise control</span>
+																		</li>
+																	</ul>
+																</div>
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">DAB radio</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Daytime running lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Front electric windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Front Fog lights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Hands-free</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">LED headlights</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">High beam assist</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Integrated music streaming</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Keyless ignition</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Leather steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Light sensor</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Multifunctional steering wheel</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">On-board computer</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Radio</span>
+																		</li>
+																	</ul>
+																</div>
 															</div>
 														</div>
-													</div>
+													)}
 												</div>
 											</div>
-
+											{/* Accessories and Extra features */}
 											<div className="col-md-6 mb-4">
-												<div className="card border-0">
-													<div className="card-body p-4">
-														<h6 className="card-title text-gray-900 dark:text-white mb-4 sm:text-sm md:text-md lg:text-lg">Accessories and Extra features</h6>
-														<div className="row">
-															<div className="col-md-6">
-																<ul className="list-unstyled feature-list">
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Tyre repair kit</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Divided rear seats</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Side mirrors with electric adjustment</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Start-stop system</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Tinted windows</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Touch screen</span>
-																	</li>
-																	<li className="mb-2">
-																		<span className="text-gray-900 dark:text-white">Voice control</span>
-																	</li>
-																</ul>
+												<div className="card border-0 h-100">
+													{/* Accordion Header */}
+													<div
+														className="d-flex align-items-center justify-content-between p-4"
+														style={{ cursor: isMobile ? 'pointer' : 'default' }}
+														onClick={() => isMobile && handleAccordion('accessories')}
+													>
+														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-sm md:text-md lg:text-lg">
+															Accessories and Extra features
+														</h6>
+														{isMobile && (
+															<Icon
+																as={ChevronUp}
+																boxSize={5}
+																style={{
+																	transform: isAccordion === 'accessories' ? 'rotate(180deg)' : 'rotate(0deg)',
+																	transition: 'transform 0.2s',
+																}}
+															/>
+														)}
+													</div>
+													{(!isMobile || isAccordion === 'accessories') && (
+														<div className="card-body p-4 pt-0">
+															<div className="row">
+																<div className="col-md-6">
+																	<ul className="list-unstyled feature-list">
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Tyre repair kit</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Divided rear seats</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Side mirrors with electric adjustment</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Start-stop system</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Tinted windows</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Touch screen</span>
+																		</li>
+																		<li className="mb-2">
+																			<span className="text-gray-900 dark:text-white">Voice control</span>
+																		</li>
+																	</ul>
+																</div>
 															</div>
 														</div>
-													</div>
+													)}
 												</div>
 											</div>
 										</div>
@@ -1245,10 +1435,10 @@ export default function CarsDetails1() {
 
 								<div id="how-it-works" className="mt-5 pt-3 w-full">
 									<h3 className="mb-4 text-gray-900 dark:text-white">How it works</h3>
-									<div className="card border-0 rounded-4 overflow-hidden bg-white dark:bg-gray-800">
+									<div className="card border-0 rounded-4 overflow-hidden ">
 										<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="carousel">
 											<div className="carousel-inner">
-												<div className="carousel-item active bg-gray-50 dark:bg-gray-800 p-4">
+												<div className="carousel-item active  p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1270,7 +1460,7 @@ export default function CarsDetails1() {
 																		style={{
 																			width: "60px",
 																			height: "60px",
-																			backgroundColor: "#FF7A00",
+																			// backgroundColor: "#FF7A00",
 																			boxShadow: "0 0 20px rgba(255, 122, 0, 0.3)"
 																		}}>
 																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff">
@@ -1282,7 +1472,7 @@ export default function CarsDetails1() {
 														</div>
 													</div>
 												</div>
-												<div className="carousel-item bg-gray-50 dark:bg-white p-4">
+												<div className="carousel-item p-4">
 													<div className="position-relative">
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
@@ -1292,7 +1482,7 @@ export default function CarsDetails1() {
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }} color='black'>
-																<h4 className="text-gray-900 dark:text-black mb-3">We keep the guarantee!</h4>
+																<h4 className="text-gray-900 dark:text-white mb-3">We keep the guarantee!</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
 																	We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
 																</p>
@@ -1312,9 +1502,10 @@ export default function CarsDetails1() {
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-3 px-2 px-md-5" style={{ width: "100%", color: 'black' }}>
-																<h4 className="mb-2 text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-900 dark:text-white">Delivery time</h4>
-																<p className="mb-3 text-sm sm:text-base md:text-lg text-gray-900 dark:text-white">
+															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }} color='black'>
+
+																<h4 className="text-gray-900 dark:text-white mb-3">Delivery time</h4>
+																<p className="mb-4 text-gray-900 dark:text-white">
 																	We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.
 																</p>
 																<p className="text-xs sm:text-sm md:text-base text-gray-500 dark:text-white">
@@ -1552,27 +1743,74 @@ export default function CarsDetails1() {
 													</div>
 												</div>
 												<div className="card-body p-4">
-													<h5 className="mb-2">Toyota C-HR 2.0 Hybrid 135 kW</h5>
-													<div className="d-flex align-items-center mb-3">
-														<div className="me-4">
-															<span className="text-muted small">46,042 km</span>
-														</div>
-														<div>
-															<span className="text-muted small">12/2020</span>
-														</div>
-													</div>
+													<Heading
+														as="h3"
+														ml='1'
+														fontSize={["lg", "lg", "xl"]}
+														fontWeight="bold"
+														color={headingColor}
+														letterSpacing="wide"
+														fontFamily="inter"
+														_hover={{ color: "red.500" }}
+													// mb={["1", "1", "0"]}
+													>Toyota C-HR Hybrid 135 kW</Heading>
+													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
+														<Flex direction="row" gap={3} mb={1}>
+															<HStack spacing="1">
+																<LucideIcon icon={Power} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.power}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.date}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+															</HStack>
+														</Flex>
+														<Flex direction="row" gap={6}>
+															<HStack spacing="1">
+																<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+															</HStack>
+														</Flex>
+													</Box>
 
-													<div className="d-flex mb-3">
-														<div className="text-success me-2">
-															★★★★☆
-														</div>
-														<span className="text-muted small">Very good price</span>
-													</div>
 
-													<div className="d-flex justify-content-between align-items-baseline mb-3">
-														<h4 className="mb-0">24 999 €</h4>
-														<span className="text-muted small">without VAT 20 491 €</span>
-													</div>
+													<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+														<VStack display="flex" alignItems="center" justifyContent="center" gap="1" mt="3" ml="0">
+															<HStack spacing="1" >
+																{[...Array(5)].map((_, i) => (
+																	<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+																))}
+																<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+																	Very Good Price
+																</Text>
+															</HStack>
+															{/* <HStack> <Flex align="center" gap="1">
+																<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+																	€ 5043
+																</Text>
+																<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+																	Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+																</Text>
+															</Flex>
+															</HStack> */}
+														</VStack>
+														<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+																€ {car.price.toLocaleString()}
+															</Text>
+															<Text fontSize="xs" color={textColor}>
+																€{(car.price / 4).toFixed(2)} without VAT
+															</Text>
+														</Box>
+													</Flex>
 
 													<h6 className="mt-4 mb-3">Equipment</h6>
 													<div className="d-flex flex-wrap gap-2">
@@ -1595,53 +1833,82 @@ export default function CarsDetails1() {
 													</div>
 												</div>
 												<div className="card-body p-4">
-													<h5 className="mb-2">Toyota C-HR 2.0 135 kW</h5>
-													<div className="d-flex align-items-center mb-3">
-														<div className="me-4">
-															<span className="text-muted small">42,799 km</span>
-														</div>
-														<div>
-															<span className="text-muted small">1/2022</span>
-														</div>
-													</div>
+													<Heading
+														as="h3"
+														ml='1'
+														fontSize={["lg", "lg", "xl"]}
+														fontWeight="bold"
+														color={headingColor}
+														letterSpacing="wide"
+														fontFamily="inter"
+														_hover={{ color: "red.500" }}
+													// mb={["1", "1", "0"]}
+													>Toyota C-HR Hybrid 135 kW</Heading>
+													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
+														<Flex direction="row" gap={3} mb={1}>
+															<HStack spacing="1">
+																<LucideIcon icon={Power} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.power}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.date}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+															</HStack>
+														</Flex>
+														<Flex direction="row" gap={6}>
+															<HStack spacing="1">
+																<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+															</HStack>
+														</Flex>
+													</Box>
 
-													<div className="d-flex justify-content-between align-items-baseline mb-3">
-														<h4 className="mb-0">24 149 €</h4>
-														<div className="text-end">
-															<div className="small">by 1 150 € more expensive</div>
-															<div className="text-muted small">without VAT 21 844 €</div>
-														</div>
-													</div>
 
-													<h6 className="mt-4 mb-3">Differences in equipment</h6>
-													<div className="mb-3">
-														<div className="d-flex mb-2">
-															<span className="badge bg-success me-2">+</span>
-															<span>Electric adjustable front seats</span>
-														</div>
-														<div className="d-flex mb-2">
-															<span className="badge bg-success me-2">+</span>
-															<span>Full leather</span>
-														</div>
-														<div className="d-flex">
-															<span className="badge bg-success me-2">+</span>
-															<span>Heated side mirrors</span>
-														</div>
-													</div>
+													<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+														<VStack display="flex" alignItems="center" justifyContent="center" gap="1" mt="3" ml="0">
+															<HStack spacing="1" >
+																{[...Array(5)].map((_, i) => (
+																	<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+																))}
+																<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+																	Very Good Price
+																</Text>
+															</HStack>
+															{/* <HStack> <Flex align="center" gap="1">
+																<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+																	€ 5043
+																</Text>
+																<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+																	Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+																</Text>
+															</Flex>
+															</HStack> */}
+														</VStack>
+														<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+																€ {car.price.toLocaleString()}
+															</Text>
+															<Text fontSize="xs" color={textColor}>
+																€{(car.price / 4).toFixed(2)} without VAT
+															</Text>
+														</Box>
+													</Flex>
 
-													<div>
-														<div className="d-flex mb-2">
-															<span className="badge bg-secondary me-2">-</span>
-															<span>Parking assist system</span>
-														</div>
-														<div className="d-flex mb-2">
-															<span className="badge bg-secondary me-2">-</span>
-															<span>Keyless entry</span>
-														</div>
-														<div className="d-flex">
-															<span className="badge bg-secondary me-2">-</span>
-															<span>Apple CarPlay</span>
-														</div>
+													<h6 className="mt-4 mb-3">Equipment</h6>
+													<div className="d-flex flex-wrap gap-2">
+														<span className="badge bg-light text-primary px-3 py-2">Parking assist</span>
+														<span className="badge bg-light text-primary px-3 py-2">Keyless entry</span>
+														<span className="badge bg-light text-primary px-3 py-2">Heated wheel</span>
+														<span className="badge bg-light text-primary px-3 py-2">Apple CarPlay</span>
+														<span className="badge bg-light text-primary px-3 py-2">Android Auto</span>
 													</div>
 												</div>
 											</div>
@@ -1770,7 +2037,7 @@ export default function CarsDetails1() {
 												<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
 												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
-											Buy
+											Buy Now
 										</Link>
 
 										<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
@@ -1836,6 +2103,7 @@ export default function CarsDetails1() {
 											<p className="text-md-medium m-0">€699</p>
 										</div>
 
+
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0 d-flex align-items-center">
 												10 liters of fuel
@@ -1852,6 +2120,16 @@ export default function CarsDetails1() {
 											<p className="text-md-medium m-0">Extended warranty</p>
 											<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
 										</div>
+										<Box borderTop="1px" borderColor={borderColor} p={2}>
+											<Flex justify="space-between" align="center">
+												<Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
+													Total price
+												</Text>
+												<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
+													EUR 667,765
+												</Text>
+											</Flex>
+										</Box>
 									</div>
 								</div>
 							</div>
@@ -1986,8 +2264,8 @@ export default function CarsDetails1() {
 								</Text>
 							</div>
 							<div>
-								<Link href="/checkout" passHref legacyBehavior>
-									<Button as="a" colorScheme="red" size="lg" w="100%">
+								<Link href="/checkout" passHref legacyBehavior >
+									<Button as="a" colorScheme="red" size="lg" w="100%" >
 										Buy Now
 									</Button>
 								</Link>

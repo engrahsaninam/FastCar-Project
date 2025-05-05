@@ -9,7 +9,9 @@ import useCarFilter from '@/util/useCarFilter'
 import Link from "next/link"
 import Marquee from 'react-fast-marquee'
 import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack } from "@chakra-ui/react";
-import { Power, Calendar, ParkingMeterIcon, Gauge, Fuel } from 'lucide-react';
+import {
+	Power, Calendar, ParkingMeterIcon, Gauge, Fuel, LucideIcon as LucideIconType, MapPin,
+	 } from 'lucide-react';
 
 const carsData = rawCarsData.map(car => ({
 	...car,
@@ -49,11 +51,16 @@ export default function CarsList3() {
 		startItemIndex,
 		endItemIndex,
 	} = useCarFilter(carsData)
-
+	interface LucideIconProps {
+		icon: LucideIconType;
+		[key: string]: any;
+	}
 	const textColor = useColorModeValue("gray.700", "gray.300");
 	const cardBorderColor = useColorModeValue("gray.100", "#333333");
 	const priceColor = useColorModeValue("black", "white");
-
+	const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
+		return <Box as={Icon} {...props} />;
+	};
 	return (
 		<>
 
@@ -148,8 +155,9 @@ export default function CarsList3() {
 																<Link className="text-lg-bold neutral-1000 text-nowrap" href={`/car?id=${car.id}`}>{car.name}</Link>
 															</div>
 															<div className="card-program mt-2">
-																<div className="card-location mb-2">
-																	<p className="text-location text-sm-medium text-red-500">{car.location}</p>
+																<div className="card-location">
+																	<LucideIcon icon={MapPin} boxSize="4" color={textColor} />
+																	<p className="text-md-medium ">{car.location}</p>
 																</div>
 																<Box mb={["2", "2", "1"]} ml="1">
 																	<SimpleGrid columns={2} spacingX={6} spacingY={2} mb="2">
@@ -188,9 +196,9 @@ export default function CarsList3() {
 																		<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
 																			<HStack spacing="1" >
 																				{[...Array(5)].map((_, i) => (
-																					<Box key={i} w="5px" h="5px" borderRadius="full" bg="#64E364" />
+																					<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 																				))}
-																				<Text fontSize="xs" color="gray.700" fontWeight="semibold" mb="0">
+																				<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
 																					Very Good Price
 																				</Text>
 																			</HStack>
