@@ -87,7 +87,7 @@ const CarCard = ({ car }) => {
     <Link href={`/car?id=${car.id}`} passHref legacyBehavior>
       <ChakraLink display="block" _hover={{ textDecoration: 'none' }}>
         <Flex
-          direction={["column", "column", "row"]}
+          direction={["column", "row", "row"]}
           bg={cardBg}
           borderRadius="md"
           overflow="hidden"
@@ -102,6 +102,8 @@ const CarCard = ({ car }) => {
           w="full"
           position="relative"
           zIndex="1"
+          alignItems={["flex-start", "flex-start", "flex-start"]}
+          gap={[2, 6, 6]}
         >
           {/* Image Section */}
           <Box position="relative" w={["full", "full", "260px"]} h={["200px", "160px", "full"]}>
@@ -195,7 +197,7 @@ const CarCard = ({ car }) => {
                 justify="space-between"
                 align="center"
                 mb={["3", "3", "2"]}
-              mt={["2", "2", "0"]}
+                mt={["2", "2", "0"]}
               >
                 <Heading
                   as="h3"
@@ -325,7 +327,7 @@ const CarCard = ({ car }) => {
                   </Flex>
                   </HStack>
                 </VStack>
-                <Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
+                <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
                   <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
                     € {car.price.toLocaleString()}
                   </Text>
@@ -729,6 +731,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState([]);
+  const [isLaptop, setIsLaptop] = useState(false);
 
   // Color mode values
   const bg = useColorModeValue("transparent", "#0e0e0e");
@@ -740,6 +743,25 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
   const buttonHoverBg = useColorModeValue("red.500", "red.600");
   const closeIconColor = useColorModeValue("red.400", "red.300");
   const closeIconHoverBg = useColorModeValue("red.200", "rgba(255, 69, 58, 0.3)");
+
+  // Check screen size on mount and window resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLaptop(window.innerWidth >= 1024); // 1024px is typical laptop breakpoint
+    };
+
+    // Initial check
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Set initial filter state based on screen size
+    setIsFilterOpen(window.innerWidth >= 1024);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, [setIsFilterOpen]);
 
   const removeFilter = (filterId) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -1098,7 +1120,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
               _hover={{ bg: buttonHoverBg }}
               transition="colors 0.2s"
             >
-              Filter
+              {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
             </Button>
 
             <Button

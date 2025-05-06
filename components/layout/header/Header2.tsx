@@ -33,99 +33,93 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 		<>
 			<div style={{ backgroundColor: resolvedBgColor }}>
 				<header style={{ backgroundColor: resolvedBgColor }} className={`header sticky-bar ${isMainPage ? 'header-home-2' : ''} ${scroll ? 'stick' : ''}`}>
-					<div className="main-header">
-						<div className="header-left">
-							<div className="header-logo">
-								<Link className="d-flex" href="/">
-									<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
-									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-								</Link>
-							</div>
-							<div className="header-nav">
-								<nav className="nav-main-menu">
-									<ul className="main-menu">
-										<li className="me-4">
-											<Link href="/cars" className={`${textColor} ${textColorHover} transition-colors`}>Buy</Link>
-										</li>
-										<li className="me-4">
-											<Link href="/deals" className={`${textColor} ${textColorHover} transition-colors`}>Daily Deals  🔥</Link>
-										</li>
-										<li className="me-4">
-											<Link href="/how-it-works" className={`${textColor} ${textColorHover} transition-colors`}>How it Works</Link>
-										</li>
-										<li className="me-4">
-											<Link href="/reviews" className={`${textColor} ${textColorHover} transition-colors`}>Reviews</Link>
-										</li>
-										<li className="me-4">
-											<Link href="/calculator" className={`${textColor} ${textColorHover} transition-colors`}>Loan Calculator</Link>
-										</li>
-									</ul>
-								</nav>
-							</div>
-							<div className="header-right main-menu">
-								<div className="d-flex align-items-center gap-0 md:gap-3">
-									<Box display={{ base: "none", xl: "flex" }} px={["8px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center">
-										<Menu>
-											<MenuButton
-												as={Text}
-												fontSize={["10px", "16px"]}
-												fontWeight="medium"
-												color={textColor}
-												_hover={{ color: textColorHover }}
-												cursor="pointer"
-												display="flex"
-												alignItems="center"
-											>
-												EN <ChevronDownIcon ml={1} />
-											</MenuButton>
-											<MenuList>
-												<MenuItem as={Link} href="#">English</MenuItem>
-												<MenuItem as={Link} href="#">French</MenuItem>
-												<MenuItem as={Link} href="#">Chinese</MenuItem>
-											</MenuList>
-										</Menu>
-									</Box>
+					<div className="container-fluid">
+						<div className="main-header">
+							<div className="header-left">
+								<div className="header-logo" style={{ display: 'none' }}>
+									<Link className="d-flex" href="/">
+										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+									</Link>
+								</div>
+								<Box className="header-logo" display={{ base: 'none', md: 'block' }}>
+									<Link className="d-flex" href="/">
+										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+									</Link>
+								</Box>
+								<div className="header-nav">
+									<nav className="nav-main-menu">
+										<ul className="main-menu">
 
-
-									{/* Sign In */}
-									<Box display="flex" px={["8px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center">
-										<Link href="/login" passHref>
-											<Box as="a" display={{ base: "none", xl: "flex" }} alignItems="center" fontSize={["10px", "16px"]}
-												fontWeight="medium" color={textColor} _hover={{ color: textColorHover }}>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													width="20"
-													height="20"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="2"
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													style={{ marginRight: "8px" }}
+											<li><ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Buy</ChakraLink></li>
+											<li><ChakraLink as={Link} href="/deals" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Daily Deals</ChakraLink></li>
+											<li><ChakraLink as={Link} href="/how-it-works" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>How it Works</ChakraLink></li>
+											<li><ChakraLink as={Link} href="/reviews" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Reviews</ChakraLink></li>
+											<li><ChakraLink as={Link} href="/calculator" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Loan Calculator</ChakraLink></li>
+										</ul>
+									</nav>
+								</div>
+								<div className="header-right">
+									<div className="header-right " style={{ marginRight: '20px' }}>
+										<Box display={{ base: "flex", xl: "flex" }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+											<Menu>
+												<MenuButton
+													as={Text}
+													fontSize={["10px", "16px"]}
+													fontWeight="medium"
+													color={textColor}
+													_hover={{ color: textColorHover }}
+													cursor="pointer"
+													display="flex"
+													alignItems="center"
 												>
-													<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-													<circle cx="12" cy="7" r="4"></circle>
-												</svg>
-												Sign In
-											</Box>
-										</Link>
-									</Box>
+													EN <ChevronDownIcon ml={1} />
+												</MenuButton>
+												<MenuList>
+													<MenuItem as={Link} href="#">English</MenuItem>
+													<MenuItem as={Link} href="#">French</MenuItem>
+													<MenuItem as={Link} href="#">Chinese</MenuItem>
+												</MenuList>
+											</Menu>
+										</Box>
 
 
-									{/* Theme Switcher */}
-									<div className="px-0 md:px-3">
-										<div className={`top-button-mode ${!isMainPage ? 'theme-switch-dark' : ''}`}>
+										{/* Sign In */}
+										<Box display="flex" px={["10px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+											<Link href="/login" passHref>
+												<Box as="a" display={{ base: "flex", xl: "flex" }} alignItems="center" fontSize={["10px", "16px"]}
+													fontWeight="medium" color={textColor} _hover={{ color: textColorHover }}>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														width="20"
+														height="20"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														strokeWidth="2"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														style={{ marginRight: "8px" }}
+													>
+														<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+														<circle cx="12" cy="7" r="4"></circle>
+													</svg>
+													Sign In
+												</Box>
+											</Link>
+										</Box>
+
+
+										<div className="top-button-mode">
 											<ThemeSwitch />
 										</div>
 									</div>
-								</div>
-
-								{/* Mobile Menu Icon */}
-								<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu} >
-									<span className="burger-icon-top" />
-									<span className="burger-icon-mid" />
-									<span className="burger-icon-bottom" />
+									<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
+										<span className="burger-icon-top" />
+										<span className="burger-icon-mid" />
+										<span className="burger-icon-bottom" />
+									</div>
 								</div>
 							</div>
 						</div>

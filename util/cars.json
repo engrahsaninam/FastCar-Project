@@ -13,7 +13,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 2,
@@ -29,7 +31,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 3,
@@ -45,7 +49,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 4,
@@ -61,7 +67,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 5,
@@ -77,7 +85,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 6,
@@ -93,7 +103,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 7,
@@ -109,7 +121,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "date": "2024-01-01",
+        "reviews": "672",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 8,
@@ -125,7 +139,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 9,
@@ -141,7 +157,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 10,
@@ -157,7 +175,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 11,
@@ -173,7 +193,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 12,
@@ -189,7 +211,9 @@
         "transmission": "Automatic",
         "mileage": "10000",
         "power": "200",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 13,
@@ -205,7 +229,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 14,
@@ -221,7 +247,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 15,
@@ -237,7 +265,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 16,
@@ -253,7 +283,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 17,
@@ -269,7 +301,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 18,
@@ -285,7 +319,9 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 19,
@@ -301,7 +337,10 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     },
     {
         "id": 20,
@@ -317,6 +356,8 @@
         "transmission": "Automatic",
         "mileage": "18,496 km",
         "power": "100 kW (136 hp)",
-        "reviews": "672"
+        "reviews": "672",
+        "date": "2024-01-01",
+        "features": ["Leather upholstery", "Sunroof/Moonroof", "Adaptive cruise control", "Heated seats", "Plug-in Hybrid (PHEV)"]
     }
 ]

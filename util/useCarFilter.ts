@@ -15,6 +15,8 @@ interface Car {
 	transmission: string
 	reviews: string
 	power: string,
+	date: string,
+	features: string[]
 }
 
 export interface Filter {
@@ -28,6 +30,8 @@ export interface Filter {
 	transmission: string[]
 	mileage: string[]
 	power: string[]
+	date: string[],
+	features: string[]
 }
 
 type SortCriteria = "name" | "price" | "rating"
@@ -44,6 +48,8 @@ const useCarFilter = (carsData: Car[]) => {
 		transmission: [],
 		mileage: [],
 		power: [],
+		date: [],
+		features: [],
 	})
 	const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name")
 	const [itemsPerPage, setItemsPerPage] = useState<number>(10)
@@ -146,6 +152,8 @@ const useCarFilter = (carsData: Car[]) => {
 			transmission: [],
 			mileage: [],
 			power: [],
+			date: [],
+			features: [],
 		})
 		setSortCriteria("name")
 		setItemsPerPage(4)

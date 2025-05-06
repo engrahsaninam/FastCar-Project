@@ -654,7 +654,7 @@ export default function CarsDetails1() {
 	const textColor = useColorModeValue("gray.900", "white");
 	const priceColor = useColorModeValue("black", "white");
 
-	const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
+	const badgeBg = useColorModeValue("red.50", "black");
 
 	const badgeColor = useColorModeValue("red.400", "red.300");
 
@@ -811,7 +811,7 @@ export default function CarsDetails1() {
 														key={index}
 														px="2"
 														bg={badgeBg}
-														className="bg-gray-100"
+														// className="bg-gray-100"
 														color={badgeColor}
 														borderRadius="md"
 														fontSize="sm"
@@ -847,25 +847,25 @@ export default function CarsDetails1() {
 								</div>
 								<div className="car-nav-tabs mt-4 mb-4 " style={{ top: "0", zIndex: "100" }}>
 									<div className="container-fluid px-0">
-										<div className="nav-scroll py-3 bg-light dark:bg-gray-800 rounded" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+										<div className="nav-scroll py-3 bg-dark dark:bg-gray-800 rounded" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a href="#details" className={` font-bold nav-link ${activeTab === 'details' ? 'text-white' : 'text-dark'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+													<a href="#details" className={` font-extrabold text-xl nav-link ${activeTab === 'details' ? 'text-white' : 'text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 												</li>
 												<li className="nav-item">
-													<a href="#features" className={`nav-link ${activeTab === 'features' ? 'text-white' : 'text-dark'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a href="#features" className={`text-xl nav-link ${activeTab === 'features' ? 'text-white' : 'text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 												</li>
 												<li className="nav-item">
-													<a href="#how-it-works" className={`nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-dark'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a href="#how-it-works" className={`text-xl nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 												</li>
 												<li className="nav-item">
-													<a href="#price-map" className={`nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-dark'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a href="#price-map" className={`text-xl nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 												</li>
 												<li className="nav-item">
-													<a href="#comparison" className={`nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-dark'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
+													<a href="#comparison" className={`text-xl nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 												</li>
 												<li className="nav-item">
-													<a href="#financing" className={`nav-link ${activeTab === 'financing' ? 'text-white' : 'text-dark'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a href="#financing" className={`text-xl nav-link ${activeTab === 'financing' ? 'text-white' : 'text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 												</li>
 											</ul>
 										</div>

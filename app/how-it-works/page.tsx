@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Layout from "@/components/layout/Layout"
 import {
     Box,
@@ -14,10 +14,12 @@ import {
     GridItem,
     Icon,
     VStack,
-    useColorModeValue
+    useColorModeValue,
+    IconButton
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
+import { FaPlay, FaPause } from "react-icons/fa";
 
 const steps = [
     {
@@ -94,6 +96,24 @@ export default function HowItWorks() {
     const stepCardBg = useColorModeValue("white", "gray.800");
     const stepCardShadow = useColorModeValue("md", "dark-lg");
     const stepNumberColor = useColorModeValue("red.500", "red.300");
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handlePlay = () => {
+        if (videoRef.current) {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
+    };
+
+    const handlePause = () => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+        }
+    };
+
     return (
         <Layout >
             {/* Hero Section */}
@@ -105,7 +125,6 @@ export default function HowItWorks() {
                         minH="calc(100vh - 100px)"
                         alignItems="center"
                     >
-                        {/* Left Content */}
                         <GridItem>
                             <Box maxW="600px">
                                 <Heading
@@ -238,8 +257,54 @@ export default function HowItWorks() {
                     </Container>
                 </Box>
             </Box>
+            <div className=''>
+                <Box position="relative" p={[0, 16]} bg={bgColor} borderRadius="2xl" overflow="hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+                    <video
+                        ref={videoRef}
+                        src="/no_music.mp4"
+                        loop
+                        playsInline
+                        style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }}
+                        onPause={() => setIsPlaying(false)}
+                        onPlay={() => setIsPlaying(true)}
+                    />
+                    {(!isPlaying || isHovered) && (
+                        !isPlaying ? (
+                            <IconButton
+                                aria-label="Play video"
+                                icon={<FaPlay size={40} />}
+                                onClick={handlePlay}
+                                position="absolute"
+                                top="50%"
+                                left="50%"
+                                transform="translate(-50%, -50%)"
+                                size="lg"
+                                colorScheme="whiteAlpha"
+                                bg="rgba(0,0,0,0.6)"
+                                borderRadius="full"
+                                _hover={{ bg: "rgba(0,0,0,0.8)" }}
+                            />
+                        ) : (
+                            <IconButton
+                                aria-label="Pause video"
+                                icon={<FaPause size={40} />}
+                                onClick={handlePause}
+                                position="absolute"
+                                top="50%"
+                                left="50%"
+                                transform="translate(-50%, -50%)"
+                                size="lg"
+                                colorScheme="whiteAlpha"
+                                bg="rgba(0,0,0,0.6)"
+                                borderRadius="full"
+                                _hover={{ bg: "rgba(0,0,0,0.8)" }}
+                            />
+                        )
+                    )}
+                </Box>
+            </div>
             {/* Content sections will go here */}
-            <Box id="content" pt={{ base:0, md: 0 }}>
+            <Box id="content" pt={{ base: 0, md: 0 }}>
                 {/* Steps Section */}
                 <Box py={20} bg={bgColor}>
                     <Container maxW="container.xl">
