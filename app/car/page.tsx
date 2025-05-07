@@ -450,6 +450,17 @@ export default function CarsDetails1() {
 							<Text fontSize="xs" color="red.100" opacity={0.8} mt={1.5}>
 								EUR 542,965 without VAT
 							</Text>
+							<VStack display="flex" alignItems="flex-start" justifyContent="center" gap="1" mt="3" ml="0">
+								<HStack spacing="1" >
+									{[...Array(5)].map((_, i) => (
+										<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+									))}
+									<Text fontSize="sm" color='white' fontWeight="semibold" mb="0">
+										Very Good Price
+									</Text>
+								</HStack>
+
+							</VStack>
 						</Box>
 
 						{/* Vehicle details */}
@@ -653,7 +664,7 @@ export default function CarsDetails1() {
 	};
 	const textColor = useColorModeValue("gray.900", "white");
 	const priceColor = useColorModeValue("black", "white");
-
+	const bgColor = useColorModeValue("gray.800", "gray.800");
 	const badgeBg = useColorModeValue("red.50", "black");
 
 	const badgeColor = useColorModeValue("red.400", "red.300");
@@ -847,25 +858,25 @@ export default function CarsDetails1() {
 								</div>
 								<div className="car-nav-tabs mt-4 mb-4 " style={{ top: "0", zIndex: "100" }}>
 									<div className="container-fluid px-0">
-										<div className="nav-scroll py-3 bg-dark dark:bg-gray-800 rounded" style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+										<div className="nav-scroll py-3  rounded" style={{ overflowX: "auto", whiteSpace: "nowrap", backgroundColor: bgColor }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a href="#details" className={` font-extrabold text-xl nav-link ${activeTab === 'details' ? 'text-white' : 'text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+													<a href="#details" className={` font-extrabold text-xl nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 												</li>
 												<li className="nav-item">
-													<a href="#features" className={`text-xl nav-link ${activeTab === 'features' ? 'text-white' : 'text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a href="#features" className={`text-xl nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 												</li>
 												<li className="nav-item">
-													<a href="#how-it-works" className={`text-xl nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a href="#how-it-works" className={`text-xl nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 												</li>
 												<li className="nav-item">
-													<a href="#price-map" className={`text-xl nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a href="#price-map" className={`text-xl nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 												</li>
 												<li className="nav-item">
-													<a href="#comparison" className={`text-xl nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
+													<a href="#comparison" className={`text-xl nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 												</li>
 												<li className="nav-item">
-													<a href="#financing" className={`text-xl nav-link ${activeTab === 'financing' ? 'text-white' : 'text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a href="#financing" className={`text-xl nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 												</li>
 											</ul>
 										</div>
@@ -880,7 +891,7 @@ export default function CarsDetails1() {
 
 												<div className="bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4">
 													<div className="row g-4">
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -894,7 +905,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -910,7 +921,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -925,7 +936,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -941,7 +952,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -954,7 +965,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -971,7 +982,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -989,7 +1000,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1015,7 +1026,7 @@ export default function CarsDetails1() {
 													</div>
 
 													<div className="row g-4 mt-2">
-														<div className="col-md-6">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3 text-primary">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1031,7 +1042,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-6">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3 text-primary">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1044,7 +1055,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-6">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3 text-primary">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1061,7 +1072,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-6">
+														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3 text-primary">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1081,7 +1092,7 @@ export default function CarsDetails1() {
 													</div>
 
 													<div className="row mt-4">
-														<div className="col-md-4">
+														<div className="col-6 col-md-4">
 															<div className="mb-3">
 																<div className="text-muted small">Battery type</div>
 																<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
@@ -1107,7 +1118,7 @@ export default function CarsDetails1() {
 
 												<div className="general-engine-info ">
 													<div className="row">
-														<div className="col-md-6 ">
+														<div className="col-6 col-md-4 ">
 															<div className="card border-0 mb-4">
 																<div className="card-header bg-gray-50 dark:bg-gray-800">General</div>
 																<div className="card-body p-0">
@@ -1126,7 +1137,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-md-6">
+														<div className="col-6 col-md-4">
 															<div className="card border-0 mb-4">
 																<div className="card-header bg-gray-50 dark:bg-gray-800">Engine</div>
 																<div className="card-body p-0">
@@ -1440,14 +1451,14 @@ export default function CarsDetails1() {
 											<div className="carousel-inner">
 												<div className="carousel-item active  p-4">
 													<div className="position-relative">
-														<div className="d-flex">
-															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
-																<div style={{ height: "400px" }}>
+														<div className="d-flex flex-column flex-lg-row">
+															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																<div style={{ height: "fit-content" }}>
 																	<img src="/how_works_2.webp" className="w-100 h-100" alt="Car inspection" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }}>
+															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }}>
 																<h4 className="text-gray-900 dark:text-white mb-3">Check the car first, decide later</h4>
 																<p className="mb-4 text-gray-900 dark:text-gray-200">
 																	For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.
@@ -1474,14 +1485,15 @@ export default function CarsDetails1() {
 												</div>
 												<div className="carousel-item p-4">
 													<div className="position-relative">
-														<div className="d-flex">
-															<div className="position-relative" style={{ width: "45%", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
-																<div style={{ height: "400px" }}>
+														<div className="d-flex flex-column flex-lg-row">
+
+															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																<div style={{ height: "fit-content" }}>
 																	<img src="/how_works_3.webp" className="w-100 h-100" alt="Customer warranty" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }} color='black'>
+															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
 																<h4 className="text-gray-900 dark:text-white mb-3">We keep the guarantee!</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
 																	We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
@@ -1495,14 +1507,14 @@ export default function CarsDetails1() {
 												</div>
 												<div className="carousel-item bg-gray-50 dark:bg-black p-4">
 													<div className="position-relative">
-														<div className="d-flex flex-column flex-md-row">
-															<div className="position-relative mb-3 mb-md-0" style={{ width: "100%", maxWidth: "350px", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
-																<div style={{ height: "220px" }}>
+														<div className="d-flex flex-column flex-lg-row">
+															<div className="position-relative mb-3 mb-md-0" style={{ width: "fit-content", maxWidth: "350px", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
+																<div style={{ height: "fit-content" }}>
 																	<img src="/how_works_1.webp" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
-															<div className="py-5 px-4 px-md-5" style={{ width: "55%" }} color='black'>
+															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
 
 																<h4 className="text-gray-900 dark:text-white mb-3">Delivery time</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
@@ -1792,15 +1804,7 @@ export default function CarsDetails1() {
 																	Very Good Price
 																</Text>
 															</HStack>
-															{/* <HStack> <Flex align="center" gap="1">
-																<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-																	€ 5043
-																</Text>
-																<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-																	Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-																</Text>
-															</Flex>
-															</HStack> */}
+
 														</VStack>
 														<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
 															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
@@ -1967,29 +1971,7 @@ export default function CarsDetails1() {
 									<h2 className="mb-4">Financing</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
-											<div className="d-flex justify-content-between align-items-center mb-3">
-												<h5 className="mb-0 fs-6">Financing options</h5>
-												<div className="d-flex gap-3 align-items-center">
-													<div className="d-flex align-items-center">
-														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
-														<span className="small">This vehicle</span>
-													</div>
-													<div className="d-flex align-items-center">
-														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
-														<span className="small">Similar models</span>
-													</div>
-													<div className="d-flex align-items-center">
-														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
-														<span className="small">Market average</span>
-													</div>
-												</div>
-											</div>
-											<div className="d-flex justify-content-between align-items-center">
-												<div className="text-muted small">Data from similar vehicles in market</div>
-												<div className="bg-light-green rounded-2 py-1 px-2 d-flex align-items-center">
-													<span className="text-success small fw-medium">Good price positioning</span>
-												</div>
-											</div>
+
 
 											<div className="mt-4">
 												<FinancingSpecs
@@ -2003,7 +1985,7 @@ export default function CarsDetails1() {
 								</div>
 							</div>
 							<div className="col-lg-4">
-								<div className="sidebar-banner mb-4" style={{
+								<div className="sidebar-banner mb-4 d-none d-md-block" style={{
 									position: 'sticky',
 									top: '20px',
 									zIndex: 100,
@@ -2265,7 +2247,7 @@ export default function CarsDetails1() {
 							</div>
 							<div>
 								<Link href="/checkout" passHref legacyBehavior >
-									<Button as="a" colorScheme="red" size="lg" w="100%" >
+									<Button as="a" bg="#E53E3E" color="white" size="lg" w="100%" >
 										Buy Now
 									</Button>
 								</Link>

@@ -40,7 +40,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
 								</Link>
 							</div>
-							<Box className="header-logo" display={{ base: 'none', md: 'block' }}>
+							<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
 								<Link className="d-flex" href="/">
 									<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
 									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
@@ -60,7 +60,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 							</div>
 							<div className="header-right">
 								<div className="header-right " style={{ marginRight: '20px' }}>
-									<Box display={{ base: "flex", xl: "flex" }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+									<Box display={{ base: "flex", xl: "flex" }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
 										<Menu>
 											<MenuButton
 												as={Text}
@@ -84,7 +84,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 
 
 									{/* Sign In */}
-									<Box display="flex" px={["10px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+									<Box display="flex" px={["10px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
 										<Link href="/login" passHref>
 											<Box as="a" display={{ base: "flex", xl: "flex" }} alignItems="center" fontSize={["10px", "16px"]}
 												fontWeight="medium" color={textColor} _hover={{ color: textColorHover }}>

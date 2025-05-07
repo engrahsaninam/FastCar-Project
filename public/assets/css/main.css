@@ -5646,9 +5646,9 @@ label {
 
 .header .main-header .header-left {
 	display: flex;
-	align-items: center;
+	align-items: right;
 	width: 100%;
-	justify-content: space-between;
+	justify-content: flex-end;
 }
 
 .header .main-header .header-left .header-logo {
@@ -5663,6 +5663,16 @@ label {
 
 .header .main-header .header-right {
 	width: 30%;
+	/* min-width: 405px; */
+	text-align: right;
+	display: flex;
+	/* gap: 10px; */
+	align-items: center;
+	position: relative;
+	justify-content: flex-end;
+}
+.header-leftt {
+	width: 30%;
 	min-width: 405px;
 	text-align: right;
 	display: flex;
@@ -5671,7 +5681,6 @@ label {
 	position: relative;
 	justify-content: flex-end;
 }
-
 .header .nav-main-menu {
 	display: flex;
 	padding: 0px;
@@ -6089,6 +6098,9 @@ label {
 }
 
 .header.header-commingsoon .main-header .header-right {
+	width: 50%;
+}
+.header-leftt {
 	width: 50%;
 }
 
@@ -12164,11 +12176,11 @@ a.icon-socials:hover svg path {
 		display: block;
 	}
 
-	.header .main-header .header-right {
-		/* min-width: 150px; */
-	}
-
+	
 	.header-right {
+		padding-right: 20px;
+	}
+	.header-leftt {
 		padding-right: 20px;
 	}
 
@@ -12389,6 +12401,10 @@ a.icon-socials:hover svg path {
 	}
 
 	.header.header-commingsoon .main-header .header-right {
+		width: 60%;
+		padding-right: 0px;
+	}
+	.header-leftt {
 		width: 60%;
 		padding-right: 0px;
 	}
@@ -12854,7 +12870,12 @@ a.icon-socials:hover svg path {
 		justify-content: center;
 		text-align: center;
 	}
-
+	.header-leftt {
+		width: 100%;
+		padding-left: 0px;
+		justify-content: center;
+		text-align: center;
+	}
 	.box-video-comming {
 		margin-bottom: 150px;
 	}
@@ -13250,9 +13271,11 @@ a.icon-socials:hover svg path {
 	.header .main-header .header-right .btn-green-linear {
 		display: none;
 	}
-
+	.header-leftt {
+		display: none;
+	}
 	.burger-icon {
-		top: 0px;
+		top: 10px;
 	}
 
 	.box-grid-hotels .card-flight .card-facilities .list-tick-green li {
@@ -13857,6 +13880,9 @@ a.icon-socials:hover svg path {
 /*OTHER SCREEN*/
 @media screen and (min-width: 1200px) and (max-width: 1440px) {
 	.header-right {
+		display: none;
+	}
+	.header-left {
 		display: none;
 	}
 }

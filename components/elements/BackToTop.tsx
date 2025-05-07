@@ -43,7 +43,7 @@ export default function BackToTop({ target = "body" }) {
           aria-label="Scroll to top"
           title="Back to top"
           style={{
-            position: 'fixed',
+            // position: 'fixed',
             zIndex: 100,
             cursor: 'pointer',
             bottom: '20px',

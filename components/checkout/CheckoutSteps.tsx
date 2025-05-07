@@ -5,9 +5,11 @@ import {
     Text,
     useBreakpointValue,
     useColorModeValue,
+    Icon,
 } from "@chakra-ui/react";
 import { FC } from "react";
 import { Step } from "./CarType";
+import { ChevronRight } from "lucide-react";
 
 const steps: Step[] = [
     { id: 1, label: "Payment method", isActive: true },
@@ -124,14 +126,18 @@ const CheckoutSteps: FC = () => {
             {/* Mobile View */}
             <Box w="full" bg={mobileBg} py={4} display={{ base: 'block', lg: 'none' }}>
                 <Box maxW="92%" mx="auto">
-                    <Flex align="center" justify="space-between">
+                    <Flex align="center" justify="space-between" gap={2}>
                         {steps.map((step, index) => (
-                            <Flex key={step.id} direction="column" align="center" gap={1} flexShrink={0}>
-                                <StepNumber number={step.id} isActive={step.isActive} />
-                                <StepLabel label={step.label} isActive={step.isActive} isMobile />
-                                {index < steps.length - 1 && (
-                                    <LineSeparator isActive={step.isActive} />
-                                )}
+                            <Flex key={step.id} align="center" gap={5} justify='space-between'>
+                                <Flex direction="column" align="center" gap={1} flexShrink={0}>
+                                    <StepNumber number={step.id} isActive={step.isActive} />
+                                    <StepLabel label={step.label} isActive={step.isActive} isMobile />
+                                </Flex>
+                                <Flex>
+                                    {index < steps.length - 1 && (
+                                        <Icon as={ChevronRight} boxSize={5} color={steps[index + 1].isActive ? "red.500" : "gray.400"} mx={1} />
+                                    )}
+                                </Flex>
                             </Flex>
                         ))}
                     </Flex>
