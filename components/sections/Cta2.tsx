@@ -80,8 +80,8 @@ export default function Cta2() {
 						</div>
 					</div>
 					<div className="row align-items-center">
-						<div className="border-top py-3 mt-3" />
-						<div className="col-lg-7 mb-20 wow fadeIn">
+						{/* <div className="border-top py-3 mt-3" /> */}
+						{/* <div className="col-lg-7 mb-20 wow fadeIn">
 							<div className="row">
 								<div className="col-md-3 col-6 mb-md-0 mb-4 d-flex flex-column align-items-center align-items-md-start">
 									<div className="d-flex justify-content-center justify-content-md-start">
@@ -124,8 +124,8 @@ export default function Cta2() {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="col-lg-4 offset-lg-1 wow fadeIn">
+						</div> */}
+						{/* <div className="col-lg-4 offset-lg-1 wow fadeIn">
 							<div className="box-authors-partner background-body wow fadeInUp p-4">
 								<div className="authors-partner-left">
 									<img src="/assets/imgs/page/homepage5/author.png" alt="Fast4Car" /><img src="/assets/imgs/page/homepage5/author2.png" alt="Fast4Car" /><img src="/assets/imgs/page/homepage5/author3.png" alt="Fast4Car" />
@@ -141,7 +141,7 @@ export default function Cta2() {
 										<strong>24 hours</strong></p>
 								</div>
 							</div>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</section>

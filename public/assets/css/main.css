@@ -5738,7 +5738,7 @@ label {
 	font-weight: 500;
 	font-size: 16px;
 	line-height: 22px;
-	color: var(--bs-neutral-1000);
+	/* color: var(--bs-neutral-1000); */
 	display: block;
 	padding: 20px 18px 20px 18px;
 	text-decoration: none;
@@ -9301,7 +9301,7 @@ a.icon-socials:hover svg path {
 }
 
 .page-header .custom-container {
-	min-height: 430px;
+	/* min-height: 100px; */
 }
 
 .page-header .custom-container .bg-overlay {
@@ -10586,10 +10586,10 @@ a.icon-socials:hover svg path {
 	border-radius: 16px;
 	background-color: var(--bs-neutral-0);
 	padding: 28px;
-	position: relative;
+	/* position: relative; */
 	top: -143px;
 	z-index: 12;
-	margin-bottom: -112px;
+	/* margin-bottom: -112px; */
 	box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.05);
 	width: 100%;
 	max-width: 1200px; /* Adjust based on your layout */

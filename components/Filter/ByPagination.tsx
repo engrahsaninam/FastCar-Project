@@ -4,8 +4,8 @@ export default function ByPagination({ handlePreviousPage, totalPages, currentPa
 		<>
 			<nav aria-label="Page navigation example">
 				<ul className="pagination">
-					<li className="page-item" onClick={handlePreviousPage}>
-						<a className="page-link">
+					<li className="page-item d-flex align-items-center justify-content-center" onClick={handlePreviousPage} > 
+						<a className="page-link d-flex align-items-center justify-content-center">
 							<svg width={12} height={12} viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
 								<path d="M6.00016 1.33325L1.3335 5.99992M1.3335 5.99992L6.00016 10.6666M1.3335 5.99992H10.6668" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
@@ -24,7 +24,7 @@ export default function ByPagination({ handlePreviousPage, totalPages, currentPa
 
 					))}
 					<li className="page-item" onClick={handleNextPage}>
-						<a className="page-link">
+						<a className="page-link d-flex align-items-center justify-content-center">
 							<svg width={12} height={12} viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M5.99967 10.6666L10.6663 5.99992L5.99968 1.33325M10.6663 5.99992L1.33301 5.99992" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>

@@ -36,10 +36,10 @@ export default function Brand1() {
 								src="/logoautodark.png"
 								alt="Auto Logo"
 								style={{
-									width: 'auto',
-									height: 'auto',
-									maxWidth: '300px',
-									maxHeight: '150px',
+									width: '100%',
+									height: '100%',
+									maxWidth: '100%',
+									maxHeight: '100%',
 									objectFit: 'contain',
 									margin: '0 auto',
 									// display: 'block'

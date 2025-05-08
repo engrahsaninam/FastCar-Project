@@ -20,7 +20,7 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
 
 	// Use the values conditionally
-	const textColor = isMainPage ? 'gray.100' : lightTextColor;
+	const textColor = isMainPage ? 'white' : lightTextColor;
 	const textColorHover = isMainPage ? 'gray.300' : lightTextColorHover;
 	const borderColor = lightBorderColor;
 	const bgColor = isMainPage ? 'gray.900' : lightBgColor;
@@ -50,11 +50,11 @@ export default function Header1({ scroll, isMobileMenu, handleMobileMenu, handle
 								<nav className="nav-main-menu">
 									<ul className="main-menu">
 										
-										<li><ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Buy</ChakraLink></li>
-										<li><ChakraLink as={Link} href="/deals" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Daily Deals</ChakraLink></li>
-										<li><ChakraLink as={Link} href="/how-it-works" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>How it Works</ChakraLink></li>
-										<li><ChakraLink as={Link} href="/reviews" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Reviews</ChakraLink></li>
-										<li><ChakraLink as={Link} href="/calculator" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Loan Calculator</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color={'white'} >Buy</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/deals" fontSize="md" fontWeight="medium" color={'white'} _hover={{ color: textColorHover, textDecoration: 'none' }}>Daily Deals</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/how-it-works" fontSize="md" fontWeight="medium" color={'white'} _hover={{ color: textColorHover, textDecoration: 'none' }}>How it Works</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/reviews" fontSize="md" fontWeight="medium" color={'white'} _hover={{ color: textColorHover, textDecoration: 'none' }}>Reviews</ChakraLink></li>
+										<li><ChakraLink as={Link} href="/calculator" fontSize="md" fontWeight="medium" color={'white'} _hover={{ color: textColorHover, textDecoration: 'none' }}>Loan Calculator</ChakraLink></li>
 									</ul>
 								</nav>
 							</div>

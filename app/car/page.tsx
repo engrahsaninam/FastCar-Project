@@ -147,6 +147,7 @@ export default function CarsDetails1() {
 				if (targetId) {
 					setActiveTab(targetId);
 
+
 					const targetElement = document.getElementById(targetId);
 					if (targetElement) {
 						window.scrollTo({
@@ -664,9 +665,9 @@ export default function CarsDetails1() {
 	};
 	const textColor = useColorModeValue("gray.900", "white");
 	const priceColor = useColorModeValue("black", "white");
-	const bgColor = useColorModeValue("gray.800", "gray.800");
+	const bgColor = useColorModeValue("white", "black");
 	const badgeBg = useColorModeValue("red.50", "black");
-
+	const bgnavitem=useColorModeValue("red.500","red.500")
 	const badgeColor = useColorModeValue("red.400", "red.300");
 
 	const buttonLinkColor = useColorModeValue("red.500", "red.300");
@@ -861,22 +862,22 @@ export default function CarsDetails1() {
 										<div className="nav-scroll py-3  rounded" style={{ overflowX: "auto", whiteSpace: "nowrap", backgroundColor: bgColor }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a href="#details" className={` font-extrabold text-xl nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+													<a href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 												</li>
 												<li className="nav-item">
-													<a href="#features" className={`text-xl nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a onClick={() => setActiveTab('#features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 												</li>
 												<li className="nav-item">
-													<a href="#how-it-works" className={`text-xl nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a onClick={() => setActiveTab('#how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 												</li>
 												<li className="nav-item">
-													<a href="#price-map" className={`text-xl nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a onClick={() => setActiveTab('#price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 												</li>
 												<li className="nav-item">
-													<a href="#comparison" className={`text-xl nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
+													<a onClick={() => setActiveTab('#comparison')} href="#comparison" className={`text-md md:text-lg nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 												</li>
 												<li className="nav-item">
-													<a href="#financing" className={`text-xl nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a onClick={() => setActiveTab('#financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 												</li>
 											</ul>
 										</div>
@@ -1451,7 +1452,7 @@ export default function CarsDetails1() {
 											<div className="carousel-inner">
 												<div className="carousel-item active  p-4">
 													<div className="position-relative">
-														<div className="d-flex flex-column flex-lg-row">
+														<div className="d-flex">
 															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
 																	<img src="/how_works_2.webp" className="w-100 h-100" alt="Car inspection" style={{ objectFit: "cover", objectPosition: "center" }} />
@@ -1471,7 +1472,7 @@ export default function CarsDetails1() {
 																		style={{
 																			width: "60px",
 																			height: "60px",
-																			// backgroundColor: "#FF7A00",
+																			backgroundColor: "#FF7A00",
 																			boxShadow: "0 0 20px rgba(255, 122, 0, 0.3)"
 																		}}>
 																		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff">
@@ -1485,7 +1486,8 @@ export default function CarsDetails1() {
 												</div>
 												<div className="carousel-item p-4">
 													<div className="position-relative">
-														<div className="d-flex flex-column flex-lg-row">
+														<div className="d-flex">
+
 
 															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
@@ -1507,7 +1509,7 @@ export default function CarsDetails1() {
 												</div>
 												<div className="carousel-item bg-gray-50 dark:bg-black p-4">
 													<div className="position-relative">
-														<div className="d-flex flex-column flex-lg-row">
+														<div className="d-flex">
 															<div className="position-relative mb-3 mb-md-0" style={{ width: "fit-content", maxWidth: "350px", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
 																	<img src="/how_works_1.webp" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />

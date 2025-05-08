@@ -89,57 +89,58 @@ export default function Footer1() {
 							</div>
 						</div>
 						<div className="col-md-2 col-xs-6 footer-3">
-							<h6 className="text-linear-3">Company</h6>
+							<h6 className="text-linear-3">Fast4Car</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">About Us</Link></li>
-								<li><Link href="#">Our Awards</Link></li>
-								<li><Link href="#">Agencies</Link></li>
-								<li><Link href="#">Copyright Notices</Link></li>
+								<li><Link href="/cars">Buy</Link></li>
+								<li><Link href="/how-it-works">How it works</Link></li>
+								<li><Link href="/deals">Best Deals</Link></li>
+								<li><Link href="/calculator">Loan Calculator</Link></li>
+								{/* <li><Link href="#">Copyright Notices</Link></li>
 								<li><Link href="#">Terms of Use</Link></li>
-								<li><Link href="#">Privacy Notice</Link></li>
-								<li><Link href="#">Lost &amp; Found</Link></li>
+								<li><Link href="#">Privacy Notice</Link></li> */}
+								{/* <li><Link href="#">Lost &amp; Found</Link></li> */}
 							</ul>
 						</div>
 						<div className="col-md-2 col-xs-6 footer-2">
 							<h6 className="text-linear-3">Our Services</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">Car Rental Services</Link></li>
-								<li><Link href="#">Vehicle Leasing Options</Link></li>
-								<li><Link href="#">Long-Term Car Rentals</Link></li>
-								<li><Link href="#">Car Sales and Trade-Ins</Link></li>
-								<li><Link href="#">Luxury Car Rentals</Link></li>
-								<li><Link href="#">Rent-to-Own Programs</Link></li>
+								{/* <li><Link href="#">Car Rental Services</Link></li> */}
+								<li><Link href="#">CarAudit</Link></li>
+								<li><Link href="#">Delivery</Link></li>
+								<li><Link href="#">Financing</Link></li>
+								{/* <li><Link href="#">Luxury Car Rentals</Link></li> */}
+								{/* <li><Link href="#">Rent-to-Own Programs</Link></li> */}
 								<li><Link href="#">Fleet Management Solutions</Link></li>
 							</ul>
 						</div>
 						<div className="col-md-2 col-xs-6 footer-4">
 							<h6 className="text-linear-3">Our Partners</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">Affiliates</Link></li>
-								<li><Link href="#">Travel Agents</Link></li>
+								<li><Link href="#">AutoScout</Link></li>
+								{/* <li><Link href="#">Travel Agents</Link></li>
 								<li><Link href="#">AARP Members</Link></li>
 								<li><Link href="#">Points Programs</Link></li>
 								<li><Link href="#">Military &amp; Veterans</Link></li>
 								<li><Link href="#">Work with us</Link></li>
-								<li><Link href="#">Advertise with us</Link></li>
+								<li><Link href="#">Advertise with us</Link></li> */}
 							</ul>
 						</div>
 						<div className="col-md-3 col-xs-6 footer-5">
-							<h6 className="text-linear-3">Support</h6>
+							<h6 className="text-linear-3">Company</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">Forum support</Link></li>
+								<li><Link href="#">About Us</Link></li>
 								<li><Link href="#">Help Center</Link></li>
-								<li><Link href="#">Live chat</Link></li>
-								<li><Link href="#">How it works</Link></li>
-								<li><Link href="#">Security</Link></li>
-								<li><Link href="#">Refund Policy</Link></li>
+								<li><Link href="#">Terms of Service</Link></li>
+								{/* <li><Link href="#">How it works</Link></li> */}
+								{/* <li><Link href="#">Security</Link></li> */}
+								{/* <li><Link href="#">Refund Policy</Link></li> */}
 							</ul>
 						</div>
 					</div>
 					<div className="footer-bottom mt-50">
 						<div className="row align-items-center justify-content-center">
 							<div className="col-md-6 text-md-start text-center mb-20">
-								<p className="text-sm color-white">© {new Date().getFullYear()} Fast4Car Inc. All rights reserved.</p>
+								<p className="text-sm color-white">© {new Date().getFullYear()} Fast4car AG: Terms of Use, Cookie Policy, Privacy Policy, Manage Cookies</p>
 							</div>
 							<div className="col-md-6 text-md-end text-center mb-20">
 								<div className="d-flex align-items-center justify-content-center justify-content-md-end">

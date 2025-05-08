@@ -15,9 +15,14 @@ import {
     Icon,
     VStack,
     useColorModeValue,
-    IconButton
+    IconButton,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionPanel,
+    AccordionIcon,
 } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
 import { FaPlay, FaPause } from "react-icons/fa";
 
@@ -99,6 +104,7 @@ export default function HowItWorks() {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
 
     const handlePlay = () => {
         if (videoRef.current) {
@@ -114,6 +120,14 @@ export default function HowItWorks() {
         }
     };
 
+    const nextStep = () => {
+        setCurrentStep((prev) => (prev + 1) % steps.length);
+    };
+
+    const prevStep = () => {
+        setCurrentStep((prev) => (prev - 1 + steps.length) % steps.length);
+    };
+
     return (
         <Layout >
             {/* Hero Section */}
@@ -122,7 +136,7 @@ export default function HowItWorks() {
                     <Grid
                         templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
                         gap={8}
-                        minH="calc(100vh - 100px)"
+                        minH="fit-content"
                         alignItems="center"
                     >
                         <GridItem>
@@ -169,12 +183,72 @@ export default function HowItWorks() {
                         </GridItem>
                     </Grid>
                 </Container>
+                <div className='mb-60 '>
+                    <Box bg={bgColor} padding={10} position={'relative'} display={'flex'} mt={10} justifyContent={'center'} alignItems={'center'} borderRadius="2xl" overflow="hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+                        <Box w={{ base: "100%", md: "50%" }}>
+                            <video
+                                ref={videoRef}
+                                src="/no_music.mp4"
+                                loop
+                                playsInline
+                                style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    objectFit: "cover",
+                                    display: "flex",
+                                    alignContent: 'center',
+                                    justifyItems: "center"
+                                }}
+                                onPause={() => setIsPlaying(false)}
+                                onPlay={() => setIsPlaying(true)}
+                            />
+                        </Box>
+                        {(!isPlaying || isHovered) && (
+                            !isPlaying ? (
+                                <VStack spacing={2}>
+                                    <IconButton
+                                        aria-label="Play video"
+                                        icon={<FaPlay size={40} />}
+                                        onClick={handlePlay}
+                                        position="absolute"
+                                        top="50%"
+                                        left="50%"
+                                        transform="translate(-50%, -50%)"
+                                        size="lg"
+                                        padding={2}
+                                        colorScheme="whiteAlpha"
+                                        bg={"#FF7A00"}
+                                        borderRadius="full"
+                                        _hover={{ bg: "rgba(0,0,0,0.8)" }}
+                                    />
+                                    <Text textStyle={'sm-bold'} color={'#FF7A00'} position="absolute" top="calc(45% + 40px)" left="50%" transform="translateX(-50%)">Play Video</Text>
+                                </VStack>
+                            ) : (
+                                <IconButton
+                                    aria-label="Pause video"
+                                    icon={<FaPause size={40} />}
+                                    onClick={handlePause}
+                                    position="absolute"
+                                    top="50%"
+                                    left="50%"
+                                    transform="translate(-50%, -50%)"
+                                    size="lg"
+                                    colorScheme="whiteAlpha"
+                                    bg="rgba(0,0,0,0.6)"
+                                    borderRadius="full"
+                                    _hover={{ bg: "rgba(0,0,0,0.8)" }}
+                                />
+                            )
+                        )}
+                    </Box>
+                </div>
                 {/* Guarantee Cards */}
                 <Box
                     mt={{ base: 8, md: -20 }}
                     zIndex="1"
                 >
                     <Container maxW="container.xl">
+                        {/* Desktop View */}
                         <SimpleGrid
                             columns={{ base: 1, md: 3 }}
                             spacing={8}
@@ -182,6 +256,7 @@ export default function HowItWorks() {
                             p={{ base: 4, md: 10 }}
                             rounded="3xl"
                             shadow="2xl"
+                            display={{ base: "none", md: "grid" }}
                         >
                             {guarantees.map((item, index) => (
                                 <Box
@@ -197,8 +272,6 @@ export default function HowItWorks() {
                                     _hover={{
                                         transform: 'translateY(-8px)',
                                         shadow: '2xl',
-                                        // borderColor: 'red.300',
-                                        // bg: hoverBgColor,
                                         color: hovertextColor
                                     }}
                                 >
@@ -254,111 +327,196 @@ export default function HowItWorks() {
                                 </Box>
                             ))}
                         </SimpleGrid>
+
+                        {/* Mobile View - Accordion */}
+                        <Box
+                            display={{ base: "block", md: "none" }}
+                            bg={bgColor}
+                            p={4}
+                            rounded="3xl"
+                            shadow="2xl"
+                        >
+                            <Accordion allowMultiple>
+                                {guarantees.map((item, index) => (
+                                    <AccordionItem
+                                        key={index}
+                                        border="none"
+                                        mb={4}
+                                        bg={cardBg}
+                                        rounded="xl"
+                                        overflow="hidden"
+                                    >
+                                        <AccordionButton
+                                            py={4}
+                                            px={6}
+                                            _hover={{ bg: "transparent" }}
+                                        >
+                                            <Flex align="center" flex="1">
+                                                <Box
+                                                    bg="red.50"
+                                                    p={2}
+                                                    rounded="lg"
+                                                    mr={4}
+                                                >
+                                                    <Image
+                                                        src={item.icon}
+                                                        alt={item.title}
+                                                        w="24px"
+                                                        h="24px"
+                                                        objectFit="contain"
+                                                    />
+                                                </Box>
+                                                <Heading
+                                                    size="sm"
+                                                    color="red.500"
+                                                    fontWeight="bold"
+                                                    flex="1"
+                                                    textAlign="left"
+                                                >
+                                                    {item.title}
+                                                </Heading>
+                                                <AccordionIcon color="red.500" />
+                                            </Flex>
+                                        </AccordionButton>
+                                        <AccordionPanel pb={4} px={6}>
+                                            <Text
+                                                color={subTextColor}
+                                                fontSize="sm"
+                                                lineHeight="1.6"
+                                            >
+                                                {item.description}
+                                            </Text>
+                                        </AccordionPanel>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </Box>
                     </Container>
                 </Box>
             </Box>
-            <div className=''>
-                <Box position="relative" p={[0, 16]} bg={bgColor} borderRadius="2xl" overflow="hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                    <video
-                        ref={videoRef}
-                        src="/no_music.mp4"
-                        loop
-                        playsInline
-                        style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }}
-                        onPause={() => setIsPlaying(false)}
-                        onPlay={() => setIsPlaying(true)}
-                    />
-                    {(!isPlaying || isHovered) && (
-                        !isPlaying ? (
-                            <IconButton
-                                aria-label="Play video"
-                                icon={<FaPlay size={40} />}
-                                onClick={handlePlay}
-                                position="absolute"
-                                top="50%"
-                                left="50%"
-                                transform="translate(-50%, -50%)"
-                                size="lg"
-                                colorScheme="whiteAlpha"
-                                bg="rgba(0,0,0,0.6)"
-                                borderRadius="full"
-                                _hover={{ bg: "rgba(0,0,0,0.8)" }}
-                            />
-                        ) : (
-                            <IconButton
-                                aria-label="Pause video"
-                                icon={<FaPause size={40} />}
-                                onClick={handlePause}
-                                position="absolute"
-                                top="50%"
-                                left="50%"
-                                transform="translate(-50%, -50%)"
-                                size="lg"
-                                colorScheme="whiteAlpha"
-                                bg="rgba(0,0,0,0.6)"
-                                borderRadius="full"
-                                _hover={{ bg: "rgba(0,0,0,0.8)" }}
-                            />
-                        )
-                    )}
-                </Box>
-            </div>
+
             {/* Content sections will go here */}
             <Box id="content" pt={{ base: 0, md: 0 }}>
                 {/* Steps Section */}
                 <Box py={20} bg={bgColor}>
                     <Container maxW="container.xl">
-                        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10}>
-                            {steps.map((step, index) => (
+                        <Box position="relative">
+                            {/* Navigation Arrows */}
+                            <IconButton
+                                aria-label="Previous step"
+                                icon={<ChevronLeftIcon />}
+                                position="absolute"
+                                left="-4"
+                                top="50%"
+                                transform="translateY(-50%)"
+                                zIndex={2}
+                                onClick={prevStep}
+                                colorScheme="red"
+                                variant="solid"
+                                borderRadius="full"
+                                display={{ base: "none", md: "flex" }}
+                            />
+                            <IconButton
+                                aria-label="Next step"
+                                icon={<ChevronRightIcon />}
+                                position="absolute"
+                                right="-4"
+                                top="50%"
+                                transform="translateY(-50%)"
+                                zIndex={2}
+                                onClick={nextStep}
+                                colorScheme="red"
+                                variant="solid"
+                                borderRadius="full"
+                                display={{ base: "none", md: "flex" }}
+                            />
+
+                            {/* Steps Carousel */}
+                            <Box
+                                position="relative"
+                                overflow="hidden"
+                                borderRadius="xl"
+                                bg={stepCardBg}
+                                shadow={stepCardShadow}
+                            >
                                 <Box
-                                    key={index}
-                                    bg={stepCardBg}
-                                    p={0}
-                                    borderRadius="xl"
-                                    shadow={stepCardShadow}
-                                    transition="all 0.3s"
-                                    overflow="hidden"
-                                    _hover={{ transform: 'translateY(-5px)', shadow: 'lg' }}
+                                    display="flex"
+                                    transition="transform 0.3s ease"
+                                    transform={`translateX(-${currentStep * 100}%)`}
                                 >
-                                    <Box position="relative" h="200px">
-                                        <Image
-                                            src={step.image}
-                                            alt={step.title}
-                                            objectFit="cover"
-                                            w="100%"
-                                            h="100%"
-                                        />
-                                        <Text
-                                            position="absolute"
-                                            top={4}
-                                            left={4}
-                                            color={stepNumberColor}
-                                            fontSize="2xl"
-                                            fontWeight="bold"
-                                            textShadow="0 2px 4px rgba(0,0,0,0.3)"
+                                    {steps.map((step, index) => (
+                                        <Box
+                                            key={index}
+                                            minW="100%"
+                                            p={6}
+                                            display="flex"
+                                            flexDirection={{ base: "column", md: "row" }}
+                                            gap={8}
                                         >
-                                            {step.number}
-                                        </Text>
-                                    </Box>
-                                    <Box p={6}>
-                                        <Heading
-                                            size="md"
-                                            mb={4}
-                                            color="red.500"
-                                        >
-                                            {step.title}
-                                        </Heading>
-                                        <Text
-                                            color={subTextColor}
-                                            fontSize="sm"
-                                            lineHeight="1.6"
-                                        >
-                                            {step.description}
-                                        </Text>
-                                    </Box>
+                                            <Box
+                                                position="relative"
+                                                flex="1"
+                                                h={{ base: "200px", md: "400px" }}
+                                                borderRadius="xl"
+                                                overflow="hidden"
+                                            >
+                                                <Image
+                                                    src={step.image}
+                                                    alt={step.title}
+                                                    objectFit="cover"
+                                                    w="100%"
+                                                    h="100%"
+                                                />
+                                                <Text
+                                                    position="absolute"
+                                                    top={4}
+                                                    left={4}
+                                                    color={stepNumberColor}
+                                                    fontSize="2xl"
+                                                    fontWeight="bold"
+                                                    textShadow="0 2px 4px rgba(0,0,0,0.3)"
+                                                >
+                                                    {step.number}
+                                                </Text>
+                                            </Box>
+                                            <Box flex="1" display="flex" flexDirection="column" justifyContent="center">
+                                                <Heading
+                                                    size="lg"
+                                                    mb={4}
+                                                    color="red.500"
+                                                >
+                                                    {step.title}
+                                                </Heading>
+                                                <Text
+                                                    color={subTextColor}
+                                                    fontSize="lg"
+                                                    lineHeight="1.6"
+                                                >
+                                                    {step.description}
+                                                </Text>
+                                            </Box>
+                                        </Box>
+                                    ))}
                                 </Box>
-                            ))}
-                        </SimpleGrid>
+                            </Box>
+
+                            {/* Step Indicators */}
+                            <Flex justify="center" mt={6} gap={2}>
+                                {steps.map((_, index) => (
+                                    <Box
+                                        key={index}
+                                        w="3"
+                                        h="3"
+                                        borderRadius="full"
+                                        bg={currentStep === index ? "red.500" : "gray.300"}
+                                        cursor="pointer"
+                                        onClick={() => setCurrentStep(index)}
+                                        transition="all 0.3s"
+                                        _hover={{ bg: "red.400" }}
+                                    />
+                                ))}
+                            </Flex>
+                        </Box>
                     </Container>
                 </Box>
                 {/* CTA Section */}

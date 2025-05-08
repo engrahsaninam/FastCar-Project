@@ -26,17 +26,17 @@ export default function Home() {
 				<Brand1 />
 				<CarsListing1 />
 				<Cta1 />
-				<Categories1 />
-				<WhyUs1 />
+				{/* <Categories1 /> */}
+				{/* <WhyUs1 /> */}
 				<Cta2 />
-				<CarsListing2 />
-				<Cta3 />
-				<Services1 />
-				<Banners />
-				<Testimonials />
-				<CarReview1 />
-				<Blog1 />
-				<App />
+				{/* <CarsListing2 /> */}
+				{/* <Cta3 /> */}
+				{/* <Services1 /> */}
+				{/* <Banners /> */}
+				{/* <Testimonials /> */}
+				{/* <CarReview1 /> */}
+				{/* <Blog1 /> */}
+				{/* <App /> */}
 			</Layout>
 		</>
 	)

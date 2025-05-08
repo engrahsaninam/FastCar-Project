@@ -242,7 +242,7 @@ export default function CarsListing1() {
 				<div className="container">
 					<div className="row align-items-end">
 						<div className="col-md-9 wow fadeInUp">
-							<h3 className="title-svg neutral-1000 mb-5">Most Searched Vehicles</h3>
+							<h3 className="title-svg neutral-1000 mb-5">Featured Vehicles</h3>
 							<p className="text-lg-medium text-bold neutral-500">The world's leading car brands</p>
 						</div>
 						<div className="col-md-3 position-relative mb-30 wow fadeInUp">

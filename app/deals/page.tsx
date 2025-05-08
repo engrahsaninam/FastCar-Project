@@ -128,7 +128,7 @@ export default function CarsList3() {
 			<Layout footerStyle={1}>
 				<div>
 					<div className="page-header-2 pt-30 background-body">
-						<div className="custom-container position-relative mx-auto">
+						{/* <div className="custom-container position-relative mx-auto">
 							<div className="bg-overlay rounded-12 overflow-hidden">
 								<img className="w-100 h-100 img-fluid img-banner" src="/assets/imgs/page-header/banner6.png" alt="Fast4Car" />
 							</div>
@@ -148,27 +148,9 @@ export default function CarsList3() {
 								</span>
 								<Link href="#" className="neutral-1000 text-md-bold text-nowrap">@@current-page</Link>
 							</div>
-						</div>
+						</div> */}
 					</div>
 					{/* search 1 */}
-					<section className="box-section box-search-advance-home10 background-body">
-						<div className="container">
-							<div className="box-search-advance background-card wow fadeIn">
-								<div className="box-top-search">
-									<div className="left-top-search">
-										<Link className="category-link text-sm-bold btn-click active" href="#">All cars</Link>
-										<Link className="category-link text-sm-bold btn-click" href="#">New cars</Link>
-										<Link className="category-link text-sm-bold btn-click" href="#">Used cars</Link>
-									</div>
-									<div className="right-top-search d-none d-md-flex">
-										<Link className="text-sm-medium need-some-help" href="/contact">Need help?</Link>
-									</div>
-								</div>
-								<HeroSearch />
-							</div>
-						</div>
-					</section>
-					{/* cars-listing-1 */}
 					<section className="section-box pt-50 background-body">
 						<div className="container">
 							<div className="row align-items-end">
@@ -179,6 +161,25 @@ export default function CarsList3() {
 							</div>
 						</div>
 					</section>
+					<section className="box-section box-search-advance-home10 background-body">
+						<div className="container">
+							<div className="box-search-advance background-card wow fadeIn">
+								{/* <div className="box-top-search">
+									<div className="left-top-search">
+										<Link className="category-link text-sm-bold btn-click active" href="#">All cars</Link>
+										<Link className="category-link text-sm-bold btn-click" href="#">New cars</Link>
+										<Link className="category-link text-sm-bold btn-click" href="#">Used cars</Link>
+									</div>
+									<div className="right-top-search d-none d-md-flex">
+										<Link className="text-sm-medium need-some-help" href="/contact">Need help?</Link>
+									</div>
+								</div> */}
+								<HeroSearch />
+							</div>
+						</div>
+					</section>
+					{/* cars-listing-1 */}
+					
 					<section className="box-section block-content-tourlist background-body">
 						<div className="container">
 							<div className="box-content-main pt-20">
@@ -217,7 +218,7 @@ export default function CarsList3() {
 														zIndex="1"
 														alignItems={["flex-start", "flex-start", "flex-start"]}
 														gap={[2, 2, 2]}
-														mb={["2", "2", "2"]}
+														mb={["4", "4", "4"]}
 													>
 														{/* Image Section */}
 														<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
