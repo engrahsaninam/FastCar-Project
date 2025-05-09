@@ -5,14 +5,20 @@ const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 })
 import Link from 'next/link'
 import Dropdown from 'react-bootstrap/Dropdown'
-import { Link as ChakraLink, Text, Flex, HStack, useColorModeValue, useToken, Menu, MenuButton, MenuList, MenuItem, Box } from '@chakra-ui/react';
+import { Link as ChakraLink, Text, Flex, HStack, useColorModeValue, useToken, Menu, MenuButton, MenuList, MenuItem, Box, useDisclosure, Button, Divider, VStack } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import { ChevronDownIcon } from "@chakra-ui/icons";
-
+import { useState } from 'react'
+import { ShoppingCart, User, Heart } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
+import { MenuItemLink } from './Header1';
 export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handleOffcanvas, isOffcanvas }: any) {
 	const pathname = usePathname();
 	const isMainPage = pathname === '/';
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
+	const [showLoginModal, setShowLoginModal] = useState(false);
+	const [showSignupModal, setShowSignupModal] = useState(false);
 	// Move all useColorModeValue hooks to the top level
 	const lightTextColor = useColorModeValue('gray.900', 'gray.100');
 	const lightTextColorHover = useColorModeValue('gray.700', 'gray.200');
@@ -62,7 +68,7 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 								</div>
 								<div className="header-left">
 									<div className="header-left " style={{ marginRight: '20px' }}>
-										<Box display={{ base: "flex", xl: "flex" }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
+										<Box display={{ base: "flex", xl: "flex" }} px={3} pb={1} borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
 											<Menu>
 												<MenuButton
 													as={Text}
@@ -86,36 +92,91 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 
 
 										{/* Sign In */}
-										<Box display="flex" px={["10px", "30px"]} borderRight="1px solid" borderColor={borderColor} alignItems="center" whiteSpace='nowrap'	>
-											<Link href="/login" passHref>
-												<Box as="a" display={{ base: "flex", xl: "flex" }} alignItems="center" fontSize={["10px", "16px"]}
-													fontWeight="medium" color={textColor} _hover={{ color: textColorHover }}>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														width="20"
-														height="20"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														strokeWidth="2"
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														style={{ marginRight: "8px" }}
-													>
-														<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-														<circle cx="12" cy="7" r="4"></circle>
-													</svg>
-													Sign In
+										<Box position="relative">
+											<Button
+												onClick={isOpen ? onClose : onOpen}
+												variant="ghost"
+												px={2}
+												top="10px"
+												rightIcon={<ChevronDown size={16} />}
+												leftIcon={<User size={20} />}
+												_hover={{ color: textColorHover }}
+												color={textColor}
+												fontWeight="medium"
+											>
+
+											</Button>
+
+											{isOpen && (
+												<Box
+													position="absolute"
+													top="100%"
+													mt={2}
+													right={0}
+													bg={bgColor}
+													border="1px solid"
+													borderColor={borderColor}
+													borderRadius="md"
+													boxShadow="md"
+													zIndex={100}
+													width="300px"
+												>
+													<VStack align="start" spacing={0} p={4}>
+														{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
+											<MenuItemLink label="Last searches" Icon={Clock} /> */}
+														<MenuItemLink label="Favorite cars" Icon={Heart} />
+														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} />
+													</VStack>
+
+													<Divider />
+
+													<Box p={4}>
+														<Link href="/login">
+															<Button
+																onClick={() => {
+																	onClose();
+																	setShowLoginModal(true);
+																}}
+																bg="red.500"
+																_hover={{ bg: 'red.600' }}
+																color="white"
+																width="full"
+																leftIcon={<User size={20} />}
+																fontSize="15px"
+																fontWeight="medium"
+															>
+																Login
+															</Button>
+														</Link>
+														<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
+															Don't have an account?
+															<Link href="/register">
+
+																<Button
+																	variant="link"
+																	ml={2}
+																	color="red.500"
+																	fontWeight="medium"
+																	onClick={() => {
+																		onClose();
+																		setShowSignupModal(true);
+																	}}
+																>
+																	Register
+																</Button>
+															</Link>
+														</Text>
+													</Box>
 												</Box>
-											</Link>
+											)}
 										</Box>
 
 
-										<div className="top-button-mode">
+										<div className="top-button-mode " style={{ marginTop: '10px' }}>
 											<ThemeSwitch />
 										</div>
 									</div>
-									<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
+									<div className={`burger-icon ${burgerIconClass}`} style={{ top: '20px' }} onClick={handleMobileMenu}>
 										<span className="burger-icon-top" />
 										<span className="burger-icon-mid" />
 										<span className="burger-icon-bottom" />

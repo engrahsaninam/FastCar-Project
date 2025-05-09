@@ -1,5 +1,6 @@
 'use client';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { useRouter } from 'next/navigation';
 import {
 	Box,
 	Button,
@@ -24,14 +25,16 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import router from 'next/router';
 
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
 });
 
-function MenuItemLink({ label, Icon }: { label: string; Icon: any }) {
+export function MenuItemLink({ label, Icon }: { label: string; Icon: any }) {
 	const color = useColorModeValue('black', 'white');
 	const hoverColor = useColorModeValue('white', 'black');
+	const router = useRouter();
 	return (
 		<HStack
 			as="a"
@@ -75,7 +78,7 @@ export default function Header1({
 	const textColorHover = isMainPage ? 'gray.300' : lightTextColorHover;
 	const borderColor = lightBorderColor;
 	const bgColor = isMainPage ? 'gray.900' : lightBgColor;
-	const bgColor1 = isMainPage ? 'white' : lightBgColor;
+	const bgColor1 = lightBgColor;
 	const burgerIconClass = isMainPage ? 'burger-icon-white' : lightBurgerIconClass;
 
 	const [resolvedBgColor] = useToken('colors', [bgColor]);
@@ -156,7 +159,7 @@ export default function Header1({
 						</div>
 
 						<div className="header-right" style={{ marginRight: '20px' }}>
-							<Box display={{ base: 'flex', xl: 'flex' }} px={3} borderRight="1px solid" borderColor={borderColor} alignItems="center">
+							<Box display={{ base: 'flex', xl: 'flex' }} px={3} borderColor={borderColor} alignItems="center" whiteSpace="nowrap">
 								<Menu>
 									<MenuButton
 										as={Text}
@@ -196,9 +199,8 @@ export default function Header1({
 									color={textColor}
 									fontWeight="medium"
 								>
-									
-								</Button>
 
+								</Button>
 								{isOpen && (
 									<Box
 										position="absolute"
@@ -223,46 +225,52 @@ export default function Header1({
 										<Divider />
 
 										<Box p={4}>
-											<Button
-												onClick={() => {
-													onClose();
-													setShowLoginModal(true);
-												}}
-												bg="red.500"
-												_hover={{ bg: 'red.600' }}
-												color="white"
-												width="full"
-												leftIcon={<User size={20} />}
-												fontSize="15px"
-												fontWeight="medium"
-											>
-												Login
-											</Button>
-											<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
-												Don't have an account?
+											<Link href="/login">
+
 												<Button
-													variant="link"
-													ml={2}
-													color="red.500"
-													fontWeight="medium"
 													onClick={() => {
 														onClose();
-														setShowSignupModal(true);
+														router.push('/login');
+														setShowLoginModal(true);
 													}}
+													bg="red.500"
+													_hover={{ bg: 'red.600' }}
+													color="white"
+													width="full"
+													leftIcon={<User size={20} />}
+													fontSize="15px"
+													fontWeight="medium"
 												>
-													Register
+													Login
 												</Button>
+											</Link>
+											<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
+												Don't have an account?
+												<Link href="/register">
+													<Button
+														variant="link"
+														ml={2}
+														color="red.500"
+														fontWeight="medium"
+														onClick={() => {
+															onClose();
+															setShowSignupModal(true);
+														}}
+													>
+														Register
+													</Button>
+												</Link>
 											</Text>
 										</Box>
 									</Box>
 								)}
 							</Box>
 
-							<div className="top-button-mode">
+							<div className="top-button-mode" style={{ marginRight: '25px' }}>
 								<ThemeSwitch />
 							</div>
 
-							<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
+							<div className={`burger-icon d-flex flex-col justify-content-center align-items-center ${burgerIconClass}`} onClick={handleMobileMenu}>
 								<span className="burger-icon-top" />
 								<span className="burger-icon-mid" />
 								<span className="burger-icon-bottom" />
