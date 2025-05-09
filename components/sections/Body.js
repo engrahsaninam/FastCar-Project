@@ -25,7 +25,7 @@ import {
   Select,
   AspectRatio,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '@chakra-ui/react'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -56,7 +56,7 @@ const LucideIcon = ({ icon: Icon, ...props }) => {
 };
 
 // Car Card Component
-const CarCard = ({ car }) => {
+export const CarCard = ({ car }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 

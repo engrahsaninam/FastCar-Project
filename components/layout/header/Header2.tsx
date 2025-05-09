@@ -8,14 +8,17 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import { Link as ChakraLink, Text, Flex, HStack, useColorModeValue, useToken, Menu, MenuButton, MenuList, MenuItem, Box, useDisclosure, Button, Divider, VStack } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ShoppingCart, User, Heart } from 'lucide-react'
 import { ChevronDown } from 'lucide-react'
 import { MenuItemLink } from './Header1';
+import { useOutsideClick } from '@chakra-ui/react';
+
 export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handleOffcanvas, isOffcanvas }: any) {
 	const pathname = usePathname();
 	const isMainPage = pathname === '/';
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const dropdownRef = useRef(null);
 
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [showSignupModal, setShowSignupModal] = useState(false);
@@ -23,17 +26,24 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 	const lightTextColor = useColorModeValue('gray.900', 'gray.100');
 	const lightTextColorHover = useColorModeValue('gray.700', 'gray.200');
 	const lightBorderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-	const lightBgColor = useColorModeValue('white', 'gray.900');
+	const lightBgColor = useColorModeValue('white', 'gray.700');
 	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
 
 	// Use the values conditionally
 	const textColor = isMainPage ? 'gray.900' : lightTextColor;
 	const textColorHover = isMainPage ? 'gray.700' : lightTextColorHover;
 	const borderColor = lightBorderColor;
-	const bgColor = lightBgColor;
+	const bgColor = useColorModeValue('white', 'gray.800');
 	const burgerIconClass = isMainPage ? 'burger-icon-white' : lightBurgerIconClass;
 
 	const [resolvedBgColor] = useToken('colors', [bgColor]);
+
+	useOutsideClick({
+		ref: dropdownRef,
+		handler: () => {
+			if (isOpen) onClose();
+		},
+	});
 
 	return (
 		<>
@@ -109,6 +119,7 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 
 											{isOpen && (
 												<Box
+													ref={dropdownRef}
 													position="absolute"
 													top="100%"
 													mt={2}
@@ -124,8 +135,8 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 													<VStack align="start" spacing={0} p={4}>
 														{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
 											<MenuItemLink label="Last searches" Icon={Clock} /> */}
-														<MenuItemLink label="Favorite cars" Icon={Heart} />
-														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} />
+														<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
+														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
 													</VStack>
 
 													<Divider />

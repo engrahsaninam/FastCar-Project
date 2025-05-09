@@ -1,6 +1,8 @@
 'use client'
-import React, { useRef, useState } from 'react';
 import Layout from "@/components/layout/Layout"
+import {  Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
+import { useRef, useState, useEffect } from "react";
+
 import {
     Box,
     Container,
@@ -21,10 +23,11 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
+    HStack,
 } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaBackward, FaForward } from "react-icons/fa";
 
 const steps = [
     {
@@ -101,10 +104,10 @@ export default function HowItWorks() {
     const stepCardBg = useColorModeValue("white", "gray.800");
     const stepCardShadow = useColorModeValue("md", "dark-lg");
     const stepNumberColor = useColorModeValue("red.500", "red.300");
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+   
     const [isHovered, setIsHovered] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+ 
 
     const handlePlay = () => {
         if (videoRef.current) {
@@ -120,8 +123,61 @@ export default function HowItWorks() {
         }
     };
 
+    const handleSeek = (seconds: number) => {
+        if (videoRef.current) {
+            videoRef.current.currentTime += seconds;
+        }
+    };
+
     const nextStep = () => {
         setCurrentStep((prev) => (prev + 1) % steps.length);
+    };
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [showOverlay, setShowOverlay] = useState(true);
+    // Format time like mm:ss
+    const formatTime = (time: number) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    };
+
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        const updateTime = () => setCurrentTime(video.currentTime);
+        const updateDuration = () => setDuration(video.duration);
+
+        video.addEventListener("timeupdate", updateTime);
+        video.addEventListener("loadedmetadata", updateDuration);
+
+        return () => {
+            video.removeEventListener("timeupdate", updateTime);
+            video.removeEventListener("loadedmetadata", updateDuration);
+        };
+    }, []);
+
+    const handlePlayPause = () => {
+        if (!videoRef.current) return;
+
+        if (isPlaying) {
+            videoRef.current.pause();
+        } else {
+            videoRef.current.play();
+            setShowOverlay(false); // Hide overlay on play
+        }
+
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleSliderChange = (value: number) => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = value;
+            setCurrentTime(value);
+        }
     };
 
     const prevStep = () => {
@@ -185,61 +241,83 @@ export default function HowItWorks() {
                 </Container>
                 <div className='mb-60 '>
                     <Box bg={bgColor} padding={10} position={'relative'} display={'flex'} mt={10} justifyContent={'center'} alignItems={'center'} borderRadius="2xl" overflow="hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                        <Box w={{ base: "100%", md: "50%" }}>
+                        <Box w={{ base: "100%", md: "50%" }} position="relative">
+                            {/* Video */}
                             <video
                                 ref={videoRef}
                                 src="/no_music.mp4"
-                                loop
+                                poster="/thumbnail.png"
                                 playsInline
+                                loop
                                 style={{
                                     width: "100%",
                                     height: "auto",
                                     objectFit: "cover",
-                                    display: "flex",
-                                    alignContent: 'center',
-                                    justifyItems: "center"
                                 }}
-                                onPause={() => setIsPlaying(false)}
-                                onPlay={() => setIsPlaying(true)}
                             />
-                        </Box>
-                        {(!isPlaying || isHovered) && (
-                            !isPlaying ? (
-                                <VStack spacing={2}>
-                                    <IconButton
-                                        aria-label="Play video"
-                                        icon={<FaPlay size={40} />}
-                                        onClick={handlePlay}
-                                        position="absolute"
-                                        top="50%"
-                                        left="50%"
-                                        transform="translate(-50%, -50%)"
-                                        size="lg"
-                                        padding={2}
-                                        colorScheme="whiteAlpha"
-                                        bg={"#FF7A00"}
-                                        borderRadius="full"
-                                        _hover={{ bg: "rgba(0,0,0,0.8)" }}
-                                    />
-                                    <Text textStyle={'sm-bold'} color={'#FF7A00'} position="absolute" top="calc(45% + 40px)" left="50%" transform="translateX(-50%)">Play Video</Text>
-                                </VStack>
-                            ) : (
-                                <IconButton
-                                    aria-label="Pause video"
-                                    icon={<FaPause size={40} />}
-                                    onClick={handlePause}
+
+                            {/* Overlay Play Button */}
+                            {showOverlay && (
+                                <Flex
                                     position="absolute"
-                                    top="50%"
-                                    left="50%"
-                                    transform="translate(-50%, -50%)"
-                                    size="lg"
-                                    colorScheme="whiteAlpha"
-                                    bg="rgba(0,0,0,0.6)"
-                                    borderRadius="full"
-                                    _hover={{ bg: "rgba(0,0,0,0.8)" }}
+                                    top="0"
+                                    left="0"
+                                    right="0"
+                                    bottom="0"
+                                    align="center"
+                                    justify="center"
+                                    bg="rgba(0, 0, 0, 0.5)"
+                                    zIndex="1"
+                                    direction="column"
+                                    onClick={handlePlayPause}
+                                    cursor="pointer"
+                                >
+                                    <Box
+                                        bg="orange.400"
+                                        borderRadius="full"
+                                        w="70px"
+                                        h="70px"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        boxShadow="lg"
+                                    >
+                                        <FaPlay color="white" size="24px" />
+                                    </Box>
+                                    <Text color="white" fontWeight="bold" mt={2}>
+                                        Play video
+                                    </Text>
+                                </Flex>
+                            )}
+
+                            {/* Controls */}
+                            <Flex align="center" mt={2} gap={3}>
+                                <IconButton
+                                    aria-label={isPlaying ? "Pause" : "Play"}
+                                    icon={isPlaying ? <FaPause /> : <FaPlay />}
+                                    onClick={handlePlayPause}
+                                    size="sm"
                                 />
-                            )
-                        )}
+                                <Text fontSize="sm" minW="40px">
+                                    {formatTime(currentTime)}
+                                </Text>
+                                <Box flex="1" mx={2}>
+                                    <input
+                                        type="range"
+                                        value={currentTime}
+                                        min={0}
+                                        max={duration || 1}
+                                        step={0.1}
+                                        onChange={(e) => handleSliderChange(Number(e.target.value))}
+                                        style={{ width: "100%" }}
+                                    />
+                                </Box>
+                                <Text fontSize="sm" minW="40px">
+                                    {formatTime(duration)}
+                                </Text>
+                            </Flex>
+                        </Box>
+                        
                     </Box>
                 </div>
                 {/* Guarantee Cards */}

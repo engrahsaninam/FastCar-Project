@@ -54,9 +54,9 @@ import Image from 'next/image';
 import logo from '@/public/assets/imgs/template/logo-d.svg';
 import logoDark from '@/public/assets/imgs/template/logo-w.svg';
 import Marquee from 'react-fast-marquee'
-import {  SimpleGrid } from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
 import {
-	 LucideIcon as LucideIconType
+	LucideIcon as LucideIconType
 } from 'lucide-react';
 
 const carsData = rawCarsData.map(car => ({
@@ -127,36 +127,30 @@ export default function CarsList3() {
 
 			<Layout footerStyle={1}>
 				<div>
-					<div className="page-header-2 pt-30 background-body">
-						{/* <div className="custom-container position-relative mx-auto">
-							<div className="bg-overlay rounded-12 overflow-hidden">
-								<img className="w-100 h-100 img-fluid img-banner" src="/assets/imgs/page-header/banner6.png" alt="Fast4Car" />
-							</div>
-							<div className="container position-absolute z-1 top-50 start-50 pb-70 translate-middle text-center">
-								<span className="text-sm-bold bg-2 px-4 py-3 rounded-12">Find cars for sale and for rent near you</span>
-								<h2 className="text-white mt-4">Locate the Car That Fits You Best</h2>
-								<span className="text-white text-lg-medium">Search and find your best car rental with easy way</span>
-							</div>
-							<div className="background-body position-absolute z-1 top-100 start-50 translate-middle px-3 py-2 rounded-12 border d-flex gap-3 d-none d-none d-md-flex">
-								<Link href="/" className="neutral-700 text-md-medium">Home</Link>
-								<span className="@@ds-prev-page">
-									<img src="/assets/imgs/template/icons/arrow-right.svg" alt="Fast4Car" />
-								</span>
-								<Link href="#" className="neutral-1000 text-md-bold">@@prev-page</Link>
-								<span>
-									<img src="/assets/imgs/template/icons/arrow-right.svg" alt="Fast4Car" />
-								</span>
-								<Link href="#" className="neutral-1000 text-md-bold text-nowrap">@@current-page</Link>
-							</div>
-						</div> */}
-					</div>
+					
 					{/* search 1 */}
-					<section className="section-box pt-50 background-body">
-						<div className="container">
+					<section
+						className="section-box pt-50 background-body"
+						style={{
+							backgroundImage: "url('/assets/imgs/page-header/banner6.png')",
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+							backgroundRepeat: "no-repeat",
+							position: "relative",
+							// zIndex: 1,
+						}}
+					>
+						<div style={{
+							background: badgeColor, // Optional: white overlay for readability
+							position: "absolute",
+							top: 0, left: 0, right: 0, bottom: 0,
+							zIndex: 2,
+						}} />
+						<div className="container pt-96" style={{ position: "relative", zIndex: 3 }}>
 							<div className="row align-items-end">
 								<div className="col-md-9 mb-30 wow fadeInUp">
-									<h4 className="title-svg neutral-1000 mb-15">Our Vehicle Fleet</h4>
-									<p className="text-lg-medium text-bold neutral-500">Turning dreams into reality with versatile vehicles.</p>
+									<h4 className="title-svg text-white mb-15">Our Daily Best Deals</h4>
+									<p className="text-lg-medium text-bold neutral-500">We find and filter the best cars of the day for you</p>
 								</div>
 							</div>
 						</div>
@@ -179,7 +173,7 @@ export default function CarsList3() {
 						</div>
 					</section>
 					{/* cars-listing-1 */}
-					
+
 					<section className="box-section block-content-tourlist background-body">
 						<div className="container">
 							<div className="box-content-main pt-20">
@@ -224,7 +218,7 @@ export default function CarsList3() {
 														<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
 															<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
 																<Box position="relative" w="full" h="full" className='card-image'>
-																	
+
 
 																	<Image
 																		src={`/assets/imgs/cars-listing/cars-listing-6/${car.image}`}

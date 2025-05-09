@@ -18,27 +18,28 @@ import {
 	useColorModeValue,
 	useDisclosure,
 	useToken,
-	Link as ChakraLink
+	Link as ChakraLink,
+	useOutsideClick
 } from '@chakra-ui/react';
 import { ChevronDown, User, Bookmark, Clock, Heart, ShoppingCart } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import router from 'next/router';
 
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
 });
 
-export function MenuItemLink({ label, Icon }: { label: string; Icon: any }) {
+export function MenuItemLink({ label, Icon, href }: { label: string; Icon: any, href: string }) {
 	const color = useColorModeValue('black', 'white');
 	const hoverColor = useColorModeValue('white', 'black');
 	const router = useRouter();
 	return (
 		<HStack
 			as="a"
-			href="#"
+			href={href}
 			spacing={3}
 			height="48px"
 			width="full"
@@ -71,7 +72,7 @@ export default function Header1({
 	const lightTextColor = useColorModeValue('gray.900', 'gray.100');
 	const lightTextColorHover = useColorModeValue('gray.700', 'gray.200');
 	const lightBorderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-	const lightBgColor = useColorModeValue('white', 'black');
+	const lightBgColor = useColorModeValue('white', 'gray.900');
 	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
 
 	const textColor = isMainPage ? 'white' : lightTextColor;
@@ -82,6 +83,14 @@ export default function Header1({
 	const burgerIconClass = isMainPage ? 'burger-icon-white' : lightBurgerIconClass;
 
 	const [resolvedBgColor] = useToken('colors', [bgColor]);
+
+	const dropdownRef = useRef<HTMLDivElement>(null);
+	useOutsideClick({
+		ref: dropdownRef,
+		handler: () => {
+			if (isOpen) onClose();
+		},
+	});
 
 	return (
 		<header
@@ -197,16 +206,19 @@ export default function Header1({
 									leftIcon={<User size={20} />}
 									_hover={{ color: textColorHover }}
 									color={textColor}
+
 									fontWeight="medium"
 								>
 
 								</Button>
 								{isOpen && (
 									<Box
+										ref={dropdownRef}
 										position="absolute"
 										top="100%"
 										mt={2}
-										right={0}
+										// left={-50}
+										right={-10}
 										bg={bgColor1}
 										border="1px solid"
 										borderColor={borderColor}
@@ -218,8 +230,8 @@ export default function Header1({
 										<VStack align="start" spacing={0} p={4}>
 											{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
 											<MenuItemLink label="Last searches" Icon={Clock} /> */}
-											<MenuItemLink label="Favorite cars" Icon={Heart} />
-											<MenuItemLink label="Orders in progress" Icon={ShoppingCart} />
+											<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
+											<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/orders-in-progress" />
 										</VStack>
 
 										<Divider />

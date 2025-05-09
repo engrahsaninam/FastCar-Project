@@ -664,9 +664,9 @@ export default function CarsDetails1() {
 		return <Box as={Icon} {...props} />;
 	};
 	const textColor = useColorModeValue("gray.900", "white");
-	const priceColor = useColorModeValue("black", "white");
-	const bgColor = useColorModeValue("white", "black");
-	const badgeBg = useColorModeValue("red.50", "black");
+	const priceColor = useColorModeValue("#171923", "white");
+	const bgColor = useColorModeValue("white", "#171923");
+	const badgeBg = useColorModeValue("red.50", "#171923");
 	const bgnavitem=useColorModeValue("red.500","red.500")
 	const badgeColor = useColorModeValue("red.400", "red.300");
 
