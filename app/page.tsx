@@ -15,7 +15,6 @@ import Search1 from "@/components/sections/Search1"
 import Services1 from "@/components/sections/Services1"
 import Testimonials from "@/components/sections/Testimonials"
 import WhyUs1 from "@/components/sections/WhyUs1"
-
 export default function Home() {
 
 	return (

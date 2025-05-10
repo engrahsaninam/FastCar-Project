@@ -26,7 +26,6 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef } from 'react';
-import router from 'next/router';
 
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
@@ -63,6 +62,7 @@ export default function Header1({
 	isOffcanvas,
 }: any) {
 	const pathname = usePathname();
+	const router = useRouter();
 	const isMainPage = pathname === '/';
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -75,11 +75,11 @@ export default function Header1({
 	const lightBgColor = useColorModeValue('white', '#F7FAFC');
 	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
 
-	const textColor =  lightTextColor;
-	const textColorHover =lightTextColorHover;
+	const textColor = lightTextColor;
+	const textColorHover = lightTextColorHover;
 	const borderColor = lightBorderColor;
 	const bgColor = useColorModeValue('white', 'black');
-	const bgColor1 = lightBgColor;
+	const bgColor1 = useColorModeValue('white', '#171923');
 	const burgerIconClass = lightBurgerIconClass;
 
 	const [resolvedBgColor] = useToken('colors', [bgColor]);
@@ -185,17 +185,18 @@ export default function Header1({
 										cursor="pointer"
 										display="flex"
 										alignItems="center"
+
 									>
 										EN <ChevronDownIcon ml={1} />
 									</MenuButton>
 									<MenuList>
-										<MenuItem as="a" href="#">
+										<MenuItem as="a" >
 											English
 										</MenuItem>
-										<MenuItem as="a" href="#">
+										<MenuItem as="a">
 											French
 										</MenuItem>
-										<MenuItem as="a" href="#">
+										<MenuItem as="a">
 											Chinese
 										</MenuItem>
 									</MenuList>

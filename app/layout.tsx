@@ -5,7 +5,7 @@ import "/public/assets/css/main.css"
 import "/public/assets/css/globals.css" 
 import { Providers } from './provider'
 import logo from "@/public/assets/imgs/template/logo-d.svg"
-
+import { appWithTranslation } from 'next-i18next';
 
 export const metadata: Metadata = {
   title: "Fast4Car - #1 Import Car Marketplace",
