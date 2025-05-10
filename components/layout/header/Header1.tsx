@@ -69,18 +69,18 @@ export default function Header1({
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [showSignupModal, setShowSignupModal] = useState(false);
 
-	const lightTextColor = useColorModeValue('gray.900', 'gray.100');
-	const lightTextColorHover = useColorModeValue('gray.700', 'gray.200');
-	const lightBorderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-	const lightBgColor = useColorModeValue('white', 'gray.900');
+	const lightTextColor = useColorModeValue('#171923', '#F7FAFC');
+	const lightTextColorHover = useColorModeValue('#2D3748', '#EDF2F7');
+	const lightBorderColor = useColorModeValue('#EDF2F7', 'whiteAlpha.300');
+	const lightBgColor = useColorModeValue('white', '#F7FAFC');
 	const lightBurgerIconClass = useColorModeValue('burger-icon-black', 'burger-icon-white');
 
-	const textColor = isMainPage ? 'white' : lightTextColor;
-	const textColorHover = isMainPage ? 'gray.300' : lightTextColorHover;
+	const textColor =  lightTextColor;
+	const textColorHover =lightTextColorHover;
 	const borderColor = lightBorderColor;
-	const bgColor = isMainPage ? 'gray.900' : lightBgColor;
+	const bgColor = useColorModeValue('white', 'black');
 	const bgColor1 = lightBgColor;
-	const burgerIconClass = isMainPage ? 'burger-icon-white' : lightBurgerIconClass;
+	const burgerIconClass = lightBurgerIconClass;
 
 	const [resolvedBgColor] = useToken('colors', [bgColor]);
 
@@ -94,15 +94,21 @@ export default function Header1({
 
 	return (
 		<header
-			style={{ backgroundColor: resolvedBgColor }}
+			style={{ backgroundColor: bgColor }}
 			className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}
 		>
 			<div className="container-fluid">
 				<div className="main-header">
 					<div className="header-left">
-						<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
+						<div className="header-logo" style={{ display: 'none' }}>
 							<Link className="d-flex" href="/">
 								<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+								<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+							</Link>
+						</div>
+						<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
+							<Link className="d-flex" href="/">
+								<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
 								<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
 							</Link>
 						</Box>
@@ -168,7 +174,7 @@ export default function Header1({
 						</div>
 
 						<div className="header-right" style={{ marginRight: '20px' }}>
-							<Box display={{ base: 'flex', xl: 'flex' }} px={3} borderColor={borderColor} alignItems="center" whiteSpace="nowrap">
+							<Box display={{ base: 'flex', xl: 'flex' }} px={3} alignItems="center" whiteSpace="nowrap">
 								<Menu>
 									<MenuButton
 										as={Text}
@@ -282,7 +288,7 @@ export default function Header1({
 								<ThemeSwitch />
 							</div>
 
-							<div className={`burger-icon d-flex flex-col justify-content-center align-items-center ${burgerIconClass}`} onClick={handleMobileMenu}>
+							<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
 								<span className="burger-icon-top" />
 								<span className="burger-icon-mid" />
 								<span className="burger-icon-bottom" />

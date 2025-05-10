@@ -5738,7 +5738,7 @@ label {
 	font-weight: 500;
 	font-size: 16px;
 	line-height: 22px;
-	/* color: var(--bs-neutral-1000); */
+	color: var(--bs-neutral-1000);
 	display: block;
 	padding: 20px 18px 20px 18px;
 	text-decoration: none;
