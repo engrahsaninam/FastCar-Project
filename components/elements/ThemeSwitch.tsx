@@ -33,14 +33,14 @@ export default function ThemeSwitch() {
       {colorMode === "light" ? (
         <img
           className="light-mode"
-          src="/assets/imgs/template/icons/light.svg"
+          src="/assets/imgs/template/icons/light-w.svg"
           alt="Light Mode"
           style={{ width: '20px', height: '20px' }}
         />
       ) : (
         <img
           className="dark-mode"
-          src="/assets/imgs/template/icons/light-w.svg"
+          src="/assets/imgs/template/icons/light.svg"
           alt="Dark Mode"
           style={{ width: '20px', height: '20px' }}
         />

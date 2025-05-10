@@ -378,15 +378,26 @@ const FavoritesSection: React.FC = () => {
         }
     ];
 
-    const bg = useColorModeValue("white", "#1a1a1a")
+    const bg = useColorModeValue("#f7fafc", "#1a1a1a")
     return (
         <Layout>
-            <section className="min-h-screen w-full py-12 px-4 pt-12 md:py-16 md:px-16" style={{ backgroundColor: bg }} >
-                <div className="max-w-7xl mx-auto m-12" style={{marginInline: "30px"}}>
-                    {/* Header Section */}
-                    <Heading size="lg" color={useColorModeValue("gray.800", "white")}>
-                        Favourite cars
-                    </Heading>
+            <Box w="full" minH="100vh" bg={useColorModeValue("gray.50", "gray.900")}>
+                <Container maxW="7xl" py={10}>
+                    {/* Header */}
+                    <Flex align="center" mb={8}>
+                        <Link href="/">
+                            <IconButton
+                                aria-label="Back"
+                                icon={<ChevronLeft />}
+                                variant="ghost"
+                                colorScheme="gray"
+                                mr={2}
+                            />
+                        </Link>
+                        <Heading size="lg" color={useColorModeValue("gray.800", "white")}>
+                            Favourite cars
+                        </Heading>
+                    </Flex>
 
                     {/* Conditional Content */}
                     {!hasFavorites ? (
@@ -543,7 +554,7 @@ const FavoritesSection: React.FC = () => {
                                                             width={24}
                                                             height={24}
                                                             objectFit="contain"
-                                                        />  
+                                                        />
                                                     </Box>
                                                     <Heading
                                                         size="sm"
@@ -572,8 +583,8 @@ const FavoritesSection: React.FC = () => {
                             </Box>
                         </Container>
                     </Box>
-                </div>
-            </section>
+                </Container>
+            </Box>
         </Layout>
     );
 };
