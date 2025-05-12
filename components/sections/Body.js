@@ -607,7 +607,7 @@ const VerifiedCarsHeader = () => {
       >
         {/* Title and Results Count */}
         <Box>
-          <Heading fontSize="xl" fontWeight="bold" color={headingColor}>
+          <Heading fontSize="xl" fontWeight="bold" color={headingColor} fontFamily='satoshi'>
             Verified cars
           </Heading>
           <Text fontSize="sm" color={textColor}>

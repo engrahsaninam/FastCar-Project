@@ -63,7 +63,7 @@ export default function ReviewsPage() {
         <Layout >
             <Box minH="100vh" bg={bg} px={[4, 4, 50]} py={10} margin="0 auto">
                 <Box mb={8} paddingInline={8}>
-                    <Heading size="2xl" mb={2} color={textColor}>
+                    <Heading size="2xl" mb={2} color={textColor} fontFamily='satoshi' fontWeight={900}>
                         Trustpilot Testimonials
                     </Heading>
                     <Text fontSize="lg" color={subTextColor}>

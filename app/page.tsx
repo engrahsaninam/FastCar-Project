@@ -22,7 +22,7 @@ export default function Home() {
 			<Layout headerStyle={1} footerStyle={1}>
 				<Hero1 />
 				{/* <Search1 /> */}
-				<Brand1 />
+				{/* <Brand1 /> */}
 				<CarsListing1 />
 				<Cta1 />
 				{/* <Categories1 /> */}

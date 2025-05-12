@@ -135,7 +135,7 @@ export default function HowItWorks() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
+    const [duration, setDuration] = useState(1.73);
     const [showOverlay, setShowOverlay] = useState(true);
     // Format time like mm:ss
     const formatTime = (time: number) => {
@@ -201,8 +201,9 @@ export default function HowItWorks() {
                                     as="h1"
                                     fontSize={{ base: "3xl", md: "5xl" }}
                                     color={textColor}
-                                    fontWeight="bold"
+                                    fontWeight={900}
                                     lineHeight="1.2"
+                                    fontFamily='satoshi'
                                 >
                                     How does Fast4Car work?
                                 </Heading>

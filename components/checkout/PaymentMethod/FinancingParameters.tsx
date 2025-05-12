@@ -33,7 +33,7 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
     const titleSize = useBreakpointValue({ base: "sm", sm: "md" });
     const amountSize = useBreakpointValue({ base: "md", sm: "lg" });
     const gridTemplateColumns = useBreakpointValue({
-        base: "1fr",
+        base: "repeat(2, 1fr)",
         sm: "repeat(2, 1fr)",
         md: "repeat(3, 1fr)"
     });

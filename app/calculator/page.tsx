@@ -24,7 +24,7 @@ export default function Calculator() {
 						<div className="container">
 							<div className="row">
 								<div className="col-lg-5">
-									<h4 className="mb-10 neutral-1000">
+									<h4 className="mb-10 neutral-1000" style={{ fontFamily: "satoshi", fontWeight: 900 }}>
 										Get a competitive loan offer.
 										Apply with us today.
 									</h4>

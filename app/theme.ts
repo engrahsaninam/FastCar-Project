@@ -18,6 +18,7 @@ const theme = extendTheme({
     heading: `var(--urbanist)`,
     body: `var(--urbanist)`,
     inter: `'Inter', sans-serif`,
+    satoshi: `'Satoshi', sans-serif`,
   },
   styles: {
     global: {
