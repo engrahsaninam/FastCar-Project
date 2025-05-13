@@ -95,30 +95,33 @@ export default function HeroWithSearch() {
               </div>
             </div>
             <HeroSearch showAdvanced={activeTab === 'advanced'} />
-          </div>
-          {/* <div className="container"> */}
-          <div className="box-search-category d-flex flex-column align-items-center">
-            <h4 className={`heading-3 text-center wow fadeInUp text-white`}>Offical Partner</h4>
-            <div className="d-flex flex-column align-items-center">
-              <p className="text-lg-medium text-white  text-center wow fadeInUp mb-0">Exclusive partner of AutoScout24</p>
-            </div>
 
-            <div className="d-flex wow fadeInUp">
-              <img
-                src="/logoautodark.png"
-                alt="Auto Logo"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                  margin: '0 auto',
-                  // display: 'block'
-                }}
-              />
-            </div>
           </div>
+          <div className="box-search-category d-flex flex-column align-items-center m-0 p-0">
+          <h4 className={`heading-4 text-center wow fadeInUp text-white`}>Offical Partner</h4>
+          <div className="d-flex flex-column align-items-center">
+            <p className="text-lg-medium text-white  text-center wow fadeInUp mb-0">Exclusive partner of AutoScout24</p>
+          </div>
+
+          <div className="d-flex wow fadeInUp">
+            <img
+              src="/logoautodark.png"
+              alt="Auto Logo"
+              style={{
+                width: '70%',
+                height: '70%',
+                maxWidth: '70%',
+                maxHeight: '70%',
+                // objectFit: '',
+                margin: '0 auto',
+                // display: 'block'
+              }}
+            />
+          </div>
+          </div>
+
+          {/* <div className="container"> */}
+
         </div>
         {/* </div> */}
         <div className="bg-shape z-0" />

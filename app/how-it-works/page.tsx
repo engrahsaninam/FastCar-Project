@@ -148,19 +148,14 @@ export default function HowItWorks() {
         const video = videoRef.current;
         if (!video) return;
 
-        const updateTime = () => {
-            setCurrentTime(video.currentTime);
-        };
-
-        const updateDuration = () => {
-            setDuration(video.duration);
-        };
+        const updateTime = () => setCurrentTime(video.currentTime);
+        const updateDuration = () => setDuration(video.duration);
 
         const handleEnded = () => {
             setIsPlaying(false);
             setCurrentTime(0);
             setShowOverlay(true);
-            video.currentTime = 0; // Reset video to beginning
+            video.currentTime = 0;
         };
 
         video.addEventListener("timeupdate", updateTime);
@@ -320,7 +315,7 @@ export default function HowItWorks() {
                                     <Slider
                                         value={currentTime}
                                         min={0}
-                                        max={duration || 0}
+                                        max={duration > 0 ? duration : 1}
                                         step={0.1}
                                         onChange={handleSliderChange}
                                     >
