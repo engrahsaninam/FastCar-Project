@@ -95,212 +95,212 @@ export default function Header1({
 	return (
 		<>
 			{/* <Box display={{ base: 'none', md: 'block' }}> */}
-				<header
-					style={{ backgroundColor: bgColor }}
-					className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}
-				>
-					<div className="container-fluid">
-						<div className="main-header">
-							<div className="header-left">
-								<div className="header-logo" style={{ display: 'none' }}>
-									<Link className="d-flex" href="/">
-										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-									</Link>
-								</div>
-								<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
-									<Link className="d-flex" href="/">
-										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
-										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-									</Link>
+			<header
+				style={{ backgroundColor: bgColor }}
+				className={`header header-fixed sticky-bar ${scroll ? 'stick' : ''}`}
+			>
+				<div className="container-fluid">
+					<div className="main-header">
+						<div className="header-left">
+							<div className="header-logo" style={{ display: 'none' }}>
+								<Link className="d-flex" href="/">
+									<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+								</Link>
+							</div>
+							<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
+								<Link className="d-flex" href="/">
+									<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
+									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+								</Link>
+							</Box>
+
+							<div className="header-nav">
+								<nav className="nav-main-menu">
+									<ul className="main-menu">
+										<li>
+											<ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color="white">
+												Buy
+											</ChakraLink>
+										</li>
+										<li>
+											<ChakraLink
+												as={Link}
+												href="/deals"
+												fontSize="md"
+												fontWeight="medium"
+												color="white"
+												_hover={{ color: textColorHover, textDecoration: 'none' }}
+											>
+												Daily Deals
+											</ChakraLink>
+										</li>
+										<li>
+											<ChakraLink
+												as={Link}
+												href="/how-it-works"
+												fontSize="md"
+												fontWeight="medium"
+												color="white"
+												_hover={{ color: textColorHover, textDecoration: 'none' }}
+											>
+												How it Works
+											</ChakraLink>
+										</li>
+										<li>
+											<ChakraLink
+												as={Link}
+												href="/reviews"
+												fontSize="md"
+												fontWeight="medium"
+												color="white"
+												_hover={{ color: textColorHover, textDecoration: 'none' }}
+											>
+												Reviews
+											</ChakraLink>
+										</li>
+										<li>
+											<ChakraLink
+												as={Link}
+												href="/calculator"
+												fontSize="md"
+												fontWeight="medium"
+												color="white"
+												_hover={{ color: textColorHover, textDecoration: 'none' }}
+											>
+												Loan Calculator
+											</ChakraLink>
+										</li>
+									</ul>
+								</nav>
+							</div>
+
+							<div className="header-right" style={{ marginRight: '20px' }}>
+								<Box display={{ base: 'flex', xl: 'flex' }} px={3} alignItems="center" whiteSpace="nowrap">
+									<Menu>
+										<MenuButton
+											as={Text}
+											fontSize={['10px', '16px']}
+											fontWeight="medium"
+											color={textColor}
+											_hover={{ color: textColorHover }}
+											cursor="pointer"
+											display="flex"
+											alignItems="center"
+
+										>
+											EN <ChevronDownIcon ml={1} />
+										</MenuButton>
+										<MenuList>
+											<MenuItem as="a" >
+												English
+											</MenuItem>
+											<MenuItem as="a">
+												French
+											</MenuItem>
+											<MenuItem as="a">
+												Chinese
+											</MenuItem>
+										</MenuList>
+									</Menu>
 								</Box>
 
-								<div className="header-nav">
-									<nav className="nav-main-menu">
-										<ul className="main-menu">
-											<li>
-												<ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color="white">
-													Buy
-												</ChakraLink>
-											</li>
-											<li>
-												<ChakraLink
-													as={Link}
-													href="/deals"
-													fontSize="md"
-													fontWeight="medium"
-													color="white"
-													_hover={{ color: textColorHover, textDecoration: 'none' }}
-												>
-													Daily Deals
-												</ChakraLink>
-											</li>
-											<li>
-												<ChakraLink
-													as={Link}
-													href="/how-it-works"
-													fontSize="md"
-													fontWeight="medium"
-													color="white"
-													_hover={{ color: textColorHover, textDecoration: 'none' }}
-												>
-													How it Works
-												</ChakraLink>
-											</li>
-											<li>
-												<ChakraLink
-													as={Link}
-													href="/reviews"
-													fontSize="md"
-													fontWeight="medium"
-													color="white"
-													_hover={{ color: textColorHover, textDecoration: 'none' }}
-												>
-													Reviews
-												</ChakraLink>
-											</li>
-											<li>
-												<ChakraLink
-													as={Link}
-													href="/calculator"
-													fontSize="md"
-													fontWeight="medium"
-													color="white"
-													_hover={{ color: textColorHover, textDecoration: 'none' }}
-												>
-													Loan Calculator
-												</ChakraLink>
-											</li>
-										</ul>
-									</nav>
-								</div>
+								{/* Login Dropdown */}
+								<Box position="relative">
+									<Button
+										onClick={isOpen ? onClose : onOpen}
+										variant="ghost"
+										px={2}
+										rightIcon={<ChevronDown size={16} />}
+										leftIcon={<User size={20} />}
+										_hover={{ color: textColorHover }}
+										color={textColor}
 
-								<div className="header-right" style={{ marginRight: '20px' }}>
-									<Box display={{ base: 'flex', xl: 'flex' }} px={3} alignItems="center" whiteSpace="nowrap">
-										<Menu>
-											<MenuButton
-												as={Text}
-												fontSize={['10px', '16px']}
-												fontWeight="medium"
-												color={textColor}
-												_hover={{ color: textColorHover }}
-												cursor="pointer"
-												display="flex"
-												alignItems="center"
+										fontWeight="medium"
+									>
 
-											>
-												EN <ChevronDownIcon ml={1} />
-											</MenuButton>
-											<MenuList>
-												<MenuItem as="a" >
-													English
-												</MenuItem>
-												<MenuItem as="a">
-													French
-												</MenuItem>
-												<MenuItem as="a">
-													Chinese
-												</MenuItem>
-											</MenuList>
-										</Menu>
-									</Box>
-
-									{/* Login Dropdown */}
-									<Box position="relative">
-										<Button
-											onClick={isOpen ? onClose : onOpen}
-											variant="ghost"
-											px={2}
-											rightIcon={<ChevronDown size={16} />}
-											leftIcon={<User size={20} />}
-											_hover={{ color: textColorHover }}
-											color={textColor}
-
-											fontWeight="medium"
+									</Button>
+									{isOpen && (
+										<Box
+											ref={dropdownRef}
+											position="absolute"
+											top="100%"
+											mt={2}
+											// left={-50}
+											right={-10}
+											bg={bgColor1}
+											border="1px solid"
+											borderColor={borderColor}
+											borderRadius="md"
+											boxShadow="md"
+											zIndex={100}
+											width="300px"
 										>
-
-										</Button>
-										{isOpen && (
-											<Box
-												ref={dropdownRef}
-												position="absolute"
-												top="100%"
-												mt={2}
-												// left={-50}
-												right={-10}
-												bg={bgColor1}
-												border="1px solid"
-												borderColor={borderColor}
-												borderRadius="md"
-												boxShadow="md"
-												zIndex={100}
-												width="300px"
-											>
-												<VStack align="start" spacing={0} p={4}>
-													{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
+											<VStack align="start" spacing={0} p={4}>
+												{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
 											<MenuItemLink label="Last searches" Icon={Clock} /> */}
-													<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
-													<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
-												</VStack>
+												<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
+												<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
+											</VStack>
 
-												<Divider />
+											<Divider />
 
-												<Box p={4}>
-													<Link href="/login">
+											<Box p={4}>
+												<Link href="/login">
 
+													<Button
+														onClick={() => {
+															onClose();
+															router.push('/login');
+															setShowLoginModal(true);
+														}}
+														bg="red.500"
+														_hover={{ bg: 'red.600' }}
+														color="white"
+														width="full"
+														leftIcon={<User size={20} />}
+														fontSize="15px"
+														fontWeight="medium"
+													>
+														Login
+													</Button>
+												</Link>
+												<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
+													Don't have an account?
+													<Link href="/register">
 														<Button
+															variant="link"
+															ml={2}
+															color="red.500"
+															fontWeight="medium"
 															onClick={() => {
 																onClose();
-																router.push('/login');
-																setShowLoginModal(true);
+																setShowSignupModal(true);
 															}}
-															bg="red.500"
-															_hover={{ bg: 'red.600' }}
-															color="white"
-															width="full"
-															leftIcon={<User size={20} />}
-															fontSize="15px"
-															fontWeight="medium"
 														>
-															Login
+															Register
 														</Button>
 													</Link>
-													<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
-														Don't have an account?
-														<Link href="/register">
-															<Button
-																variant="link"
-																ml={2}
-																color="red.500"
-																fontWeight="medium"
-																onClick={() => {
-																	onClose();
-																	setShowSignupModal(true);
-																}}
-															>
-																Register
-															</Button>
-														</Link>
-													</Text>
-												</Box>
+												</Text>
 											</Box>
-										)}
-									</Box>
+										</Box>
+									)}
+								</Box>
 
-									<div className="top-button-mode" style={{ marginRight: '25px' }}>
-										<ThemeSwitch />
-									</div>
+								<div className="top-button-mode" style={{ marginRight: '25px' }}>
+									<ThemeSwitch />
+								</div>
 
-									<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
-										<span className="burger-icon-top" />
-										<span className="burger-icon-mid" />
-										<span className="burger-icon-bottom" />
-									</div>
+								<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
+									<span className="burger-icon-top" />
+									<span className="burger-icon-mid" />
+									<span className="burger-icon-bottom" />
 								</div>
 							</div>
 						</div>
 					</div>
-				</header>
+				</div>
+			</header>
 			{/* </Box>
 			<Box display={{ base: 'block', md: 'none' }}>
 				<header

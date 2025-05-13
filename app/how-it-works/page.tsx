@@ -1,6 +1,6 @@
 'use client'
 import Layout from "@/components/layout/Layout"
-import {  Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
+import { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
 import { useRef, useState, useEffect } from "react";
 
 import {
@@ -104,10 +104,10 @@ export default function HowItWorks() {
     const stepCardBg = useColorModeValue("white", "gray.800");
     const stepCardShadow = useColorModeValue("md", "dark-lg");
     const stepNumberColor = useColorModeValue("red.500", "red.300");
-   
+
     const [isHovered, setIsHovered] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
- 
+
 
     const handlePlay = () => {
         if (videoRef.current) {
@@ -135,7 +135,7 @@ export default function HowItWorks() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(1.73);
+    const [duration, setDuration] = useState(0);
     const [showOverlay, setShowOverlay] = useState(true);
     // Format time like mm:ss
     const formatTime = (time: number) => {
@@ -148,15 +148,29 @@ export default function HowItWorks() {
         const video = videoRef.current;
         if (!video) return;
 
-        const updateTime = () => setCurrentTime(video.currentTime);
-        const updateDuration = () => setDuration(video.duration);
+        const updateTime = () => {
+            setCurrentTime(video.currentTime);
+        };
+
+        const updateDuration = () => {
+            setDuration(video.duration);
+        };
+
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+            setShowOverlay(true);
+            video.currentTime = 0; // Reset video to beginning
+        };
 
         video.addEventListener("timeupdate", updateTime);
         video.addEventListener("loadedmetadata", updateDuration);
+        video.addEventListener("ended", handleEnded);
 
         return () => {
             video.removeEventListener("timeupdate", updateTime);
             video.removeEventListener("loadedmetadata", updateDuration);
+            video.removeEventListener("ended", handleEnded);
         };
     }, []);
 
@@ -167,7 +181,7 @@ export default function HowItWorks() {
             videoRef.current.pause();
         } else {
             videoRef.current.play();
-            setShowOverlay(false); // Hide overlay on play
+            setShowOverlay(false);
         }
 
         setIsPlaying(!isPlaying);
@@ -204,6 +218,7 @@ export default function HowItWorks() {
                                     fontWeight={900}
                                     lineHeight="1.2"
                                     fontFamily='satoshi'
+                                    marginTop={['20px', '0px', '0px']}
                                 >
                                     How does Fast4Car work?
                                 </Heading>
@@ -249,7 +264,6 @@ export default function HowItWorks() {
                                 src="/no_music.mp4"
                                 poster="/thumbnail.png"
                                 playsInline
-                                loop
                                 style={{
                                     width: "100%",
                                     height: "auto",
@@ -303,22 +317,25 @@ export default function HowItWorks() {
                                     {formatTime(currentTime)}
                                 </Text>
                                 <Box flex="1" mx={2}>
-                                    <input
-                                        type="range"
+                                    <Slider
                                         value={currentTime}
                                         min={0}
-                                        max={duration || 1}
+                                        max={duration || 0}
                                         step={0.1}
-                                        onChange={(e) => handleSliderChange(Number(e.target.value))}
-                                        style={{ width: "100%" }}
-                                    />
+                                        onChange={handleSliderChange}
+                                    >
+                                        <SliderTrack>
+                                            <SliderFilledTrack bg="red.500" />
+                                        </SliderTrack>
+                                        <SliderThumb />
+                                    </Slider>
                                 </Box>
                                 <Text fontSize="sm" minW="40px">
                                     {formatTime(duration)}
                                 </Text>
                             </Flex>
                         </Box>
-                        
+
                     </Box>
                 </div>
                 {/* Guarantee Cards */}
@@ -485,29 +502,33 @@ export default function HowItWorks() {
                                 aria-label="Previous step"
                                 icon={<ChevronLeftIcon />}
                                 position="absolute"
-                                left="-4"
+                                left={{ base: "2", md: "-4" }}
                                 top="50%"
                                 transform="translateY(-50%)"
                                 zIndex={2}
                                 onClick={prevStep}
-                                colorScheme="red"
+                                bg={'red.500'}
+
                                 variant="solid"
                                 borderRadius="full"
-                                display={{ base: "none", md: "flex" }}
+                                size={{ base: "sm", md: "md" }}
+                                display="flex"
                             />
                             <IconButton
                                 aria-label="Next step"
                                 icon={<ChevronRightIcon />}
                                 position="absolute"
-                                right="-4"
+                                right={{ base: "2", md: "-4" }}
                                 top="50%"
                                 transform="translateY(-50%)"
                                 zIndex={2}
                                 onClick={nextStep}
-                                colorScheme="red"
+                                // colorScheme="red"
+                                bg={'red.500'}
                                 variant="solid"
                                 borderRadius="full"
-                                display={{ base: "none", md: "flex" }}
+                                size={{ base: "sm", md: "md" }}
+                                display="flex"
                             />
 
                             {/* Steps Carousel */}

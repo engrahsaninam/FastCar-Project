@@ -62,6 +62,7 @@ import Image from 'next/image'
 import { ChevronUp, X, ChevronDown, Calendar, Clock, Info, Gauge, Fuel } from "lucide-react"
 
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
+// import { XAxis, YAxis, CartesianGrid } from "recharts";
 
 const arrowButtonStyle = {
 	width: 36,
@@ -228,99 +229,27 @@ export default function CarsDetails1() {
 
 		// Track scroll position to update active tab
 		const handleScroll = () => {
-			const scrollPosition = window.scrollY + 200;
+			const sections = [
+				{ id: 'details', offset: document.getElementById('details')?.offsetTop || 0 },
+				{ id: 'features', offset: document.getElementById('features')?.offsetTop || 0 },
+				{ id: 'how-it-works', offset: document.getElementById('how-it-works')?.offsetTop || 0 },
+				{ id: 'price-map', offset: document.getElementById('price-map')?.offsetTop || 0 },
+				{ id: 'comparison', offset: document.getElementById('comparison')?.offsetTop || 0 },
+				{ id: 'financing', offset: document.getElementById('financing')?.offsetTop || 0 },
+			];
+			const scrollPosition = window.scrollY + 120; // adjust offset for sticky nav
 
-			// Find all sections
-			const sections = ['details', 'features', 'how-it-works', 'price-map', 'comparison', 'financing'];
-
-			// Find the current visible section
-			for (let i = sections.length - 1; i >= 0; i--) {
-				const section = document.getElementById(sections[i]);
-				if (section && section.offsetTop <= scrollPosition) {
-					setActiveTab(sections[i]);
-					break;
+			let current = 'details';
+			for (let i = 0; i < sections.length; i++) {
+				if (scrollPosition >= sections[i].offset) {
+					current = sections[i].id;
 				}
 			}
+			setActiveTab(current);
 		};
 
-		// Initialize carousel indicators and counter
-		const currentSlideSpan = document.getElementById('current-slide');
-		const indicators = document.querySelectorAll('.carousel-indicators button');
-		const prevButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="prev"]') as HTMLElement | null;
-		const nextButton = document.querySelector('[data-bs-target="#howItWorksCarousel"][data-bs-slide="next"]') as HTMLElement | null;
-
-		// Function to update indicators
-		const updateIndicators = (slideIndex: number) => {
-			// Update the current slide number in the counter
-			if (currentSlideSpan) {
-				currentSlideSpan.textContent = (slideIndex + 1).toString();
-			}
-
-			// Update indicator styling
-			indicators.forEach((indicator, i) => {
-				if (i === slideIndex) {
-					indicator.classList.remove('bg-secondary');
-					indicator.classList.add('bg-primary', 'active');
-				} else {
-					indicator.classList.remove('bg-primary', 'active');
-					indicator.classList.add('bg-secondary');
-				}
-			});
-		};
-
-		// Event handler for carousel slide change
-		const handleSlideChange = (e: Event) => {
-			const slideEvent = e as unknown as { to: number };
-			updateIndicators(slideEvent.to);
-		};
-
-		// Touch event handlers for mobile swipe
-		let touchStartX = 0;
-		let touchEndX = 0;
-
-		const handleTouchStart = (e: TouchEvent) => {
-			touchStartX = e.changedTouches[0].screenX;
-		};
-
-		const handleTouchEnd = (e: TouchEvent) => {
-			touchEndX = e.changedTouches[0].screenX;
-
-			// Handle swipe
-			const swipeThreshold = 50;
-			if (touchEndX < touchStartX - swipeThreshold) {
-				// Swipe left - next slide
-				if (nextButton) nextButton.click();
-			} else if (touchEndX > touchStartX + swipeThreshold) {
-				// Swipe right - previous slide
-				if (prevButton) prevButton.click();
-			}
-		};
-
-		// Add event listeners
 		window.addEventListener('scroll', handleScroll);
-
-		if (carousel) {
-			carousel.addEventListener('slide.bs.carousel', handleSlideChange);
-			carousel.addEventListener('touchstart', handleTouchStart, { passive: true });
-			carousel.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-			// Initialize with first slide
-			updateIndicators(0);
-		}
-
-		// Clean up event listeners
-		return () => {
-			navLinks.forEach(link => {
-				link.removeEventListener('click', () => { });
-			});
-			window.removeEventListener('scroll', handleScroll);
-
-			if (carousel) {
-				carousel.removeEventListener('slide.bs.carousel', handleSlideChange);
-				carousel.removeEventListener('touchstart', handleTouchStart);
-				carousel.removeEventListener('touchend', handleTouchEnd);
-			}
-		};
+		return () => window.removeEventListener('scroll', handleScroll);
 	}, [slider2, slider1, carId]);
 
 	const settingsMain = {
@@ -352,7 +281,12 @@ export default function CarsDetails1() {
 	const handleAccordion = (key: any) => {
 		setIsAccordion(prevState => prevState === key ? null : key)
 	}
-
+	const axisLabelColor = useColorModeValue("#222", "#E5E7EB");
+	const gridLineColor = useColorModeValue("#E5E7EB", "#2D3748"); // Light gray for light mode, darker gray for dark
+	const backgroundColor = useColorModeValue("#ffffff", "#1A202C"); // White for light, dark gray for dark
+	const badgeBgLight = useColorModeValue("#f8f9fa", "#2D3748"); // Bootstrap's light bg alternative
+	const marketDotColor = useColorModeValue("#BBC5D5", "#4A5568"); // Muted blue-gray in dark mode
+	const textMuted = useColorModeValue("gray.600", "gray.400");
 	// Custom mobile drawer component for Buy Car
 	const MobileBuyCarDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
 		const bgColor = useColorModeValue("white", "gray.800")
@@ -391,6 +325,7 @@ export default function CarsDetails1() {
 			{ label: 'Car registration', price: 'EUR 1,990' },
 			{ label: 'Extended warranty', price: 'FREE', isFree: true }
 		];
+
 		return (
 			<>
 				<Box
@@ -667,13 +602,21 @@ export default function CarsDetails1() {
 	const priceColor = useColorModeValue("#171923", "white");
 	const bgColor = useColorModeValue("white", "#171923");
 	const badgeBg = useColorModeValue("red.50", "#171923");
-	const bgnavitem=useColorModeValue("red.500","red.500")
+	const bgnavitem = useColorModeValue("red.500", "red.500")
 	const badgeColor = useColorModeValue("red.400", "red.300");
 
 	const buttonLinkColor = useColorModeValue("red.500", "red.300");
 	const car = cars[0];
 
+	const priceMapData = [
+		{ km: 57000, price: 36000, type: "this" },      // orange
+		{ km: 66000, price: 35000, type: "similar" },   // blue
+		{ km: 61000, price: 40000, type: "market" },    // gray
+		// ...more
+	];
 
+	const axisColor = useColorModeValue("#6B7280", "#E5E7EB"); // gray-500 for light, gray-200 for dark
+	const gridColor = useColorModeValue("#E5EAF2", "#444857"); // light gray for light, dark gray for dark
 	return (
 		<Layout footerStyle={1}>
 			<div>
@@ -862,22 +805,22 @@ export default function CarsDetails1() {
 										<div className="nav-scroll py-3  rounded" style={{ overflowX: "auto", whiteSpace: "nowrap", backgroundColor: bgColor }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+													<a onClick={() => setActiveTab('#details')} href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('#features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a onClick={() => setActiveTab('features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('#how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a onClick={() => setActiveTab('how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('#price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a onClick={() => setActiveTab('price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('#comparison')} href="#comparison" className={`text-md md:text-lg nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
+													<a onClick={() => setActiveTab('comparison')} href="#comparison" className={`text-md md:text-lg nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('#financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a onClick={() => setActiveTab('financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
 												</li>
 											</ul>
 										</div>
@@ -1455,17 +1398,17 @@ export default function CarsDetails1() {
 														<div className="d-flex">
 															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
-																	<img src="/how_works_2.webp" className="w-100 h-100" alt="Car inspection" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	<img src="/check.jpg" className="w-100 h-100" alt="Car inspection" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }}>
 																<h4 className="text-gray-900 dark:text-white mb-3">Check the car first, decide later</h4>
 																<p className="mb-4 text-gray-900 dark:text-gray-200">
-																	For each car, we first arrange an inspection, which results in a complete report on the technical condition of the car.
+																	Before you commit, we'll arrange a thorough inspection and provide you with a detailed report on the car's technical condition.
 																</p>
 																<p className="text-gray-500 dark:text-gray-400">
-																	Only then do you decide whether you want to buy the car.
+																	Only after reviewing the results do you decide if you want to proceed with the purchase.
 																</p>
 																<div className="mt-4 position-relative">
 																	<div className="rounded-circle d-flex align-items-center justify-content-center"
@@ -1491,17 +1434,17 @@ export default function CarsDetails1() {
 
 															<div className="position-relative" style={{ width: "fit-content", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
-																	<img src="/how_works_3.webp" className="w-100 h-100" alt="Customer warranty" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	<img src="/4.jpg" className="w-100 h-100" alt="Customer warranty" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
-																<h4 className="text-gray-900 dark:text-white mb-3">We keep the guarantee!</h4>
+																<h4 className="text-gray-900 dark:text-white mb-3">We stand by the guarantee!</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
-																	We don't doubt the cars you buy from us, but for your peace of mind, we'll give you a 6-month warranty on the essentials - engine, transmission, differential - in addition to the warranty on hidden defects.
+																	We're confident in the cars we sell, but for your peace of mind, every purchase comes with a 6-month warranty covering key components—engine, transmission, and differential—plus protection against hidden defects.
 																</p>
 																<p className="text-gray-500 dark:text-white">
-																	If you still don't like the car, <strong>you can return it to us within 14 days of receipt.</strong>
+																	If you're not satisfied, you can return the car within 14 days of receiving it
 																</p>
 															</div>
 														</div>
@@ -1512,18 +1455,18 @@ export default function CarsDetails1() {
 														<div className="d-flex">
 															<div className="position-relative mb-3 mb-md-0" style={{ width: "fit-content", maxWidth: "350px", clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)", overflow: "hidden" }}>
 																<div style={{ height: "fit-content" }}>
-																	<img src="/how_works_1.webp" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />
+																	<img src="/order.jpg" className="w-100 h-100" alt="Delivery truck" style={{ objectFit: "cover", objectPosition: "center" }} />
 																</div>
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
 
-																<h4 className="text-gray-900 dark:text-white mb-3">Delivery time</h4>
+																<h4 className="text-gray-900 dark:text-white mb-3">Fast Delivery </h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
-																	We can deliver most cars within 20 business days from the confirmation of your order and receipt of payment.
+																	Most vehicles can be delivered within 20 business days after your order is confirmed and payment is received.
 																</p>
 																<p className="text-xs sm:text-sm md:text-base text-gray-500 dark:text-white">
-																	Depending on the specific location of the vehicle and the legal timeframes required for administrative procedures, which vary between countries, the expected delivery time may be extended.
+																	Please note: Delivery times may vary depending on the car's location and the administrative requirements in each country.
 																</p>
 															</div>
 														</div>
@@ -1607,46 +1550,65 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 								<div id="price-map" className="mt-5 pt-3">
-									<h2 className="mb-4 text-gray-900 dark:text-white">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h2>
+									<h2 className="mb-4 text-gray-900">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
-										<div className="card-body p-4">
-											<div className="d-flex justify-content-between align-items-center mb-3">
-												<h5 className="mb-0 fs-6">Price vs Mileage Comparison</h5>
+										<div className="card-body p-4 bg-white">
+											<div className="d-flex justify-content-between align-items-center mb-3 bg-white">
+												<h5 className="mb-0 fs-6 text-black">Price vs Mileage Comparison</h5>
 												<div className="d-flex gap-3 align-items-center">
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
-														<span className="small">This vehicle</span>
+														<span className="small text-black">This vehicle</span>
 													</div>
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
-														<span className="small">Similar models</span>
+														<span className="small text-black">Similar models</span>
 													</div>
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
-														<span className="small">Market average</span>
+														<span className="small text-black">Market average</span>
 													</div>
 												</div>
 											</div>
 
-											<div className="price-map-chart bg-white rounded-3 p-3" style={{ height: '250px' }}>
+											<div className="price-map-chart rounded-3 p-3" style={{ backgroundColor, height: '250px' }}>
+
 												{/* Enhanced price map chart */}
 												<div className="position-relative h-100">
 													{/* Y-axis labels */}
 													<div className="position-absolute start-0 h-100 d-flex flex-column justify-content-between" style={{ width: '60px' }}>
-														<div className="text-muted small">€31,000</div>
-														<div className="text-muted small">€29,000</div>
-														<div className="text-muted small">€27,000</div>
-														<div className="text-muted small">€25,000</div>
-														<div className="text-muted small">€23,000</div>
+														<div
+															className="text-muted small"
+															style={{ color: useColorModeValue("#222", "#E5E7EB") }}
+														>
+															€31,000
+														</div>
+														<div
+															className="text-muted small"
+															style={{ color: axisLabelColor }}
+														>
+															€31,000
+														</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>€27,000</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>€25,000</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>€23,000</div>
 													</div>
 
 													{/* X-axis labels */}
 													<div className="position-absolute bottom-0 start-0 w-100 d-flex justify-content-between ps-5 pe-3">
-														<div className="text-muted small">40,000 km</div>
-														<div className="text-muted small">44,000 km</div>
-														<div className="text-muted small">48,000 km</div>
-														<div className="text-muted small">52,000 km</div>
-														<div className="text-muted small">56,000 km</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>40,000 km</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>44,000 km</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>48,000 km</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>52,000 km</div>
+														<div className="text-muted small"
+															style={{ color: axisLabelColor }}>56,000 km</div>
 													</div>
 
 													{/* Chart with grid lines and dots */}

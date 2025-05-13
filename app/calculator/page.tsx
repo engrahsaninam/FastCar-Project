@@ -20,7 +20,7 @@ export default function Calculator() {
 
 			<Layout footerStyle={1}>
 				<div>
-					<section className="section-cta-11 background-body pt-85 pb-85">
+					{/* <section className="section-cta-11 background-body pt-85 pb-85">
 						<div className="container">
 							<div className="row">
 								<div className="col-lg-5">
@@ -42,7 +42,7 @@ export default function Calculator() {
 								</div>
 							</div>
 						</div>
-					</section>
+					</section> */}
 
 
 					{/* cta 12*/}

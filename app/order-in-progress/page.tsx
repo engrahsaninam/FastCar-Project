@@ -388,6 +388,7 @@ const OrdersInProgress = () => {
                                                     <Box
                                                         bg="red.400"
                                                         h="2"
+                                                        mt={["4", "4", "0"]}
                                                         rounded="full"
                                                         transition="width 0.3s"
                                                         w={`${getStatusPercentage("Documentation")}%`}
