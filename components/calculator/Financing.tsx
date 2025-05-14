@@ -7,7 +7,7 @@ export default function FinancingCard() {
     const textColor = useColorModeValue("gray.900", "gray.100");
     const bgColor = useColorModeValue("gray.50", "gray.900");
     return (
-        <Box py={24} bg={bgColor}>
+        <Box bg={bgColor}>
             <Container maxW="container.xl" pb={5}>
                 {/* Heading and Description */}
                 <Box mb={10} textAlign="center">

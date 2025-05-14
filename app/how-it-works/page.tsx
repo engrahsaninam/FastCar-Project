@@ -276,7 +276,7 @@ export default function HowItWorks() {
                                     bottom="0"
                                     align="center"
                                     justify="center"
-                                    bg="rgba(0, 0, 0, 0.5)"
+                                    bg="rgba(0, 0, 0, 0.2)"
                                     zIndex="1"
                                     direction="column"
                                     onClick={handlePlayPause}

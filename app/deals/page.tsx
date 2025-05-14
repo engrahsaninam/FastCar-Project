@@ -129,11 +129,11 @@ export default function CarsList3() {
 
 					{/* search 1 */}
 					<section
-						className="section-box pt-50 background-body"
+						className="section-box pt-50 background-body light-mode"
 						style={{
-							backgroundImage: "url('/assets/imgs/page-header/banner6.png')",
+							backgroundImage: "url('/bestest.svg')",
 							backgroundSize: "cover",
-							backgroundPosition: "center",
+							// backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
 							position: "relative",
 							// zIndex: 1,
@@ -148,7 +148,33 @@ export default function CarsList3() {
 						<div className="container pt-96" style={{ position: "relative", zIndex: 3 }}>
 							<div className="row align-items-end">
 								<div className="col-md-9 mb-30 wow fadeInUp">
-									<h4 className="title-svg text-white mb-15" style={{ fontFamily: "satoshi", fontWeight: 900 }}>Our Daily Best Deals</h4>
+									<h4 className="title-svg mb-15 text-dark dark:text-white" style={{ fontFamily: "satoshi", fontWeight: 900 }}>Our Daily Best Deals</h4>
+									<p className="text-lg-medium text-bold text-dark dark:text-white" >We find and filter the best cars of the day for you</p>
+								</div>
+							</div>
+						</div>
+					</section>
+					<section
+						className="section-box pt-50 background-body dark-mode"
+						style={{
+							backgroundImage: "url('/best-dark.svg')",
+							backgroundSize: "cover",
+							// backgroundPosition: "center",
+							backgroundRepeat: "no-repeat",
+							position: "relative",
+							// zIndex: 1,
+						}}
+					>
+						<div style={{
+							background: badgeColor,
+							position: "absolute",
+							top: 0, left: 0, right: 0, bottom: 0,
+							zIndex: 2,
+						}} />
+						<div className="container pt-96" style={{ position: "relative", zIndex: 3 }}>
+							<div className="row align-items-end">
+								<div className="col-md-9 mb-30 wow fadeInUp">
+									<h4 className="title-svg mb-15 text-white" style={{ fontFamily: "satoshi", fontWeight: 900 }}>Our Daily Best Deals</h4>
 									<p className="text-lg-medium text-bold text-white" >We find and filter the best cars of the day for you</p>
 								</div>
 							</div>

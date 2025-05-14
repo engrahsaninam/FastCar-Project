@@ -140,8 +140,8 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 														<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
 														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
 													</VStack>
-													<HStack justify="center" align="center" p={0} m={0} spacing={1}>
-														<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0}>
+													<HStack justify="center" align="center" p={0} m={0} spacing={1} >
+														<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0} marginLeft={5}>
 															<Menu>
 																<MenuButton
 																	as={Text}

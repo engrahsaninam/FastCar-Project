@@ -3,7 +3,7 @@ import FinancingCard from "@/components/calculator/Financing"
 import Specs from "@/components/calculator/Specs"
 import FinancingSpecs from "@/components/checkout/PaymentMethod/FinancingSpecs"
 import Layout from "@/components/layout/Layout"
-import { Box, Text, useColorModeValue } from "@chakra-ui/react"
+import { Box, Heading, Text, useColorModeValue } from "@chakra-ui/react"
 import Link from "next/link"
 import { useState } from 'react'
 import FinancingWorkflow from "@/components/calculator/FinancingWorkflow"
@@ -14,12 +14,12 @@ export default function Calculator() {
 	const handleAccordion = (key: any) => {
 		setIsAccordion(prevState => prevState === key ? null : key)
 	}
-
+	const bgColor = useColorModeValue("#F7FAFC", "#171923")
 	return (
 		<>
 
 			<Layout footerStyle={1}>
-				<div>
+				<div style={{ backgroundColor: bgColor }}>
 					{/* <section className="section-cta-11 background-body pt-85 pb-85">
 						<div className="container">
 							<div className="row">
@@ -46,15 +46,28 @@ export default function Calculator() {
 
 
 					{/* cta 12*/}
-					<section className="section-cta-12 background-100 py-96">
+					<section className="section-cta-12  py-96">
 						<div className="box-cta-6">
 							<div className="container">
 								<Box mb={10} textAlign="center">
-									<Text as="h2" fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="extrabold" color={textColor} mb={4}>
+									<Heading
+										as="h1"
+										fontSize={{ base: "3xl", md: "5xl" }}
+										color={textColor}
+										fontWeight={900}
+										lineHeight="1.2"
+										fontFamily='satoshi'
+										marginTop={['20px', '0px', '0px']}
+									>
 										Financing through Fast4Car
-									</Text>
-									<Text fontSize={{ base: 'md', md: 'lg' }} color={textColor} fontWeight="semibold">
-										Our favourable financing makes car purchase affordable for anyone. Just choose your<br />
+									</Heading>
+									<Text
+										fontSize={{ base: "lg", md: "xl" }}
+										color={textColor}
+										mb={8}
+										p={6}
+										lineHeight="1.6"
+									>										Our favourable financing makes car purchase affordable for anyone. Just choose your<br />
 										favourite car and a financing plan to suit your needs.
 									</Text>
 								</Box>
