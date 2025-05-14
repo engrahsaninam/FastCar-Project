@@ -242,42 +242,35 @@ export default function Header1({
 												<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
 												<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
 											</VStack>
-											<HStack display='flex' justifyContent='center' alignItems='center'>
-												
-												<Box display={{ base: 'flex', xl: 'none' }} px={3} alignItems="center" whiteSpace="nowrap">
+											<HStack justify="center" align="center" p={0} m={0} spacing={1}>
+												<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0}>
 													<Menu>
 														<MenuButton
 															as={Text}
-															fontSize={['16px', '16px']}
+															fontSize="16px"
 															fontWeight="medium"
 															color={textColor}
 															_hover={{ color: textColorHover }}
 															cursor="pointer"
 															display="flex"
 															alignItems="center"
-
 														>
-															EN <ChevronDownIcon ml={1} />
+															EN <ChevronDownIcon />
 														</MenuButton>
 														<MenuList>
-															<MenuItem as="a" >
-																English
-															</MenuItem>
-															<MenuItem as="a">
-																French
-															</MenuItem>
-															<MenuItem as="a">
-																Chinese
-															</MenuItem>
+															<MenuItem as="a">English</MenuItem>
+															<MenuItem as="a">French</MenuItem>
+															<MenuItem as="a">Chinese</MenuItem>
 														</MenuList>
 													</Menu>
 												</Box>
-												<Box display={{ base: 'flex', xl: 'none' }} px={3} alignItems="center" whiteSpace="nowrap">
-													<div className="top-button-mode" style={{ marginRight: '25px' }}>
+												<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0} ml={1}>
+													<Box className="top-button-mode">
 														<ThemeSwitch />
-													</div>
+													</Box>
 												</Box>
 											</HStack>
+
 											<Divider />
 
 											<Box p={4}>
