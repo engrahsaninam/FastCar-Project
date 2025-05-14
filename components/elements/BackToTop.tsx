@@ -55,7 +55,7 @@ export default function BackToTop({ target = "body" }) {
             color: 'white',
             border: 'none',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-            display: 'flex',
+            display: 'none',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'background-color 0.2s, transform 0.2s',
