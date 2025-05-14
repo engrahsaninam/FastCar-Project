@@ -78,7 +78,7 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 								</div>
 								<div className="header-left">
 									<div className="header-left " style={{ marginRight: '20px' }}>
-										<Box display={{ base: "flex", xl: "flex" }} px={3} pb={1} borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
+										<Box display={{ base: "none", xl: "flex" }} px={3} pb={1} borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
 											<Menu>
 												<MenuButton
 													as={Text}
@@ -108,6 +108,8 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 												variant="ghost"
 												px={2}
 												top="10px"
+												marginRight={[10, 0, 0]}
+
 												rightIcon={<ChevronDown size={16} />}
 												leftIcon={<User size={20} />}
 												_hover={{ color: textColorHover }}
@@ -138,7 +140,42 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 														<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
 														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
 													</VStack>
+													<HStack display='flex' justifyContent='center' alignItems='center'>
 
+														<Box display={{ base: 'flex', xl: 'none' }} px={3} alignItems="center" whiteSpace="nowrap">
+															<Menu>
+																<MenuButton
+																	as={Text}
+																	fontSize={['16px', '16px']}
+																	fontWeight="medium"
+																	color={textColor}
+																	_hover={{ color: textColorHover }}
+																	cursor="pointer"
+																	display="flex"
+																	alignItems="center"
+
+																>
+																	EN <ChevronDownIcon ml={1} />
+																</MenuButton>
+																<MenuList>
+																	<MenuItem as="a" >
+																		English
+																	</MenuItem>
+																	<MenuItem as="a">
+																		French
+																	</MenuItem>
+																	<MenuItem as="a">
+																		Chinese
+																	</MenuItem>
+																</MenuList>
+															</Menu>
+														</Box>
+														<Box display={{ base: 'flex', xl: 'none' }} px={3} alignItems="center" whiteSpace="nowrap">
+															<div className="top-button-mode" style={{ marginRight: '25px' }}>
+																<ThemeSwitch />
+															</div>
+														</Box>
+													</HStack>
 													<Divider />
 
 													<Box p={4}>
@@ -182,10 +219,11 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 											)}
 										</Box>
 
-
-										<div className="top-button-mode " style={{ marginTop: '10px' }}>
-											<ThemeSwitch />
-										</div>
+										<Box display={{ base: 'none', xl: 'flex' }} >
+											<div className="top-button-mode " style={{ marginTop: '10px' }}>
+												<ThemeSwitch />
+											</div>
+										</Box>
 									</div>
 									<div className={`burger-icon ${burgerIconClass}`} style={{ top: '20px' }} onClick={handleMobileMenu}>
 										<span className="burger-icon-top" />

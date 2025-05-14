@@ -557,7 +557,7 @@ export default function CarsDetails1() {
 						zIndex={2}
 					>
 						<Link href="/checkout" passHref legacyBehavior>
-							<Button as="a" colorScheme="red" color="white" size="lg" w="100%">
+							<Button as="a" bg="red.500"  color="white" size="lg" w="100%">
 								Buy Now
 							</Button>
 						</Link>
@@ -1984,6 +1984,7 @@ export default function CarsDetails1() {
 												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
 											Buy Now
+											
 										</Link>
 
 										<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>

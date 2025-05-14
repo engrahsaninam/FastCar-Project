@@ -24,7 +24,7 @@ export default function Footer1() {
 
 					</div>
 					{/* <div className="top-right-header"> */}
-						{/* <Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle mr-15 head-lang">
+					{/* <Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle mr-15 head-lang">
 							<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-account icon-lang">
 								<span className="text-14-medium arrow-down">EN</span>
 							</Dropdown.Toggle>
@@ -48,13 +48,13 @@ export default function Footer1() {
 								</ul>
 							</Dropdown.Menu>
 						</Dropdown> */}
-						{/* <div className="top-button-mode"> */}
-						{/* </div> */}
+					{/* <div className="top-button-mode"> */}
+					{/* </div> */}
 					{/* </div> */}
 				</div>
 			</div>
 			<footer className="footer">
-				
+
 				<div className="container">
 					<div className="footer-top">
 						<div className="row align-items-center">
@@ -72,7 +72,7 @@ export default function Footer1() {
 						</div>
 					</div>
 					<div className="row">
-						<div className="col-md-3 col-sm-12 footer-1">
+						<div className="col-md-6 col-sm-12 footer-1">
 							<div className="mt-20 mb-20">
 								<Link className="d-flex" href="/">
 									<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
@@ -88,53 +88,37 @@ export default function Footer1() {
 								</div>
 							</div>
 						</div>
-						<div className="col-md-2 col-xs-6 footer-3">
-							<h6 className="text-linear-3">Fast4Car</h6>
-							<ul className="menu-footer">
-								<li><Link href="/cars">Buy</Link></li>
-								<li><Link href="/how-it-works">How it works</Link></li>
-								<li><Link href="/deals">Best Deals</Link></li>
-								<li><Link href="/calculator">Loan Calculator</Link></li>
-								{/* <li><Link href="#">Copyright Notices</Link></li>
-								<li><Link href="#">Terms of Use</Link></li>
-								<li><Link href="#">Privacy Notice</Link></li> */}
-								{/* <li><Link href="#">Lost &amp; Found</Link></li> */}
-							</ul>
-						</div>
-						<div className="col-md-2 col-xs-6 footer-2">
-							<h6 className="text-linear-3">Our Services</h6>
-							<ul className="menu-footer">
-								{/* <li><Link href="#">Car Rental Services</Link></li> */}
-								<li><Link href="#">CarAudit</Link></li>
-								<li><Link href="#">Delivery</Link></li>
-								<li><Link href="#">Financing</Link></li>
-								{/* <li><Link href="#">Luxury Car Rentals</Link></li> */}
-								{/* <li><Link href="#">Rent-to-Own Programs</Link></li> */}
-								<li><Link href="#">Fleet Management Solutions</Link></li>
-							</ul>
-						</div>
-						<div className="col-md-2 col-xs-6 footer-4">
-							<h6 className="text-linear-3">Our Partners</h6>
-							<ul className="menu-footer">
-								<li><Link href="#">AutoScout</Link></li>
-								{/* <li><Link href="#">Travel Agents</Link></li>
-								<li><Link href="#">AARP Members</Link></li>
-								<li><Link href="#">Points Programs</Link></li>
-								<li><Link href="#">Military &amp; Veterans</Link></li>
-								<li><Link href="#">Work with us</Link></li>
-								<li><Link href="#">Advertise with us</Link></li> */}
-							</ul>
-						</div>
-						<div className="col-md-3 col-xs-6 footer-5">
-							<h6 className="text-linear-3">Company</h6>
-							<ul className="menu-footer">
-								<li><Link href="#">About Us</Link></li>
-								<li><Link href="#">Help Center</Link></li>
-								<li><Link href="#">Terms of Service</Link></li>
-								{/* <li><Link href="#">How it works</Link></li> */}
-								{/* <li><Link href="#">Security</Link></li> */}
-								{/* <li><Link href="#">Refund Policy</Link></li> */}
-							</ul>
+						<div className="col-md-6 col-sm-12">
+							<div className="row">
+								<div className="col-md-6 footer-3">
+									<h6 className="text-linear-3">Fast4Car</h6>
+									<ul className="menu-footer">
+										<li><Link href="/cars">Buy</Link></li>
+										<li><Link href="/how-it-works">How it works</Link></li>
+										<li><Link href="/deals">Best Deals</Link></li>
+										<li><Link href="/calculator">Loan Calculator</Link></li>
+									</ul>
+									<h6 className="text-linear-3 mt-4">Our Services</h6>
+									<ul className="menu-footer">
+										<li><Link href="#">CarAudit</Link></li>
+										<li><Link href="#">Delivery</Link></li>
+										<li><Link href="#">Financing</Link></li>
+										<li><Link href="#">Fleet Management Solutions</Link></li>
+									</ul>
+								</div>
+								<div className="col-md-6 footer-4">
+									<h6 className="text-linear-3">Our Partners</h6>
+									<ul className="menu-footer">
+										<li><Link href="#">AutoScout</Link></li>
+									</ul>
+									<h6 className="text-linear-3 mt-4">Company</h6>
+									<ul className="menu-footer">
+										<li><Link href="#">About Us</Link></li>
+										<li><Link href="#">Help Center</Link></li>
+										<li><Link href="#">Terms of Service</Link></li>
+									</ul>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div className="footer-bottom mt-50">

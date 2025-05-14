@@ -503,7 +503,8 @@ export default function HowItWorks() {
                                 zIndex={2}
                                 onClick={prevStep}
                                 bg={'red.500'}
-
+                                _active={{ bg: 'red.500' }}
+                                _hover={{ bg: 'red.500' }}
                                 variant="solid"
                                 borderRadius="full"
                                 size={{ base: "sm", md: "md" }}
@@ -522,6 +523,8 @@ export default function HowItWorks() {
                                 bg={'red.500'}
                                 variant="solid"
                                 borderRadius="full"
+                                _active={{ bg: 'red.500' }}
+                                _hover={{ bg: 'red.500' }}
                                 size={{ base: "sm", md: "md" }}
                                 display="flex"
                             />
