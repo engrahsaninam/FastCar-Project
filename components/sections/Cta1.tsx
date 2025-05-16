@@ -17,8 +17,8 @@ export default function Cta1() {
 						<div className="col-lg-6 pe-lg-5 wow fadeInUp">
 							<div className="card-video">
 								<div className="card-image">
-									<a className="btn btn-play popup-youtube" onClick={() => setOpen(true)} />
-									<img src="/check.jpg" alt="Fast4Car" />
+									<a  className="btn btn-play popup-youtube" onClick={() => setOpen(true)} />
+									<img src="/assets/imgs/cta/cta-1/video.png" alt="Fast4Car" />
 								</div>
 							</div>
 						</div>
