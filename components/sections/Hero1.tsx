@@ -103,14 +103,14 @@ export default function HeroWithSearch() {
             <p className="text-lg-medium text-white  text-center wow fadeInUp mb-0">Exclusive partner of AutoScout24</p>
           </div>
 
-          <div className="d-flex wow fadeInUp">
+          <div className="d-flex wow fadeInUp mt-3">
             <img
               src="/logoautodark.png"
               alt="Auto Logo"
               style={{
-                width: '70%',
+                width: '100%',
                 height: 'fit-content',
-                maxWidth: '70%',
+                maxWidth: '100%',
                 maxHeight: 'fit-content',
                 // objectFit: '',
                 margin: '0 auto',

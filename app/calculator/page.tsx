@@ -90,12 +90,14 @@ export default function Calculator() {
 											{/* Info section below car image */}
 											<Box mt={['20px', '0px', '200px']} mb={4} display="flex" flexDirection={{ base: 'column', md: 'row' }} justifyContent="center" alignItems={{ base: 'center', md: 'center' }} gap={{ base: 6, md: 16 }}>
 												<Box textAlign={{ base: 'center', md: 'center' }}>
-													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">8.99 %</Text>
 													<Text fontSize="sm" color={textColor} mt={1}>Average Interest rate</Text>
+
+													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">8.99 %</Text>
 												</Box>
 												<Box textAlign={{ base: 'center', md: 'center' }}>
-													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">24 hours</Text>
 													<Text fontSize="sm" color={textColor} mt={1}>Approval time</Text>
+													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">24 hours</Text>
+
 												</Box>
 											</Box>
 										</div>

@@ -77,7 +77,8 @@ export default function Cta2() {
 		}
 	}, []);
 	return (
-		<> <div className='background-100'>
+		<> 
+		{/* <div className='background-100'>
 			<Container maxWidth="container.xl" paddingInline={10} padding={10} >
 				<section
 					className="box-cta-2 background-100  overflow-hidden mx-6"
@@ -243,7 +244,7 @@ export default function Cta2() {
 						</div>
 					</div></section>
 			</Container>
-		</div>
+		</div> */}
 			<section className="box-cta-2 background-body overflow-hidden">
 				<div className="bg-shape top-50 start-50 translate-middle" />
 				<div className="bg-shape top-50 start-50 translate-middle" />
