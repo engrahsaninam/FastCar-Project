@@ -394,7 +394,7 @@ const FavoritesSection: React.FC = () => {
                                 mr={2}
                             />
                         </Link>
-                        <Heading size="lg" color={useColorModeValue("gray.800", "white")}>
+                        <Heading size="lg" color={useColorModeValue("gray.800", "white")} style={{ fontFamily: "satoshi", fontWeight: 900 }}>
                             Favourite cars
                         </Heading>
                     </Flex>

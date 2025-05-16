@@ -164,7 +164,7 @@ const OrdersInProgress = () => {
                                 mr={2}
                             />
                         </Link>
-                        <Heading size="lg" color={useColorModeValue("gray.800", "white")}>
+                        <Heading size="lg" color={useColorModeValue("gray.800", "white")} style={{ fontFamily: "satoshi", fontWeight: 900 }}>
                             Orders in progress
                         </Heading>
                     </Flex>

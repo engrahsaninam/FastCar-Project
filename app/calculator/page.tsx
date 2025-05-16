@@ -73,22 +73,35 @@ export default function Calculator() {
 								</Box>
 								<div className="row align-items-start justify-content-between">
 									<div className="col-lg-6">
-										<div className="card-image d-inline-block position-relative mb-4">
-											<img
-												className="rounded-12 img-fluid"
-												src="/assets/imgs/cta/cta-11/img-3.png"
-												alt="Fast4Car"
-												style={{ width: '100%', height: 'auto' }}
-											/>
-											<img
-												className="position-absolute top-100 start-100 translate-middle d-none d-md-block"
-												src="/assets/imgs/cta/cta-11/img-car.png"
-												alt="Fast4Car"
-											/>
+										<div className="card-image d-inline-block position-relative mb-4 mt-30">
+											<div className="m-w-fit m-h-fit">
+												<img
+													className="rounded-12 img-fluid"
+													src="/assets/imgs/cta/cta-11/img-3.png"
+													alt="Fast4Car"
+													style={{ width: '100%', height: 'auto' }}
+												/>
+												{/* <img
+													className="position-absolute top-100 start-100 translate-middle d-none d-md-block"
+													src="/assets/imgs/cta/cta-11/img-car.png"
+													alt="Fast4Car"
+												/> */}
+											</div>
+											{/* Info section below car image */}
+											<Box mt={['20px', '0px', '200px']} mb={4} display="flex" flexDirection={{ base: 'column', md: 'row' }} justifyContent="center" alignItems={{ base: 'center', md: 'center' }} gap={{ base: 6, md: 16 }}>
+												<Box textAlign={{ base: 'center', md: 'center' }}>
+													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">8.99 %</Text>
+													<Text fontSize="sm" color={textColor} mt={1}>Average Interest rate</Text>
+												</Box>
+												<Box textAlign={{ base: 'center', md: 'center' }}>
+													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">24 hours</Text>
+													<Text fontSize="sm" color={textColor} mt={1}>Approval time</Text>
+												</Box>
+											</Box>
 										</div>
 									</div>
 									<div className="col-lg-6">
-										<div className="ps-lg-4">
+										<div className="ps-lg-4 mt-20 md:mt-0" >
 											<Specs
 												onFinancingRequest={() => { }}
 												onFullPayment={() => { }}

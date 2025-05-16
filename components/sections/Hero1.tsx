@@ -97,7 +97,7 @@ export default function HeroWithSearch() {
             <HeroSearch showAdvanced={activeTab === 'advanced'} />
 
           </div>
-          <div className="box-search-category d-flex flex-column align-items-center m-0 p-0">
+          <div className="box-search-category  d-flex flex-column align-items-center m-0 p-0">
           <h4 className={`heading-4 text-center wow fadeInUp text-white`}>Offical Partner</h4>
           <div className="d-flex flex-column align-items-center">
             <p className="text-lg-medium text-white  text-center wow fadeInUp mb-0">Exclusive partner of AutoScout24</p>
@@ -109,9 +109,9 @@ export default function HeroWithSearch() {
               alt="Auto Logo"
               style={{
                 width: '70%',
-                height: '70%',
+                height: 'fit-content',
                 maxWidth: '70%',
-                maxHeight: '70%',
+                maxHeight: 'fit-content',
                 // objectFit: '',
                 margin: '0 auto',
                 // display: 'block'
