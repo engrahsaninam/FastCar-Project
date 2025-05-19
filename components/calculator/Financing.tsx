@@ -1,4 +1,4 @@
-import { Box, Flex, Text, VStack, HStack, Icon, useBreakpointValue, Button, useColorModeValue, Container } from '@chakra-ui/react';
+import { Box, Flex, Text, VStack, HStack, Icon, useBreakpointValue, Button, useColorModeValue, Container, Heading } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -13,10 +13,24 @@ export default function FinancingCard() {
             <Container maxW="container.xl" pb={5}>
                 {/* Heading and Description */}
                 <Box mb={10} textAlign="center" >
-                    <Text as="h2" fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="extrabold" color={textColor} mb={4}>
+                    <Heading
+                        as="h1"
+                        fontSize={{ base: "3xl", md: "5xl" }}
+                        color={textColor}
+                        fontWeight={900}
+                        lineHeight="1.2"
+                        fontFamily='satoshi'
+                        marginTop={['20px', '0px', '0px']}
+                    >
                         Check one of our cars
-                    </Text>
-                    <Text fontSize={{ base: 'md', md: 'lg' }} color={textColor} fontWeight="semibold">
+                    </Heading>
+                    <Text
+                        fontSize={{ base: "lg", md: "xl" }}
+                        color={textColor}
+                        mb={8}
+                        p={6}
+                        lineHeight="1.6"
+                    >
                         Get a competitive loan offer. Apply with us today.<br />
                         Unlock the best rates and terms for your car loan with our easy application process.
                     </Text>

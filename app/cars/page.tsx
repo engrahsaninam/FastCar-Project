@@ -139,51 +139,7 @@ export default function CarsList1() {
             </Box>
           </Flex>
         </Container>
-        <div className="background-100 pt-10 pb-10">
-          <Container maxWidth={maxContentWidth} mx="auto">
-            <Marquee
-              direction="left"
-              pauseOnHover={true}
-              className="carouselTicker carouselTicker-left box-list-brand-car justify-content-center wow fadeIn"
-            >
-              <ul className="carouselTicker__list">
-                {['lexus', 'mer', 'bugatti', 'jaguar', 'honda', 'chevrolet', 'acura', 'bmw', 'toyota'].map((brand) => (
-                  <li key={brand} className="carouselTicker__item">
-                    <div className="item-brand">
-                      <img
-                        className="light-mode"
-                        src={`/assets/imgs/page/homepage2/${brand}.png`}
-                        alt="Fast4Car"
-                      />
-                      <img
-                        className="dark-mode"
-                        src={`/assets/imgs/page/homepage2/${brand}-w.png`}
-                        alt="Fast4Car"
-                      />
-                    </div>
-                  </li>
-                ))}
-                {/* Repeat first few for continuity */}
-                {['lexus', 'mer', 'bugatti'].map((brand) => (
-                  <li key={`repeat-${brand}`} className="carouselTicker__item">
-                    <div className="item-brand">
-                      <img
-                        className="light-mode"
-                        src={`/assets/imgs/page/homepage2/${brand}.png`}
-                        alt="Fast4Car"
-                      />
-                      <img
-                        className="dark-mode"
-                        src={`/assets/imgs/page/homepage2/${brand}-w.png`}
-                        alt="Fast4Car"
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </Marquee>
-          </Container>
-        </div>
+       
       </section>
     </Layout>
   );

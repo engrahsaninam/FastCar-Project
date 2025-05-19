@@ -82,13 +82,13 @@ export default function Calculator() {
 													style={{ width: '100%', height: 'auto' }}
 												/>
 												{/* <img
-													className="position-absolute top-100 start-100 translate-middle d-none d-md-block"
+													className="position-absolute  start-100 translate-middle d-md-block"
 													src="/assets/imgs/cta/cta-11/img-car.png"
-													alt="Fast4Car"
-												/> */}
+													alt="Fast4Car" */}
+												{/* /> */}
 											</div>
 											{/* Info section below car image */}
-											<Box mt={['20px', '0px', '200px']} mb={4} display="flex" flexDirection={{ base: 'column', md: 'row' }} justifyContent="center" alignItems={{ base: 'center', md: 'center' }} gap={{ base: 6, md: 16 }}>
+											<Box mt={['20px', '0px', '200px']} mb={4} display="flex" flexDirection={{ base: 'row', md: 'row' }} justifyContent="center" alignItems={{ base: 'center', md: 'center' }} gap={{ base: 6, md: 16 }}>
 												<Box textAlign={{ base: 'center', md: 'center' }}>
 													<Text fontSize="sm" color={textColor} mt={1}>Average Interest rate</Text>
 

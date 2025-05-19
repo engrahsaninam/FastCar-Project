@@ -132,7 +132,7 @@ export default function CarsList3() {
 
 							{/* search 1 */}
 							<section
-								className="section-box pt-50 background-body light-mode"
+								className="section-box pt-50 light-mode"
 								style={{
 									backgroundImage: "url('/bestest.svg')",
 									backgroundSize: "cover",
@@ -143,7 +143,7 @@ export default function CarsList3() {
 								}}
 							>
 								<div style={{
-									background: badgeColor,
+									// background: badgeColor,
 									position: "absolute",
 									top: 0, left: 0, right: 0, bottom: 0,
 									zIndex: 2,
@@ -158,7 +158,7 @@ export default function CarsList3() {
 								</div>
 							</section>
 							<section
-								className="section-box pt-50 background-body dark-mode"
+								className="section-box pt-50  dark-mode"
 								style={{
 									backgroundImage: "url('/best-dark.svg')",
 									backgroundSize: "cover",
@@ -676,86 +676,7 @@ export default function CarsList3() {
 										</div>
 									</div>
 								</div>
-								<div className="background-100 pt-55 pb-55">
-									<div className="container">
-										<Marquee direction='left' pauseOnHover={true} className="carouselTicker carouselTicker-left box-list-brand-car justify-content-center  wow fadeIn">
-											<ul className="carouselTicker__list">
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/lexus.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/lexus-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/mer.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/mer-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/bugatti.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/bugatti-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/jaguar.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/jaguar-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/honda.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/honda-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/chevrolet.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/chevrolet-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/acura.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/acura-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/bmw.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/bmw-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/toyota.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/toyota-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/lexus.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/lexus-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/mer.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/mer-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-												<li className="carouselTicker__item">
-													<div className="item-brand">
-														<img className="light-mode" src="/assets/imgs/page/homepage2/bugatti.png" alt="Fast4Car" />
-														<img className="dark-mode" src="/assets/imgs/page/homepage2/bugatti-w.png" alt="Fast4Car" />
-													</div>
-												</li>
-											</ul>
-										</Marquee>
-									</div>
-								</div>
+								
 							</section>
 						</div >
 					</Container>
