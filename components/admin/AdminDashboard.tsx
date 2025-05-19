@@ -62,7 +62,9 @@ import DashboardOverview from './DashboardOverview';
 import RecentOrders from './RecentOrders';
 import VehiclesTable from './VehiclesTable';
 import OrdersTable from './OrdersTable';
-import { Vehicle, Order, Stats } from './types';
+import { Vehicle, Order, Stats, FinancingEntry } from './types';
+import FinancingTable from './FinancingTable';
+import FinancingDetailsModal from './FinancingDetailsModal';
 
 const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -113,11 +115,39 @@ const AdminDashboard: React.FC = () => {
 
     const { isOpen: isAddVehicleOpen, onOpen: onAddVehicleOpen, onClose: onAddVehicleClose } = useDisclosure();
     const { isOpen: isOrderDetailsOpen, onOpen: onOrderDetailsOpen, onClose: onOrderDetailsClose } = useDisclosure();
+    const { isOpen: isFinancingDetailsOpen, onOpen: onFinancingDetailsOpen, onClose: onFinancingDetailsClose } = useDisclosure();
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [selectedFinancingApplication, setSelectedFinancingApplication] = useState<FinancingEntry | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [orderFilter, setOrderFilter] = useState('all');
     const { user, logout } = useAuth();
     const toast = useToast();
+
+    // Dummy data for FinancingTable
+    const [financingData, setFinancingData] = useState<FinancingEntry[]>([
+        {
+            name: "Jane",
+            surname: "Smith",
+            telephoneNumber: "+34 987 654 321",
+            email: "jane.smith@example.com",
+            identificationNumber: "XYZ789012",
+            dateOfBirth: "1992-07-25",
+            totalFinancedAmount:12323,
+            totalKm:1123,
+            color:"red"
+        },
+        {
+            name: "Peter",
+            surname: "Jones",
+            telephoneNumber: "+44 20 7123 4567",
+            email: "peter.jones@example.com",
+            identificationNumber: "AB123456C",
+            dateOfBirth: "1985-11-10",
+            totalFinancedAmount: 12323,
+            totalKm: 1123,
+            color: "red"
+        },
+    ]);
 
     const handleUpdateOrderStatus = (orderId: string, newStatus: string) => {
         setOrders(prevOrders =>
@@ -160,6 +190,18 @@ const AdminDashboard: React.FC = () => {
                 isClosable: true,
             });
         }
+    };
+
+    const handleApproveFinancing = (applicationId: string) => {
+        console.log(`Application ${applicationId} approved`);
+        // Implement actual approval logic here
+        onFinancingDetailsClose();
+    };
+
+    const handleRejectFinancing = (applicationId: string) => {
+        console.log(`Application ${applicationId} rejected`);
+        // Implement actual rejection logic here
+        onFinancingDetailsClose();
     };
 
     const filteredOrders = orders.filter(order => {
@@ -240,6 +282,7 @@ const AdminDashboard: React.FC = () => {
                             { id: 'vehicles', icon: FiLayout, label: 'Vehicles' },
                             { id: 'orders', icon: FiPackage, label: 'Orders' },
                             { id: 'pricing', icon: FiDollarSign, label: 'Pricing' },
+                            { id: 'financing', icon: FiDollarSign, label: 'Financing' },
                         ].map((item) => (
                             <Button
                                 key={item.id}
@@ -372,6 +415,15 @@ const AdminDashboard: React.FC = () => {
                                     </Box>
                                 ))}
                             </Grid>
+                        </Box>
+                    )}
+
+                    {activeTab === 'financing' && (
+                        <Box>
+                            <FinancingTable data={financingData} onRowClick={(application) => {
+                                setSelectedFinancingApplication(application);
+                                onFinancingDetailsOpen();
+                            }} />
                         </Box>
                     )}
                 </Box>
@@ -521,6 +573,14 @@ const AdminDashboard: React.FC = () => {
                     </ModalBody>
                 </ModalContent>
             </Modal>
+
+            <FinancingDetailsModal
+                isOpen={isFinancingDetailsOpen}
+                onClose={onFinancingDetailsClose}
+                application={selectedFinancingApplication}
+                onApprove={handleApproveFinancing}
+                onReject={handleRejectFinancing}
+            />
         </Box>
     );
 };
@@ -636,7 +696,7 @@ const AddVehicleModal: React.FC<AddVehicleModalProps> = ({ isOpen, onClose, setV
             <ModalContent>
                 <ModalHeader>
                     <Flex align="center" gap={2}>
-                        <Box  />
+                        <Box />
                         Add New Vehicle
                     </Flex>
                 </ModalHeader>

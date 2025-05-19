@@ -39,3 +39,15 @@ export interface Stats {
     totalRevenue: number;
     pendingDeliveries: number;
 }
+
+export interface FinancingEntry {
+    name: string;
+    surname: string;
+    telephoneNumber: string;
+    email: string;
+    identificationNumber: string;
+    dateOfBirth: string;
+    totalFinancedAmount: number;
+    totalKm: number;
+    color: string;
+}
