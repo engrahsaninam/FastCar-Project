@@ -132,9 +132,9 @@ const AdminDashboard: React.FC = () => {
             email: "jane.smith@example.com",
             identificationNumber: "XYZ789012",
             dateOfBirth: "1992-07-25",
-            totalFinancedAmount:12323,
-            totalKm:1123,
-            color:"red"
+            totalFinancedAmount: 12323,
+            totalKm: 1123,
+            color: "red"
         },
         {
             name: "Peter",
@@ -273,9 +273,9 @@ const AdminDashboard: React.FC = () => {
             </Box>
 
             {/* Main Content */}
-            <Flex>
+            <Flex direction={{ base: 'column', md: 'row' }}>
                 {/* Sidebar */}
-                <Box w="64" bg="white" h="calc(100vh - 4rem)" borderRight="1px" borderColor="gray.200">
+                <Box w={{ base: 'full', md: '64' }} bg="white" h={{ base: 'auto', md: 'calc(100vh - 4rem)' }} borderRight={{ base: 'none', md: '1px' }} borderBottom={{ base: '1px', md: 'none' }} borderColor="gray.200">
                     <VStack spacing={1} p={4}>
                         {[
                             { id: 'dashboard', icon: FiLayout, label: 'Dashboard' },

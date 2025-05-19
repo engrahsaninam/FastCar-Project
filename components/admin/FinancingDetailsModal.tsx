@@ -41,7 +41,7 @@ const FinancingDetailsModal: React.FC<FinancingDetailsModalProps> = ({
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                     <VStack spacing={4} align="stretch">
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                             <GridItem>
                                 <Text fontSize="sm" color="gray.500">Name</Text>
                                 <Text fontWeight="medium" color="gray.800">{application.name}</Text>
