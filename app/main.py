@@ -41,6 +41,7 @@ app.include_router(filters.router, prefix="/api/filters", tags=["filters"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize application on startup."""
