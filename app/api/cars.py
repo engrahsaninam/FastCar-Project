@@ -1,5 +1,4 @@
 # app/api/cars.py
-
 from fastapi import APIRouter, Query, HTTPException, Depends, Request
 from app.api.auth import get_current_user
 from app.models.user import User
@@ -31,64 +30,70 @@ async def get_cars(
 ):
     """Get paginated list of cars with filters"""
     query = "SELECT * FROM cars WHERE 1=1"
+    count_query = "SELECT COUNT(*) as total FROM cars WHERE 1=1"
     params = []
     
-    # Apply filters
     if brand:
         query += " AND brand = %s"
+        count_query += " AND brand = %s"
         params.append(brand)
     
     if model:
         query += " AND model = %s"
+        count_query += " AND model = %s"
         params.append(model)
         
     if min_price:
         query += " AND price >= %s"
+        count_query += " AND price >= %s"
         params.append(min_price)
         
     if max_price:
         query += " AND price <= %s"
+        count_query += " AND price <= %s"
         params.append(max_price)
         
     if min_year:
-        # The age field directly contains the year as the integer part
         query += " AND FLOOR(age) >= %s"
+        count_query += " AND FLOOR(age) >= %s"
         params.append(min_year)
         
     if max_year:
-        # The age field directly contains the year as the integer part
         query += " AND FLOOR(age) <= %s"
+        count_query += " AND FLOOR(age) <= %s"
         params.append(max_year)
         
     if min_mileage is not None:
         query += " AND mileage >= %s"
+        count_query += " AND mileage >= %s"
         params.append(min_mileage)
         
     if max_mileage is not None:
         query += " AND mileage <= %s"
+        count_query += " AND mileage <= %s"
         params.append(max_mileage)
         
     if fuel:
         query += " AND fuel = %s"
+        count_query += " AND fuel = %s"
         params.append(fuel)
         
     if gear:
         query += " AND gear = %s"
+        count_query += " AND gear = %s"
         params.append(gear)
     
-    # First fetch all filtered data to handle outliers
-    filtered_query = query
-    all_results = await execute_query(filtered_query, params, remove_outliers=remove_outliers)
-    
-    # Calculate total based on the outlier-filtered results
-    total = len(all_results)
-    
-    # Manually handle pagination on the filtered results
+    # Add pagination to the main query
     offset = (page - 1) * limit
-    end_index = min(offset + limit, total)
+    query += " LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
     
-    # Apply pagination to the filtered results
-    cars = all_results[offset:end_index] if offset < total else []
+    # Execute count query to get total
+    count_result = await execute_query(count_query, params[:-2], remove_outliers=False)
+    total = count_result[0]["total"] if count_result else 0
+    
+    # Execute main query with pagination
+    cars = await execute_query(query, params, remove_outliers=remove_outliers)
     
     return {
         "data": [CarResponse(**car) for car in cars],
@@ -118,16 +123,12 @@ async def search_cars(
     remove_outliers: bool = True,
 ):
     """Search cars with all filters and save to history if user is logged in"""
-    # Extract all query parameters
     search_params = dict(request.query_params)
-    
-    # Get the search results by calling the existing get_cars function
     result = await get_cars(
         brand, model, min_price, max_price, min_year, max_year, 
         min_mileage, max_mileage, fuel, gear, page, limit, remove_outliers
     )
     
-    # Save search to history if user is logged in
     if current_user:
         from app.models.user import SearchHistory
         search_history = SearchHistory(
@@ -139,12 +140,10 @@ async def search_cars(
     
     return result
 
-
 @router.get("/{car_id}", response_model=CarResponse)
 async def get_car(car_id: str):
     """Get a single car by ID"""
     query = "SELECT * FROM cars WHERE id = %s"
-    # No need to remove outliers for a specific car lookup
     result = await execute_query(query, [car_id], remove_outliers=False)
     
     if not result:
@@ -156,7 +155,6 @@ async def get_car(car_id: str):
 async def get_brands():
     """Get list of all car brands"""
     query = "SELECT DISTINCT brand FROM cars ORDER BY brand"
-    # No need to remove outliers for metadata queries
     result = await execute_query(query, remove_outliers=False)
     return [brand["brand"] for brand in result]
 
@@ -169,13 +167,11 @@ async def get_models(brand: Optional[str] = None):
     else:
         query = "SELECT DISTINCT model FROM cars ORDER BY model"
         result = await execute_query(query, remove_outliers=False)
-        
     return [model["model"] for model in result]
 
 @router.get("/{car_id}/similar", response_model=List[CarResponse])
 async def get_similar_cars(car_id: str, limit: int = Query(5, ge=1, le=20), remove_outliers: bool = True):
     """Get similar cars based on a specific car"""
-    # First get the car
     car_query = "SELECT * FROM cars WHERE id = %s"
     car_result = await execute_query(car_query, [car_id], remove_outliers=False)
     
@@ -184,7 +180,6 @@ async def get_similar_cars(car_id: str, limit: int = Query(5, ge=1, le=20), remo
     
     car = car_result[0]
     
-    # Find similar cars
     similar_query = """
     SELECT * FROM cars 
     WHERE brand = %s 
@@ -194,8 +189,6 @@ async def get_similar_cars(car_id: str, limit: int = Query(5, ge=1, le=20), remo
     """
     params = [car['brand'], car['model'], car_id, car['price']]
     
-    # Apply outlier removal to similar cars
     similar_cars = await execute_query(similar_query, params, remove_outliers=remove_outliers)
     
-    # Manual limit after outlier removal
     return [CarResponse(**similar_car) for similar_car in similar_cars[:limit]]

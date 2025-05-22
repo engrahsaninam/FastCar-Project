@@ -1,24 +1,22 @@
- 
-from fastapi import APIRouter, Depends, HTTPException, status
+#app/api/auth.py
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+from google.auth.transport import requests
+from google.oauth2 import id_token
+import secrets
 
 from app.database.sqlite import get_db
 from app.models.user import User, PasswordReset
 from app.utils.security import verify_password, get_password_hash, create_access_token
-from app.config import JWT_SECRET, JWT_ALGORITHM
-
+from app.config import JWT_SECRET, JWT_ALGORITHM, GOOGLE_CLIENT_ID
 from app.utils.email import send_email
 from app.schemas.user import (
-    UserCreate, UserResponse, Token, TokenData, 
-    PasswordResetRequest, PasswordReset as PasswordResetSchema, LoginRequest, Token
+    UserSignup, GoogleSignup, UserResponse, Token, TokenData, 
+    PasswordResetRequest, PasswordReset as PasswordResetSchema, LoginRequest
 )
-
-import uuid
-import secrets
-from fastapi import BackgroundTasks
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
@@ -26,9 +24,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
+def get_user_by_username(db: Session, username: str):
+    return db.query(User).filter(User.username == username).first()
+
+def get_user_by_google_id(db: Session, google_id: str):
+    return db.query(User).filter(User.google_id == google_id).first()
+
 def authenticate_user(db: Session, email: str, password: str):
     user = get_user_by_email(db, email)
-    if not user:
+    if not user or not user.hashed_password:
         return False
     if not verify_password(password, user.hashed_password):
         return False
@@ -54,40 +58,67 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 @router.post("/register", response_model=UserResponse)
-async def register(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = get_user_by_email(db, email=user.email)
-    if db_user:
+async def register(user: UserSignup, db: Session = Depends(get_db)):
+    # Check for existing email or username
+    if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
+    if get_user_by_username(db, user.username):
+        raise HTTPException(status_code=400, detail="Username already taken")
     
     hashed_password = get_password_hash(user.password)
     db_user = User(
+        username=user.username,
         email=user.email,
-        name=user.name,
-        surname=user.surname,
-        phone=user.phone,
-        country=user.country,
-        postal_code=user.postal_code,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        is_active=True
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+@router.post("/google-signup", response_model=UserResponse)
+async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)):
+    try:
+        # Verify Google ID token
+        idinfo = id_token.verify_oauth2_token(
+            google_data.id_token,
+            requests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+        google_id = idinfo['sub']
+        email = idinfo['email']
+        username = idinfo.get('name', email.split('@')[0])
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid Google token")
 
-def authenticate_user(db: Session, email: str, password: str):
-    user = get_user_by_email(db, email)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
+    # Check if user exists
+    user = get_user_by_google_id(db, google_id) or get_user_by_email(db, email)
+    if user:
+        if not user.google_id:
+            # Link existing account to Google
+            user.google_id = google_id
+            db.commit()
+            db.refresh(user)
+        return user
+
+    # Create new user
+    while get_user_by_username(db, username):
+        username = f"{username}{secrets.randbelow(1000)}"
+    
+    db_user = User(
+        username=username,
+        email=email,
+        google_id=google_id,
+        is_active=True
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 @router.post("/login", response_model=Token)
 async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Login endpoint that accepts email and password in JSON"""
     user = authenticate_user(db, login_data.email, login_data.password)
     if not user:
         raise HTTPException(
@@ -110,17 +141,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-# Add these functions first
-def generate_reset_token():
-    """Generate a secure random token for password reset"""
-    return secrets.token_urlsafe(32)
-
 async def send_password_reset_email(background_tasks: BackgroundTasks, email: str, token: str):
-    """Send password reset email with token"""
     reset_url = f"http://localhost:3000/reset-password?token={token}"
-    
-    # HTML email template
     html_content = f"""
     <html>
     <body>
@@ -133,34 +155,26 @@ async def send_password_reset_email(background_tasks: BackgroundTasks, email: st
     </body>
     </html>
     """
-    
-    # Send email in background to avoid blocking the API response
     background_tasks.add_task(
-        send_email, 
+        send_email,
         to_email=email,
         subject="Reset Your EUCar Password",
         html_content=html_content
     )
 
-# Add these endpoints
 @router.post("/forgot-password")
 async def forgot_password(
-    request: PasswordResetRequest, 
+    request: PasswordResetRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
-    """Request a password reset link"""
-    # Check if user exists
     user = get_user_by_email(db, request.email)
-    if not user:
-        # Don't reveal if user exists or not for security
+    if not user or user.google_id:  # Don't allow password reset for Google-only users
         return {"message": "If your email is registered, you will receive a password reset link"}
     
-    # Generate token and create reset record
-    token = generate_reset_token()
+    token = secrets.token_urlsafe(32)
     expires_at = datetime.utcnow() + timedelta(hours=24)
     
-    # Create or update password reset record
     reset_record = db.query(PasswordReset).filter(
         PasswordReset.email == request.email,
         PasswordReset.is_used == False,
@@ -168,12 +182,10 @@ async def forgot_password(
     ).first()
     
     if reset_record:
-        # Update existing record
         reset_record.token = token
         reset_record.expires_at = expires_at
         reset_record.is_used = False
     else:
-        # Create new record
         reset_record = PasswordReset(
             email=request.email,
             token=token,
@@ -182,16 +194,11 @@ async def forgot_password(
         db.add(reset_record)
     
     db.commit()
-    
-    # Send email
     await send_password_reset_email(background_tasks, request.email, token)
-    
     return {"message": "If your email is registered, you will receive a password reset link"}
 
 @router.post("/reset-password")
 async def reset_password(reset_data: PasswordResetSchema, db: Session = Depends(get_db)):
-    """Reset password using token from email"""
-    # Find valid reset token
     reset_record = db.query(PasswordReset).filter(
         PasswordReset.token == reset_data.token,
         PasswordReset.is_used == False,
@@ -201,20 +208,11 @@ async def reset_password(reset_data: PasswordResetSchema, db: Session = Depends(
     if not reset_record:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
     
-    # Find user and update password
     user = get_user_by_email(db, reset_record.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update password
     user.hashed_password = get_password_hash(reset_data.password)
-    
-    # Mark reset token as used
     reset_record.is_used = True
-    
     db.commit()
-    
     return {"message": "Password has been reset successfully"}
-
-
-

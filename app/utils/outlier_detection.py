@@ -2,6 +2,9 @@
 
 import numpy as np
 from typing import List, Dict, Any, Tuple, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 def detect_outliers(
     data: List[Dict[str, Any]], 
@@ -11,15 +14,6 @@ def detect_outliers(
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
     Detect outliers in the provided dataset using either IQR or Z-score method.
-    
-    Args:
-        data: List of dictionaries containing the data
-        numeric_columns: Columns to check for outliers
-        method: 'iqr' for Interquartile Range or 'zscore' for Z-score method
-        iqr_multiplier: Multiplier for IQR to determine outlier threshold (default: 1.5)
-        
-    Returns:
-        Tuple containing (clean_data, outliers)
     """
     if not data:
         return [], []
@@ -27,7 +21,6 @@ def detect_outliers(
     clean_data = []
     outliers = []
     
-    # Convert data to column-based format for easier statistical calculations
     columns = {col: [] for col in numeric_columns}
     
     for item in data:
@@ -35,7 +28,6 @@ def detect_outliers(
             if col in item and item[col] is not None:
                 columns[col].append(float(item[col]))
                 
-    # Calculate thresholds for each column
     thresholds = {}
     
     for col in numeric_columns:
@@ -58,7 +50,6 @@ def detect_outliers(
             upper_bound = mean + (3 * std)
             thresholds[col] = (lower_bound, upper_bound)
     
-    # Classify each item as clean or outlier
     for item in data:
         is_outlier = False
         
@@ -76,23 +67,35 @@ def detect_outliers(
             
     return clean_data, outliers
 
-
-def filter_mysql_results(
-    results: List[Dict[str, Any]], 
-    outlier_method: str = 'iqr'
+async def filter_mysql_results(
+    query: str,
+    params: List[Any],
+    numeric_columns: List[str] = ['price', 'mileage', 'age'],
+    outlier_method: str = 'iqr',
+    iqr_multiplier: float = 1.5
 ) -> List[Dict[str, Any]]:
     """
-    Filter MySQL results to remove outliers.
-    
-    Args:
-        results: Results from MySQL query
-        outlier_method: Method to use for outlier detection ('iqr' or 'zscore')
-        
-    Returns:
-        Clean results with outliers removed
+    Filter MySQL results to remove outliers using Python-based outlier detection.
     """
-    if not results:
+    from app.database.mysql import execute_query  # Lazy import to avoid circular dependency
+    
+    # Fetch results without SQL-based outlier filtering
+    logger.debug(f"Executing query: {query}")
+    logger.debug(f"Query params: {params}")
+    
+    results = await execute_query(query, params, remove_outliers=False)
+    
+    if not results or not numeric_columns:
         return results
-        
-    clean_data, _ = detect_outliers(results, method=outlier_method)
+    
+    # Apply Python-based outlier detection
+    clean_data, outliers = detect_outliers(
+        results,
+        numeric_columns=numeric_columns,
+        method=outlier_method,
+        iqr_multiplier=iqr_multiplier
+    )
+    
+    logger.debug(f"Filtered {len(outliers)} outliers, returning {len(clean_data)} clean records")
+    
     return clean_data

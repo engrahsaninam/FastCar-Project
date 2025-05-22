@@ -1,20 +1,30 @@
- 
-from pydantic import BaseModel, EmailStr, Field
+#app/schemas/user.py 
+from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional
 from datetime import datetime
 
 class UserBase(BaseModel):
+    username: str
     email: EmailStr
-    name: Optional[str] = None
-    surname: Optional[str] = None
-    phone: Optional[str] = None
-    country: Optional[str] = None
-    postal_code: Optional[str] = None
 
-class UserCreate(UserBase):
+class UserSignup(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
     password: str = Field(..., min_length=8)
+    confirm_password: str = Field(..., min_length=8)
 
-class UserUpdate(UserBase):
+    @validator('confirm_password')
+    def passwords_match(cls, v, values, **kwargs):
+        if 'password' in values and v != values['password']:
+            raise ValueError('Passwords do not match')
+        return v
+
+class GoogleSignup(BaseModel):
+    id_token: str  # Google ID token
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
+    email: Optional[EmailStr] = None
     password: Optional[str] = Field(None, min_length=8)
 
 class UserResponse(UserBase):
@@ -32,15 +42,12 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
-
-# Add these to app/schemas/user.py
 class PasswordResetRequest(BaseModel):
     email: EmailStr
 
 class PasswordReset(BaseModel):
     token: str
     password: str = Field(..., min_length=8)
-
 
 class LoginRequest(BaseModel):
     email: EmailStr
