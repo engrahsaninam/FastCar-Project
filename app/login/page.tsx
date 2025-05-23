@@ -12,13 +12,32 @@ import {
 	Link as ChakraLink,
 	IconButton,
 	HStack,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalFooter,
+	ModalBody,
+	ModalCloseButton,
+	useDisclosure,
 } from "@chakra-ui/react";
 import { Sun, Moon } from "lucide-react";
 import { useColorMode } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Layout from "@/components/layout/Layout";
+// import { useLogin } from "@/services/auth/useAuth";
+import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
+import { useLogin, useForgotPassword } from "@/services/auth/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(false);
+	const [forgotEmail, setForgotEmail] = useState("");
+	const router = useRouter()
+	const { isOpen, onOpen, onClose } = useDisclosure();
 	const bg = useColorModeValue("gray.50", "gray.900");
 	const cardBg = useColorModeValue("white", "gray.800");
 	const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -27,6 +46,98 @@ export default function Login() {
 	const btnBg = useColorModeValue("red.500", "red.400");
 	const btnColor = useColorModeValue("white", "gray.900");
 	const { colorMode, toggleColorMode } = useColorMode();
+	const { mutate, isPending } = useLogin();
+	const forgotPasswordMutation = useForgotPassword();
+	const toast = useToast();
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+
+		if (!email || !password) {
+			toast({
+				title: 'Validation Error',
+				description: 'Please fill in all fields',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		mutate(
+			{ email, password },
+			{
+				onSuccess: (data) => {
+					// console.log("sucess login",)
+					if (rememberMe) {
+						localStorage.setItem('rememberMe', 'true');
+					}
+					console.log(data)
+					localStorage.setItem('token', data.access_token);
+
+					toast({
+						title: 'Login successful',
+						status: 'success',
+						duration: 3000,
+						isClosable: true,
+					});
+					// You might want to add navigation here
+					router.push('/');
+				},
+				onError: (error: any) => {
+					console.log(error)
+					toast({
+						title: 'Login failed',
+						description: error?.response?.data?.detail || 'An error occurred.',
+						status: 'error',
+						duration: 3000,
+						isClosable: true,
+					});
+				},
+			}
+		);
+	};
+
+	const handleForgotPassword = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!forgotEmail) {
+			toast({
+				title: 'Validation Error',
+				description: 'Please enter your email address',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		forgotPasswordMutation.mutate(
+			{ email: forgotEmail },
+			{
+				onSuccess: (data) => {
+					console.log(data)
+					toast({
+						title: 'Success',
+						description: data?.message || 'Password reset instructions have been sent to your email',
+						status: 'success',
+						duration: 3000,
+						isClosable: true,
+					});
+					onClose();
+					setForgotEmail('');
+				},
+				onError: (error: any) => {
+					toast({
+						title: 'Error',
+						description: error?.response?.data?.detail || 'Failed to send reset instructions',
+						status: 'error',
+						duration: 3000,
+						isClosable: true,
+					});
+				},
+			}
+		);
+	};
 
 	return (
 		<Layout footerStyle={1}>
@@ -69,13 +180,16 @@ export default function Login() {
 								Welcome back
 							</Heading>
 						</Box>
-						<VStack as="form" spacing={4} align="stretch">
+						<VStack as="form" spacing={4} align="stretch" onSubmit={handleSubmit}>
 							<Input
 								placeholder="Email / Username"
 								type="text"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
 								color={textColor}
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								required
 							/>
 							<Input
 								placeholder="****************"
@@ -83,16 +197,25 @@ export default function Login() {
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
 								color={textColor}
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
 							/>
 							<Flex justify="space-between" align="center">
-								<Checkbox colorScheme="red" color={subTextColor} border='gray'>
+								<Checkbox
+									colorScheme="red"
+									color={subTextColor}
+									border='gray'
+									isChecked={rememberMe}
+									onChange={(e) => setRememberMe(e.target.checked)}
+								>
 									Remember me
 								</Checkbox>
 								<ChakraLink
-									as={NextLink}
-									href="#"
+									onClick={onOpen}
 									color={subTextColor}
 									fontSize="sm"
+									cursor="pointer"
 								>
 									Forgot password?
 								</ChakraLink>
@@ -103,6 +226,8 @@ export default function Login() {
 								color={btnColor}
 								w="full"
 								type="submit"
+								isLoading={isPending}
+								loadingText="Signing in..."
 								rightIcon={
 									<svg width={16} height={16} viewBox="0 0 16 16" fill="none">
 										<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -112,52 +237,7 @@ export default function Login() {
 								Sign in
 							</Button>
 						</VStack>
-						<Text color={subTextColor} fontSize="md" textAlign="center">
-							Or connect with your social account
-						</Text>
-						<HStack spacing={4} justify="center">
-							<Button
-								leftIcon={
-									<img
-										src="/assets/imgs/template/popup/google.svg"
-										alt="Google"
-										width={20}
-									/>
-								}
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-							>
-								Sign up with Google
-							</Button>
-							<Button
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-								p={2}
-							>
-								<img
-									src="/assets/imgs/template/popup/facebook.svg"
-									alt="Facebook"
-									width={20}
-								/>
-							</Button>
-							<Button
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-								p={2}
-							>
-								<img
-									src="/assets/imgs/template/popup/apple.svg"
-									alt="Apple"
-									width={20}
-								/>
-							</Button>
-						</HStack>
+
 						<Text color={subTextColor} fontSize="sm" textAlign="center" mt={8}>
 							Don't have an account?{" "}
 							<ChakraLink as={NextLink} href="/register" color={textColor}>
@@ -167,6 +247,47 @@ export default function Login() {
 					</VStack>
 				</Box>
 			</Flex>
+
+			{/* Forgot Password Modal */}
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent bg={cardBg}>
+					<ModalHeader color={textColor}>Forgot Password</ModalHeader>
+					<ModalCloseButton color={textColor} />
+					<form onSubmit={handleForgotPassword}>
+						<ModalBody>
+							<Text color={subTextColor} mb={4}>
+								Enter your email address and we'll send you instructions to reset your password.
+							</Text>
+							<Input
+								placeholder="Enter your email"
+								type="email"
+								value={forgotEmail}
+								onChange={(e) => setForgotEmail(e.target.value)}
+								variant="filled"
+								bg={useColorModeValue("gray.100", "gray.700")}
+								color={textColor}
+								required
+							/>
+						</ModalBody>
+
+						<ModalFooter>
+							<Button variant="ghost" mr={3} onClick={onClose}>
+								Cancel
+							</Button>
+							<Button
+								colorScheme="red"
+								bg={btnBg}
+								color={btnColor}
+								type="submit"
+								isLoading={forgotPasswordMutation.isPending}
+							>
+								Send Reset Link
+							</Button>
+						</ModalFooter>
+					</form>
+				</ModalContent>
+			</Modal>
 		</Layout>
 	);
 }

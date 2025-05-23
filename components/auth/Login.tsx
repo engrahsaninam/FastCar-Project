@@ -21,12 +21,45 @@ import {
 import { useState } from 'react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import Link from 'next/link'
+// import { useLogin } from '@/services/auth/useAuth'
+import { useLogin } from '@/services/auth/useAuth'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const toast = useToast()
+  const { mutate, isPending } = useLogin();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    mutate(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          // Example: Store token and redirect
+          console.log(data)
+          localStorage.setItem('token', data.token);
+          toast({
+            title: 'Login successful',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Login failed',
+            description: error?.response?.data?.message || 'An error occurred.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+        },
+      }
+    );
+  };
 
   // Color mode values
   const bgColor = useColorModeValue('white', 'gray.800')
@@ -37,17 +70,17 @@ const Login = () => {
   const inputHoverBorder = useColorModeValue('gray.400', 'gray.500')
   const inputFocusBorder = useColorModeValue('red.500', 'red.400')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Add your login logic here
-    toast({
-      title: 'Login attempt',
-      description: 'Login functionality to be implemented',
-      status: 'info',
-      duration: 3000,
-      isClosable: true,
-    })
-  }
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   // Add your login logic here
+  //   toast({
+  //     title: 'Login attempt',
+  //     description: 'Login functionality to be implemented',
+  //     status: 'info',
+  //     duration: 3000,
+  //     isClosable: true,
+  //   })
+  // }
 
   return (
     <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '0', sm: '8' }}>

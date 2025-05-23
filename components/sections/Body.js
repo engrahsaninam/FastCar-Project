@@ -1103,7 +1103,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
           display={["none", "none", "flex"]}
           flexDir="column"
           w="full"
-          bg={bg}
+          // bg={bg}
         >
           <Flex flexWrap="wrap" alignItems="center" gap="2" mb="2">
             {/* Filter button - always visible */}

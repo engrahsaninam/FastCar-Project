@@ -15,28 +15,14 @@ import Search1 from "@/components/sections/Search1"
 import Services1 from "@/components/sections/Services1"
 import Testimonials from "@/components/sections/Testimonials"
 import WhyUs1 from "@/components/sections/WhyUs1"
-export default function Home() {
 
+export default function Home() {
 	return (
-		<>
-			<Layout headerStyle={1} footerStyle={1}>
-				<Hero1 />
-				{/* <Search1 /> */}
-				{/* <Brand1 /> */}
-				<CarsListing1 />
-				<Cta1 />
-				{/* <Categories1 /> */}
-				{/* <WhyUs1 /> */}
-				<Cta2 />
-				{/* <CarsListing2 /> */}
-				{/* <Cta3 /> */}
-				{/* <Services1 /> */}
-				{/* <Banners /> */}
-				{/* <Testimonials /> */}
-				{/* <CarReview1 /> */}
-				{/* <Blog1 /> */}
-				{/* <App /> */}
-			</Layout>
-		</>
+		<Layout headerStyle={1} footerStyle={1}>
+			<Hero1 />
+			<CarsListing1 />
+			<Cta1 />
+			<Cta2 />
+		</Layout>
 	)
 }

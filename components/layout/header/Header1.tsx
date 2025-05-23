@@ -26,6 +26,8 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef } from 'react';
+import { UserAvatar } from '@/components/UserAvatar';
+import { useAuth } from '@/context/AuthContext';
 
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
@@ -65,6 +67,7 @@ export default function Header1({
 	const router = useRouter();
 	const isMainPage = pathname === '/';
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { user } = useAuth();
 
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [showSignupModal, setShowSignupModal] = useState(false);
@@ -236,6 +239,20 @@ export default function Header1({
 											zIndex={100}
 											width="300px"
 										>
+											{user && (
+												<HStack w="full" mb={2} spacing={3} padding={2}>
+													<UserAvatar size="sm" />
+													<VStack align="start" spacing={0}>
+														<HStack w="full" mb={2} spacing={3} display='flex' justifyContent='space-between'>
+															<Text fontWeight="bold" fontSize="md">{user.username}</Text>
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg>
+														</HStack>
+
+
+														<Text color="gray.500" fontSize="xs" noOfLines={1}>{user.email}</Text>
+													</VStack>
+												</HStack>
+											)}
 											<VStack align="start" spacing={0} p={4}>
 												{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
 											<MenuItemLink label="Last searches" Icon={Clock} /> */}
@@ -286,7 +303,7 @@ export default function Header1({
 														_hover={{ bg: 'red.600' }}
 														color="white"
 														width="full"
-														leftIcon={<User size={20} />}
+														// leftIcon={<UserAvatar size="sm" />}
 														fontSize="15px"
 														fontWeight="medium"
 													>

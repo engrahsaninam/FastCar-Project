@@ -12,11 +12,16 @@ import {
 	Link as ChakraLink,
 	IconButton,
 	HStack,
+	useToast,
 } from "@chakra-ui/react";
 import { Sun, Moon } from "lucide-react";
 import { useColorMode } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Layout from "@/components/layout/Layout";
+import { useRegister } from "@/services/auth/useAuth";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import GoogleSignIn from "@/components/GoogleSignIn";
 
 export default function Register() {
 	const bg = useColorModeValue("gray.50", "gray.900");
@@ -27,6 +32,73 @@ export default function Register() {
 	const btnBg = useColorModeValue("red.500", "red.400");
 	const btnColor = useColorModeValue("white", "gray.900");
 	const { colorMode, toggleColorMode } = useColorMode();
+	const toast = useToast();
+	const router = useRouter();
+
+	const [formData, setFormData] = useState({
+		username: "",
+		email: "",
+		password: "",
+		confirm_password: "",
+		terms: false,
+	});
+
+	const registerMutation = useRegister();
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value, type, checked } = e.target;
+		setFormData(prev => ({
+			...prev,
+			[name]: type === 'checkbox' ? checked : value
+		}));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		if (formData.password !== formData.confirm_password) {
+			toast({
+				title: "Error",
+				description: "Passwords do not match",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		if (!formData.terms) {
+			toast({
+				title: "Error",
+				description: "Please accept the terms and conditions",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		try {
+			await registerMutation.mutateAsync(formData);
+			toast({
+				title: "Success",
+				description: "Registration successful!",
+				status: "success",
+				duration: 3000,
+				isClosable: true,
+			});
+			router.push("/login");
+		} catch (error: any) {
+			console.log(error)
+			toast({
+				title: "Error",
+				description: error.response?.data?.detail || "Registration failed",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+	};
 
 	return (
 		<Layout footerStyle={1}>
@@ -69,15 +141,21 @@ export default function Register() {
 								Create an Account
 							</Heading>
 						</Box>
-						<VStack as="form" spacing={4} align="stretch">
+						<VStack as="form" spacing={4} align="stretch" onSubmit={handleSubmit}>
 							<Input
-								placeholder="Email / Username"
+								name="username"
+								value={formData.username}
+								onChange={handleInputChange}
+								placeholder="Username"
 								type="text"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
 								color={textColor}
 							/>
 							<Input
+								name="email"
+								value={formData.email}
+								onChange={handleInputChange}
 								placeholder="Email"
 								type="email"
 								variant="filled"
@@ -85,6 +163,9 @@ export default function Register() {
 								color={textColor}
 							/>
 							<Input
+								name="password"
+								value={formData.password}
+								onChange={handleInputChange}
 								placeholder="Password"
 								type="password"
 								variant="filled"
@@ -92,6 +173,9 @@ export default function Register() {
 								color={textColor}
 							/>
 							<Input
+								name="confirm_password"
+								value={formData.confirm_password}
+								onChange={handleInputChange}
 								placeholder="Confirm Password"
 								type="password"
 								variant="filled"
@@ -99,7 +183,15 @@ export default function Register() {
 								color={textColor}
 							/>
 							<Flex align="center">
-								<Checkbox colorScheme="" color={subTextColor} mr={2} border='gray'>
+								<Checkbox
+									name="terms"
+									isChecked={formData.terms}
+									onChange={handleInputChange}
+									colorScheme=""
+									color={subTextColor}
+									mr={2}
+									border='gray'
+								>
 									I agree to terms and conditions
 								</Checkbox>
 							</Flex>
@@ -109,6 +201,7 @@ export default function Register() {
 								color={btnColor}
 								w="full"
 								type="submit"
+								isLoading={registerMutation.isPending}
 								rightIcon={
 									<svg width={16} height={16} viewBox="0 0 16 16" fill="none">
 										<path
@@ -128,47 +221,7 @@ export default function Register() {
 							Or connect with your social account
 						</Text>
 						<HStack spacing={4} justify="center">
-							<Button
-								leftIcon={
-									<img
-										src="/assets/imgs/template/popup/google.svg"
-										alt="Google"
-										width={20}
-									/>
-								}
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-							>
-								Sign up with Google
-							</Button>
-							<Button
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-								p={2}
-							>
-								<img
-									src="/assets/imgs/template/popup/facebook.svg"
-									alt="Facebook"
-									width={20}
-								/>
-							</Button>
-							<Button
-								variant="outline"
-								colorScheme="gray"
-								as={NextLink}
-								href="#"
-								p={2}
-							>
-								<img
-									src="/assets/imgs/template/popup/apple.svg"
-									alt="Apple"
-									width={20}
-								/>
-							</Button>
+							<GoogleSignIn />
 						</HStack>
 						<Text color={subTextColor} fontSize="sm" textAlign="center" mt={8}>
 							Already have an account?{" "}

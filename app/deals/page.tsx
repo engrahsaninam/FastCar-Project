@@ -139,6 +139,7 @@ export default function CarsList3() {
 									// backgroundPosition: "center",
 									backgroundRepeat: "no-repeat",
 									position: "relative",
+									border: "none",
 									// zIndex: 1,
 								}}
 							>
@@ -158,14 +159,14 @@ export default function CarsList3() {
 								</div>
 							</section>
 							<section
-								className="section-box pt-50  dark-mode"
+								className="section-box pt-50 dark-mode"
 								style={{
 									backgroundImage: "url('/best-dark.svg')",
 									backgroundSize: "cover",
-									// backgroundPosition: "center",
 									backgroundRepeat: "no-repeat",
 									position: "relative",
-									// zIndex: 1,
+									border: "none",
+									boxShadow: "none",
 								}}
 							>
 								<div style={{
@@ -676,7 +677,7 @@ export default function CarsList3() {
 										</div>
 									</div>
 								</div>
-								
+
 							</section>
 						</div >
 					</Container>

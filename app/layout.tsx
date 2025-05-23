@@ -1,11 +1,13 @@
 // app/layout.tsx
 import type { Metadata } from "next"
 import "@/node_modules/react-modal-video/css/modal-video.css"
-import "/public/assets/css/main.css" 
-import "/public/assets/css/globals.css" 
+import "/public/assets/css/main.css"
+import "/public/assets/css/globals.css"
 import { Providers } from './provider'
 import logo from "@/public/assets/imgs/template/logo-d.svg"
 import { appWithTranslation } from 'next-i18next';
+import ReactQueryProvider from "@/services/ReactQueryProvider"
+import { AuthProvider } from "@/context/AuthContext"
 
 export const metadata: Metadata = {
   title: "Fast4Car - #1 Import Car Marketplace",
@@ -68,7 +70,11 @@ export default function RootLayout({
       </head>
       <body className={`font-euclid`}  >
         <Providers>
-          {children}
+          <ReactQueryProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ReactQueryProvider>
         </Providers>
       </body>
     </html>
