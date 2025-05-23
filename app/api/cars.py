@@ -2,15 +2,156 @@
 from fastapi import APIRouter, Query, HTTPException, Depends, Request
 from app.api.auth import get_current_user
 from app.models.user import User
+from app.models.car import Car
 from app.database.sqlite import get_db
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from typing import Optional, List
 import json
+import logging
+import time
+from sqlalchemy import and_, or_
 
-from app.database.mysql import execute_query
-from app.schemas.car import CarFilterParams, CarResponse, PaginatedCarResponse
+from app.schemas.car import CarResponse, PaginatedCarResponse
+from app.utils.outlier_detection import detect_outliers
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+def car_to_dict(car: Car) -> dict:
+    """Convert a Car model instance to a dictionary for CarResponse"""
+    return {
+        "id": car.id,
+        "brand": car.brand,
+        "model": car.model,
+        "version": car.version,
+        "price": car.price,
+        "mileage": car.mileage,
+        "age": car.age,
+        "power": car.power,
+        "gear": car.gear,
+        "fuel": car.fuel,
+        "country": car.country,
+        "zipcode": car.zipcode,
+        "images": car.images,
+        "url": car.url,
+        "attrs": car.attrs,
+        "year": car.year
+    }
+
+@router.get("/best-deals", response_model=PaginatedCarResponse)
+async def get_best_deals(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    remove_outliers: bool = True,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get paginated list of best deals (cars with price below average for brand and model, with fallback to cheapest cars)"""
+    logger.info(f"Fetching best deals: page={page}, limit={limit}, remove_outliers={remove_outliers}")
+    start_time = time.time()
+
+    offset = (page - 1) * limit
+
+    # Primary query: Cars with price below average for brand and model
+    avg_prices = db.query(
+        Car.brand,
+        Car.model,
+        func.avg(Car.price).label('avg_price'),
+        func.count().label('group_count')
+    ).filter(
+        Car.price.isnot(None),
+        Car.brand.isnot(None),
+        Car.model.isnot(None)
+    ).group_by(Car.brand, Car.model).subquery()
+
+    primary_query = db.query(Car).join(
+        avg_prices,
+        and_(Car.brand == avg_prices.c.brand, Car.model == avg_prices.c.model)
+    ).filter(
+        Car.price < avg_prices.c.avg_price,
+        Car.price.isnot(None)
+    ).order_by((avg_prices.c.avg_price - Car.price).desc())
+
+    # Count total
+    total = primary_query.count()
+    logger.info(f"Primary query found {total} best deals")
+
+    # Fetch cars
+    cars = primary_query.offset(offset).limit(limit).all()
+
+    # Apply outlier detection
+    if remove_outliers and cars:
+        car_dicts = [car_to_dict(car) for car in cars]
+        clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
+        cars = [car for car in cars if car_to_dict(car) in clean_data]
+        total = len(clean_data) if total > len(clean_data) else total
+
+    # Fallback: Cheapest cars by brand and model (below median)
+    if not cars:
+        logger.info("No cars found with primary query, using fallback")
+        median_prices = db.query(
+            Car.brand,
+            Car.model,
+            func.min(Car.price).label('min_price'),
+            func.max(Car.price).label('max_price'),
+            ((func.min(Car.price) + func.max(Car.price)) / 2).label('price_threshold'),
+            func.count().label('group_count')
+        ).filter(
+            Car.price.isnot(None),
+            Car.brand.isnot(None),
+            Car.model.isnot(None)
+        ).group_by(Car.brand, Car.model).having(
+            func.count() > 1
+        ).subquery()
+
+        fallback_query = db.query(Car).join(
+            median_prices,
+            and_(Car.brand == median_prices.c.brand, Car.model == median_prices.c.model)
+        ).filter(
+            Car.price <= median_prices.c.price_threshold,
+            Car.price.isnot(None)
+        ).order_by(Car.price.asc())
+
+        total = fallback_query.count()
+        logger.info(f"Fallback query found {total} cars")
+        cars = fallback_query.offset(offset).limit(limit).all()
+
+        if remove_outliers and cars:
+            car_dicts = [car_to_dict(car) for car in cars]
+            clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
+            cars = [car for car in cars if car_to_dict(car) in clean_data]
+            total = len(clean_data) if total > len(clean_data) else total
+
+    # Log query time
+    query_time = time.time() - start_time
+    logger.info(f"Best deals query took {query_time:.2f} seconds")
+
+    # Save search to history if user is logged in
+    if current_user:
+        from app.models.user import SearchHistory
+        search_params = {
+            "page": page,
+            "limit": limit,
+            "remove_outliers": remove_outliers
+        }
+        search_history = SearchHistory(
+            user_id=current_user.id,
+            search_params=json.dumps(search_params)
+        )
+        db.add(search_history)
+        db.commit()
+
+    return {
+        "data": [CarResponse(**car_to_dict(car)) for car in cars],
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit if limit > 0 else 0
+    }
 
 @router.get("/", response_model=PaginatedCarResponse)
 async def get_cars(
@@ -27,76 +168,77 @@ async def get_cars(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
+    current_user: Optional[User] = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """Get paginated list of cars with filters"""
-    query = "SELECT * FROM cars WHERE 1=1"
-    count_query = "SELECT COUNT(*) as total FROM cars WHERE 1=1"
-    params = []
-    
+    start_time = time.time()
+    query = db.query(Car)
+    filters = []
+
     if brand:
-        query += " AND brand = %s"
-        count_query += " AND brand = %s"
-        params.append(brand)
-    
+        filters.append(Car.brand == brand)
     if model:
-        query += " AND model = %s"
-        count_query += " AND model = %s"
-        params.append(model)
-        
+        filters.append(Car.model == model)
     if min_price:
-        query += " AND price >= %s"
-        count_query += " AND price >= %s"
-        params.append(min_price)
-        
+        filters.append(Car.price >= min_price)
     if max_price:
-        query += " AND price <= %s"
-        count_query += " AND price <= %s"
-        params.append(max_price)
-        
+        filters.append(Car.price <= max_price)
     if min_year:
-        query += " AND FLOOR(age) >= %s"
-        count_query += " AND FLOOR(age) >= %s"
-        params.append(min_year)
-        
+        filters.append(Car.year >= min_year)
     if max_year:
-        query += " AND FLOOR(age) <= %s"
-        count_query += " AND FLOOR(age) <= %s"
-        params.append(max_year)
-        
+        filters.append(Car.year <= max_year)
     if min_mileage is not None:
-        query += " AND mileage >= %s"
-        count_query += " AND mileage >= %s"
-        params.append(min_mileage)
-        
+        filters.append(Car.mileage >= min_mileage)
     if max_mileage is not None:
-        query += " AND mileage <= %s"
-        count_query += " AND mileage <= %s"
-        params.append(max_mileage)
-        
+        filters.append(Car.mileage <= max_mileage)
     if fuel:
-        query += " AND fuel = %s"
-        count_query += " AND fuel = %s"
-        params.append(fuel)
-        
+        filters.append(Car.fuel == fuel)
     if gear:
-        query += " AND gear = %s"
-        count_query += " AND gear = %s"
-        params.append(gear)
-    
-    # Add pagination to the main query
+        filters.append(Car.gear == gear)
+
+    query = query.filter(*filters)
+    total = query.count()
+
     offset = (page - 1) * limit
-    query += " LIMIT %s OFFSET %s"
-    params.extend([limit, offset])
-    
-    # Execute count query to get total
-    count_result = await execute_query(count_query, params[:-2], remove_outliers=False)
-    total = count_result[0]["total"] if count_result else 0
-    
-    # Execute main query with pagination
-    cars = await execute_query(query, params, remove_outliers=remove_outliers)
-    
+    cars = query.offset(offset).limit(limit).all()
+
+    if remove_outliers and cars:
+        car_dicts = [car_to_dict(car) for car in cars]
+        clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
+        cars = [car for car in cars if car_to_dict(car) in clean_data]
+        total = len(clean_data) if total > len(clean_data) else total
+
+    query_time = time.time() - start_time
+    logger.info(f"Get cars query took {query_time:.2f} seconds")
+
+    # Save search to history if user is logged in
+    if current_user:
+        from app.models.user import SearchHistory
+        search_params = {
+            "brand": brand,
+            "model": model,
+            "min_price": min_price,
+            "max_price": max_price,
+            "min_year": min_year,
+            "max_year": max_year,
+            "min_mileage": min_mileage,
+            "max_mileage": max_mileage,
+            "fuel": fuel,
+            "gear": gear,
+            "page": page,
+            "limit": limit,
+            "remove_outliers": remove_outliers
+        }
+        search_history = SearchHistory(
+            user_id=current_user.id,
+            search_params=json.dumps(search_params)
+        )
+        db.add(search_history)
+        db.commit()
+
     return {
-        "data": [CarResponse(**car) for car in cars],
+        "data": [CarResponse(**car_to_dict(car)) for car in cars],
         "total": total,
         "page": page,
         "limit": limit,
@@ -118,15 +260,16 @@ async def search_cars(
     gear: Optional[str] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
+    remove_outliers: bool = True,
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db),
-    remove_outliers: bool = True,
 ):
     """Search cars with all filters and save to history if user is logged in"""
     search_params = dict(request.query_params)
     result = await get_cars(
         brand, model, min_price, max_price, min_year, max_year, 
-        min_mileage, max_mileage, fuel, gear, page, limit, remove_outliers
+        min_mileage, max_mileage, fuel, gear, page, limit, remove_outliers, 
+        current_user, db
     )
     
     if current_user:
@@ -140,55 +283,69 @@ async def search_cars(
     
     return result
 
-@router.get("/{car_id}", response_model=CarResponse)
-async def get_car(car_id: str):
-    """Get a single car by ID"""
-    query = "SELECT * FROM cars WHERE id = %s"
-    result = await execute_query(query, [car_id], remove_outliers=False)
-    
-    if not result:
-        raise HTTPException(status_code=404, detail="Car not found")
-    
-    return CarResponse(**result[0])
-
 @router.get("/brands/", response_model=List[str])
-async def get_brands():
+async def get_brands(db: Session = Depends(get_db)):
     """Get list of all car brands"""
-    query = "SELECT DISTINCT brand FROM cars ORDER BY brand"
-    result = await execute_query(query, remove_outliers=False)
-    return [brand["brand"] for brand in result]
+    start_time = time.time()
+    brands = db.query(Car.brand).distinct().order_by(Car.brand).all()
+    query_time = time.time() - start_time
+    logger.info(f"Get brands query took {query_time:.2f} seconds")
+    return [brand[0] for brand in brands if brand[0]]
 
 @router.get("/models/", response_model=List[str])
-async def get_models(brand: Optional[str] = None):
+async def get_models(brand: Optional[str] = None, db: Session = Depends(get_db)):
     """Get list of car models, optionally filtered by brand"""
+    start_time = time.time()
+    query = db.query(Car.model).distinct().order_by(Car.model)
     if brand:
-        query = "SELECT DISTINCT model FROM cars WHERE brand = %s ORDER BY model"
-        result = await execute_query(query, [brand], remove_outliers=False)
-    else:
-        query = "SELECT DISTINCT model FROM cars ORDER BY model"
-        result = await execute_query(query, remove_outliers=False)
-    return [model["model"] for model in result]
+        query = query.filter(Car.brand == brand)
+    models = query.all()
+    query_time = time.time() - start_time
+    logger.info(f"Get models query took {query_time:.2f} seconds")
+    return [model[0] for model in models if model[0]]
 
-@router.get("/{car_id}/similar", response_model=List[CarResponse])
-async def get_similar_cars(car_id: str, limit: int = Query(5, ge=1, le=20), remove_outliers: bool = True):
-    """Get similar cars based on a specific car"""
-    car_query = "SELECT * FROM cars WHERE id = %s"
-    car_result = await execute_query(car_query, [car_id], remove_outliers=False)
+@router.get("/{car_id}", response_model=CarResponse)
+async def get_car(car_id: str, db: Session = Depends(get_db)):
+    """Get a single car by ID"""
+    start_time = time.time()
+    car = db.query(Car).filter(Car.id == car_id).first()
     
-    if not car_result:
+    if not car:
         raise HTTPException(status_code=404, detail="Car not found")
     
-    car = car_result[0]
+    query_time = time.time() - start_time
+    logger.info(f"Get car query took {query_time:.2f} seconds")
+    return CarResponse(**car_to_dict(car))
+
+@router.get("/{car_id}/similar", response_model=List[CarResponse])
+async def get_similar_cars(
+    car_id: str, 
+    limit: int = Query(5, ge=1, le=20), 
+    remove_outliers: bool = True, 
+    db: Session = Depends(get_db)
+):
+    """Get similar cars based on a specific car"""
+    start_time = time.time()
+    car = db.query(Car).filter(Car.id == car_id).first()
     
-    similar_query = """
-    SELECT * FROM cars 
-    WHERE brand = %s 
-        AND model = %s 
-        AND id != %s 
-    ORDER BY ABS(price - %s) 
-    """
-    params = [car['brand'], car['model'], car_id, car['price']]
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
     
-    similar_cars = await execute_query(similar_query, params, remove_outliers=remove_outliers)
-    
-    return [CarResponse(**similar_car) for similar_car in similar_cars[:limit]]
+    query = db.query(Car).filter(
+        Car.brand == car.brand,
+        Car.model == car.model,
+        Car.id != car_id
+    ).order_by(
+        func.abs(Car.price - car.price)
+    )
+
+    cars = query.limit(limit).all()
+
+    if remove_outliers and cars:
+        car_dicts = [car_to_dict(c) for c in cars]
+        clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
+        cars = [c for c in cars if car_to_dict(c) in clean_data]
+
+    query_time = time.time() - start_time
+    logger.info(f"Get similar cars query took {query_time:.2f} seconds")
+    return [CarResponse(**car_to_dict(c)) for c in cars]

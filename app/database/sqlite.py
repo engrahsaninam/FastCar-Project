@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import SQLITE_DB
+from sqlalchemy.sql import text
 
 SQLALCHEMY_DATABASE_URL = SQLITE_DB
 
@@ -24,3 +25,9 @@ def get_db():
 def create_tables():
     """Create all tables defined in models"""
     Base.metadata.create_all(bind=engine)
+
+def is_cars_table_empty():
+    """Check if the cars table is empty"""
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT COUNT(*) as count FROM cars")).fetchone()
+        return result[0] == 0

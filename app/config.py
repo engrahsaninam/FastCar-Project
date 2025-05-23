@@ -29,7 +29,7 @@ SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "")
 SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "EUCar Support")
 
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your-google-client-id")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "46662326432-69uij1vn69d3f8987qgtit02vmp4ndcg.apps.googleusercontent.com")
 
 # API settings
 API_V1_PREFIX = "/api"

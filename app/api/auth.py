@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from google.auth.transport import requests
 from google.oauth2 import id_token
 import secrets
+import logging
 
 from app.database.sqlite import get_db
 from app.models.user import User, PasswordReset
@@ -19,7 +20,8 @@ from app.schemas.user import (
 )
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token", auto_error=False)
+logger = logging.getLogger(__name__)
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
@@ -39,27 +41,23 @@ def authenticate_user(db: Session, email: str, password: str):
     return user
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    if not token:
+        return None
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise credentials_exception
+            return None
         token_data = TokenData(email=email)
     except JWTError:
-        raise credentials_exception
+        return None
     user = get_user_by_email(db, email=token_data.email)
     if user is None:
-        raise credentials_exception
+        return None
     return user
 
 @router.post("/register", response_model=UserResponse)
 async def register(user: UserSignup, db: Session = Depends(get_db)):
-    # Check for existing email or username
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
     if get_user_by_username(db, user.username):
@@ -77,10 +75,9 @@ async def register(user: UserSignup, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-@router.post("/google-signup", response_model=UserResponse)
+@router.post("/google-signup", response_model=Token)
 async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)):
     try:
-        # Verify Google ID token
         idinfo = id_token.verify_oauth2_token(
             google_data.id_token,
             requests.Request(),
@@ -89,20 +86,20 @@ async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)
         google_id = idinfo['sub']
         email = idinfo['email']
         username = idinfo.get('name', email.split('@')[0])
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid Google token")
+        logger.info(f"Google Sign-In: Valid token for email={email}, google_id={google_id}")
+    except ValueError as e:
+        logger.error(f"Google Sign-In: Invalid token - {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid Google token: {str(e)}")
 
-    # Check if user exists
     user = get_user_by_google_id(db, google_id) or get_user_by_email(db, email)
     if user:
         if not user.google_id:
-            # Link existing account to Google
             user.google_id = google_id
             db.commit()
             db.refresh(user)
-        return user
+        access_token = create_access_token(data={"sub": user.email})
+        return {"access_token": access_token, "token_type": "bearer"}
 
-    # Create new user
     while get_user_by_username(db, username):
         username = f"{username}{secrets.randbelow(1000)}"
     
@@ -115,7 +112,9 @@ async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    access_token = create_access_token(data={"sub": db_user.email})
+    logger.info(f"Google Sign-In: Created new user email={email}, username={username}")
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)
 async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
@@ -169,7 +168,7 @@ async def forgot_password(
     db: Session = Depends(get_db)
 ):
     user = get_user_by_email(db, request.email)
-    if not user or user.google_id:  # Don't allow password reset for Google-only users
+    if not user or user.google_id:
         return {"message": "If your email is registered, you will receive a password reset link"}
     
     token = secrets.token_urlsafe(32)
