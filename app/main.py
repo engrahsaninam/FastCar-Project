@@ -6,11 +6,12 @@ import logging
 import asyncio
 from app.database.mysql import execute_query, optimize_database
 from app.database.sqlite import get_db, create_tables, is_cars_table_empty
+from app.database.migrations import apply_migrations
 from app.models.car import Car
 from sqlalchemy.orm import Session
 
 # Import routers
-from app.api import cars, auth, users, filters
+from app.api import cars, auth, users, filters, purchase
 
 # Configure simple logging
 logging.basicConfig(
@@ -40,6 +41,7 @@ app.include_router(cars.router, prefix="/api/cars", tags=["cars"])
 app.include_router(filters.router, prefix="/api/filters", tags=["filters"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
+app.include_router(purchase.router, prefix="/api/purchase", tags=["purchase"])
 
 async def sync_mysql_to_sqlite(db: Session):
     """Fetch 50,000 cars from MySQL and store in SQLite if cars table is empty"""
@@ -94,6 +96,9 @@ async def sync_mysql_to_sqlite(db: Session):
 async def startup_event():
     """Initialize application on startup."""
     logger.info("Starting EUCar API application")
+
+    # Apply database migrations
+    apply_migrations()
     
     # Create SQLite tables for user data and cars
     create_tables()

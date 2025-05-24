@@ -1,18 +1,21 @@
 #app/models/user.py 
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.sql import func
-from app.database.sqlite import Base
+from app.database.base import Base
+import json
 
 class User(Base):
     __tablename__ = "users"
-
+    
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=True)  # Nullable for Google users
-    google_id = Column(String, unique=True, nullable=True)  # For Google OAuth
+    hashed_password = Column(String, nullable=True)
+    google_id = Column(String, unique=True, nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    is_admin = Column(Boolean, default=False)  # Added for admin access
+    created_at = Column(DateTime, default=func.now())
+
 
 class SavedCar(Base):
     __tablename__ = "saved_cars"
@@ -24,18 +27,26 @@ class SavedCar(Base):
 
 class SearchHistory(Base):
     __tablename__ = "search_history"
-
+    
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, index=True)
-    search_params = Column(String)  # JSON string
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user_id = Column(Integer, index=True, nullable=False)
+    search_params = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "search_params": json.loads(self.search_params),
+            "created_at": self.created_at.isoformat()
+        }
 
 class PasswordReset(Base):
     __tablename__ = "password_resets"
-
+    
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, index=True)
-    token = Column(String, unique=True, index=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    expires_at = Column(DateTime(timezone=True))
+    email = Column(String, index=True, nullable=False)
+    token = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=func.now())

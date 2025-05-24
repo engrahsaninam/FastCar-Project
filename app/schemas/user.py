@@ -12,6 +12,7 @@ class UserSignup(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
     confirm_password: str = Field(..., min_length=8)
+    is_admin: Optional[bool] = False  # Added for admin registration
 
     @validator('confirm_password')
     def passwords_match(cls, v, values, **kwargs):
@@ -31,6 +32,7 @@ class UserResponse(UserBase):
     id: int
     is_active: bool
     created_at: datetime
+    is_admin: bool  # Added to reflect admin status
 
     class Config:
         from_attributes = True

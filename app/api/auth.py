@@ -57,7 +57,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 @router.post("/register", response_model=UserResponse)
-async def register(user: UserSignup, db: Session = Depends(get_db)):
+async def register(
+    user: UserSignup,
+    db: Session = Depends(get_db)
+):
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
     if get_user_by_username(db, user.username):
@@ -68,11 +71,13 @@ async def register(user: UserSignup, db: Session = Depends(get_db)):
         username=user.username,
         email=user.email,
         hashed_password=hashed_password,
-        is_active=True
+        is_active=True,
+        is_admin=user.is_admin
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    logger.info(f"Registered user: email={user.email}, is_admin={user.is_admin}")
     return db_user
 
 @router.post("/google-signup", response_model=Token)
@@ -107,13 +112,14 @@ async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)
         username=username,
         email=email,
         google_id=google_id,
-        is_active=True
+        is_active=True,
+        is_admin=False  # Explicitly set for Google Sign-In
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     access_token = create_access_token(data={"sub": db_user.email})
-    logger.info(f"Google Sign-In: Created new user email={email}, username={username}")
+    logger.info(f"Google Sign-In: Created new user email={email}, username={username}, is_admin=False")
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)
