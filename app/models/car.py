@@ -1,6 +1,6 @@
 #app/models/car.py
 from sqlalchemy import Column, String, Float, Integer, JSON, Text
-from app.database.sqlite import Base
+from app.database.base import Base
 
 class Car(Base):
     __tablename__ = "cars"
@@ -17,7 +17,12 @@ class Car(Base):
     fuel = Column(String, nullable=True)
     country = Column(String, nullable=True)
     zipcode = Column(String, nullable=True)
-    images = Column(JSON, nullable=True)  # Store as JSON string
+    images = Column(JSON, nullable=True)
     url = Column(Text, nullable=True)
-    attrs = Column(JSON, nullable=True)  # Store as JSON string
+    attrs = Column(JSON, nullable=True)
     year = Column(Integer, nullable=True)
+    CO2_emissions = Column(String, nullable=True)  # e.g., "158 g"
+    engine_size = Column(String, nullable=True)    # e.g., "1598 cc"
+    body_type = Column(String, nullable=True)      # e.g., "Compact"
+    colour = Column(String, nullable=True)         # e.g., "Grey"
+    features = Column(JSON, nullable=True)         # e.g., {"Comfort & Convenience": [...], ...}

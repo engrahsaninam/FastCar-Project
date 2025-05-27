@@ -7,6 +7,7 @@ import asyncio
 from app.database.mysql import execute_query, optimize_database
 from app.database.sqlite import get_db, create_tables, is_cars_table_empty
 from app.database.migrations import apply_migrations
+from app.scripts.populate_car_data import populate_dummy_data
 from app.models.car import Car
 from sqlalchemy.orm import Session
 
@@ -102,6 +103,9 @@ async def startup_event():
     
     # Create SQLite tables for user data and cars
     create_tables()
+
+    # Populate dummy data for new car columns
+    populate_dummy_data()
     
     # Sync MySQL cars to SQLite
     db_gen = get_db()

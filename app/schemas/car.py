@@ -17,6 +17,9 @@ class CarFilterParams(BaseModel):
     vat_deduction: Optional[bool] = None
     power_min: Optional[int] = None
     power_max: Optional[int] = None
+    body_type: Optional[str] = None  # New: Filter by body type
+    colour: Optional[str] = None     # New: Filter by colour
+    features: Optional[List[str]] = None  # New: Filter by features (e.g., ["Air conditioning"])
 
 class CarResponse(BaseModel):
     id: str
@@ -35,27 +38,34 @@ class CarResponse(BaseModel):
     url: Optional[str] = None
     attrs: Optional[Dict[str, Any]] = None
     year: int = Field(None)
+    CO2_emissions: Optional[str] = None
+    engine_size: Optional[str] = None
+    body_type: Optional[str] = None
+    colour: Optional[str] = None
+    features: Optional[Dict[str, List[str]]] = None
     
     class Config:
         from_attributes = True
     
     def __init__(self, **data):
-        # Convert images from JSON string if needed
         if isinstance(data.get('images'), str):
             try:
                 data['images'] = json.loads(data['images'])
             except:
                 data['images'] = []
                 
-        # Convert attrs from JSON string if needed
         if isinstance(data.get('attrs'), str):
             try:
                 data['attrs'] = json.loads(data['attrs'])
             except:
                 data['attrs'] = {}
                 
-        # Calculate year from age - the age field actually contains the manufacturing year
-        # with a decimal component (e.g., 2021.25 for a car manufactured in 2021, first quarter)
+        if isinstance(data.get('features'), str):
+            try:
+                data['features'] = json.loads(data['features'])
+            except:
+                data['features'] = {}
+                
         if 'age' in data and 'year' not in data:
             data['year'] = int(float(data['age']))
             
