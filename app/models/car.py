@@ -21,8 +21,9 @@ class Car(Base):
     url = Column(Text, nullable=True)
     attrs = Column(JSON, nullable=True)
     year = Column(Integer, nullable=True)
-    CO2_emissions = Column(String, nullable=True)  # e.g., "158 g"
-    engine_size = Column(String, nullable=True)    # e.g., "1598 cc"
-    body_type = Column(String, nullable=True)      # e.g., "Compact"
-    colour = Column(String, nullable=True)         # e.g., "Grey"
-    features = Column(JSON, nullable=True)         # e.g., {"Comfort & Convenience": [...], ...}
+    CO2_emissions = Column(String, nullable=True)
+    engine_size = Column(String, nullable=True)
+    body_type = Column(String, nullable=True)
+    colour = Column(String, nullable=True)
+    features = Column(JSON, nullable=True)
+    total_price = Column(Float, nullable=True)  # New: Total price including charges

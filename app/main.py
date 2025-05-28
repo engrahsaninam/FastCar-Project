@@ -9,10 +9,11 @@ from app.database.sqlite import get_db, create_tables, is_cars_table_empty
 from app.database.migrations import apply_migrations
 from app.scripts.populate_car_data import populate_dummy_data
 from app.models.car import Car
+from app.models.charges import AdditionalCharges
 from sqlalchemy.orm import Session
 
 # Import routers
-from app.api import cars, auth, users, filters, purchase
+from app.api import cars, auth, users, filters, purchase, charges
 
 # Configure simple logging
 logging.basicConfig(
@@ -31,7 +32,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,6 +44,44 @@ app.include_router(filters.router, prefix="/api/filters", tags=["filters"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(purchase.router, prefix="/api/purchase", tags=["purchase"])
+app.include_router(charges.router, prefix="/api/charges", tags=["charges"])
+
+def update_total_prices(db: Session):
+    """Update total_price for all cars based on current charges."""
+    charges = db.query(AdditionalCharges).first()
+    if not charges:
+        logger.error("No charges found, creating default values")
+        charges = AdditionalCharges(
+            vat=22.0,
+            services_total=1111.0,
+            car_inspection=119.0,
+            delivery=0.0,
+            registration_tax=293.0,
+            pre_delivery_prep=699.0,
+            fuel=0.0,
+            extended_warranty=0.0
+        )
+        db.add(charges)
+        db.commit()
+        db.refresh(charges)
+
+    cars = db.query(Car).all()
+    for car in cars:
+        vat_amount = car.price * charges.vat / 100
+        car.total_price = (
+            car.price +
+            vat_amount +
+            charges.services_total +
+            charges.car_inspection +
+            charges.delivery +
+            charges.registration_tax +
+            charges.pre_delivery_prep +
+            charges.fuel +
+            charges.extended_warranty
+        )
+
+    db.commit()
+    logger.info(f"Updated total_price for {len(cars)} cars")
 
 async def sync_mysql_to_sqlite(db: Session):
     """Fetch 50,000 cars from MySQL and store in SQLite if cars table is empty"""
@@ -112,10 +151,12 @@ async def startup_event():
     db = next(db_gen)
     try:
         await sync_mysql_to_sqlite(db)
+        # Update total prices after sync
+        update_total_prices(db)
     finally:
         db.close()
     
-    # Create database indexes for MySQL (for any remaining MySQL queries)
+    # Create database indexes for MySQL
     try:
         await optimize_database()
         logger.info("MySQL database optimization completed")

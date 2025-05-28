@@ -17,9 +17,9 @@ class CarFilterParams(BaseModel):
     vat_deduction: Optional[bool] = None
     power_min: Optional[int] = None
     power_max: Optional[int] = None
-    body_type: Optional[str] = None  # New: Filter by body type
-    colour: Optional[str] = None     # New: Filter by colour
-    features: Optional[List[str]] = None  # New: Filter by features (e.g., ["Air conditioning"])
+    body_type: Optional[str] = None
+    colour: Optional[str] = None
+    features: Optional[List[str]] = None
 
 class CarResponse(BaseModel):
     id: str
@@ -43,6 +43,7 @@ class CarResponse(BaseModel):
     body_type: Optional[str] = None
     colour: Optional[str] = None
     features: Optional[Dict[str, List[str]]] = None
+    total_price: Optional[float] = None  # New: Total price including charges
     
     class Config:
         from_attributes = True
