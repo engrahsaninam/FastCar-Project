@@ -69,6 +69,7 @@ async def get_best_deals(
     if year:
         filters.append(Car.year == year)
 
+    # Subquery to calculate average prices per brand/model
     avg_prices = db.query(
         Car.brand,
         Car.model,
@@ -81,6 +82,7 @@ async def get_best_deals(
         *filters
     ).group_by(Car.brand, Car.model).subquery()
 
+    # Main query: Select cars with price below average, explicitly selecting all columns
     primary_query = db.query(Car).join(
         avg_prices,
         and_(Car.brand == avg_prices.c.brand, Car.model == avg_prices.c.model)
@@ -95,6 +97,13 @@ async def get_best_deals(
 
     cars = primary_query.offset(offset).limit(limit).all()
 
+    # Log raw car data to debug null fields
+    if cars:
+        sample_car = cars[0]
+        logger.debug(f"Sample car from primary query: CO2_emissions={sample_car.CO2_emissions}, "
+                     f"engine_size={sample_car.engine_size}, body_type={sample_car.body_type}, "
+                     f"colour={sample_car.colour}, features={sample_car.features}")
+
     if remove_outliers and cars:
         car_dicts = [car_to_dict(car) for car in cars]
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
@@ -103,11 +112,10 @@ async def get_best_deals(
 
     if not cars:
         logger.info("No cars found with primary query, using fallback")
+        # Fallback: Use median price threshold
         median_prices = db.query(
             Car.brand,
             Car.model,
-            func.min(Car.price).label('min_price'),
-            func.max(Car.price).label('max_price'),
             ((func.min(Car.price) + func.max(Car.price)) / 2).label('price_threshold'),
             func.count().label('group_count')
         ).filter(
@@ -131,6 +139,13 @@ async def get_best_deals(
         total = fallback_query.count()
         logger.info(f"Fallback query found {total} cars")
         cars = fallback_query.offset(offset).limit(limit).all()
+
+        # Log raw car data for fallback
+        if cars:
+            sample_car = cars[0]
+            logger.debug(f"Sample car from fallback query: CO2_emissions={sample_car.CO2_emissions}, "
+                         f"engine_size={sample_car.engine_size}, body_type={sample_car.body_type}, "
+                         f"colour={sample_car.colour}, features={sample_car.features}")
 
         if remove_outliers and cars:
             car_dicts = [car_to_dict(car) for car in cars]
@@ -385,4 +400,6 @@ async def get_similar_cars(
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
         cars = [c for c in cars if car_to_dict(c) in clean_data]
 
+    query_time = time.time() - start_time
+    logger.info(f"Get similar cars query took {query_time:.2f} seconds")
     return [CarResponse(**car_to_dict(c)) for c in cars]
