@@ -2,11 +2,8 @@
 from fastapi import APIRouter, Query, Depends
 from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
-from sqlalchemy import or_, text
+from sqlalchemy.sql import text
 from app.database.sqlite import get_db
-from app.models.car import Car
-from app.utils.outlier_detection import detect_outliers
 import logging
 import time
 
@@ -15,43 +12,54 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_iqr_bounds(db: Session, column: str):
+    """Calculate IQR bounds for outlier detection."""
+    result = db.execute(text(f"""
+        SELECT
+            (SELECT value FROM (
+                SELECT value, ntile(4) OVER (ORDER BY value) as quartile
+                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL)
+            ) WHERE quartile = 1 ORDER BY value DESC LIMIT 1) as q1,
+            (SELECT value FROM (
+                SELECT value, ntile(4) OVER (ORDER BY value) as quartile
+                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL)
+            ) WHERE quartile = 3 ORDER BY value LIMIT 1) as q3
+    """)).fetchone()
+    if result:
+        q1, q3 = result
+        iqr = q3 - q1
+        return q1 - 1.5 * iqr, q3 + 1.5 * iqr
+    return None, None
+
 @router.get("/years", response_model=Dict[str, int])
 async def get_years_range(remove_outliers: bool = True, db: Session = Depends(get_db)):
     start_time = time.time()
     current_year = 2025
 
     if remove_outliers:
-        cars = db.query(Car).filter(Car.year.isnot(None)).all()
-        if not cars:
-            logger.info("No cars found for years with remove_outliers=True")
+        min_bound, max_bound = get_iqr_bounds(db, "year")
+        if min_bound is None:
+            logger.info("No year data for IQR calculation")
             return {"min_year": 2000, "max_year": current_year}
-        
-        car_dicts = [{"year": car.year} for car in cars]
-        clean_data, _ = detect_outliers(car_dicts, numeric_columns=["year"])
-        
-        if not clean_data:
-            logger.info("No clean data after outlier removal for years")
-            return {"min_year": 2000, "max_year": current_year}
-        
-        years = [int(item["year"]) for item in clean_data]
-        min_year = min(years)
-        max_year = max(years)
+        result = db.execute(text("""
+            SELECT MIN(year), MAX(year)
+            FROM cars
+            WHERE year IS NOT NULL AND year BETWEEN :min_bound AND :max_bound
+        """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
-        result = db.query(
-            func.min(Car.year).label('min_year'),
-            func.max(Car.year).label('max_year')
-        ).filter(Car.year.isnot(None)).first()
-        
-        if not result or result.min_year is None:
-            logger.info("No year data found without outlier removal")
-            return {"min_year": 2000, "max_year": current_year}
-        
-        min_year = int(result.min_year)
-        max_year = int(result.max_year)
-    
+        result = db.execute(text("""
+            SELECT MIN(year), MAX(year)
+            FROM cars
+            WHERE year IS NOT NULL
+        """)).fetchone()
+
+    if not result or result[0] is None:
+        logger.info("No year data found")
+        return {"min_year": 2000, "max_year": current_year}
+    min_year, max_year = int(result[0]), int(result[1])
     min_year = max(1950, min_year)
     max_year = min(current_year, max_year)
-    
+
     query_time = time.time() - start_time
     logger.info(f"Get years query took {query_time:.2f} seconds")
     return {"min_year": min_year, "max_year": max_year}
@@ -60,76 +68,69 @@ async def get_years_range(remove_outliers: bool = True, db: Session = Depends(ge
 async def get_price_range(remove_outliers: bool = True, db: Session = Depends(get_db)):
     start_time = time.time()
     if remove_outliers:
-        cars = db.query(Car).filter(Car.price.isnot(None)).all()
-        if not cars:
-            logger.info("No cars found for prices with remove_outliers=True")
+        min_bound, max_bound = get_iqr_bounds(db, "price")
+        if min_bound is None:
+            logger.info("No price data for IQR calculation")
             return {"min_price": 0, "max_price": 100000}
-        
-        car_dicts = [{"price": car.price} for car in cars]
-        clean_data, _ = detect_outliers(car_dicts, numeric_columns=["price"])
-        
-        if not clean_data:
-            logger.info("No clean data after outlier removal for prices")
-            return {"min_price": 0, "max_price": 100000}
-        
-        min_price = min(float(item["price"]) for item in clean_data)
-        max_price = max(float(item["price"]) for item in clean_data)
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get prices query took {query_time:.2f} seconds")
-        return {"min_price": min_price, "max_price": max_price}
+        result = db.execute(text("""
+            SELECT MIN(price), MAX(price)
+            FROM cars
+            WHERE price IS NOT NULL AND price BETWEEN :min_bound AND :max_bound
+        """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
-        result = db.query(
-            func.min(Car.price).label('min_price'),
-            func.max(Car.price).label('max_price')
-        ).filter(Car.price.isnot(None)).first()
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get prices query took {query_time:.2f} seconds")
-        return {
-            "min_price": result.min_price or 0,
-            "max_price": result.max_price or 100000
-        }
+        result = db.execute(text("""
+            SELECT MIN(price), MAX(price)
+            FROM cars
+            WHERE price IS NOT NULL
+        """)).fetchone()
+
+    if not result or result[0] is None:
+        logger.info("No price data found")
+        return {"min_price": 0, "max_price": 100000}
+    min_price, max_price = float(result[0]), float(result[1])
+
+    query_time = time.time() - start_time
+    logger.info(f"Get prices query took {query_time:.2f} seconds")
+    return {"min_price": min_price, "max_price": max_price}
 
 @router.get("/mileage", response_model=Dict[str, float])
 async def get_mileage_range(remove_outliers: bool = True, db: Session = Depends(get_db)):
     start_time = time.time()
     if remove_outliers:
-        cars = db.query(Car).filter(Car.mileage.isnot(None)).all()
-        if not cars:
-            logger.info("No cars found for mileage with remove_outliers=True")
+        min_bound, max_bound = get_iqr_bounds(db, "mileage")
+        if min_bound is None:
+            logger.info("No mileage data for IQR calculation")
             return {"min_mileage": 0, "max_mileage": 300000}
-        
-        car_dicts = [{"mileage": car.mileage} for car in cars]
-        clean_data, _ = detect_outliers(car_dicts, numeric_columns=["mileage"])
-        
-        if not clean_data:
-            logger.info("No clean data after outlier removal for mileage")
-            return {"min_mileage": 0, "max_mileage": 300000}
-        
-        min_mileage = min(float(item["mileage"]) for item in clean_data)
-        max_mileage = max(float(item["mileage"]) for item in clean_data)
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get mileage query took {query_time:.2f} seconds")
-        return {"min_mileage": min_mileage, "max_mileage": max_mileage}
+        result = db.execute(text("""
+            SELECT MIN(mileage), MAX(mileage)
+            FROM cars
+            WHERE mileage IS NOT NULL AND mileage BETWEEN :min_bound AND :max_bound
+        """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
-        result = db.query(
-            func.min(Car.mileage).label('min_mileage'),
-            func.max(Car.mileage).label('max_mileage')
-        ).filter(Car.mileage.isnot(None)).first()
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get mileage query took {query_time:.2f} seconds")
-        return {
-            "min_mileage": result.min_mileage or 0,
-            "max_mileage": result.max_mileage or 300000
-        }
+        result = db.execute(text("""
+            SELECT MIN(mileage), MAX(mileage)
+            FROM cars
+            WHERE mileage IS NOT NULL
+        """)).fetchone()
+
+    if not result or result[0] is None:
+        logger.info("No mileage data found")
+        return {"min_mileage": 0, "max_mileage": 300000}
+    min_mileage, max_mileage = float(result[0]), float(result[1])
+
+    query_time = time.time() - start_time
+    logger.info(f"Get mileage query took {query_time:.2f} seconds")
+    return {"min_mileage": min_mileage, "max_mileage": max_mileage}
 
 @router.get("/fuel-types", response_model=List[str])
 async def get_fuel_types(db: Session = Depends(get_db)):
     start_time = time.time()
-    fuels = db.query(Car.fuel).filter(Car.fuel.isnot(None)).distinct().order_by(Car.fuel).all()
+    fuels = db.execute(text("""
+        SELECT DISTINCT fuel
+        FROM car_filters
+        WHERE fuel IS NOT NULL
+        ORDER BY fuel
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get fuel types query took {query_time:.2f} seconds")
     return [fuel[0] for fuel in fuels]
@@ -137,7 +138,12 @@ async def get_fuel_types(db: Session = Depends(get_db)):
 @router.get("/transmission-types", response_model=List[str])
 async def get_transmission_types(db: Session = Depends(get_db)):
     start_time = time.time()
-    gears = db.query(Car.gear).filter(Car.gear.isnot(None)).distinct().order_by(Car.gear).all()
+    gears = db.execute(text("""
+        SELECT DISTINCT gear
+        FROM car_filters
+        WHERE gear IS NOT NULL
+        ORDER BY gear
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get transmission types query took {query_time:.2f} seconds")
     return [gear[0] for gear in gears]
@@ -145,113 +151,108 @@ async def get_transmission_types(db: Session = Depends(get_db)):
 @router.get("/countries", response_model=List[str])
 async def get_countries(db: Session = Depends(get_db)):
     start_time = time.time()
-    countries = db.query(Car.country).filter(Car.country.isnot(None)).distinct().order_by(Car.country).all()
+    countries = db.execute(text("""
+        SELECT DISTINCT country
+        FROM car_filters
+        WHERE country IS NOT NULL
+        ORDER BY country
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get countries query took {query_time:.2f} seconds")
     return [country[0] for country in countries]
 
 @router.get("/power", response_model=Dict[str, int])
 async def get_power_range(remove_outliers: bool = True, db: Session = Depends(get_db)):
-    """Get min and max power for filtering"""
     start_time = time.time()
     if remove_outliers:
-        cars = db.query(Car).filter(Car.power.isnot(None)).all()
-        if not cars:
-            logger.info("No cars found for power with remove_outliers=True")
+        min_bound, max_bound = get_iqr_bounds(db, "power")
+        if min_bound is None:
+            logger.info("No power data for IQR calculation")
             return {"min_power": 50, "max_power": 500}
-        
-        car_dicts = [{"power": car.power} for car in cars]
-        clean_data, _ = detect_outliers(car_dicts, numeric_columns=["power"])
-        
-        if not clean_data:
-            logger.info("No clean data after outlier removal for power")
-            return {"min_power": 50, "max_power": 500}
-        
-        min_power = min(int(item["power"]) for item in clean_data)
-        max_power = max(int(item["power"]) for item in clean_data)
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get power query took {query_time:.2f} seconds")
-        return {"min_power": min_power, "max_power": max_power}
+        result = db.execute(text("""
+            SELECT MIN(power), MAX(power)
+            FROM cars
+            WHERE power IS NOT NULL AND power BETWEEN :min_bound AND :max_bound
+        """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
-        result = db.query(
-            func.min(Car.power).label('min_power'),
-            func.max(Car.power).label('max_power')
-        ).filter(Car.power.isnot(None)).first()
-        
-        query_time = time.time() - start_time
-        logger.info(f"Get power query took {query_time:.2f} seconds")
-        return {
-            "min_power": result.min_power or 50,
-            "max_power": result.max_power or 500
-        }
+        result = db.execute(text("""
+            SELECT MIN(power), MAX(power)
+            FROM cars
+            WHERE power IS NOT NULL
+        """)).fetchone()
+
+    if not result or result[0] is None:
+        logger.info("No power data found")
+        return {"min_power": 50, "max_power": 500}
+    min_power, max_power = int(result[0]), int(result[1])
+
+    query_time = time.time() - start_time
+    logger.info(f"Get power query took {query_time:.2f} seconds")
+    return {"min_power": min_power, "max_power": max_power}
 
 @router.get("/body-types", response_model=List[str])
 async def get_body_types(db: Session = Depends(get_db)):
-    """Get available body types"""
     start_time = time.time()
-    body_types = db.query(Car.body_type).filter(Car.body_type.isnot(None)).distinct().order_by(Car.body_type).all()
+    body_types = db.execute(text("""
+        SELECT DISTINCT body_type
+        FROM car_filters
+        WHERE body_type IS NOT NULL
+        ORDER BY body_type
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get body types query took {query_time:.2f} seconds")
     return [body_type[0] for body_type in body_types]
 
 @router.get("/colours", response_model=List[str])
 async def get_colours(db: Session = Depends(get_db)):
-    """Get available colours"""
     start_time = time.time()
-    colours = db.query(Car.colour).filter(Car.colour.isnot(None)).distinct().order_by(Car.colour).all()
+    colours = db.execute(text("""
+        SELECT DISTINCT colour
+        FROM car_filters
+        WHERE colour IS NOT NULL
+        ORDER BY colour
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get colours query took {query_time:.2f} seconds")
     return [colour[0] for colour in colours]
 
-@router.get("/features", response_model=Dict[str, List[str]])
+@router.get("/features", response_model=List[str])
 async def get_features(db: Session = Depends(get_db)):
-    """Get available features for Comfort & Convenience, Safety & Security, Extras"""
     start_time = time.time()
-    feature_categories = {
-        "Comfort & Convenience": [],
-        "Safety & Security": [],
-        "Extras": []
-    }
-    
-    # Raw SQL to extract distinct features from JSON
-    for category in feature_categories:
-        query = text("""
-            SELECT DISTINCT json_each.value
-            FROM cars, json_each(cars.features, :category_path)
-            WHERE json_each.value IS NOT NULL
-            ORDER BY json_each.value
-        """).bindparams(category_path=f'$."{category}"')
-        
-        result = db.execute(query).fetchall()
-        feature_categories[category] = [row[0] for row in result]
-    
+    features = db.execute(text("""
+        SELECT DISTINCT feature
+        FROM car_features
+        ORDER BY feature
+    """)).fetchall()
     query_time = time.time() - start_time
     logger.info(f"Get features query took {query_time:.2f} seconds")
-    return feature_categories
+    return [feature[0] for feature in features]
 
 @router.get("/outlier-stats")
 async def get_outlier_stats(db: Session = Depends(get_db)):
     start_time = time.time()
-    cars = db.query(Car).filter(
-        or_(Car.price.isnot(None), Car.mileage.isnot(None), Car.year.isnot(None))
-    ).all()
-    
-    if not cars:
-        logger.info("No cars found for outlier stats")
-        return {"total_records": 0, "outliers": 0, "outlier_percentage": 0.0}
-    
-    car_dicts = [{"price": car.price, "mileage": car.mileage, "year": car.year} for car in cars]
-    clean_data, outliers = detect_outliers(car_dicts, numeric_columns=["price", "mileage", "year"])
-    
-    total = len(car_dicts)
-    outlier_count = len(outliers)
-    outlier_percentage = round((outlier_count / total) * 100, 2) if total > 0 else 0.0
-    
+    total_records = 0
+    total_outliers = 0
+
+    for column in ["year", "price", "mileage", "power"]:
+        min_bound, max_bound = get_iqr_bounds(db, column)
+        if min_bound is None:
+            continue
+        result = db.execute(text(f"""
+            SELECT
+                (SELECT COUNT(*) FROM cars WHERE {column} IS NOT NULL) as total_count,
+                (SELECT COUNT(*) FROM cars WHERE {column} IS NOT NULL AND ({column} < :min_bound OR {column} > :max_bound)) as outlier_count
+        """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
+        if result:
+            total_records += result.total_count
+            total_outliers += result.outlier_count
+
+    outlier_percentage = round((total_outliers / total_records) * 100, 2) if total_records > 0 else 0.0
+
     query_time = time.time() - start_time
     logger.info(f"Get outlier stats query took {query_time:.2f} seconds")
     return {
-        "total_records": total,
-        "outliers": outlier_count,
+        "total_records": total_records,
+        "outliers": total_outliers,
         "outlier_percentage": outlier_percentage
     }

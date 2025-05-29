@@ -11,25 +11,23 @@ from app.scripts.populate_car_data import populate_dummy_data
 from app.models.car import Car
 from app.models.charges import AdditionalCharges
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 # Import routers
 from app.api import cars, auth, users, filters, purchase, charges
 
-# Configure simple logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Create app
 app = FastAPI(
     title="EUCar API",
     description="API for European Car Insights",
     version="1.0.0"
 )
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -38,7 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(cars.router, prefix="/api/cars", tags=["cars"])
 app.include_router(filters.router, prefix="/api/filters", tags=["filters"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
@@ -79,7 +76,6 @@ def update_total_prices(db: Session):
             charges.fuel +
             charges.extended_warranty
         )
-
     db.commit()
     logger.info(f"Updated total_price for {len(cars)} cars")
 
@@ -132,6 +128,47 @@ async def sync_mysql_to_sqlite(db: Session):
         logger.info(f"Inserted {i + len(batch)}/{len(cars)} cars")
     logger.info("MySQL to SQLite sync completed")
 
+async def refresh_materialized_views():
+    while True:
+        db_gen = get_db()
+        db = next(db_gen)
+        try:
+            with db.begin():
+                # Refresh avg_prices
+                db.execute(text("""
+                    DELETE FROM avg_prices;
+                    INSERT INTO avg_prices (brand, model, avg_price, group_count, last_updated)
+                    SELECT brand, model, AVG(price), COUNT(*), DATETIME('now')
+                    FROM cars
+                    WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL
+                    GROUP BY brand, model
+                """))
+                # Refresh car_filters
+                db.execute(text("""
+                    DELETE FROM car_filters;
+                    INSERT INTO car_filters (fuel, gear, country, body_type, colour)
+                    SELECT DISTINCT fuel, gear, country, body_type, colour
+                    FROM cars
+                    WHERE fuel IS NOT NULL OR gear IS NOT NULL OR country IS NOT NULL
+                        OR body_type IS NOT NULL OR colour IS NOT NULL
+                """))
+                # Refresh car_features
+                db.execute(text("""
+                    DELETE FROM car_features;
+                    INSERT INTO car_features (car_id, feature)
+                    SELECT cars.id, json_each.value
+                    FROM cars
+                    CROSS JOIN json_each(cars.features)
+                    WHERE json_each.value IS NOT NULL
+                """))
+                db.commit()
+                logger.info("Refreshed materialized views")
+        except Exception as e:
+            logger.error(f"Failed to refresh materialized views: {str(e)}")
+        finally:
+            db.close()
+        await asyncio.sleep(86400)  # Refresh daily
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize application on startup."""
@@ -163,6 +200,9 @@ async def startup_event():
     except Exception as e:
         logger.warning(f"MySQL database optimization failed: {str(e)}")
         logger.info("Application will continue with unoptimized MySQL database")
+
+    # Start background task for materialized views
+    asyncio.create_task(refresh_materialized_views())
 
 @app.get("/")
 async def root():
