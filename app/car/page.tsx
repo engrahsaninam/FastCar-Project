@@ -9,6 +9,7 @@ import Slider from "react-slick"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useColorModeValue } from "@chakra-ui/react"
 import logo from '@/public/assets/imgs/template/logo-d.svg';
+import { useBestDeals } from "@/services/cars/useCars";
 import {
 	Heart,
 	MapPin,

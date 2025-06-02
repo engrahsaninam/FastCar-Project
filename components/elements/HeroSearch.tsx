@@ -11,6 +11,7 @@ import {
   Euro,
   ChevronDown,
 } from "lucide-react";
+import { useBrands, useModels, useyearsRange } from "@/services/cars/useCars";
 
 // Define TypeScript interfaces
 interface ModelOptionsType {
@@ -23,29 +24,27 @@ interface HeroSearchProps {
 }
 
 const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
-  const router = useRouter(); // Initialize the router
-
-  const [vatDeduction, setVatDeduction] = useState<boolean>(false);
+  const router = useRouter();
+  const [make, setMake] = useState<string>("Brand");
   const [model, setModel] = useState<string>("Model");
   const [year, setYear] = useState<string>("Year");
-  // Advanced search states
+  const [vatDeduction, setVatDeduction] = useState<boolean>(false);
   const [minMileage, setMinMileage] = useState<string>("");
   const [maxMileage, setMaxMileage] = useState<string>("");
   const [mileageRange, setMileageRange] = useState<string>("Kilometers");
-
   const [priceRange, setPriceRange] = useState<string>("Price");
-
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  // State for controlling dropdown visibility
   const [showMakeDropdown, setShowMakeDropdown] = useState<boolean>(false);
   const [showModelDropdown, setShowModelDropdown] = useState<boolean>(false);
   const [showYearDropdown, setShowYearDropdown] = useState<boolean>(false);
-  const [showMileageDropdown, setShowMileageDropdown] =
-    useState<boolean>(false);
+  const [showMileageDropdown, setShowMileageDropdown] = useState<boolean>(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState<boolean>(false);
+
+  const { data: brands } = useBrands();
+  const { data: models } = useModels(make !== "Brand" ? make : "");
+  const { data: yearsData } = useyearsRange();
 
   // Detect mobile device on client-side
   useEffect(() => {
@@ -115,8 +114,6 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
     setShowPriceDropdown(false);
   };
 
-  const [make, setMake] = useState<string>("Brand");
-
   // Update isModelDisabled check
   const isModelDisabled = make === "Brand";
 
@@ -167,42 +164,20 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
               </div>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="dropdown-menu">
-              <li>
-                <Link
-                  className="dropdown-item"
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    handleMakeSelect("BMW");
-                  }}
-                >
-                  BMW
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="dropdown-item"
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    handleMakeSelect("Mercedes");
-                  }}
-                >
-                  Mercedes
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="dropdown-item"
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    handleMakeSelect("Audi");
-                  }}
-                >
-                  Audi
-                </Link>
-              </li>
+              {brands?.map((brand: string) => (
+                <li key={brand}>
+                  <Link
+                    className="dropdown-item"
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      handleMakeSelect(brand);
+                    }}
+                  >
+                    {brand}
+                  </Link>
+                </li>
+              ))}
             </Dropdown.Menu>
           </Dropdown>
         </div>
@@ -218,9 +193,8 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
           >
             <Dropdown.Toggle
               as="div"
-              className={`btn btn-secondary dropdown-toggle btn-dropdown-search ${
-                isModelDisabled ? "disabled" : ""
-              }`}
+              className={`btn btn-secondary dropdown-toggle btn-dropdown-search ${isModelDisabled ? "disabled" : ""
+                }`}
               aria-expanded={showModelDropdown}
               onClick={() =>
                 isModelDisabled
@@ -235,21 +209,20 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
               </div>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="dropdown-menu">
-              {make !== "Brand" &&
-                modelOptions[make]?.map((modelOption, index) => (
-                  <li key={index}>
-                    <Link
-                      className="dropdown-item"
-                      href="#"
-                      onClick={(e: React.MouseEvent) => {
-                        e.preventDefault();
-                        handleModelSelect(modelOption);
-                      }}
-                    >
-                      {modelOption}
-                    </Link>
-                  </li>
-                ))}
+              {models?.map((modelOption: string) => (
+                <li key={modelOption}>
+                  <Link
+                    className="dropdown-item"
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      handleModelSelect(modelOption);
+                    }}
+                  >
+                    {modelOption}
+                  </Link>
+                </li>
+              ))}
             </Dropdown.Menu>
           </Dropdown>
         </div>
@@ -273,7 +246,10 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
               </div>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="dropdown-menu">
-              {[2023, 2022, 2021, 2020, 2019].map((yearOption) => (
+              {yearsData && Array.from(
+                { length: yearsData.max_year - yearsData.min_year + 1 },
+                (_, i) => yearsData.max_year - i
+              ).map((yearOption) => (
                 <li key={yearOption}>
                   <Link
                     className="dropdown-item"
@@ -305,9 +281,8 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                 <span className="toggle-slider"></span>
               </label>
               <span
-                className={`vat-label text-sm-bold ${
-                  vatDeduction ? "neutral-800" : "neutral-500"
-                }`}
+                className={`vat-label text-sm-bold ${vatDeduction ? "neutral-800" : "neutral-500"
+                  }`}
               >
                 VAT
               </span>

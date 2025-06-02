@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useCurrentUser } from '@/services/auth/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
@@ -50,6 +51,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import logo from '@/public/assets/imgs/template/logo-d.svg';
 import logoDark from '@/public/assets/imgs/template/logo-w.svg';
+import { useCar } from '@/services/cars/useCars';
 // Custom Lucide icon wrapper for Chakra UI
 const LucideIcon = ({ icon: Icon, ...props }) => {
   return <Box as={Icon} {...props} />;
@@ -66,7 +68,6 @@ export const CarCard = ({ car }) => {
   const priceColor = useColorModeValue("black", "white");
   const textColor = useColorModeValue("gray.700", "gray.300");
   const buttonLinkColor = useColorModeValue("red.600", "red.300");
-  // Fix: separate the useColorModeValue calls from the conditional logic
   const favoriteColor = useColorModeValue("red.600", "red.400");
   const nonFavoriteColor = useColorModeValue("gray.600", "gray.400");
   const heartColor = isFavorite ? favoriteColor : nonFavoriteColor;
@@ -82,6 +83,12 @@ export const CarCard = ({ car }) => {
   const previousImage = () => {
     setCurrentImageIndex((prev) => prev === 0 ? car.images.length - 1 : prev - 1);
   };
+
+  // Format mileage with commas
+  const formattedMileage = car.mileage.toLocaleString();
+
+  // Format power with kW
+  const formattedPower = `${car.power} kW`;
 
   return (
     <Link href={`/car?id=${car.id}`} passHref legacyBehavior>
@@ -174,7 +181,7 @@ export const CarCard = ({ car }) => {
 
                 <Image
                   src={car.images[currentImageIndex]}
-                  alt={car.name}
+                  alt={`${car.brand} ${car.model}`}
                   fill
                   priority
                   style={{ objectFit: "cover" }}
@@ -183,13 +190,12 @@ export const CarCard = ({ car }) => {
             </AspectRatio>
           </Box>
 
-          {/* Content Section - maintain size but reduce spacing */}
+          {/* Content Section */}
           <Flex
             flex="1"
             p={["4", "4", "3"]}
             flexDir="column"
             justifyContent="space-between"
-          // mt={["3", "3", "0"]}
           >
             <Box>
               <Flex
@@ -208,9 +214,8 @@ export const CarCard = ({ car }) => {
                   letterSpacing="wide"
                   fontFamily="inter"
                   _hover={{ color: "red.500" }}
-                // mb={["1", "1", "0"]}
                 >
-                  {car.name}
+                  {`${car.brand} ${car.model}`}
                 </Heading>
                 <Box mt={["1", "1", "0"]} className='light-mode'>
                   <Image
@@ -232,81 +237,83 @@ export const CarCard = ({ car }) => {
                 </Box>
               </Flex>
 
-              {/* Specs Row - inline with minimal spacing */}
+              {/* Specs Row */}
               <Box mb={["2", "2", "1"]} ml="1">
                 <Flex direction="row" gap={6} mb={1}>
                   <HStack spacing="1">
                     <LucideIcon icon={Power} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{car.power}</Text>
+                    <Text fontSize="sm" color={textColor}>{formattedPower}</Text>
                   </HStack>
                   <HStack spacing="1">
                     <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{car.date}</Text>
+                    <Text fontSize="sm" color={textColor}>{car.year}</Text>
                   </HStack>
                   <HStack spacing="1">
                     <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+                    <Text fontSize="sm" color={textColor}>{formattedMileage} km</Text>
                   </HStack>
                 </Flex>
                 <Flex direction="row" gap={6}>
                   <HStack spacing="1">
                     <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
                   </HStack>
                   <HStack spacing="1">
                     <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
                   </HStack>
                 </Flex>
               </Box>
 
-              {/* Features - keeping size with less vertical space */}
+              {/* Features */}
               <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-                {car.features.slice(0, 4).map((feature, index) => (
-                  <Badge
-                    key={index}
-                    px="2"
-                    // py="0.5"
-                    bg={badgeBg}
-                    color={badgeColor}
-                    borderRadius="md"
-                    fontSize="sm"
-                    fontWeight="medium"
-                    style={{ textTransform: "none" }}
-                  >
-                    {feature}
-                  </Badge>
-                ))}
-                {car.features.length > 4 && (
-                  <Button
-                    variant="unstyled"
-                    color={buttonLinkColor}
-                    fontSize="sm"
-                    fontWeight="medium"
-                    height="auto"
-                    padding="0"
-                    lineHeight="1.5"
-                    // mt="0.5"
-                    _hover={{ textDecoration: "underline" }}
-                    onClick={(e) => e.preventDefault()}
-                    style={{ textTransform: "none" }}
-                  >
-                    + {car.features.length - 4} more
-                  </Button>
-                )}
+                {car.features &&
+                  Object.entries(car.features)
+                    .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+                    .slice(0, 4)
+                    .map((feature, index) => (
+                      <Badge
+                        key={index}
+                        px="2"
+                        bg={badgeBg}
+                        color={badgeColor}
+                        borderRadius="md"
+                        fontSize="sm"
+                        fontWeight="medium"
+                        style={{ textTransform: "none" }}
+                      >
+                        {feature}
+                      </Badge>
+                    ))}
+                {car.features &&
+                  Object.entries(car.features)
+                    .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+                    .length > 4 && (
+                    <Button
+                      variant="unstyled"
+                      color={buttonLinkColor}
+                      fontSize="sm"
+                      fontWeight="medium"
+                      height="auto"
+                      padding="0"
+                      lineHeight="1.5"
+                      _hover={{ textDecoration: "underline" }}
+                      onClick={e => e.preventDefault()}
+                      style={{ textTransform: "none" }}
+                    >
+                      + {Object.entries(car.features).flatMap(([_, features]) => features).length - 4} more
+                    </Button>
+                  )
+                }
               </Flex>
             </Box>
 
-            {/* Location and Price - maintain size with reduced space */}
+            {/* Price Section */}
             <Box
-              // pt={["3", "3", "1.5"]}
               px={["0", "0", "2"]}
               borderTopWidth="1px"
               borderColor={cardBorderColor}
-            // mt={["2", "2", "1"]}
             >
-              {/* Top row: Very Good Price (left) and Main Price (right) */}
-
               <Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
                 <VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
                   <HStack spacing="1" >
@@ -317,14 +324,15 @@ export const CarCard = ({ car }) => {
                       Very Good Price
                     </Text>
                   </HStack>
-                  <HStack> <Flex align="center" gap="1">
-                    <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-                      € 5043
-                    </Text>
-                    <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-                      Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-                    </Text>
-                  </Flex>
+                  <HStack>
+                    <Flex align="center" gap="1">
+                      <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+                        € {car.price.toLocaleString()}
+                      </Text>
+                      <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+                        Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+                      </Text>
+                    </Flex>
                   </HStack>
                 </VStack>
                 <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
@@ -336,10 +344,7 @@ export const CarCard = ({ car }) => {
                   </Text>
                 </Box>
               </Flex>
-              {/* Bottom row: Cheaper than in Spain! */}
-
             </Box>
-
           </Flex>
         </Flex>
       </ChakraLink>
@@ -422,167 +427,9 @@ const CarListSkeleton = () => {
   );
 };
 
-// Car List Component
-const CarList = () => {
-  const [filteredCars, setFilteredCars] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Use useMemo to memoize the cars array
-  const cars = useMemo(() => [
-    {
-      id: 1,
-      name: "BMW Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      logo: "/Logo/logo.png"
-    },
-    {
-      id: 2,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-    {
-      id: 3,
-      name: "MINI Cooper 100 kW",
-      images: [
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Ym13JTIwMzMwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-        "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lcmNlZGVzJTIwZTUzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      ],
-      power: "100 kW (136 hp)",
-      date: "9/2021",
-      mileage: "18,496 km",
-      transmission: "Automatic",
-      fuelType: "Petrol",
-      features: [
-        "Digital cockpit",
-        "Keyless entry",
-        "Apple CarPlay",
-        "Navigation system",
-        "Cruise control",
-        "LED headlights"
-      ],
-      price: 25749,
-      priceWithoutVat: 21280
-    },
-  ], []); // Empty dependency array since this data is static
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      try {
-        // Simulate network delay or actual API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setFilteredCars(cars);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [cars]);
-
-
-  if (isLoading) {
-    return <CarListSkeleton />;
-  }
-
-  return (
-    <Box w="full">
-      <Box w="full">
-        <VStack spacing="4" mt="4" align="stretch">
-          {filteredCars.map((car) => (
-            <CarCard key={car.id} car={car} />
-          ))}
-        </VStack>
-      </Box>
-    </Box>
-  );
-};
-
-// Maps for filter display
-const colorMap = {
-  'blue': 'Blue',
-  'silver': 'Silver',
-  'gold': 'Gold',
-  'red': 'Red',
-  'brown': 'Brown',
-  'purple': 'Purple',
-  'black': 'Black',
-  'white': 'White',
-  'blue-gray': 'Gray Blue',
-  'green': 'Green',
-  'beige': 'Beige',
-  'yellow': 'Yellow',
-  'orange': 'Orange'
-};
-
-const vehicleTypesMap = {
-  'cabriolet': 'Cabriolet',
-  'compact': 'Compact',
-  'coupe': 'Coupe',
-  'estate': 'Estate car',
-  'hatchback': 'Hatchback',
-  'light': 'Light truck'
-};
-
-const featuresMap = {
-  'air-conditioning': 'Air conditioning',
-  'cruise-control': 'Cruise control',
-  'heated-seats': 'Heated front seats',
-  'steering-wheel': 'Multifunctional steering wheel',
-  'navigation': 'Navigation system',
-  'trailer': 'Trailer coupling',
-  'led-lights': 'LED headlights',
-  'xenon-lights': 'Xenon headlights'
-};
-
 // Verified Cars Header Component
-// Verified Cars Header Component with reduced padding
-const VerifiedCarsHeader = () => {
-  // Color mode values
+const VerifiedCarsHeader = ({ carData, currentPage, onPageChange }) => {
+  // Color mode values - moved to top level
   const headerBg = useColorModeValue("transparent", "transparent");
   const headingColor = useColorModeValue("gray.900", "white");
   const textColor = useColorModeValue("gray.600", "gray.400");
@@ -611,31 +458,12 @@ const VerifiedCarsHeader = () => {
             Verified cars
           </Heading>
           <Text fontSize="sm" color={textColor}>
-            194 475 results
+            {carData?.total || 0} results
           </Text>
         </Box>
 
         {/* Sort and Pagination */}
         <Flex alignItems="center" gap="3">
-          <Select
-            size="sm"
-            bg={selectBg}
-            borderColor={selectBorderColor}
-            borderRadius="md"
-            px="1"
-            py="1.5"
-            fontSize="sm"
-            color={selectTextColor}
-            defaultValue="newest"
-            h="32px"
-          >
-            <option value="newest">Newest ad</option>
-            <option value="oldest">Oldest ad</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </Select>
-
-          {/* Pagination - smaller buttons */}
           <HStack spacing="1" display={["none", "none", "flex"]}>
             <IconButton
               aria-label="Previous page"
@@ -644,73 +472,47 @@ const VerifiedCarsHeader = () => {
               color={iconColor}
               p="1"
               size="sm"
+              isDisabled={currentPage === 1}
+              onClick={() => onPageChange(currentPage - 1)}
             />
-            <Button
-              w="6"
-              h="6"
-              borderRadius="md"
-              bg={paginationActiveBg}
-              color={paginationActiveColor}
-              variant="solid"
-              fontSize="xs"
-              minW="6"
-              p="0"
-            >
-              1
-            </Button>
-            <Button
-              w="6"
-              h="6"
-              borderRadius="md"
-              variant="ghost"
-              color={paginationInactiveColor}
-              _hover={{ bg: paginationHoverBg }}
-              fontSize="xs"
-              minW="6"
-              p="0"
-            >
-              2
-            </Button>
-            <Button
-              w="6"
-              h="6"
-              borderRadius="md"
-              variant="ghost"
-              color={paginationInactiveColor}
-              _hover={{ bg: paginationHoverBg }}
-              fontSize="xs"
-              minW="6"
-              p="0"
-            >
-              3
-            </Button>
-            <Button
-              w="6"
-              h="6"
-              borderRadius="md"
-              variant="ghost"
-              color={paginationInactiveColor}
-              _hover={{ bg: paginationHoverBg }}
-              fontSize="xs"
-              minW="6"
-              p="0"
-            >
-              4
-            </Button>
-            <Text px="1" color={textColor}>...</Text>
-            <Button
-              w="6"
-              h="6"
-              borderRadius="md"
-              variant="ghost"
-              color={paginationInactiveColor}
-              _hover={{ bg: paginationHoverBg }}
-              fontSize="xs"
-              minW="8"
-              p="0"
-            >
-              973
-            </Button>
+            {Array.from({ length: Math.min(5, carData?.pages || 1) }, (_, i) => {
+              let pageNum;
+              if (i < 3) {
+                pageNum = i + 1;
+              } else if (i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1) {
+                pageNum = currentPage;
+              } else if (i === 4) {
+                pageNum = carData?.pages || 1;
+              }
+
+              if (!pageNum) return null;
+
+              return (
+                <React.Fragment key={pageNum}>
+                  {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
+                    <Text px="1" color={textColor}>...</Text>
+                  )}
+                  <Button
+                    w="6"
+                    h="6"
+                    borderRadius="md"
+                    bg={pageNum === currentPage ? paginationActiveBg : "transparent"}
+                    color={pageNum === currentPage ? paginationActiveColor : paginationInactiveColor}
+                    variant={pageNum === currentPage ? "solid" : "ghost"}
+                    _hover={{ bg: pageNum === currentPage ? paginationActiveBg : paginationHoverBg }}
+                    fontSize="xs"
+                    minW="6"
+                    p="0"
+                    onClick={() => onPageChange(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                  {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
+                    <Text px="1" color={textColor}>...</Text>
+                  )}
+                </React.Fragment>
+              );
+            })}
             <IconButton
               aria-label="Next page"
               icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
@@ -718,6 +520,8 @@ const VerifiedCarsHeader = () => {
               color={iconColor}
               p="1"
               size="sm"
+              isDisabled={currentPage === (carData?.pages || 1)}
+              onClick={() => onPageChange(currentPage + 1)}
             />
           </HStack>
         </Flex>
@@ -726,12 +530,80 @@ const VerifiedCarsHeader = () => {
   );
 };
 
+// Car List Component
+const CarList = ({ carData, isLoading }) => {
+  const textColor = useColorModeValue("gray.600", "gray.400");
+
+  if (isLoading) {
+    return <CarListSkeleton />;
+  }
+
+  return (
+    <Box w="full">
+      <Box w="full">
+        <VStack spacing="4" mt="4" align="stretch">
+          {carData?.data?.map((car) => (
+            <CarCard key={car.id} car={car} />
+          ))}
+        </VStack>
+        <Text
+          textAlign="center"
+          color={textColor}
+          fontSize="sm"
+          mt="2"
+        >
+          Showing {carData?.data?.length || 0} of {carData?.total || 0} cars
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+// Maps for filter display
+const colorMap = {
+  'blue': 'Blue',
+  'silver': 'Silver',
+  'gold': 'Gold',
+  'red': 'Red',
+  'brown': 'Brown',
+  'purple': 'Purple',
+  'black': 'Black',
+  'white': 'White',
+  'blue-gray': 'Gray Blue',
+  'green': 'Green',
+  'beige': 'Beige',
+  'yellow': 'Yellow',
+  'orange': 'Orange'
+};
+
+const vehicleTypesMap = {
+  'cabriolett': 'Cabriolett',
+  'compact': 'Compact',
+  'coupe': 'Coupe',
+  'estate': 'Estate car',
+  'hatchback': 'Hatchback',
+  'light': 'Light truck'
+};
+
+const featuresMap = {
+  'air-conditioning': 'Air conditioning',
+  'cruise-control': 'Cruise control',
+  'heated-seats': 'Heated front seats',
+  'steering-wheel': 'Multifunctional steering wheel',
+  'navigation': 'Navigation system',
+  'trailer': 'Trailer coupling',
+  'led-lights': 'LED headlights',
+  'xenon-lights': 'Xenon headlights'
+};
+
 const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => {
-  const { useRouter, useSearchParams } = require('next/navigation');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState([]);
   const [isLaptop, setIsLaptop] = useState(false);
+
+  // Get the current page from URL params
+  const currentPage = parseInt(searchParams.get('page') || '1');
 
   // Color mode values
   const bg = useColorModeValue("transparent", "#0e0e0e");
@@ -743,23 +615,54 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
   const buttonHoverBg = useColorModeValue("red.500", "red.600");
   const closeIconColor = useColorModeValue("red.400", "red.300");
   const closeIconHoverBg = useColorModeValue("red.200", "rgba(255, 69, 58, 0.3)");
+  const saveSearchBg = useColorModeValue("red.500", "red.600");
+  const saveSearchHoverBg = useColorModeValue("red.600", "red.700");
+
+  // Get all filter parameters from URL
+  const filters = {
+    tab: searchParams.get('tab'),
+    priceType: searchParams.get('priceType'),
+    min_price: searchParams.get('min_price'),
+    max_price: searchParams.get('max_price'),
+    min_year: searchParams.get('min_year'),
+    max_year: searchParams.get('max_year'),
+    min_mileage: searchParams.get('min_mileage'),
+    max_mileage: searchParams.get('max_mileage'),
+    gear: searchParams.get('gear'),
+    vat: searchParams.get('vat'),
+    discounted: searchParams.get('discounted'),
+    fuel: searchParams.get('fuel')?.split(',').filter(Boolean),
+    electric: searchParams.get('electric'),
+    hybridType: searchParams.get('hybridType'),
+    powerUnit: searchParams.get('powerUnit'),
+    powerFrom: searchParams.get('powerFrom'),
+    powerTo: searchParams.get('powerTo'),
+    body_type: searchParams.get('body_type')?.split(',').filter(Boolean),
+    colour: searchParams.get('colour')?.split(',').filter(Boolean),
+    features: searchParams.get('features')?.split(',').filter(Boolean),
+    makeModel: searchParams.get('makeModel')?.split(',').filter(Boolean),
+    brand: searchParams.getAll('brand'),
+    model: searchParams.getAll('model'),
+  };
+
+  const { data: carData, isLoading } = useCar(currentPage.toString(), "20", filters);
+
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', newPage.toString());
+    router.push(`/cars?${params.toString()}`, { scroll: false });
+  };
 
   // Check screen size on mount and window resize
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsLaptop(window.innerWidth >= 1024); // 1024px is typical laptop breakpoint
+      setIsLaptop(window.innerWidth >= 1024);
     };
 
-    // Initial check
     checkScreenSize();
-
-    // Add event listener for window resize
     window.addEventListener('resize', checkScreenSize);
-
-    // Set initial filter state based on screen size
     setIsFilterOpen(window.innerWidth >= 1024);
 
-    // Cleanup
     return () => window.removeEventListener('resize', checkScreenSize);
   }, [setIsFilterOpen]);
 
@@ -768,20 +671,20 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
 
     switch (filterId) {
       case 'price':
-        params.delete('priceFrom');
-        params.delete('priceTo');
+        params.delete('min_price');
+        params.delete('max_price');
         params.delete('priceType');
         break;
       case 'registration':
-        params.delete('regFrom');
-        params.delete('regTo');
+        params.delete('min_year');
+        params.delete('max_year');
         break;
       case 'mileage':
-        params.delete('mileageFrom');
-        params.delete('mileageTo');
+        params.delete('min_mileage');
+        params.delete('max_mileage');
         break;
-      case 'transmission':
-        params.delete('transmission');
+      case 'gear':
+        params.delete('gear');
         break;
       case 'discounted':
         params.delete('discounted');
@@ -803,21 +706,18 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
         params.delete('powerTo');
         params.delete('powerUnit');
         break;
-      case '4x4':
-        params.delete('is4x4');
-        break;
-      case 'vehicleTypes':
-        params.delete('vehicleTypes');
+      case 'body_type':
+        params.delete('body_type');
         break;
       default:
-        if (filterId.startsWith('color-')) {
-          const color = filterId.replace('color-', '');
-          const currentColors = params.get('colors')?.split(',') || [];
-          const newColors = currentColors.filter(c => c !== color);
-          if (newColors.length) {
-            params.set('colors', newColors.join(','));
+        if (filterId.startsWith('colour-')) {
+          const colour = filterId.replace('colour-', '');
+          const currentColours = params.get('colour')?.split(',') || [];
+          const newColours = currentColours.filter(c => c !== colour);
+          if (newColours.length) {
+            params.set('colour', newColours.join(','));
           } else {
-            params.delete('colors');
+            params.delete('colour');
           }
         }
         if (filterId.startsWith('feature-')) {
@@ -871,44 +771,44 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     });
 
     // Price Range
-    const priceFrom = searchParams.get('priceFrom');
-    const priceTo = searchParams.get('priceTo');
+    const min_price = searchParams.get('min_price');
+    const max_price = searchParams.get('max_price');
     const priceType = searchParams.get('priceType');
-    if (priceFrom || priceTo) {
+    if (min_price || max_price) {
       filters.push({
         id: 'price',
-        label: `${formatPrice(priceFrom || 0)} - ${formatPrice(priceTo || 0)}${priceType === 'instalments' ? ' (Instalments)' : ''}`
+        label: `${formatPrice(min_price || 0)} - ${formatPrice(max_price || 0)}}`
       });
     }
 
     // Registration period
-    const regFrom = searchParams.get('regFrom');
-    const regTo = searchParams.get('regTo');
-    if (regFrom || regTo) {
+    const min_year = searchParams.get('min_year');
+    const max_year = searchParams.get('max_year');
+    if (min_year || max_year) {
       filters.push({
         id: 'registration',
-        label: regFrom === regTo
-          ? `Registration: ${regFrom}`
-          : `Registration: ${regFrom || ''} - ${regTo || ''}`
+        label: min_year === max_year
+          ? `Registration: ${min_year}`
+          : `Registration: ${min_year || ''} - ${max_year || ''}`
       });
     }
 
     // Mileage
-    const mileageFrom = searchParams.get('mileageFrom');
-    const mileageTo = searchParams.get('mileageTo');
-    if (mileageFrom || mileageTo) {
+    const min_mileage = searchParams.get('min_mileage');
+    const max_mileage = searchParams.get('max_mileage');
+    if (min_mileage || max_mileage) {
       filters.push({
         id: 'mileage',
-        label: `${parseInt(mileageFrom || '0').toLocaleString()} - ${parseInt(mileageTo || '0').toLocaleString()} km`
+        label: `${parseInt(min_mileage || '0').toLocaleString()} - ${parseInt(max_mileage || '0').toLocaleString()} km`
       });
     }
 
     // Transmission
-    const transmission = searchParams.get('transmission');
-    if (transmission) {
+    const gear = searchParams.get('gear');
+    if (gear) {
       filters.push({
-        id: 'transmission',
-        label: transmission
+        id: 'gear',
+        label: Transmission
       });
     }
 
@@ -969,23 +869,23 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     }
 
     // Vehicle Types
-    const vehicleTypes = searchParams.get('vehicleTypes')?.split(',') || [];
-    vehicleTypes.forEach(type => {
+    const body_type = searchParams.get('body_type')?.split(',') || [];
+    body_type.forEach(type => {
       if (vehicleTypesMap[type]) {
         filters.push({
-          id: `vehicleType-${type}`,
+          id: `body_type-${type}`,
           label: vehicleTypesMap[type]
         });
       }
     });
 
-    // Colors
-    const colors = searchParams.get('colors')?.split(',') || [];
-    colors.forEach(color => {
-      if (colorMap[color]) {
+    // Colours
+    const colours = searchParams.get('colour')?.split(',') || [];
+    colours.forEach(colour => {
+      if (colorMap[colour]) {
         filters.push({
-          id: `color-${color}`,
-          label: colorMap[color]
+          id: `colour-${colour}`,
+          label: colorMap[colour]
         });
       }
     });
@@ -1002,13 +902,13 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     });
 
     // 4x4
-    const is4x4 = searchParams.get('is4x4');
-    if (is4x4 === 'true') {
-      filters.push({
-        id: '4x4',
-        label: 'Drive type 4x4'
-      });
-    }
+    // const is4x4 = searchParams.get('is4x4');
+    // if (is4x4 === 'true') {
+    //   filters.push({
+    //     id: '4x4',
+    //     label: 'Drive type 4x4'
+    //   });
+    // }
 
     setActiveFilters(filters);
   }, [searchParams]);
@@ -1091,9 +991,13 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
             </Box>
           </Flex>
           <Box>
-            <VerifiedCarsHeader />
+            <VerifiedCarsHeader
+              carData={carData}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
             <Suspense fallback={<CarListSkeleton />}>
-              <CarList />
+              <CarList carData={carData} isLoading={isLoading} />
             </Suspense>
           </Box>
         </Flex>
@@ -1103,7 +1007,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
           display={["none", "none", "flex"]}
           flexDir="column"
           w="full"
-          // bg={bg}
+        // bg={bg}
         >
           <Flex flexWrap="wrap" alignItems="center" gap="2" mb="2">
             {/* Filter button - always visible */}
@@ -1125,14 +1029,14 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
 
             <Button
               leftIcon={<LucideIcon icon={Bell} boxSize="4" />}
-              bg={useColorModeValue("red.500", "red.600")}
+              bg={saveSearchBg}
               color={buttonColor}
               px="4"
               py="1.5"
               borderRadius="lg"
               fontWeight="semibold"
               fontSize="sm"
-              _hover={{ bg: useColorModeValue("red.600", "red.700") }}
+              _hover={{ bg: saveSearchHoverBg }}
               transition="colors 0.2s"
             >
               Save search
@@ -1165,9 +1069,13 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
               </Flex>
             ))}
           </Flex>
-          <VerifiedCarsHeader />
+          <VerifiedCarsHeader
+            carData={carData}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
           <Suspense fallback={<CarListSkeleton />}>
-            <CarList />
+            <CarList carData={carData} isLoading={isLoading} />
           </Suspense>
         </Flex>
       </Flex>

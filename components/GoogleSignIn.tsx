@@ -1,7 +1,7 @@
 // components/GoogleSignIn.tsx
 'use client'; // if using App Router
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useGoogleSignUp } from '@/services/auth/useAuth';
 import { useToast } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,28 @@ const GoogleSignIn = () => {
     const toast = useToast();
     const googleSignUpMutation = useGoogleSignUp();
 
+    const handleCredentialResponse = useCallback(async (response: { credential: string }) => {
+        try {
+            await googleSignUpMutation.mutateAsync({ id_token: response.credential });
+            toast({
+                title: "Success",
+                description: "Successfully signed in with Google",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
+            router.push('/');
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error?.response?.data?.detail || "Failed to sign in with Google",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    }, [googleSignUpMutation, toast, router]);
+
     useEffect(() => {
         const initializeGoogleSignIn = () => {
             window.google.accounts.id.initialize({
@@ -52,29 +74,7 @@ const GoogleSignIn = () => {
             script.onload = initializeGoogleSignIn;
             document.body.appendChild(script);
         }
-    }, []);
-
-    const handleCredentialResponse = async (response: { credential: string }) => {
-        try {
-            await googleSignUpMutation.mutateAsync({ id_token: response.credential });
-            toast({
-                title: "Success",
-                description: "Successfully signed in with Google",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-            router.push('/');
-        } catch (error: any) {
-            toast({
-                title: "Error",
-                description: error?.response?.data?.detail || "Failed to sign in with Google",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-    };
+    }, [handleCredentialResponse]);
 
     return <div id="google-signin-btn"></div>;
 };

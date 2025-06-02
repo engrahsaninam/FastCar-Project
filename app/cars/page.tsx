@@ -11,7 +11,8 @@ import {
   useDisclosure,
   useBreakpointValue,
   IconButton,
-  Container
+  Container,
+  Select
 } from "@chakra-ui/react";
 
 import Layout from "@/components/layout/Layout";
@@ -19,6 +20,7 @@ import rawCarsData from "@/util/cars.json";
 import useCarFilter from "@/util/useCarFilter";
 import CarFilterUI from "@/components/sections/CarListings";
 import Body from "@/components/sections/Body";
+import { usePriceRange } from '@/services/cars/useCars';
 
 // Convert ratings to numbers for proper comparison
 const carsData = rawCarsData.map((car) => ({
@@ -82,6 +84,20 @@ export default function CarsList1() {
   const sidebarWidth = "320px";
   const maxContentWidth = "1400px"; // Maximum width
 
+  const { data, isLoading } = usePriceRange();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!data) return null;
+
+  const { min_price, max_price } = data;
+
+  // Generate price options (e.g., every 1,000 euros)
+  const step = 1000;
+  const priceOptions = [];
+  for (let price = min_price; price <= max_price; price += step) {
+    priceOptions.push(price);
+  }
+
   return (
     <Layout footerStyle={1}>
       <section className="background-body">
@@ -101,7 +117,7 @@ export default function CarsList1() {
               {isFilterOpen && (
                 <CarFilterUI
                   isMobileOpen={false}
-                  setIsMobileOpen={() => {}}
+                  setIsMobileOpen={() => { }}
                 />
               )}
             </Box>
@@ -139,7 +155,7 @@ export default function CarsList1() {
             </Box>
           </Flex>
         </Container>
-       
+
       </section>
     </Layout>
   );

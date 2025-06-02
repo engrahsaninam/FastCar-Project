@@ -6,6 +6,7 @@ import ByPagination from '@/components/Filter/ByPagination'
 import Layout from "@/components/layout/Layout"
 import rawCarsData from "@/util/cars.json"
 import useCarFilter from '@/util/useCarFilter'
+import { useBestDeals, useBrands, useyearsRange } from '@/services/cars/useCars'
 import Link from "next/link"
 import {
 	Box,
@@ -58,6 +59,7 @@ import { SimpleGrid } from "@chakra-ui/react";
 import {
 	LucideIcon as LucideIconType
 } from 'lucide-react';
+import { useState } from 'react';
 
 const carsData = rawCarsData.map(car => ({
 	...car,
@@ -65,6 +67,15 @@ const carsData = rawCarsData.map(car => ({
 }))
 
 export default function CarsList3() {
+	const [brand, setBrand] = useState<string | undefined>();
+	const [model, setModel] = useState<string | undefined>();
+	const [year, setYear] = useState<string | undefined>();
+	const [limit, setLimit] = useState<string>("10"); // default 10
+	const { data: bestDealsData } = useBestDeals({ brand, model, year, limit });
+	// const { data: bestDealsData } = useBestDeals()
+	const { data: brands } = useBrands()
+	const { data: yearsData } = useyearsRange()
+	console.log(bestDealsData)
 	const {
 		filter,
 		setFilter,
@@ -96,7 +107,7 @@ export default function CarsList3() {
 		handleClearFilters,
 		startItemIndex,
 		endItemIndex,
-	} = useCarFilter(carsData)
+	} = useCarFilter(bestDealsData?.data || [])
 	interface LucideIconProps {
 		icon: LucideIconType;
 		[key: string]: any;
@@ -211,17 +222,18 @@ export default function CarsList3() {
 												<SortCarsFilter
 													sortCriteria={sortCriteria}
 													handleSortChange={handleSortChange}
-													itemsPerPage={itemsPerPage}
-													handleItemsPerPageChange={handleItemsPerPageChange}
+													itemsPerPage={parseInt(limit)}
+													handleItemsPerPageChange={e => setLimit(e.target.value)}
 													handleClearFilters={handleClearFilters}
 													startItemIndex={startItemIndex}
 													endItemIndex={endItemIndex}
-													sortedCars={sortedCars}
+													sortedCars={bestDealsData?.data || []}
+													totalCars={bestDealsData?.total || 0}
 												/>
 											</div>
 											<div className="box-grid-tours wow fadeIn">
 												<div className="row">
-													{paginatedCars.map((car) => (
+													{bestDealsData?.data.map((car: any) => (
 														<div className="col-lg-4 col-md-6" key={car.id}>
 															<Flex
 																direction={["column", "column", "column"]}
@@ -250,8 +262,8 @@ export default function CarsList3() {
 
 
 																			<Image
-																				src={`/assets/imgs/cars-listing/cars-listing-6/${car.image}`}
-																				alt={car.name}
+																				src={`/assets/imgs/cars-listing/cars-listing-6/${car.images[0]}`}
+																				alt={car.brand}
 																				fill
 																				priority
 																				style={{ objectFit: "cover" }}
@@ -287,7 +299,7 @@ export default function CarsList3() {
 																				_hover={{ color: "red.500" }}
 																			// mb={["1", "1", "0"]}
 																			>
-																				{car.name}
+																				{[car?.brand, car?.modal].filter(Boolean).join(' ') || 'Car Details'}
 																			</Heading>
 																			{/* <Box mt={["1", "1", "0"]} className='light-mode'>
 																		<Image
@@ -314,36 +326,35 @@ export default function CarsList3() {
 																			<Flex direction="row" gap={4} mb={1} >
 																				<HStack spacing="1">
 																					<LucideIcon icon={Power} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.power}</Text>
+																					<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
 																				</HStack>
 																				<HStack spacing="1">
 																					<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.date}</Text>
+																					<Text fontSize="sm" color={textColor}>{car.year}</Text>
 																				</HStack>
 																				<HStack spacing="1">
 																					<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+																					<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
 																				</HStack>
 																			</Flex>
 																			<Flex direction="row" gap={6}>
 																				<HStack spacing="1">
 																					<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
 																				</HStack>
 																				<HStack spacing="1">
 																					<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
 																				</HStack>
 																			</Flex>
 																		</Box>
 
 																		{/* Features - keeping size with less vertical space */}
 																		<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-																			{car.features.slice(0, 4).map((feature, index) => (
+																			{bestDealsData?.data?.features?.slice(0, 4).map((feature: string, index: number) => (
 																				<Badge
 																					key={index}
 																					px="2"
-																					// py="0.5"
 																					bg={badgeBg}
 																					color={badgeColor}
 																					borderRadius="md"
@@ -354,7 +365,7 @@ export default function CarsList3() {
 																					{feature}
 																				</Badge>
 																			))}
-																			{car.features.length > 4 && (
+																			{bestDealsData?.data?.features && bestDealsData?.data?.features.length > 4 && (
 																				<Button
 																					variant="unstyled"
 																					color={buttonLinkColor}
@@ -363,12 +374,11 @@ export default function CarsList3() {
 																					height="auto"
 																					padding="0"
 																					lineHeight="1.5"
-																					// mt="0.5"
 																					_hover={{ textDecoration: "underline" }}
 																					onClick={(e) => e.preventDefault()}
 																					style={{ textTransform: "none" }}
 																				>
-																					+ {car.features.length - 4} more
+																					+ {bestDealsData?.data?.features.length - 4} more
 																				</Button>
 																			)}
 																		</Flex>
@@ -425,7 +435,7 @@ export default function CarsList3() {
 											</div>
 											<ByPagination
 												handlePreviousPage={handlePreviousPage}
-												totalPages={totalPages}
+												totalPages={bestDealsData?.pages || 1}
 												currentPage={currentPage}
 												handleNextPage={handleNextPage}
 												handlePageChange={handlePageChange}

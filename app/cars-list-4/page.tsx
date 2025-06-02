@@ -126,6 +126,7 @@ export default function CarsList4() {
 											startItemIndex={startItemIndex}
 											endItemIndex={endItemIndex}
 											sortedCars={sortedCars}
+											totalCars={sortedCars.length} // <-- Add this line
 										/>
 									</div>
 									<div className="box-grid-hotels wow fadeIn">

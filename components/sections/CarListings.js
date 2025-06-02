@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
+import { usePriceRange, useMileageRange, useyearsRange, useFuelType, useTransmissionType, useBrands, useModels, useBodyTypes, useColors, useFeatures } from '@/services/cars/useCars';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -35,6 +36,7 @@ import {
   Collapse,
   useColorMode,
   useColorModeValue,
+  Skeleton,
 } from '@chakra-ui/react';
 import {
   ChevronDown,
@@ -48,6 +50,7 @@ import {
   ChevronRight,
   Search,
   Check,
+  Heart,
 } from 'lucide-react';
 
 // Custom icon wrapper for Chakra UI
@@ -56,19 +59,19 @@ const LucideIcon = ({ icon: Icon, ...props }) => {
 };
 
 const colorOptions = [
-  { id: 'black', value: '#000000', label: 'Black' },
-  { id: 'white', value: '#FFFFFF', label: 'White', border: true },
-  { id: 'blue-gray', value: '#64748B', label: 'Gray Blue' },
-  { id: 'red', value: '#EF4444', label: 'Red' },
-  { id: 'blue', value: '#3B82F6', label: 'Blue' },
-  { id: 'silver', value: '#E2E8F0', label: 'Silver', border: true },
-  { id: 'green', value: '#22C55E', label: 'Green' },
-  { id: 'beige', value: '#E3D3C3', label: 'Beige', border: true },
-  { id: 'yellow', value: '#FBBF24', label: 'Yellow' },
-  { id: 'orange', value: '#F97316', label: 'Orange' },
-  { id: 'brown', value: '#92400E', label: 'Brown' },
-  { id: 'gold', value: '#EAB308', label: 'Gold' },
-  { id: 'purple', value: '#7C3AED', label: 'Purple' }
+  { id: 'Black', value: '#000000', label: 'Black' },
+  { id: 'White', value: '#FFFFFF', label: 'White', border: true },
+  { id: 'Grey', value: '#64748B', label: 'Gray Blue' },
+  { id: 'Red', value: '#EF4444', label: 'Red' },
+  { id: 'Blue', value: '#3B82F6', label: 'Blue' },
+  { id: 'Silver', value: '#E2E8F0', label: 'Silver', border: true },
+  { id: 'Green', value: '#22C55E', label: 'Green' },
+  { id: 'Beige', value: '#E3D3C3', label: 'Beige', border: true },
+  { id: 'Yellow', value: '#FBBF24', label: 'Yellow' },
+  { id: 'Orange', value: '#F97316', label: 'Orange' },
+  { id: 'Brown', value: '#92400E', label: 'Brown' },
+  { id: 'Gold', value: '#EAB308', label: 'Gold' },
+  { id: 'Purple', value: '#7C3AED', label: 'Purple' }
 ];
 
 const MultiColorSelector = ({ selectedColors, onColorSelect }) => {
@@ -680,6 +683,14 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { colorMode } = useColorMode();
+  const { data: priceRangeData, isLoading: isPriceRangeLoading } = usePriceRange();
+  const { data: mileageRangeData, isLoading: isMileageRangeLoading } = useMileageRange();
+  const { data: yearsRangeData, isLoading: isYearsRangeLoading } = useyearsRange();
+  const { data: fuelTypeData, isLoading: isFuelTypeLoading } = useFuelType();
+  const { data: transmissionTypeData, isLoading: isTransmissionTypeLoading } = useTransmissionType();
+  const { data: bodyTypesData, isLoading: isBodyTypesLoading } = useBodyTypes();
+  const { data: colorsData, isLoading: isColorsLoading } = useColors();
+  const { data: featuresData, isLoading: isFeaturesLoading } = useFeatures();
 
   // Color mode values
   const bgColor = useColorModeValue("white", "#261919FF");
@@ -697,16 +708,91 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   const toggleBgInactive = useColorModeValue("gray.100", "gray.700");
   const toggleTextInactive = useColorModeValue("gray.600", "gray.400");
 
+  // Generate fuel type options based on API data
+  const fuelOptions = useMemo(() => {
+    if (!fuelTypeData) return [];
+
+    return fuelTypeData.filter(Boolean).map(fuel => ({
+      id: fuel.toLowerCase().replace(/\s+/g, '-'),
+      value: fuel,
+      label: fuel
+
+    }));
+  }, [fuelTypeData]);
+
+  // Get display order from API data if available, otherwise use default order
+  const fuelDisplayOrder = useMemo(() => {
+    if (!fuelTypeData) return [];
+    return fuelTypeData.filter(Boolean).map(fuel => fuel.toLowerCase().replace(/\s+/g, '-'));
+  }, [fuelTypeData]);
+
+  // Generate price options based on API data
+  const priceOptions = useMemo(() => {
+    if (!priceRangeData) return [];
+
+    const { min_price, max_price } = priceRangeData;
+    const step = Math.ceil((max_price - min_price) / 20); // Create 20 steps
+
+    return Array.from(
+      { length: 21 },
+      (_, i) => ({
+        value: String(min_price + (i * step)),
+        label: `${(min_price + (i * step)).toLocaleString()} €`
+      })
+    );
+  }, [priceRangeData]);
+
+  // Generate mileage options based on API data
+  const mileageOptions = useMemo(() => {
+    if (!mileageRangeData) return [];
+
+    const { min_mileage, max_mileage } = mileageRangeData;
+    const step = Math.ceil((max_mileage - min_mileage) / 20); // Create 20 steps
+
+    return Array.from(
+      { length: 21 },
+      (_, i) => ({
+        value: String(min_mileage + (i * step)),
+        label: `${(min_mileage + (i * step)).toLocaleString()} km`
+      })
+    );
+  }, [mileageRangeData]);
+
+  // Generate registration year options based on API data
+  const registrationYears = useMemo(() => {
+    if (!yearsRangeData) return [];
+
+    const { min_year, max_year } = yearsRangeData;
+    return Array.from(
+      { length: max_year - min_year + 1 },
+      (_, i) => ({
+        value: String(max_year - i),
+        label: String(max_year - i)
+      })
+    );
+  }, [yearsRangeData]);
+
+  // Generate transmission options based on API data
+  const transmissionOptions = useMemo(() => {
+    if (!transmissionTypeData) return [];
+
+    return transmissionTypeData.filter(Boolean).map(type => ({
+      id: type.toLowerCase().replace(/\s+/g, '-'),
+      value: type,
+      label: type
+    }));
+  }, [transmissionTypeData]);
+
   // All your existing state declarations that use searchParams
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
   const [priceType, setPriceType] = useState(searchParams.get('priceType') || 'cash');
   const [showAllFeatures, setShowAllFeatures] = useState(false);
-  const [priceFrom, setPriceFrom] = useState(searchParams.get('priceFrom') || '');
-  const [priceTo, setPriceTo] = useState(searchParams.get('priceTo') || '');
-  const [registrationFrom, setRegistrationFrom] = useState(searchParams.get('regFrom') || '');
-  const [registrationTo, setRegistrationTo] = useState(searchParams.get('regTo') || '');
-  const [mileageFrom, setMileageFrom] = useState(searchParams.get('mileageFrom') || '');
-  const [mileageTo, setMileageTo] = useState(searchParams.get('mileageTo') || '');
+  const [min_price, setMin_price] = useState(searchParams.get('min_price') || '');
+  const [max_price, setMax_price] = useState(searchParams.get('max_price') || '');
+  const [min_year, setMin_year] = useState(searchParams.get('min_year') || '');
+  const [max_year, setMax_year] = useState(searchParams.get('max_year') || '');
+  const [min_mileage, setMin_mileage] = useState(searchParams.get('min_mileage') || '');
+  const [max_mileage, setMax_mileage] = useState(searchParams.get('max_mileage') || '');
   const [transmission, setTransmission] = useState(searchParams.get('transmission') || '');
   const [vatDeduction, setVatDeduction] = useState(searchParams.get('vat') === 'true');
   const [discountedCars, setDiscountedCars] = useState(searchParams.get('discounted') === 'true');
@@ -716,7 +802,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   const [powerFrom, setPowerFrom] = useState(searchParams.get('powerFrom') || '');
   const [powerTo, setPowerTo] = useState(searchParams.get('powerTo') || '');
   const [selectedVehicleTypes, setSelectedVehicleTypes] = useState(() => {
-    const types = searchParams.get('vehicleTypes')?.split(',').filter(Boolean) || [];
+    const types = searchParams.get('body_type')?.split(',').filter(Boolean) || [];
     return types;
   });
   const [is4x4, setIs4x4] = useState(searchParams.get('is4x4') === 'true');
@@ -724,9 +810,9 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     const featuresParam = searchParams.get('features')?.split(',').filter(Boolean) || [];
     return featuresParam;
   });
-  const [selectedColors, setSelectedColors] = useState(() => {
-    const colorsParam = searchParams.get('colors')?.split(',').filter(Boolean) || [];
-    return colorsParam;
+  const [selectedColours, setSelectedColours] = useState(() => {
+    const colourParam = searchParams.get('colour')?.split(',').filter(Boolean) || [];
+    return colourParam;
   });
   const [selectedFuels, setSelectedFuels] = useState(() => {
     const fuelParam = searchParams.get('fuel')?.split(',').filter(Boolean) || [];
@@ -748,6 +834,26 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     });
   });
 
+  // Generate body type options based on API data
+  const bodyTypeOptions = useMemo(() => {
+    if (!bodyTypesData) return [];
+    return bodyTypesData.filter(Boolean).map(type => ({
+      id: type.toLowerCase().replace(/\s+/g, '-'),
+      value: type,
+      label: type
+    }));
+  }, [bodyTypesData]);
+
+  // Generate feature options based on API data
+  const featureOptions = useMemo(() => {
+    if (!featuresData) return [];
+    return featuresData.filter(Boolean).map(feature => ({
+      id: feature.toLowerCase().replace(/\s+/g, '-'),
+      value: feature,
+      label: feature
+    }));
+  }, [featuresData]);
+
   // Continuing from where we left off
 
   useEffect(() => {
@@ -758,12 +864,12 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
 
     // Only add parameters if they have values
     if (priceType !== 'cash') params.set('priceType', priceType);
-    if (priceFrom) params.set('priceFrom', priceFrom);
-    if (priceTo) params.set('priceTo', priceTo);
-    if (registrationFrom) params.set('regFrom', registrationFrom);
-    if (registrationTo) params.set('regTo', registrationTo);
-    if (mileageFrom) params.set('mileageFrom', mileageFrom);
-    if (mileageTo) params.set('mileageTo', mileageTo);
+    if (min_price) params.set('min_price', min_price);
+    if (max_price) params.set('max_price', max_price);
+    if (min_year) params.set('min_year', min_year);
+    if (max_year) params.set('max_year', max_year);
+    if (min_mileage) params.set('min_mileage', min_mileage);
+    if (max_mileage) params.set('max_mileage', max_mileage);
     if (transmission) params.set('transmission', transmission);
     if (vatDeduction) params.set('vat', 'true');
     if (discountedCars) params.set('discounted', 'true');
@@ -781,12 +887,15 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     if (powerFrom) params.set('powerFrom', powerFrom);
     if (powerTo) params.set('powerTo', powerTo);
     if (selectedFeatures.length > 0) params.set('features', selectedFeatures.join(','));
-    if (selectedVehicleTypes.length > 0) params.set('vehicleTypes', selectedVehicleTypes.join(','));
-    if (selectedColors.length > 0) params.set('colors', selectedColors.join(','));
+    if (selectedVehicleTypes.length > 0) params.set('body_type', selectedVehicleTypes.join(','));
+    if (selectedColours.length > 0) params.set('colour', selectedColours.join(','));
     if (is4x4) params.set('is4x4', 'true');
 
     if (makeModelFilters.length > 0) {
-      params.set('makeModel', makeModelFilters.map(f => f.id).join(','));
+      makeModelFilters.forEach(filter => {
+        if (filter.brand) params.append('brand', filter.brand);
+        if (filter.model) params.append('model', filter.model);
+      });
     }
 
     // Construct the new URL
@@ -799,12 +908,12 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   }, [
     activeTab,
     priceType,
-    priceFrom,
-    priceTo,
-    registrationFrom,
-    registrationTo,
-    mileageFrom,
-    mileageTo,
+    min_price,
+    max_price,
+    min_year,
+    max_year,
+    min_mileage,
+    max_mileage,
     transmission,
     vatDeduction,
     discountedCars,
@@ -815,7 +924,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     powerFrom,
     powerTo,
     selectedVehicleTypes,
-    selectedColors,
+    selectedColours,
     is4x4,
     selectedFeatures,
     makeModelFilters,
@@ -824,12 +933,12 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
 
   // hasFilters check
   const hasFilters = Boolean(
-    priceFrom ||
-    priceTo ||
-    registrationFrom ||
-    registrationTo ||
-    mileageFrom ||
-    mileageTo ||
+    min_price ||
+    max_price ||
+    min_year ||
+    max_year ||
+    min_mileage ||
+    max_mileage ||
     transmission ||
     selectedFuels.length > 0 ||
     vatDeduction ||
@@ -842,19 +951,19 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     powerUnit !== 'hp' ||
     selectedVehicleTypes.length > 0 ||
     is4x4 ||
-    selectedColors.length > 0 ||
+    selectedColours.length > 0 ||
     selectedFeatures.length > 0 ||
     makeModelFilters.length > 0
   );
 
   // Reset filters
   const resetFilters = () => {
-    setPriceFrom('');
-    setPriceTo('');
-    setRegistrationFrom('');
-    setRegistrationTo('');
-    setMileageFrom('');
-    setMileageTo('');
+    setMin_price('');
+    setMax_price('');
+    setMin_year('');
+    setMax_year('');
+    setMin_mileage('');
+    setMax_mileage('');
     setTransmission('');
     setVatDeduction(false);
     setDiscountedCars(false);
@@ -867,7 +976,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     setPowerTo('');
     setSelectedVehicleTypes([]);
     setIs4x4(false);
-    setSelectedColors([]);
+    setSelectedColours([]);
     setSelectedFeatures([]);
     setMakeModelFilters([]);
   };
@@ -929,7 +1038,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             fontSize="sm"
           >
             <Text fontWeight="medium" color={accentColor}>
-              {filter.make} {filter.model !== 'all' ? filter.model : '(All)'}
+              {filter.brand} {filter.model ? filter.model : ''}
             </Text>
             <Box
               as="button"
@@ -949,6 +1058,36 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     const [selectedMake, setSelectedMake] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedModels, setSelectedModels] = useState([]);
+
+    // Fetch brands and models from API
+    const { data: brandsData, isLoading: isBrandsLoading } = useBrands();
+    const { data: modelsData, isLoading: isModelsLoading } = useModels(selectedMake?.id || '');
+
+    // Filter brands based on search term
+    const filteredBrands = useMemo(() => {
+      if (!brandsData) return [];
+      return brandsData
+        .filter(brand => brand.toLowerCase().includes(searchTerm.toLowerCase()))
+        .map(brand => ({
+          id: brand,
+          value: brand,
+          label: brand,
+        }));
+    }, [brandsData, searchTerm]);
+
+    // Filter models based on search term
+    const filteredModels = useMemo(() => {
+      if (!modelsData) return [];
+      // Ensure modelsData is treated as an array
+      const modelsArray = Array.isArray(modelsData) ? modelsData : [modelsData];
+      return modelsArray
+        .filter(model => model.toLowerCase().includes(searchTerm.toLowerCase()))
+        .map(model => ({
+          id: model,
+          value: model,
+          label: model,
+        }));
+    }, [modelsData, searchTerm]);
 
     // Modal colors
     const modalBg = useColorModeValue("white", "#22303f");
@@ -997,15 +1136,6 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
       });
     };
 
-    const filteredMakes = makes.filter(make =>
-      make.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const popularMakes = filteredMakes.filter(make => make.popular);
-    const otherMakes = filteredMakes.filter(make => !make.popular);
-    const currentModels = selectedMake ? models[selectedMake.id] || [] : [];
-    const popularModels = currentModels.filter(model => model.popular);
-    const otherModels = currentModels.filter(model => !model.popular && model.id !== 'all');
-
     if (!isOpen) return null;
 
     return (
@@ -1029,7 +1159,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             bg={modalHeaderBg}
           >
             <Heading size="md" fontWeight="semibold" color={headingColor}>
-              {selectedMake ? `Select ${selectedMake.name} Model` : 'Select Make'}
+              {selectedMake ? `Select ${selectedMake.label} Model` : 'Select Make'}
             </Heading>
             <ModalCloseButton position="static" color={textColor} />
           </ModalHeader>
@@ -1060,156 +1190,81 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
           <ModalBody overflowY="auto" bg={modalBg}>
             {!selectedMake ? (
               <VStack spacing={6} align="stretch">
-                {popularMakes.length > 0 && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color={labelColor} mb={3}>
-                      POPULAR MAKES
-                    </Text>
-                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                      {popularMakes.map(make => (
-                        <Button
-                          key={make.id}
-                          onClick={() => handleMakeSelect(make)}
-                          display="flex"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          p={3}
-                          textAlign="left"
-                          borderWidth="2px"
-                          borderColor={buttonBorderColor}
-                          borderRadius="lg"
-                          bg={buttonBg}
-                          _hover={{ borderColor: buttonHoverBorderColor, bg: buttonHoverBg }}
-                          transition="all 0.2s"
-                          h="auto"
-                          w="full"
-                          variant="unstyled"
-                        >
-                          <Text fontWeight="medium" color={textColor}>{make.name}</Text>
-                          <LucideIcon
-                            icon={ChevronRight}
-                            boxSize="5"
-                            color={iconColor}
-                          />
-                        </Button>
-                      ))}
-                    </Grid>
-                  </Box>
-                )}
-
-                {otherMakes.length > 0 && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color={labelColor} mb={3}>
-                      OTHER MAKES
-                    </Text>
-                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                      {otherMakes.map(make => (
-                        <Button
-                          key={make.id}
-                          onClick={() => handleMakeSelect(make)}
-                          display="flex"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          p={3}
-                          textAlign="left"
-                          borderWidth="2px"
-                          borderColor={buttonBorderColor}
-                          borderRadius="lg"
-                          bg={buttonBg}
-                          _hover={{ borderColor: buttonHoverBorderColor, bg: buttonHoverBg }}
-                          transition="all 0.2s"
-                          h="auto"
-                          w="full"
-                          variant="unstyled"
-                        >
-                          <Text fontWeight="medium" color={textColor}>{make.name}</Text>
-                          <LucideIcon
-                            icon={ChevronRight}
-                            boxSize="5"
-                            color={iconColor}
-                          />
-                        </Button>
-                      ))}
-                    </Grid>
-                  </Box>
+                {isBrandsLoading ? (
+                  <Flex gap={2}>
+                    <Skeleton height="40px" flex="1" />
+                    <Skeleton height="40px" flex="1" />
+                  </Flex>
+                ) : (
+                  <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                    {filteredBrands.map(brand => (
+                      <Button
+                        key={brand.id}
+                        onClick={() => handleMakeSelect(brand)}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        p={3}
+                        textAlign="left"
+                        borderWidth="2px"
+                        borderColor={buttonBorderColor}
+                        borderRadius="lg"
+                        bg={buttonBg}
+                        _hover={{ borderColor: buttonHoverBorderColor, bg: buttonHoverBg }}
+                        transition="all 0.2s"
+                        h="auto"
+                        w="full"
+                        variant="unstyled"
+                      >
+                        <Text fontWeight="medium" color={textColor}>{brand.label}</Text>
+                        <LucideIcon
+                          icon={ChevronRight}
+                          boxSize="5"
+                          color={iconColor}
+                        />
+                      </Button>
+                    ))}
+                  </Grid>
                 )}
               </VStack>
             ) : (
               <VStack spacing={6} align="stretch">
-                {popularModels.length > 0 && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color={labelColor} mb={3}>
-                      POPULAR MODELS
-                    </Text>
-                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                      {popularModels.map(model => {
-                        const isSelected = selectedModels.includes(`${selectedMake.id}-${model.id}`);
-                        return (
-                          <Button
-                            key={model.id}
-                            onClick={() => handleModelToggle(model)}
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            p={3}
-                            textAlign="left"
-                            borderWidth="2px"
-                            borderRadius="lg"
-                            h="auto"
-                            w="full"
-                            variant="unstyled"
-                            borderColor={isSelected ? buttonHoverBorderColor : buttonBorderColor}
-                            bg={isSelected ? accentBgLight : buttonBg}
-                            _hover={!isSelected ? { borderColor: buttonHoverBorderColor, bg: buttonHoverBg } : {}}
-                            transition="all 0.2s"
-                          >
-                            <Text fontWeight="medium" color={textColor}>{model.name}</Text>
-                            {isSelected && (
-                              <LucideIcon icon={Check} boxSize="5" color={activeIconColor} />
-                            )}
-                          </Button>
-                        );
-                      })}
-                    </Grid>
-                  </Box>
-                )}
-
-                {otherModels.length > 0 && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="semibold" color={labelColor} mb={3}>
-                      OTHER MODELS
-                    </Text>
-                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                      {otherModels.map(model => {
-                        const isSelected = selectedModels.includes(`${selectedMake.id}-${model.id}`);
-                        return (
-                          <Button
-                            key={model.id}
-                            onClick={() => handleModelToggle(model)}
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            p={3}
-                            textAlign="left"
-                            borderWidth="2px"
-                            borderRadius="lg"
-                            h="auto"
-                            w="full"
-                            variant="unstyled"
-                            borderColor={isSelected ? buttonHoverBorderColor : buttonBorderColor}
-                            bg={isSelected ? accentBgLight : buttonBg}
-                            _hover={!isSelected ? { borderColor: buttonHoverBorderColor, bg: buttonHoverBg } : {}}
-                            transition="all 0.2s"
-                          >
-                            <Text fontWeight="medium" color={textColor}>{model.name}</Text>
-                            {isSelected && (
-                              <LucideIcon icon={Check} boxSize="5" color={activeIconColor} />
-                            )}
-                          </Button>
-                        );
-                      })}
-                    </Grid>
-                  </Box>
+                {isModelsLoading ? (
+                  <Flex gap={2}>
+                    <Skeleton height="40px" flex="1" />
+                    <Skeleton height="40px" flex="1" />
+                  </Flex>
+                ) : (
+                  <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                    {filteredModels.map(model => {
+                      const isSelected = selectedModels.includes(`${selectedMake.id}-${model.id}`);
+                      return (
+                        <Button
+                          key={model.id}
+                          onClick={() => handleModelToggle(model)}
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          p={3}
+                          textAlign="left"
+                          borderWidth="2px"
+                          borderRadius="lg"
+                          h="auto"
+                          w="full"
+                          variant="unstyled"
+                          borderColor={isSelected ? buttonHoverBorderColor : buttonBorderColor}
+                          bg={isSelected ? accentBgLight : buttonBg}
+                          _hover={!isSelected ? { borderColor: buttonHoverBorderColor, bg: buttonHoverBg } : {}}
+                          transition="all 0.2s"
+                        >
+                          <Text fontWeight="medium" color={textColor}>{model.label}</Text>
+                          {isSelected && (
+                            <LucideIcon icon={Check} boxSize="5" color={activeIconColor} />
+                          )}
+                        </Button>
+                      );
+                    })}
+                  </Grid>
                 )}
               </VStack>
             )}
@@ -1242,11 +1297,11 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
                 onClick={() => {
                   if (selectedModels.length > 0) {
                     const filters = selectedModels.map(id => {
-                      const [make, model] = id.split('-');
+                      const [brand, model] = id.split('-');
                       return {
                         id,
-                        make: makes.find(m => m.id === make)?.name,
-                        model: models[make]?.find(m => m.id === model)?.name || model
+                        brand,
+                        model: model === 'all' ? '' : model
                       };
                     });
                     onSelect(filters);
@@ -1490,46 +1545,46 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   };
 
   // Power Unit Toggle Component
-  const PowerUnitToggle = ({ value, onChange }) => {
-    const activeBg = useColorModeValue("red.400", "red.500");
-    const inactiveBg = useColorModeValue("gray.100", "gray.700");
-    const activeTextColor = "white";
-    const inactiveTextColor = useColorModeValue("gray.600", "gray.400");
-    const hoverBg = useColorModeValue("gray.200", "gray.600");
+  // const PowerUnitToggle = ({ value, onChange }) => {
+  //   const activeBg = useColorModeValue("red.400", "red.500");
+  //   const inactiveBg = useColorModeValue("gray.100", "gray.700");
+  //   const activeTextColor = "white";
+  //   const inactiveTextColor = useColorModeValue("gray.600", "gray.400");
+  //   const hoverBg = useColorModeValue("gray.200", "gray.600");
 
-    return (
-      <HStack spacing={1}>
-        <Button
-          onClick={() => onChange('hp')}
-          size="xs"
-          px={2}
-          py={0.5}
-          fontWeight="medium"
-          borderRadius="md"
-          bg={value === 'hp' ? activeBg : inactiveBg}
-          color={value === 'hp' ? activeTextColor : inactiveTextColor}
-          _hover={value !== 'hp' ? { bg: hoverBg } : {}}
-          transition="colors 0.2s"
-        >
-          hp
-        </Button>
-        <Button
-          onClick={() => onChange('kw')}
-          size="xs"
-          px={2}
-          py={0.5}
-          fontWeight="medium"
-          borderRadius="md"
-          bg={value === 'kw' ? activeBg : inactiveBg}
-          color={value === 'kw' ? activeTextColor : inactiveTextColor}
-          _hover={value !== 'kw' ? { bg: hoverBg } : {}}
-          transition="colors 0.2s"
-        >
-          kw
-        </Button>
-      </HStack>
-    );
-  };
+  //   return (
+  //     <HStack spacing={1}>
+  //       <Button
+  //         onClick={() => onChange('hp')}
+  //         size="xs"
+  //         px={2}
+  //         py={0.5}
+  //         fontWeight="medium"
+  //         borderRadius="md"
+  //         bg={value === 'hp' ? activeBg : inactiveBg}
+  //         color={value === 'hp' ? activeTextColor : inactiveTextColor}
+  //         _hover={value !== 'hp' ? { bg: hoverBg } : {}}
+  //         transition="colors 0.2s"
+  //       >
+  //         hp
+  //       </Button>
+  //       <Button
+  //         onClick={() => onChange('kw')}
+  //         size="xs"
+  //         px={2}
+  //         py={0.5}
+  //         fontWeight="medium"
+  //         borderRadius="md"
+  //         bg={value === 'kw' ? activeBg : inactiveBg}
+  //         color={value === 'kw' ? activeTextColor : inactiveTextColor}
+  //         _hover={value !== 'kw' ? { bg: hoverBg } : {}}
+  //         transition="colors 0.2s"
+  //       >
+  //         kw
+  //       </Button>
+  //     </HStack>
+  //   );
+  // };
 
   const getPowerOptions = (unit) => {
     // Common power values in hp
@@ -1590,34 +1645,11 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
 
   // Generate options for various selects
   const currentYear = new Date().getFullYear();
-  const registrationYears = Array.from(
-    { length: currentYear - 1990 + 1 },
-    (_, i) => ({
-      value: String(currentYear - i),
-      label: String(currentYear - i)
-    })
-  );
-
-  const mileageOptions = Array.from(
-    { length: 31 },
-    (_, i) => ({
-      value: String(i * 10000),
-      label: `${(i * 10000).toLocaleString()} km`
-    })
-  );
-
-  const priceOptions = Array.from(
-    { length: 100 },
-    (_, i) => ({
-      value: String((i + 1) * 1000),
-      label: `${((i + 1) * 1000).toLocaleString()} €`
-    })
-  );
 
   // Tabs configuration
   const tabs = [
     { id: 'all', label: 'All', icon: Sliders },
-    { id: 'saved', label: 'Saved', icon: Bookmark },
+    { id: 'saved', label: 'Favourites', icon: Heart },
     { id: 'history', label: 'History', icon: Clock },
   ];
 
@@ -1698,129 +1730,103 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
             {/* Price Section */}
             <Category
               title="PRICE (€)"
-              badge={priceFrom || priceTo ? '1' : null}
+              badge={min_price || max_price ? '1' : null}
               defaultOpen={true}
             >
               <Box>
-                <Flex justify="flex-end" align="center" mb={3}>
+                {/* <Flex justify="flex-end" align="center" mb={3}>
                   <Flex shadow="sm" borderRadius="md" overflow="hidden">
-                    <Button
-                      onClick={() => setPriceType('instalments')}
-                      px={3}
-                      py={1}
-                      height="28px"
-                      fontSize="sm"
-                      fontWeight="medium"
-                      transition="colors 0.2s"
-                      borderRadius="md"
-                      borderRightRadius="0"
-                      bg={priceType === 'instalments' ? accentColor : toggleBgInactive}
-                      color={priceType === 'instalments' ? "white" : toggleTextInactive}
-                      _hover={priceType !== 'instalments' ? { bg: hoverBgColor } : {}}
-                      _focus={{ boxShadow: "none" }}
-                      border="none"
-                      sx={{
-                        padding: "0 0.75rem !important",
-                        height: "28px !important",
-                        fontSize: "var(--chakra-fontSizes-sm) !important",
-                        borderRadius: "var(--chakra-radii-md) 0 0 var(--chakra-radii-md) !important"
-                      }}
-                    >
-                      Instalments
-                    </Button>
-                    <Button
-                      onClick={() => setPriceType('cash')}
-                      px={2}
-                      py={1}
-                      height="28px"
-                      fontSize="sm"
-                      fontWeight="medium"
-                      transition="colors 0.2s"
-                      borderRadius="md"
-                      borderLeftRadius="0"
-                      bg={priceType === 'cash' ? accentColor : toggleBgInactive}
-                      color={priceType === 'cash' ? "white" : toggleTextInactive}
-                      _hover={priceType !== 'cash' ? { bg: hoverBgColor } : {}}
-                      _focus={{ boxShadow: "none" }}
-                      border="none"
-                      sx={{
-                        padding: "0 0.5rem !important",
-                        height: "28px !important",
-                        fontSize: "var(--chakra-fontSizes-sm) !important",
-                        borderRadius: "0 var(--chakra-radii-md) var(--chakra-radii-md) 0 !important"
-                      }}
-                    >
-                      Cash
-                    </Button>
+                  
                   </Flex>
-                </Flex>
+                </Flex> */}
 
-                <Flex gap={2}>
-                  <CustomSelect
-                    value={priceFrom}
-                    onChange={setPriceFrom}
-                    placeholder="From"
-                    options={priceOptions}
-                  />
-                  <CustomSelect
-                    value={priceTo}
-                    onChange={setPriceTo}
-                    placeholder="To"
-                    options={priceOptions}
-                  />
-                </Flex>
+                {isPriceRangeLoading ? (
+                  <Flex gap={2}>
+                    <Skeleton height="40px" flex="1" />
+                    <Skeleton height="40px" flex="1" />
+                  </Flex>
+                ) : (
+                  <Flex gap={2}>
+                    <CustomSelect
+                      value={min_price}
+                      onChange={setMin_price}
+                      placeholder="From"
+                      options={priceOptions}
+                    />
+                    <CustomSelect
+                      value={max_price}
+                      onChange={setMax_price}
+                      placeholder="To"
+                      options={priceOptions}
+                    />
+                  </Flex>
+                )}
               </Box>
-              <VStack spacing={3} align="stretch" pt={4}>
+              {/* <VStack spacing={3} align="stretch" pt={4}>
                 <CustomCheckbox
                   label="VAT deduction"
                   checked={vatDeduction}
                   onChange={(e) => setVatDeduction(e.target.checked)}
                 />
-              </VStack>
+              </VStack> */}
             </Category>
 
             {/* Registration Section */}
             <Category
               title="REGISTRATION"
-              badge={registrationFrom || registrationTo ? '1' : null}
+              badge={min_year || max_year ? '1' : null}
               defaultOpen={true}
             >
-              <Flex gap={2}>
-                <CustomSelect
-                  value={registrationFrom}
-                  onChange={setRegistrationFrom}
-                  placeholder="From"
-                  options={registrationYears}
-                />
-                <CustomSelect
-                  value={registrationTo}
-                  onChange={setRegistrationTo}
-                  placeholder="To"
-                  options={registrationYears}
-                />
-              </Flex>
+              {isYearsRangeLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <Flex gap={2}>
+                  <CustomSelect
+                    value={min_year}
+                    onChange={setMin_year}
+                    placeholder="From"
+                    options={registrationYears}
+                  />
+                  <CustomSelect
+                    value={max_year}
+                    onChange={setMax_year}
+                    placeholder="To"
+                    options={registrationYears}
+                  />
+                </Flex>
+              )}
             </Category>
 
             {/* Mileage Section */}
             <Category
               title="MILEAGE"
-              badge={mileageFrom || mileageTo ? '1' : null}
+              badge={min_mileage || max_mileage ? '1' : null}
               defaultOpen={true}
             >
-              <Flex gap={2}>
-                <CustomSelect
-                  value={mileageFrom}
-                  onChange={setMileageFrom}
-                  placeholder="From"
-                  options={mileageOptions}
-                />
-                <CustomSelect
-                  value={mileageTo}
-                  onChange={setMileageTo}
-                  placeholder="To"
-                  options={mileageOptions}
-                />
-              </Flex>
+              {isMileageRangeLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <Flex gap={2}>
+                  <CustomSelect
+                    value={min_mileage}
+                    onChange={setMin_mileage}
+                    placeholder="From"
+                    options={mileageOptions}
+                  />
+                  <CustomSelect
+                    value={max_mileage}
+                    onChange={setMax_mileage}
+                    placeholder="To"
+                    options={mileageOptions}
+                  />
+                </Flex>
+              )}
             </Category>
 
             {/* Transmission Section */}
@@ -1829,11 +1835,17 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
               badge={transmission ? '1' : null}
               defaultOpen={true}
             >
-              <ToggleButton
-                options={['Automatic', 'Manual']}
-                value={transmission}
-                onChange={setTransmission}
-              />
+              {isTransmissionTypeLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <ToggleButton
+                  options={transmissionOptions.map(opt => opt.label)}
+                  value={transmission}
+                  onChange={setTransmission}
+                />
+              )}
             </Category>
 
             <Category
@@ -1841,19 +1853,25 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
               badge={selectedFuels.length > 0 ? selectedFuels.length : null}
               defaultOpen={true}
             >
-              <MultiSelect
-                selected={selectedFuels}
-                onChange={(newSelected) => {
-                  setSelectedFuels(newSelected);
-                }}
-                options={fuelData.types}
-                displayOrder={fuelData.displayOrder}
-                placeholder="Select fuel types"
-              />
+              {isFuelTypeLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <MultiSelect
+                  selected={selectedFuels}
+                  onChange={(newSelected) => {
+                    setSelectedFuels(newSelected);
+                  }}
+                  options={fuelOptions}
+                  displayOrder={fuelDisplayOrder}
+                  placeholder="Select fuel types"
+                />
+              )}
             </Category>
 
             {/* Electric & Hybrid Section */}
-            <Category
+            {/* <Category
               title="ELECTRIC & HYBRID"
               badge={(isElectricVehicle || hybridType) ? '1' : null}
               defaultOpen={true}
@@ -1907,19 +1925,19 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
                   </Box>
                 </VStack>
               </Box>
-            </Category>
+            </Category> */}
 
             <Category
               title="POWER"
               badge={powerFrom || powerTo ? '1' : null}
               defaultOpen={true}
             >
-              <Flex justify="flex-end" mb={3}>
+              {/* <Flex justify="flex-end" mb={3}>
                 <PowerUnitToggle
                   value={powerUnit}
                   onChange={handlePowerUnitChange}
                 />
-              </Flex>
+              </Flex> */}
               <Flex gap={2}>
                 <CustomSelect
                   value={powerFrom}
@@ -1941,38 +1959,53 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
               badge={selectedVehicleTypes.length ? selectedVehicleTypes.length : null}
               defaultOpen={true}
             >
-              <MultiSelect
-                selected={selectedVehicleTypes.map(type => ({
-                  id: type,
-                  value: type,
-                  label: vehicleTypes.find(t => t.value === type)?.label || type
-                }))}
-                onChange={(newSelected) => {
-                  setSelectedVehicleTypes(newSelected.map(s => s.value));
-                }}
-                options={vehicleTypes}
-                displayOrder={vehicleTypes.map(t => t.value)}
-                placeholder="All"
-              />
-
-              <Box mt={4}>
-                <CustomCheckbox
-                  label="Drive type 4x4"
-                  checked={is4x4}
-                  onChange={(e) => setIs4x4(e.target.checked)}
+              {isBodyTypesLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <MultiSelect
+                  selected={selectedVehicleTypes.map(type => ({
+                    id: type,
+                    value: type,
+                    label: bodyTypeOptions?.find(t => t.value === type)?.label || type
+                  }))}
+                  onChange={(newSelected) => {
+                    setSelectedVehicleTypes(newSelected.map(s => s.value));
+                  }}
+                  options={bodyTypeOptions || []}
+                  displayOrder={selectedVehicleTypes?.map(t => t.value) || []}
+                  placeholder="All"
                 />
-              </Box>
+              )}
             </Category>
 
             <Category
               title="EXTERIOR COLOR"
-              badge={selectedColors.length ? selectedColors.length : null}
+              badge={selectedColours.length ? selectedColours.length : null}
               defaultOpen={true}
             >
-              <MultiColorSelector
-                selectedColors={selectedColors}
-                onColorSelect={setSelectedColors}
-              />
+              {isColorsLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <MultiSelect
+                  selected={selectedColours.map(colour => ({
+                    id: colour,
+                    value: colour,
+                    label: colour
+                  }))}
+                  onChange={(newSelected) => {
+                    setSelectedColours(newSelected.map(s => s.id));
+                  }}
+                  options={colorOptions || []}
+                  displayOrder={colorOptions?.map(c => c.id) || []}
+                  placeholder="Select colours"
+                />
+              )}
             </Category>
 
             <Category
@@ -1980,21 +2013,26 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
               badge={selectedFeatures.length ? selectedFeatures.length : null}
               defaultOpen={true}
             >
-              <FeaturesSection />
-              <Button
-                color={moreFeaturesBtnColor}
-                _hover={{ color: moreFeaturesBtnHoverColor }}
-                fontWeight="medium"
-                fontSize="sm"
-                mt={4}
-                rightIcon={<LucideIcon icon={ChevronRight} boxSize="4" />}
-                variant="unstyled"
-                display="flex"
-                alignItems="center"
-                height="auto"
-              >
-                More features
-              </Button>
+              {isFeaturesLoading ? (
+                <Flex gap={2}>
+                  <Skeleton height="40px" flex="1" />
+                  <Skeleton height="40px" flex="1" />
+                </Flex>
+              ) : (
+                <MultiSelect
+                  selected={selectedFeatures.map(feature => ({
+                    id: feature,
+                    value: feature,
+                    label: featureOptions?.find(f => f.value === feature)?.label || feature
+                  }))}
+                  onChange={(newSelected) => {
+                    setSelectedFeatures(newSelected.map(s => s.value));
+                  }}
+                  options={featureOptions || []}
+                  displayOrder={featureOptions?.map(f => f.value) || []}
+                  placeholder="Select features"
+                />
+              )}
             </Category>
 
             <VStack spacing={2} pt={2}>
@@ -2019,8 +2057,8 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
       case 'saved':
         return (
           <Box py={8} textAlign="center">
-            <LucideIcon icon={Bookmark} boxSize="12" mx="auto" mb={4} color={emptyStateIconColor} />
-            <Text color={emptyStateMsgColor}>Your saved filters will appear here</Text>
+            <LucideIcon icon={Heart} boxSize="12" mx="auto" mb={4} color={emptyStateIconColor} />
+            <Text color={emptyStateMsgColor}>Your favourite cars will appear here</Text>
           </Box>
         );
 

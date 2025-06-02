@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useState, useEffect } from "react"
 
 interface Car {
 	id: number
@@ -19,6 +19,13 @@ interface Car {
 	features: string[]
 }
 
+interface Cars {
+	cars: Car[],
+	total: number,
+	page: number,
+	limit: number
+}
+
 export interface Filter {
 	names: string[]
 	fuelType: string[]
@@ -27,7 +34,7 @@ export interface Filter {
 	priceRange: [number, number]
 	ratings: number[]
 	carType: string[]
-	transmission: string[]
+	gear: string[]
 	mileage: string[]
 	power: string[]
 	date: string[],
@@ -36,7 +43,14 @@ export interface Filter {
 
 type SortCriteria = "name" | "price" | "rating"
 
-const useCarFilter = (carsData: Car[]) => {
+const useCarFilter = (carsData: any) => {
+	useEffect(() => {
+		if (carsData) {
+			if (!itemsPerPage) setItemsPerPage(carsData.limit || 10);
+			setCurrentPage(carsData.page);
+		}
+		// eslint-disable-next-line
+	}, [carsData]);
 	const [filter, setFilter] = useState<Filter>({
 		names: [],
 		fuelType: [],
@@ -45,24 +59,32 @@ const useCarFilter = (carsData: Car[]) => {
 		priceRange: [0, 500],
 		ratings: [],
 		carType: [],
-		transmission: [],
+		gear: [],
 		mileage: [],
 		power: [],
 		date: [],
 		features: [],
 	})
 	const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name")
-	const [itemsPerPage, setItemsPerPage] = useState<number>(10)
-	const [currentPage, setCurrentPage] = useState<number>(1)
+	const [itemsPerPage, setItemsPerPage] = useState<number>(carsData?.limit || 10)
+	const [currentPage, setCurrentPage] = useState<number>(carsData?.page || 1)
 
-	const uniqueNames = [...new Set(carsData.map((car) => car.name))]
-	const uniqueFuelTypes = [...new Set(carsData.map((car) => car.fuelType))]
-	const uniqueAmenities = [...new Set(carsData.map((car) => car.amenities))]
-	const uniqueLocations = [...new Set(carsData.map((car) => car.location))]
-	const uniqueRatings = [...new Set(carsData.map((car) => car.rating))]
-	const uniqueCarTypes = [...new Set(carsData.map((car) => car.carType))]
+	// Update pagination when API data changes
+	useEffect(() => {
+		if (carsData) {
+			setItemsPerPage(carsData.limit)
+			setCurrentPage(carsData.page)
+		}
+	}, [carsData])
 
-	const filteredCars = carsData.filter((car) => {
+	const uniqueNames = [...new Set((carsData?.cars || []).map((car: Car) => car.name))]
+	const uniqueFuelTypes = [...new Set((carsData?.cars || []).map((car: Car) => car.fuelType))]
+	const uniqueAmenities = [...new Set((carsData?.cars || []).map((car: Car) => car.amenities))]
+	const uniqueLocations = [...new Set((carsData?.cars || []).map((car: Car) => car.location))]
+	const uniqueRatings = [...new Set((carsData?.cars || []).map((car: Car) => car.rating))]
+	const uniqueCarTypes = [...new Set((carsData?.cars || []).map((car: Car) => car.carType))]
+
+	const filteredCars = (carsData?.cars || []).filter((car: Car) => {
 		return (
 			(filter.names.length === 0 || filter.names.includes(car.name)) &&
 			(filter.fuelType.length === 0 || filter.fuelType.includes(car.fuelType)) &&
@@ -71,7 +93,7 @@ const useCarFilter = (carsData: Car[]) => {
 			(car.price >= filter.priceRange[0] && car.price <= filter.priceRange[1]) &&
 			(filter.ratings.length === 0 || filter.ratings.includes(car.rating)) &&
 			(filter.carType.length === 0 || filter.carType.includes(car.carType)) &&
-			(filter.transmission.length === 0 || filter.transmission.includes(car.transmission)) &&
+			(filter.gear.length === 0 || filter.gear.includes(car.transmission)) &&
 			(filter.mileage.length === 0 || filter.mileage.includes(car.mileage)) &&
 			(filter.power.length === 0 || filter.power.includes(car.power))
 		)
@@ -87,10 +109,11 @@ const useCarFilter = (carsData: Car[]) => {
 		}
 		return 0
 	})
-
-	const totalPages = Math.ceil(sortedCars.length / itemsPerPage)
-	const startIndex = (currentPage - 1) * itemsPerPage
-	const endIndex = startIndex + itemsPerPage
+	console.log(carsData)
+	// Use API's total for pagination
+	const totalPages = carsData?.total
+	const startIndex = carsData.page
+	const endIndex = carsData.pages
 	const paginatedCars = sortedCars.slice(startIndex, endIndex)
 
 	const handleCheckboxChange = (field: keyof Filter, value: string | number) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -120,12 +143,15 @@ const useCarFilter = (carsData: Car[]) => {
 	}
 
 	const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
-		setItemsPerPage(Number(e.target.value))
-		setCurrentPage(1)
+		const newLimit = Number(e.target.value)
+		setItemsPerPage(newLimit)
+		setCurrentPage(1) // Reset to first page when changing items per page
 	}
 
 	const handlePageChange = (newPage: number) => {
-		setCurrentPage(newPage)
+		if (newPage >= 1 && newPage <= totalPages) {
+			setCurrentPage(newPage)
+		}
 	}
 
 	const handlePreviousPage = () => {
@@ -149,19 +175,20 @@ const useCarFilter = (carsData: Car[]) => {
 			priceRange: [0, 500],
 			ratings: [],
 			carType: [],
-			transmission: [],
+			gear: [],
 			mileage: [],
 			power: [],
 			date: [],
 			features: [],
 		})
 		setSortCriteria("name")
-		setItemsPerPage(4)
+		setItemsPerPage(carsData?.limit || 10)
 		setCurrentPage(1)
 	}
 
-	const startItemIndex = (currentPage - 1) * itemsPerPage + 1
-	const endItemIndex = Math.min(startItemIndex + itemsPerPage - 1, sortedCars.length)
+	// Calculate item indices based on API data
+	const startItemIndex = (currentPage - 1) * (carsData?.limit || 10) + 1
+	const endItemIndex = Math.min(startItemIndex + (carsData?.limit || 10) - 1, carsData?.total || 0)
 
 	return {
 		filter,

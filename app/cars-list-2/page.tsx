@@ -8,15 +8,22 @@ import rawCarsData from "@/util/cars.json"
 import useCarFilter from '@/util/useCarFilter'
 import Link from "next/link"
 import Marquee from 'react-fast-marquee'
+import { useCar } from '@/services/cars/useCars'
+import { useSearchParams } from 'next/navigation'
+
 const carsData = rawCarsData.map(car => ({
 	...car,
 	rating: parseFloat(car.rating as string)
 }))
+
 export default function CarsList2() {
+	const searchParams = useSearchParams()
+	const currentPage = searchParams?.get('page') || '1'
+	const { data: carData, isLoading } = useCar(currentPage, '20')
+
 	const {
 		sortCriteria,
 		itemsPerPage,
-		currentPage,
 		sortedCars,
 		totalPages,
 		paginatedCars,
@@ -28,11 +35,10 @@ export default function CarsList2() {
 		handleClearFilters,
 		startItemIndex,
 		endItemIndex,
-	} = useCarFilter(carsData)
+	} = useCarFilter(carData)
 
 	return (
 		<>
-
 			<Layout footerStyle={1}>
 				<div>
 					<div className="page-header-2 pt-30 background-body">
@@ -101,10 +107,10 @@ export default function CarsList2() {
 											startItemIndex={startItemIndex}
 											endItemIndex={endItemIndex}
 											sortedCars={sortedCars}
+											totalCars={sortedCars.length}
 										/>
 									</div>
 									<div className="box-grid-tours wow fadeIn">
-
 										<div className="row">
 											{paginatedCars.map((car) => (
 												<div className="col-lg-3 col-md-6" key={car.id}>
@@ -449,9 +455,8 @@ export default function CarsList2() {
 							</div>
 						</div>
 					</section>
-				</div >
-
-			</Layout >
+				</div>
+			</Layout>
 		</>
 	)
 }
