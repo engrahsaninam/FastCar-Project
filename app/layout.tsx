@@ -71,9 +71,9 @@ export default function RootLayout({
       <body className={`font-euclid`}  >
         <Providers>
           <ReactQueryProvider>
-            {/* <AuthProvider> */}
+            <AuthProvider>
               {children}
-            {/* </AuthProvider> */}
+            </AuthProvider>
           </ReactQueryProvider>
         </Providers>
       </body>

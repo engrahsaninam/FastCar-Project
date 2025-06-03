@@ -26,6 +26,14 @@ import {
   Select,
   AspectRatio,
   useColorModeValue,
+  Spinner,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
 } from '@chakra-ui/react'
 import {
   ChevronLeftIcon,
@@ -51,7 +59,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import logo from '@/public/assets/imgs/template/logo-d.svg';
 import logoDark from '@/public/assets/imgs/template/logo-w.svg';
-import { useCar } from '@/services/cars/useCars';
+import { useCar, useSaveCar, useUnsaveCar } from '@/services/cars/useCars';
 // Custom Lucide icon wrapper for Chakra UI
 const LucideIcon = ({ icon: Icon, ...props }) => {
   return <Box as={Icon} {...props} />;
@@ -61,6 +69,10 @@ const LucideIcon = ({ icon: Icon, ...props }) => {
 export const CarCard = ({ car }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const router = useRouter();
+  const saveCarMutation = useSaveCar();
+  const unsaveCarMutation = useUnsaveCar();
 
   const cardBg = useColorModeValue("white", "#1a1a1a");
   const cardBorderColor = useColorModeValue("gray.100", "#333333");
@@ -90,265 +102,304 @@ export const CarCard = ({ car }) => {
   // Format power with kW
   const formattedPower = `${car.power} kW`;
 
+  const handleFavoriteClick = async (e) => {
+    e.preventDefault();
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        await unsaveCarMutation.mutateAsync(car.id);
+      } else {
+        await saveCarMutation.mutateAsync(car.id);
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error('Error saving/unsaving car:', error);
+    }
+  };
+
   return (
-    <Link href={`/car?id=${car.id}`} passHref legacyBehavior>
-      <ChakraLink display="block" _hover={{ textDecoration: 'none' }}>
-        <Flex
-          direction={["column", "row", "row"]}
-          bg={cardBg}
-          borderRadius="md"
-          overflow="hidden"
-          borderWidth="1px"
-          borderColor={cardBorderColor}
-          transition="all 0.3s ease"
-          _hover={{
-            boxShadow: "xl",
-            transform: "scale(1.02)",
-            borderColor: "red.200"
-          }}
-          w="full"
-          position="relative"
-          zIndex="1"
-          alignItems={["flex-start", "flex-start", "flex-start"]}
-          gap={[2, 6, 6]}
-        >
-          {/* Image Section */}
-          <Box position="relative" w={["full", "full", "260px"]} h={["200px", "160px", "full"]}>
-            <AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
-              <Box position="relative" w="full" h="full">
-                {/* Heart/Favorite Button */}
-                <IconButton
-                  position="absolute"
-                  top="2"
-                  right="2"
-                  zIndex="20"
-                  size="sm"
-                  icon={<LucideIcon icon={Heart} boxSize="4" color={heartColor} fill={heartFill} />}
-                  borderRadius="full"
-                  bg={navBtnBg}
-                  opacity="0.9"
-                  minW="8"
-                  h="8"
-                  _hover={{ bg: navBtnBg, opacity: "1" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsFavorite(!isFavorite);
-                  }}
-                  aria-label="Add to favorites"
-                />
-
-                {/* Navigation Arrows */}
-                <IconButton
-                  position="absolute"
-                  left="2"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  zIndex="10"
-                  size="sm"
-                  icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
-                  borderRadius="full"
-                  bg={navBtnBg}
-                  opacity="0.8"
-                  minW="8"
-                  h="8"
-                  _hover={{ bg: navBtnBg, opacity: "1" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    previousImage();
-                  }}
-                  aria-label="Previous image"
-                />
-                <IconButton
-                  position="absolute"
-                  right="2"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  zIndex="10"
-                  size="sm"
-                  icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
-                  borderRadius="full"
-                  bg={navBtnBg}
-                  opacity="0.8"
-                  minW="8"
-                  h="8"
-                  _hover={{ bg: navBtnBg, opacity: "1" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    nextImage();
-                  }}
-                  aria-label="Next image"
-                />
-
-                <Image
-                  src={car.images[currentImageIndex]}
-                  alt={`${car.brand} ${car.model}`}
-                  fill
-                  priority
-                  style={{ objectFit: "cover" }}
-                />
-              </Box>
-            </AspectRatio>
-          </Box>
-
-          {/* Content Section */}
+    <>
+      <Link href={`/car?id=${car.id}`} passHref legacyBehavior>
+        <ChakraLink display="block" _hover={{ textDecoration: 'none' }}>
           <Flex
-            flex="1"
-            p={["4", "4", "3"]}
-            flexDir="column"
-            justifyContent="space-between"
+            direction={["column", "row", "row"]}
+            bg={cardBg}
+            borderRadius="md"
+            overflow="hidden"
+            borderWidth="1px"
+            borderColor={cardBorderColor}
+            transition="all 0.3s ease"
+            _hover={{
+              boxShadow: "xl",
+              transform: "scale(1.02)",
+              borderColor: "red.200"
+            }}
+            w="full"
+            position="relative"
+            zIndex="1"
+            alignItems={["flex-start", "flex-start", "flex-start"]}
+            gap={[2, 6, 6]}
           >
-            <Box>
-              <Flex
-                direction={["row", "row", "row"]}
-                justify="space-between"
-                align="center"
-                mb={["3", "3", "2"]}
-                mt={["2", "2", "0"]}
-              >
-                <Heading
-                  as="h3"
-                  ml='1'
-                  fontSize={["lg", "lg", "xl"]}
-                  fontWeight="bold"
-                  color={headingColor}
-                  letterSpacing="wide"
-                  fontFamily="inter"
-                  _hover={{ color: "red.500" }}
+            {/* Image Section */}
+            <Box position="relative" w={["full", "full", "260px"]} h={["200px", "160px", "full"]}>
+              <AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+                <Box position="relative" w="full" h="full">
+                  {/* Heart/Favorite Button */}
+                  <IconButton
+                    position="absolute"
+                    top="2"
+                    right="2"
+                    zIndex="20"
+                    size="sm"
+                    icon={<LucideIcon icon={Heart} boxSize="4" color={heartColor} fill={heartFill} />}
+                    borderRadius="full"
+                    bg={navBtnBg}
+                    opacity="0.9"
+                    minW="8"
+                    h="8"
+                    _hover={{ bg: navBtnBg, opacity: "1" }}
+                    onClick={handleFavoriteClick}
+                    aria-label="Add to favorites"
+                  />
+
+                  {/* Navigation Arrows */}
+                  <IconButton
+                    position="absolute"
+                    left="2"
+                    top="50%"
+                    transform="translateY(-50%)"
+                    zIndex="10"
+                    size="sm"
+                    icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
+                    borderRadius="full"
+                    bg={navBtnBg}
+                    opacity="0.8"
+                    minW="8"
+                    h="8"
+                    _hover={{ bg: navBtnBg, opacity: "1" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      previousImage();
+                    }}
+                    aria-label="Previous image"
+                  />
+                  <IconButton
+                    position="absolute"
+                    right="2"
+                    top="50%"
+                    transform="translateY(-50%)"
+                    zIndex="10"
+                    size="sm"
+                    icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
+                    borderRadius="full"
+                    bg={navBtnBg}
+                    opacity="0.8"
+                    minW="8"
+                    h="8"
+                    _hover={{ bg: navBtnBg, opacity: "1" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      nextImage();
+                    }}
+                    aria-label="Next image"
+                  />
+
+                  <Image
+                    src={car.images[currentImageIndex]}
+                    alt={`${car.brand} ${car.model}`}
+                    fill
+                    priority
+                    style={{ objectFit: "cover" }}
+                  />
+                </Box>
+              </AspectRatio>
+            </Box>
+
+            {/* Content Section */}
+            <Flex
+              flex="1"
+              p={["4", "4", "3"]}
+              flexDir="column"
+              justifyContent="space-between"
+            >
+              <Box>
+                <Flex
+                  direction={["row", "row", "row"]}
+                  justify="space-between"
+                  align="center"
+                  mb={["3", "3", "2"]}
+                  mt={["2", "2", "0"]}
                 >
-                  {`${car.brand} ${car.model}`}
-                </Heading>
-                <Box mt={["1", "1", "0"]} className='light-mode'>
-                  <Image
-                    src={logo.src}
-                    alt="Logo"
-                    width={70}
-                    height={35}
-                    style={{ display: "inline-block" }}
-                  />
-                </Box>
-                <Box mt={["1", "1", "0"]} className='dark-mode'>
-                  <Image
-                    src={logoDark.src}
-                    alt="Logo"
-                    width={70}
-                    height={35}
-                    style={{ display: "inline-block" }}
-                  />
-                </Box>
-              </Flex>
-
-              {/* Specs Row */}
-              <Box mb={["2", "2", "1"]} ml="1">
-                <Flex direction="row" gap={6} mb={1}>
-                  <HStack spacing="1">
-                    <LucideIcon icon={Power} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{formattedPower}</Text>
-                  </HStack>
-                  <HStack spacing="1">
-                    <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{car.year}</Text>
-                  </HStack>
-                  <HStack spacing="1">
-                    <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor}>{formattedMileage} km</Text>
-                  </HStack>
+                  <Heading
+                    as="h3"
+                    ml='1'
+                    fontSize={["lg", "lg", "xl"]}
+                    fontWeight="bold"
+                    color={headingColor}
+                    letterSpacing="wide"
+                    fontFamily="inter"
+                    _hover={{ color: "red.500" }}
+                  >
+                    {`${car.brand} ${car.model}`}
+                  </Heading>
+                  <Box mt={["1", "1", "0"]} className='light-mode'>
+                    <Image
+                      src={logo.src}
+                      alt="Logo"
+                      width={70}
+                      height={35}
+                      style={{ display: "inline-block" }}
+                    />
+                  </Box>
+                  <Box mt={["1", "1", "0"]} className='dark-mode'>
+                    <Image
+                      src={logoDark.src}
+                      alt="Logo"
+                      width={70}
+                      height={35}
+                      style={{ display: "inline-block" }}
+                    />
+                  </Box>
                 </Flex>
-                <Flex direction="row" gap={6}>
-                  <HStack spacing="1">
-                    <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
-                  </HStack>
-                  <HStack spacing="1">
-                    <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-                    <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
-                  </HStack>
-                </Flex>
-              </Box>
 
-              {/* Features */}
-              <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-                {car.features &&
-                  Object.entries(car.features)
-                    .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
-                    .slice(0, 4)
-                    .map((feature, index) => (
-                      <Badge
-                        key={index}
-                        px="2"
-                        bg={badgeBg}
-                        color={badgeColor}
-                        borderRadius="md"
+                {/* Specs Row */}
+                <Box mb={["2", "2", "1"]} ml="1">
+                  <Flex direction="row" gap={6} mb={1}>
+                    <HStack spacing="1">
+                      <LucideIcon icon={Power} boxSize="4" color={textColor} />
+                      <Text fontSize="sm" color={textColor}>{formattedPower}</Text>
+                    </HStack>
+                    <HStack spacing="1">
+                      <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+                      <Text fontSize="sm" color={textColor}>{car.year}</Text>
+                    </HStack>
+                    <HStack spacing="1">
+                      <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+                      <Text fontSize="sm" color={textColor}>{formattedMileage} km</Text>
+                    </HStack>
+                  </Flex>
+                  <Flex direction="row" gap={6}>
+                    <HStack spacing="1">
+                      <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+                      <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
+                    </HStack>
+                    <HStack spacing="1">
+                      <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+                      <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
+                    </HStack>
+                  </Flex>
+                </Box>
+
+                {/* Features */}
+                <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+                  {car.features &&
+                    Object.entries(car.features)
+                      .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+                      .slice(0, 4)
+                      .map((feature, index) => (
+                        <Badge
+                          key={index}
+                          px="2"
+                          bg={badgeBg}
+                          color={badgeColor}
+                          borderRadius="md"
+                          fontSize="sm"
+                          fontWeight="medium"
+                          style={{ textTransform: "none" }}
+                        >
+                          {feature}
+                        </Badge>
+                      ))}
+                  {car.features &&
+                    Object.entries(car.features)
+                      .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+                      .length > 4 && (
+                      <Button
+                        variant="unstyled"
+                        color={buttonLinkColor}
                         fontSize="sm"
                         fontWeight="medium"
+                        height="auto"
+                        padding="0"
+                        lineHeight="1.5"
+                        _hover={{ textDecoration: "underline" }}
+                        onClick={e => e.preventDefault()}
                         style={{ textTransform: "none" }}
                       >
-                        {feature}
-                      </Badge>
-                    ))}
-                {car.features &&
-                  Object.entries(car.features)
-                    .flatMap(([category, features]) => (Array.isArray(features) ? features : []))
-                    .length > 4 && (
-                    <Button
-                      variant="unstyled"
-                      color={buttonLinkColor}
-                      fontSize="sm"
-                      fontWeight="medium"
-                      height="auto"
-                      padding="0"
-                      lineHeight="1.5"
-                      _hover={{ textDecoration: "underline" }}
-                      onClick={e => e.preventDefault()}
-                      style={{ textTransform: "none" }}
-                    >
-                      + {Object.entries(car.features).flatMap(([_, features]) => features).length - 4} more
-                    </Button>
-                  )
-                }
-              </Flex>
-            </Box>
+                        + {Object.entries(car.features).flatMap(([_, features]) => features).length - 4} more
+                      </Button>
+                    )
+                  }
+                </Flex>
+              </Box>
 
-            {/* Price Section */}
-            <Box
-              px={["0", "0", "2"]}
-              borderTopWidth="1px"
-              borderColor={cardBorderColor}
-            >
-              <Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
-                <VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
-                  <HStack spacing="1" >
-                    {[...Array(5)].map((_, i) => (
-                      <Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
-                    ))}
-                    <Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-                      Very Good Price
+              {/* Price Section */}
+              <Box
+                px={["0", "0", "2"]}
+                borderTopWidth="1px"
+                borderColor={cardBorderColor}
+              >
+                <Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+                  <VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+                    <HStack spacing="1" >
+                      {[...Array(5)].map((_, i) => (
+                        <Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+                      ))}
+                      <Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+                        Very Good Price
+                      </Text>
+                    </HStack>
+                    <HStack>
+                      <Flex align="center" gap="1">
+                        <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+                          € {car.price.toLocaleString()}
+                        </Text>
+                        <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+                          Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+                        </Text>
+                      </Flex>
+                    </HStack>
+                  </VStack>
+                  <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
+                    <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+                      € {car.price.toLocaleString()}
                     </Text>
-                  </HStack>
-                  <HStack>
-                    <Flex align="center" gap="1">
-                      <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-                        € {car.price.toLocaleString()}
-                      </Text>
-                      <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-                        Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-                      </Text>
-                    </Flex>
-                  </HStack>
-                </VStack>
-                <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
-                  <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
-                    € {car.price.toLocaleString()}
-                  </Text>
-                  <Text fontSize="xs" color={textColor}>
-                    €{(car.price / 4).toFixed(2)} without VAT
-                  </Text>
-                </Box>
-              </Flex>
-            </Box>
+                    <Text fontSize="xs" color={textColor}>
+                      €{(car.price / 4).toFixed(2)} without VAT
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            </Flex>
           </Flex>
-        </Flex>
-      </ChakraLink>
-    </Link>
+        </ChakraLink>
+      </Link>
+      {/* Login Modal */}
+      <Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Please Login</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>You need to be logged in to add favorites.</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={() => {
+              setIsLoginModalOpen(false);
+              router.push('/login');
+            }}>
+              Go to Login
+            </Button>
+            <Button variant="ghost" onClick={() => setIsLoginModalOpen(false)}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
@@ -645,7 +696,11 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     model: searchParams.getAll('model'),
   };
 
-  const { data: carData, isLoading } = useCar(currentPage.toString(), "20", filters);
+  const { data: carData, isLoading } = useCar(currentPage, '20', filters);
+  const priceRange = useMemo(() => {
+    if (!carData) return null;
+    // ...fetch or calculate price range
+  }, [carData]);
 
   const handlePageChange = (newPage) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -912,6 +967,8 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
 
     setActiveFilters(filters);
   }, [searchParams]);
+
+  // if (isLoading) return <CarListSkeleton />;
 
   return (
     <Box w="full" maxW="100vw" overflowX="hidden" px={[0, 2, 4]}>

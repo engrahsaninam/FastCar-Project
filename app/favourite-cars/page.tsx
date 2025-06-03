@@ -57,6 +57,8 @@ import {
 import { Suspense } from 'react';
 import logo from '@/public/assets/imgs/template/logo-d.svg';
 import logoDark from '@/public/assets/imgs/template/logo-w.svg';
+import { useGetSavedCars, useSaveCar, useUnsaveCar } from '@/services/cars/useCars';
+
 // Define the car type for TypeScript
 interface Car {
     id: number;
@@ -64,8 +66,8 @@ interface Car {
     year: number;
     mileage: number;
     price: number;
-    fuelType: string;
-    transmission: string;
+    fuel: string;
+    gear: string;
     power: string;
     image: string;
     date: string;
@@ -83,7 +85,9 @@ const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
 
 const CarCard = ({ car }: { car: Car }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(true);
+    const saveCarMutation = useSaveCar();
+    const unsaveCarMutation = useUnsaveCar();
 
     const cardBg = useColorModeValue("white", "#1a1a1a");
     const cardBorderColor = useColorModeValue("#f7fafc", "#333333");
@@ -99,6 +103,20 @@ const CarCard = ({ car }: { car: Car }) => {
     const badgeBg = useColorModeValue("#fff5f5", "rgba(255, 69, 58, 0.15)");
     const badgeColor = useColorModeValue("#f56565", "#fc8181");
     const navBtnBg = useColorModeValue("white", "#333333");
+
+    const handleFavoriteClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            if (isFavorite) {
+                await unsaveCarMutation.mutateAsync(car.id.toString());
+            } else {
+                await saveCarMutation.mutateAsync(car.id.toString());
+            }
+            setIsFavorite(!isFavorite);
+        } catch (error) {
+            console.error('Error saving/unsaving car:', error);
+        }
+    };
 
     // const nextImage = () => {
     //     setCurrentImageIndex((prev) => (prev + 1) % car.images.length);
@@ -149,10 +167,7 @@ const CarCard = ({ car }: { car: Car }) => {
                                     minW="8"
                                     h="8"
                                     _hover={{ bg: navBtnBg, opacity: "1" }}
-                                    // onClick={(e) => {
-                                    //     e.preventDefault();
-                                    //     setIsFavorite(!isFavorite);
-                                    // }}
+                                    onClick={handleFavoriteClick}
                                     aria-label="Add to favorites"
                                 />
                                 <Image
@@ -224,7 +239,7 @@ const CarCard = ({ car }: { car: Car }) => {
                                     </HStack>
                                     <HStack spacing="1">
                                         <LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-                                        <Text fontSize="sm" color={textColor}>{car.date}</Text>
+                                        <Text fontSize="sm" color={textColor}>{car.year}</Text>
                                     </HStack>
                                     <HStack spacing="1">
                                         <LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
@@ -234,17 +249,17 @@ const CarCard = ({ car }: { car: Car }) => {
                                 <Flex direction="row" gap={6}>
                                     <HStack spacing="1">
                                         <LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-                                        <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+                                        <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
                                     </HStack>
                                     <HStack spacing="1">
                                         <LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-                                        <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+                                        <Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
                                     </HStack>
                                 </Flex>
                             </Box>
 
                             {/* Features - keeping size with less vertical space */}
-                            <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+                            {/* <Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
                                 {car.features.slice(0, 4).map((feature, index) => (
                                     <Badge
                                         key={index}
@@ -277,7 +292,7 @@ const CarCard = ({ car }: { car: Car }) => {
                                         + {car.features.length - 4} more
                                     </Button>
                                 )}
-                            </Flex>
+                            </Flex> */}
                         </Box>
 
                         {/* Location and Price - maintain size with reduced space */}
@@ -332,22 +347,8 @@ const CarCard = ({ car }: { car: Car }) => {
 
 
 const FavoritesSection: React.FC = () => {
-    // Sample car data - this would come from your backend later
-    const [favoriteCars] = useState<Car[]>([
-        {
-            id: 1,
-            name: "Mercedes-Benz A 200 d",
-            year: 2023,
-            mileage: 15000,
-            price: 634490,
-            fuelType: "Diesel",
-            transmission: "Automatic",
-            power: "110",
-            image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGF1ZGklMjBhNXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
-            date: "2024-01-01",
-            features: ["Navigation", "Leather seats", "Bluetooth", "Backup camera", "Heated seats"]
-        }
-    ]);
+    const { data: savedCars, isLoading } = useGetSavedCars();
+    const hasFavorites = savedCars?.length > 0;
     const bgColor = useColorModeValue("#f9faf", "#1a202c");
     const cardBg = useColorModeValue("white", "#1a1a1a");
     const cardBorder = useColorModeValue("#f7fafc", "#2d3748");
@@ -358,7 +359,6 @@ const FavoritesSection: React.FC = () => {
     const stepCardBg = useColorModeValue("white", "gray.800");
     const stepCardShadow = useColorModeValue("md", "dark-lg");
     const stepNumberColor = useColorModeValue("red.500", "red.300");
-    const hasFavorites = favoriteCars.length > 0;
     const cardborder = useColorModeValue("white", "#2d3748");
     const guarantees = [
         {
@@ -400,9 +400,26 @@ const FavoritesSection: React.FC = () => {
                     </Flex>
 
                     {/* Conditional Content */}
-                    {!hasFavorites ? (
+                    {isLoading ? (
+                        <div className="bg-white rounded-2xl p-8 shadow-sm mb-8 mt-12 text-center">
+                            <div className="max-w-[280px] mx-auto">
+                                <div className="relative w-full aspect-square mb-6">
+                                    <Image
+                                        src="/loading.svg"
+                                        alt="Loading"
+                                        fill
+                                        className="object-contain"
+                                        priority
+                                    />
+                                </div>
+                                <p className="text-gray mb-6">
+                                    Loading your favorite cars...
+                                </p>
+                            </div>
+                        </div>
+                    ) : !hasFavorites ? (
                         /* Empty State Card */
-                        <div className="bg-white rounded-2xl p-8 shadow-sm mb-8  mt-12 text-center">
+                        <div className="bg-white rounded-2xl p-8 shadow-sm mb-8 mt-12 text-center">
                             <div className="max-w-[280px] mx-auto">
                                 <div className="relative w-full aspect-square mb-6">
                                     <Image
@@ -426,19 +443,18 @@ const FavoritesSection: React.FC = () => {
                     ) : (
                         /* Favorite Cars List */
                         <div className="">
-                            {favoriteCars.map(car => (
+                            {savedCars?.map((car: Car) => (
                                 <CarCard key={car.id} car={car} />
                             ))}
                         </div>
                     )}
 
                     {/* Features Grid */}
-                    <Box
+                    {/* <Box
                         mt={{ base: 8 }}
                         zIndex="1"
                     >
                         <Container maxW="container.xl">
-                            {/* Desktop View */}
                             <SimpleGrid
                                 columns={{ base: 1, md: 3 }}
                                 spacing={8}
@@ -518,7 +534,6 @@ const FavoritesSection: React.FC = () => {
                                 ))}
                             </SimpleGrid>
 
-                            {/* Mobile View - Accordion */}
                             <Box
                                 display={{ base: "block", md: "none" }}
                                 bg={bgColor}
@@ -582,7 +597,7 @@ const FavoritesSection: React.FC = () => {
                                 </Accordion>
                             </Box>
                         </Container>
-                    </Box>
+                    </Box> */}
                 </Container>
             </Box>
         </Layout>

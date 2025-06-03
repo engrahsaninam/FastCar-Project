@@ -13,7 +13,10 @@ export const apiRoutes = {
     car: {
         base: "/cars",
         get: (page: string, limit: string) => `/cars?page=${page}&limit=${limit}`,
-        deals: "/cars/best-deals"
+        deals: "/cars/best-deals",
+        save: (id: string) => `/users/saved-cars/${id}`,
+        unsave: (id: string) => `/users/saved-cars/${id}`,
+        getSavedCars: "/users/saved-cars",
     },
     filters: {
         fuel: '/filters/fuel-types',
@@ -27,5 +30,5 @@ export const apiRoutes = {
         bodyTypes:"/filters/body-types",
         colors:"/filters/colours",
         features:"/filters/features",
-    }
+    },
 }

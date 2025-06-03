@@ -116,7 +116,7 @@ export const getBestDeals = async (filters?: {
         if (filters.year) params.append('year', filters.year);
         if (filters.limit) params.append('limit', filters.limit);
         if (filters.page) params.append('page', filters.page);
-        params.append('remove_outliers', 'true');
+        params.append('remove_outliers', 'false');
 
     }
     const response = await axiosInstance.get(`${apiRoutes.car.deals}?${params.toString()}`);
@@ -144,3 +144,16 @@ export const getFeatures = async () => {
     return response.data;
 }
 
+
+export const saveCar = async (id: string) => {
+    const response = await axiosInstance.post(apiRoutes.car.save(id));
+    return response.data;
+}
+export const unsaveCar = async (id: string) => {
+    const response = await axiosInstance.delete(apiRoutes.car.unsave(id));
+    return response.data;
+}
+export const getSavedCars = async () => {
+    const response = await axiosInstance.get(apiRoutes.car.getSavedCars);
+    return response.data;
+}

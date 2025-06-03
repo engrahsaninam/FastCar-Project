@@ -12,6 +12,9 @@ import {
     getBodyTypes,
     getColors,
     getFeatures,
+    saveCar,
+    unsaveCar,
+    getSavedCars,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -156,6 +159,28 @@ export const useFeatures = () =>
     useQuery({
         queryKey: ["features"],
         queryFn: getFeatures,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
+    });
+
+// Save Car
+export const useSaveCar = () =>
+    useMutation({
+        mutationFn: async (id: string) => saveCar(id),
+    });
+
+// Unsave Car
+export const useUnsaveCar = () =>
+    useMutation({
+        mutationFn: async (id: string) => unsaveCar(id),
+    });
+
+// Get Saved Cars
+export const useGetSavedCars = () =>
+    useQuery({
+        queryKey: ["savedCars"],
+        queryFn: getSavedCars,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Updated import for Next.js 13+
-import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation"; // Updated import for Next.js 13+ and useSearchParams
+import React, { useState, useEffect, useCallback } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import {
   CarFrontIcon as Car,
@@ -25,6 +25,7 @@ interface HeroSearchProps {
 
 const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [make, setMake] = useState<string>("Brand");
   const [model, setModel] = useState<string>("Model");
   const [year, setYear] = useState<string>("Year");
@@ -69,50 +70,141 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
     Audi: ["A4", "A6", "Q5", "e-tron", "Q7"],
   };
 
-  // Update in handleMakeSelect function
+  // Create a function to update URL and trigger search
+  const updateSearch = useCallback((params: Record<string, string>) => {
+    if (!searchParams) return;
+
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+    // Update or remove params
+    Object.entries(params).forEach(([key, value]) => {
+      if (value && value !== "Brand" && value !== "Model" && value !== "Year") {
+        current.set(key, value);
+      } else {
+        current.delete(key);
+      }
+    });
+
+    // Reset page to 1 when filters change
+    current.set("page", "1");
+
+    // Create the new URL
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+
+    // Update the URL without full page reload
+    router.push(`/deals${query}`, { scroll: false });
+  }, [router, searchParams]);
+
+  // Update handlers to use updateSearch
   const handleMakeSelect = (selectedMake: string): void => {
     setMake(selectedMake);
     setModel("Model"); // Reset model when make changes
-    setShowMakeDropdown(false); // Close the dropdown
+    setShowMakeDropdown(false);
+    updateSearch({ brand: selectedMake });
   };
-  // Handler for model selection
+
   const handleModelSelect = (selectedModel: string): void => {
     setModel(selectedModel);
-    setShowModelDropdown(false); // Close the dropdown
+    setShowModelDropdown(false);
+    updateSearch({ model: selectedModel });
   };
 
-  // Handler for year selection
   const handleYearSelect = (selectedYear: string): void => {
     setYear(selectedYear);
-    setShowYearDropdown(false); // Close the dropdown
+    setShowYearDropdown(false);
+    updateSearch({ year: selectedYear });
   };
 
-  // Apply mileage range
+  // Update VAT handler
+  const handleVatChange = (checked: boolean) => {
+    setVatDeduction(checked);
+    updateSearch({ vat: checked ? "true" : "" });
+  };
+
+  // Update mileage range handler
   const applyMileageRange = (): void => {
     if (minMileage && maxMileage) {
       setMileageRange(`${minMileage} - ${maxMileage} km`);
+      updateSearch({
+        minMileage,
+        maxMileage
+      });
     } else if (minMileage) {
       setMileageRange(`Min ${minMileage} km`);
+      updateSearch({ minMileage });
     } else if (maxMileage) {
       setMileageRange(`Max ${maxMileage} km`);
+      updateSearch({ maxMileage });
     } else {
       setMileageRange("Kilometers");
+      updateSearch({ minMileage: "", maxMileage: "" });
     }
     setShowMileageDropdown(false);
   };
-  // Apply price range
+
+  // Update price range handler
   const applyPriceRange = (): void => {
     if (minPrice && maxPrice) {
       setPriceRange(`${minPrice} - ${maxPrice} €`);
+      updateSearch({
+        minPrice,
+        maxPrice
+      });
     } else if (minPrice) {
       setPriceRange(`Min ${minPrice} €`);
+      updateSearch({ minPrice });
     } else if (maxPrice) {
       setPriceRange(`Max ${maxPrice} €`);
+      updateSearch({ maxPrice });
     } else {
       setPriceRange("Price");
+      updateSearch({ minPrice: "", maxPrice: "" });
     }
     setShowPriceDropdown(false);
   };
+
+  // Initialize state from URL params on mount
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const brand = searchParams.get("brand");
+    // const page = searchParams.get("page");
+    const model = searchParams.get("model");
+    const year = searchParams.get("year");
+    const vat = searchParams.get("vat");
+    const minMileage = searchParams.get("minMileage");
+    const maxMileage = searchParams.get("maxMileage");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+
+    if (brand) setMake(brand);
+    if (model) setModel(model);
+    if (year) setYear(year);
+    if (vat) setVatDeduction(vat === "true");
+    if (minMileage || maxMileage) {
+      setMinMileage(minMileage || "");
+      setMaxMileage(maxMileage || "");
+      setMileageRange(
+        minMileage && maxMileage
+          ? `${minMileage} - ${maxMileage} km`
+          : minMileage
+            ? `Min ${minMileage} km`
+            : `Max ${maxMileage} km`
+      );
+    }
+    if (minPrice || maxPrice) {
+      setMinPrice(minPrice || "");
+      setMaxPrice(maxPrice || "");
+      setPriceRange(
+        minPrice && maxPrice
+          ? `${minPrice} - ${maxPrice} €`
+          : minPrice
+            ? `Min ${minPrice} €`
+            : `Max ${maxPrice} €`
+      );
+    }
+  }, [searchParams]);
 
   // Update isModelDisabled check
   const isModelDisabled = make === "Brand";
@@ -276,7 +368,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                 <input
                   type="checkbox"
                   checked={vatDeduction}
-                  onChange={() => setVatDeduction(!vatDeduction)}
+                  onChange={(e) => handleVatChange(e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>

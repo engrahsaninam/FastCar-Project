@@ -5,6 +5,7 @@ import SortCarsFilter from '@/components/elements/SortCarsFilter'
 import ByPagination from '@/components/Filter/ByPagination'
 import Layout from "@/components/layout/Layout"
 import rawCarsData from "@/util/cars.json"
+import { useSearchParams, useRouter } from "next/navigation";
 import useCarFilter from '@/util/useCarFilter'
 import { useBestDeals, useBrands, useyearsRange } from '@/services/cars/useCars'
 import Link from "next/link"
@@ -60,6 +61,7 @@ import {
 	LucideIcon as LucideIconType
 } from 'lucide-react';
 import { useState } from 'react';
+import React from 'react'
 
 const carsData = rawCarsData.map(car => ({
 	...car,
@@ -67,11 +69,20 @@ const carsData = rawCarsData.map(car => ({
 }))
 
 export default function CarsList3() {
-	const [brand, setBrand] = useState<string | undefined>();
-	const [model, setModel] = useState<string | undefined>();
-	const [year, setYear] = useState<string | undefined>();
-	const [limit, setLimit] = useState<string>("10"); // default 10
-	const { data: bestDealsData } = useBestDeals({ brand, model, year, limit });
+	// const [brand, setBrand] = useState<string | undefined>();
+	// const [model, setModel] = useState<string | undefined>();
+	// const [year, setYear] = useState<string | undefined>();
+	// const [limit, setLimit] = useState<string>("10"); // default 10
+	// const [page, setPage] = useState<string>("1"); // default 1
+	const searchParams = useSearchParams();
+	const router = useRouter();
+
+	const brand = searchParams?.get("brand") || undefined;
+	const model = searchParams?.get("model") || undefined;
+	const year = searchParams?.get("year") || undefined;
+	const limit = searchParams?.get("limit") || "10";
+	const page = searchParams?.get("page") || "1";
+	const { data: bestDealsData } = useBestDeals({ brand, model, year, limit, page });
 	// const { data: bestDealsData } = useBestDeals()
 	const { data: brands } = useBrands()
 	const { data: yearsData } = useyearsRange()
@@ -101,7 +112,7 @@ export default function CarsList3() {
 		handleSortChange,
 		handlePriceRangeChange,
 		handleItemsPerPageChange,
-		handlePageChange,
+		// handlePageChange,
 		handlePreviousPage,
 		handleNextPage,
 		handleClearFilters,
@@ -129,11 +140,31 @@ export default function CarsList3() {
 	const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
 	const badgeColor = useColorModeValue("red.400", "red.300");
 	const navBtnBg = useColorModeValue("white", "#333333");
-
+	const paginationActiveBg = useColorModeValue("#E53E3E", "#E53E3E");
+	const paginationActiveColor = useColorModeValue("red.500", "red.500");
+	const paginationInactiveColor = useColorModeValue("gray.600", "gray.400");
+	const paginationHoverBg = useColorModeValue("gray.100", "#333333");
+	const iconColor = useColorModeValue("gray.400", "gray.500");
 	const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
 		return <Box as={Icon} {...props} />;
 	};
 	const bg = useColorModeValue("white", "#1a1a1a");
+	console.log("pagination", bestDealsData?.pages, bestDealsData?.page, bestDealsData?.total)
+
+	const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
+		params.set("limit", e.target.value);
+		params.set("page", "1"); // Reset to first page when limit changes
+		router.push(`/deals?${params.toString()}`);
+	};
+	const handlePageChange = (newPage: number) => {
+		const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
+		params.set("page", newPage.toString());
+		router.push(`/deals?${params.toString()}`);
+	};
+
+	const isLoading = !bestDealsData;
+
 	return (
 		<>
 			<div style={{ backgroundColor: bg }}>
@@ -218,98 +249,171 @@ export default function CarsList3() {
 								<div className="container">
 									<div className="box-content-main pt-20">
 										<div className="content-right">
+											<Flex alignItems="center" gap="3">
+												<HStack spacing="1" display={["none", "none", "flex"]}>
+													<IconButton
+														aria-label="Previous page"
+														icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
+														variant="ghost"
+														color={iconColor}
+														p="1"
+														size="sm"
+														isDisabled={parseInt(page) === 1 || isLoading}
+														onClick={() => handlePageChange(parseInt(page) - 1)}
+													/>
+													{isLoading ? (
+														Array.from({ length: 5 }).map((_, i) => (
+															<Skeleton key={i} w="6" h="6" borderRadius="md" />
+														))
+													) : (
+														Array.from({ length: Math.min(5, bestDealsData?.pages || 1) }, (_, i) => {
+															let pageNum;
+															if (i < 3) {
+																pageNum = i + 1;
+															} else if (i === 3 && parseInt(page) > 3 && parseInt(page) < (bestDealsData?.pages || 1) - 1) {
+																pageNum = parseInt(page);
+															} else if (i === 4) {
+																pageNum = bestDealsData?.pages || 1;
+															}
+															if (!pageNum) return null;
+															return (
+																<React.Fragment key={pageNum}>
+																	{i === 3 && parseInt(page) > 3 && parseInt(page) < (bestDealsData?.pages || 1) - 1 && (
+																		<Text px="1" color={textColor}>...</Text>
+																	)}
+																	<Button
+																		w="6"
+																		h="6"
+																		borderRadius="md"
+																		bg={pageNum === parseInt(page) ? "#E53E3E" : "transparent"}
+																		color={pageNum === parseInt(page) ? "white" : "gray.400"}
+																		variant={pageNum === parseInt(page) ? "solid" : "ghost"}
+																		_hover={{ bg: "#E53E3E", color: "white" }}
+																		fontSize="xs"
+																		minW="6"
+																		p="0"
+																		onClick={() => handlePageChange(pageNum)}
+																	>
+																		{pageNum}
+																	</Button>
+																	{i === 3 && parseInt(page) > 3 && parseInt(page) < (bestDealsData?.pages || 1) - 1 && (
+																		<Text px="1" color={textColor}>...</Text>
+																	)}
+																</React.Fragment>
+															);
+														})
+													)}
+													<IconButton
+														aria-label="Next page"
+														icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
+														variant="ghost"
+														color={iconColor}
+														p="1"
+														size="sm"
+														isDisabled={parseInt(page) === (bestDealsData?.pages || 1) || isLoading}
+														onClick={() => handlePageChange(parseInt(page) + 1)}
+													/>
+												</HStack>
+											</Flex>
 											<div className="box-filters mb-25 pb-5 border-bottom border-1">
 												<SortCarsFilter
 													sortCriteria={sortCriteria}
 													handleSortChange={handleSortChange}
 													itemsPerPage={parseInt(limit)}
-													handleItemsPerPageChange={e => setLimit(e.target.value)}
+													handleItemsPerPageChange={handleLimitChange}
 													handleClearFilters={handleClearFilters}
 													startItemIndex={startItemIndex}
 													endItemIndex={endItemIndex}
 													sortedCars={bestDealsData?.data || []}
 													totalCars={bestDealsData?.total || 0}
 												/>
+
 											</div>
+
 											<div className="box-grid-tours wow fadeIn">
 												<div className="row">
-													{bestDealsData?.data.map((car: any) => (
-														<div className="col-lg-4 col-md-6" key={car.id}>
-															<Flex
-																direction={["column", "column", "column"]}
-																bg={cardBg}
-																borderRadius="md"
-																overflow="hidden"
-																borderWidth="1px"
-																borderColor={cardBorderColor}
-																transition="all 0.3s ease"
-																_hover={{
-																	boxShadow: "xl",
-																	transform: "scale(1.02)",
-																	borderColor: "red.200"
-																}}
-																w="full"
-																position="relative"
-																zIndex="1"
-																alignItems={["flex-start", "flex-start", "flex-start"]}
-																gap={[2, 2, 2]}
-																mb={["4", "4", "4"]}
-															>
-																{/* Image Section */}
-																<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
-																	<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
-																		<Box position="relative" w="full" h="full" className='card-image'>
+													{isLoading ? (
+														Array.from({ length: 6 }).map((_, i) => (
+															<div className="col-lg-4 col-md-6" key={i}>
+																<Skeleton height="340px" borderRadius="md" mb="4" />
+															</div>
+														))
+													) : (
+														bestDealsData?.data.map((car: any) => (
+															<div className="col-lg-4 col-md-6" key={car.id}>
+																<Flex
+																	direction={["column", "column", "column"]}
+																	bg={cardBg}
+																	borderRadius="md"
+																	overflow="hidden"
+																	borderWidth="1px"
+																	borderColor={cardBorderColor}
+																	transition="all 0.3s ease"
+																	_hover={{
+																		boxShadow: "xl",
+																		transform: "scale(1.02)",
+																		borderColor: "red.200"
+																	}}
+																	w="full"
+																	position="relative"
+																	zIndex="1"
+																	alignItems={["flex-start", "flex-start", "flex-start"]}
+																	gap={[2, 2, 2]}
+																	mb={["4", "4", "4"]}
+																>
+																	{/* Image Section */}
+																	<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
+																		<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+																			<Box position="relative" w="full" h="full" className='card-image'>
+																				<Image
+																					src={`/assets/imgs/cars-listing/cars-listing-6/${car.images[0]}`}
+																					alt={car.brand}
+																					fill
+																					priority
+																					style={{ objectFit: "cover" }}
+																				/>
+																			</Box>
+																		</AspectRatio>
+																	</Box>
 
-
+																	{/* Content Section - maintain size but reduce spacing */}
+																	<Flex
+																		flex="1"
+																		p={["4", "4", "3"]}
+																		flexDir="column"
+																		justifyContent="space-between"
+																	// mt={["3", "3", "0"]}
+																	>
+																		<Box>
+																			<Flex
+																				direction={["row", "row", "row"]}
+																				justify="space-between"
+																				align="center"
+																				mb={["3", "3", "2"]}
+																				mt={["2", "2", "0"]}
+																			>
+																				<Heading
+																					as="h3"
+																					ml='1'
+																					fontSize={["lg", "lg", "xl"]}
+																					fontWeight="bold"
+																					color={headingColor}
+																					letterSpacing="wide"
+																					fontFamily="inter"
+																					_hover={{ color: "red.500" }}
+																				// mb={["1", "1", "0"]}
+																				>
+																					{[car?.brand, car?.modal].filter(Boolean).join(' ') || 'Car Details'}
+																				</Heading>
+																				{/* <Box mt={["1", "1", "0"]} className='light-mode'>
 																			<Image
-																				src={`/assets/imgs/cars-listing/cars-listing-6/${car.images[0]}`}
-																				alt={car.brand}
-																				fill
-																				priority
-																				style={{ objectFit: "cover" }}
+																				src={logo.src}
+																				alt="Logo"
+																				width={70}
+																				height={35}
+																				style={{ display: "inline-block" }}
 																			/>
 																		</Box>
-																	</AspectRatio>
-																</Box>
-
-																{/* Content Section - maintain size but reduce spacing */}
-																<Flex
-																	flex="1"
-																	p={["4", "4", "3"]}
-																	flexDir="column"
-																	justifyContent="space-between"
-																// mt={["3", "3", "0"]}
-																>
-																	<Box>
-																		<Flex
-																			direction={["row", "row", "row"]}
-																			justify="space-between"
-																			align="center"
-																			mb={["3", "3", "2"]}
-																			mt={["2", "2", "0"]}
-																		>
-																			<Heading
-																				as="h3"
-																				ml='1'
-																				fontSize={["lg", "lg", "xl"]}
-																				fontWeight="bold"
-																				color={headingColor}
-																				letterSpacing="wide"
-																				fontFamily="inter"
-																				_hover={{ color: "red.500" }}
-																			// mb={["1", "1", "0"]}
-																			>
-																				{[car?.brand, car?.modal].filter(Boolean).join(' ') || 'Car Details'}
-																			</Heading>
-																			{/* <Box mt={["1", "1", "0"]} className='light-mode'>
-																		<Image
-																			src={logo.src}
-																			alt="Logo"
-																			width={70}
-																			height={35}
-																			style={{ display: "inline-block" }}
-																		/>
-																	</Box>
 																	<Box mt={["1", "1", "0"]} className='dark-mode'>
 																		<Image
 																			src={logoDark.src}
@@ -319,127 +423,128 @@ export default function CarsList3() {
 																			style={{ display: "inline-block" }}
 																		/>
 																	</Box> */}
-																		</Flex>
-
-																		{/* Specs Row - inline with minimal spacing */}
-																		<Box mb={["4", "4", "4"]} ml="1">
-																			<Flex direction="row" gap={4} mb={1} >
-																				<HStack spacing="1">
-																					<LucideIcon icon={Power} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
-																				</HStack>
-																				<HStack spacing="1">
-																					<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.year}</Text>
-																				</HStack>
-																				<HStack spacing="1">
-																					<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
-																				</HStack>
 																			</Flex>
-																			<Flex direction="row" gap={6}>
-																				<HStack spacing="1">
-																					<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
-																				</HStack>
-																				<HStack spacing="1">
-																					<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-																					<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
-																				</HStack>
+
+																			{/* Specs Row - inline with minimal spacing */}
+																			<Box mb={["4", "4", "4"]} ml="1">
+																				<Flex direction="row" gap={4} mb={1} >
+																					<HStack spacing="1">
+																						<LucideIcon icon={Power} boxSize="4" color={textColor} />
+																						<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
+																					</HStack>
+																					<HStack spacing="1">
+																						<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+																						<Text fontSize="sm" color={textColor}>{car.year}</Text>
+																					</HStack>
+																					<HStack spacing="1">
+																						<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+																						<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
+																					</HStack>
+																				</Flex>
+																				<Flex direction="row" gap={6}>
+																					<HStack spacing="1">
+																						<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+																						<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
+																					</HStack>
+																					<HStack spacing="1">
+																						<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+																						<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
+																					</HStack>
+																				</Flex>
+																			</Box>
+
+																			{/* Features - keeping size with less vertical space */}
+																			<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+																				{bestDealsData?.data?.features?.slice(0, 4).map((feature: string, index: number) => (
+																					<Badge
+																						key={index}
+																						px="2"
+																						bg={badgeBg}
+																						color={badgeColor}
+																						borderRadius="md"
+																						fontSize="sm"
+																						fontWeight="medium"
+																						style={{ textTransform: "none" }}
+																					>
+																						{feature}
+																					</Badge>
+																				))}
+																				{bestDealsData?.data?.features && bestDealsData?.data?.features.length > 4 && (
+																					<Button
+																						variant="unstyled"
+																						color={buttonLinkColor}
+																						fontSize="sm"
+																						fontWeight="medium"
+																						height="auto"
+																						padding="0"
+																						lineHeight="1.5"
+																						_hover={{ textDecoration: "underline" }}
+																						onClick={(e) => e.preventDefault()}
+																						style={{ textTransform: "none" }}
+																					>
+																						+ {bestDealsData?.data?.features.length - 4} more
+																					</Button>
+																				)}
 																			</Flex>
 																		</Box>
 
-																		{/* Features - keeping size with less vertical space */}
-																		<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-																			{bestDealsData?.data?.features?.slice(0, 4).map((feature: string, index: number) => (
-																				<Badge
-																					key={index}
-																					px="2"
-																					bg={badgeBg}
-																					color={badgeColor}
-																					borderRadius="md"
-																					fontSize="sm"
-																					fontWeight="medium"
-																					style={{ textTransform: "none" }}
-																				>
-																					{feature}
-																				</Badge>
-																			))}
-																			{bestDealsData?.data?.features && bestDealsData?.data?.features.length > 4 && (
-																				<Button
-																					variant="unstyled"
-																					color={buttonLinkColor}
-																					fontSize="sm"
-																					fontWeight="medium"
-																					height="auto"
-																					padding="0"
-																					lineHeight="1.5"
-																					_hover={{ textDecoration: "underline" }}
-																					onClick={(e) => e.preventDefault()}
-																					style={{ textTransform: "none" }}
-																				>
-																					+ {bestDealsData?.data?.features.length - 4} more
-																				</Button>
-																			)}
-																		</Flex>
-																	</Box>
+																		{/* Location and Price - maintain size with reduced space */}
+																		<Box
+																			// pt={["3", "3", "1.5"]}
+																			px={["0", "0", "2"]}
+																			borderTopWidth="1px"
+																			borderColor={cardBorderColor}
+																		// mt={["2", "2", "1"]}
+																		>
+																			{/* Top row: Very Good Price (left) and Main Price (right) */}
 
-																	{/* Location and Price - maintain size with reduced space */}
-																	<Box
-																		// pt={["3", "3", "1.5"]}
-																		px={["0", "0", "2"]}
-																		borderTopWidth="1px"
-																		borderColor={cardBorderColor}
-																	// mt={["2", "2", "1"]}
-																	>
-																		{/* Top row: Very Good Price (left) and Main Price (right) */}
-
-																		<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
-																			<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
-																				<HStack spacing="1" >
-																					{[...Array(5)].map((_, i) => (
-																						<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
-																					))}
-																					<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-																						Very Good Price
+																			<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+																				<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+																					<HStack spacing="1" >
+																						{[...Array(5)].map((_, i) => (
+																							<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+																						))}
+																						<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+																							Very Good Price
+																						</Text>
+																					</HStack>
+																					<HStack> <Flex align="center" gap="1">
+																						<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+																							€ 5043
+																						</Text>
+																						<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+																							Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+																						</Text>
+																					</Flex>
+																					</HStack>
+																				</VStack>
+																				<Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
+																					<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+																						€ {car.price.toLocaleString()}
 																					</Text>
-																				</HStack>
-																				<HStack> <Flex align="center" gap="1">
-																					<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-																						€ 5043
+																					<Text fontSize="xs" color={textColor}>
+																						€{(car.price / 4).toFixed(2)} without VAT
 																					</Text>
-																					<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-																						Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-																					</Text>
-																				</Flex>
-																				</HStack>
-																			</VStack>
-																			<Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
-																				<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
-																					€ {car.price.toLocaleString()}
-																				</Text>
-																				<Text fontSize="xs" color={textColor}>
-																					€{(car.price / 4).toFixed(2)} without VAT
-																				</Text>
-																			</Box>
-																		</Flex>
-																		{/* Bottom row: Cheaper than in Spain! */}
+																				</Box>
+																			</Flex>
+																			{/* Bottom row: Cheaper than in Spain! */}
 
-																	</Box>
+																		</Box>
 
+																	</Flex>
 																</Flex>
-															</Flex>
-														</div>
-													))}
+															</div>
+														))
+													)}
 												</div>
 											</div>
-											<ByPagination
+											{/* <ByPagination
 												handlePreviousPage={handlePreviousPage}
 												totalPages={bestDealsData?.pages || 1}
-												currentPage={currentPage}
+												currentPage={parseInt(page)}
 												handleNextPage={handleNextPage}
 												handlePageChange={handlePageChange}
-											/>
+											/> */}
 										</div>
 										<div className="content-left order-lg-first d-none">
 											<div className="sidebar-left border-1 background-body">

@@ -1649,7 +1649,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
   // Tabs configuration
   const tabs = [
     { id: 'all', label: 'All', icon: Sliders },
-    { id: 'saved', label: 'Favourites', icon: Heart },
+    // { id: 'saved', label: 'Favourites', icon: Heart },
     { id: 'history', label: 'History', icon: Clock },
   ];
 
@@ -2054,13 +2054,13 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
           </VStack>
         );
 
-      case 'saved':
-        return (
-          <Box py={8} textAlign="center">
-            <LucideIcon icon={Heart} boxSize="12" mx="auto" mb={4} color={emptyStateIconColor} />
-            <Text color={emptyStateMsgColor}>Your favourite cars will appear here</Text>
-          </Box>
-        );
+      // case 'saved':
+      //   return (
+      //     <Box py={8} textAlign="center">
+      //       <LucideIcon icon={Heart} boxSize="12" mx="auto" mb={4} color={emptyStateIconColor} />
+      //       <Text color={emptyStateMsgColor}>Your favourite cars will appear here</Text>
+      //     </Box>
+      //   );
 
       case 'history':
         return (
