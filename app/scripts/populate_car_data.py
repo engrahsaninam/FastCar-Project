@@ -1,4 +1,3 @@
-#app/scripts/populate_car_data.py
 import random
 import json
 import logging
