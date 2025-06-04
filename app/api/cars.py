@@ -93,8 +93,11 @@ async def get_best_deals(
     total = primary_query.count()
     cars = primary_query.offset(offset).limit(limit).all()
     logger.info(f"[DATA] Primary query fetched {len(cars)} cars (total matching: {total})")
+
     if cars:
-        logger.info(f"[DATA] Sample car IDs from primary: {[car.id for car in cars[:5]]}")
+        logger.info("[DATA] Sample primary cars (2-3 shown):")
+        for car in cars[:3]:
+            logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
 
     if remove_outliers and cars:
         logger.info("[INFO] Removing outliers from primary results...")
@@ -106,6 +109,7 @@ async def get_best_deals(
 
     if not cars:
         logger.info("[FALLBACK] No suitable cars found in primary query. Executing fallback logic...")
+
         median_prices = db.query(
             Car.brand,
             Car.model,
@@ -134,8 +138,11 @@ async def get_best_deals(
         total = fallback_query.count()
         cars = fallback_query.offset(offset).limit(limit).all()
         logger.info(f"[DATA] Fallback query fetched {len(cars)} cars (total matching: {total})")
+
         if cars:
-            logger.info(f"[DATA] Sample car IDs from fallback: {[car.id for car in cars[:5]]}")
+            logger.info("[DATA] Sample fallback cars (2-3 shown):")
+            for car in cars[:3]:
+                logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
 
         if remove_outliers and cars:
             logger.info("[INFO] Removing outliers from fallback results...")
