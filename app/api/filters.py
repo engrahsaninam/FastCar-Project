@@ -6,6 +6,7 @@ from sqlalchemy.sql import text
 from app.database.sqlite import get_db
 import logging
 import time
+import json
 
 router = APIRouter()
 
@@ -219,14 +220,28 @@ async def get_colours(db: Session = Depends(get_db)):
 @router.get("/features", response_model=List[str])
 async def get_features(db: Session = Depends(get_db)):
     start_time = time.time()
-    features = db.execute(text("""
-        SELECT DISTINCT feature
-        FROM car_features
-        ORDER BY feature
+    # Fetch raw features JSON
+    results = db.execute(text("""
+        SELECT features
+        FROM cars
+        WHERE features IS NOT NULL AND features != '' AND features != '{}'
     """)).fetchall()
+    
+    unique_features = set()
+    for row in results:
+        try:
+            # Parse features (handles both JSON and stringified JSON)
+            features = row[0] if isinstance(row[0], dict) else json.loads(row[0])
+            # Flatten features from all categories
+            for category, feature_list in features.items():
+                unique_features.update(feature_list)
+        except (json.JSONDecodeError, TypeError):
+            logger.warning(f"Invalid features data: {row[0]}")
+            continue
+    
     query_time = time.time() - start_time
     logger.info(f"Get features query took {query_time:.2f} seconds")
-    return [feature[0] for feature in features]
+    return sorted(list(unique_features))
 
 @router.get("/outlier-stats")
 async def get_outlier_stats(db: Session = Depends(get_db)):

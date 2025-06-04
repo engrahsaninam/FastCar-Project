@@ -14,7 +14,7 @@ class CarFilterParams(BaseModel):
     max_mileage: Optional[float] = None
     fuel: Optional[str] = None
     gear: Optional[str] = None
-    vat_deduction: Optional[bool] = None
+    vat: Optional[bool] = None
     power_min: Optional[int] = None
     power_max: Optional[int] = None
     body_type: Optional[str] = None
@@ -26,7 +26,7 @@ class CarResponse(BaseModel):
     brand: str
     model: str
     version: Optional[str] = None
-    price: float
+    price: float  # May include VAT if vat=true
     mileage: float
     age: float
     power: Optional[int] = None
@@ -43,7 +43,7 @@ class CarResponse(BaseModel):
     body_type: Optional[str] = None
     colour: Optional[str] = None
     features: Optional[Dict[str, List[str]]] = None
-    total_price: Optional[float] = None  # New: Total price including charges
+    total_price: Optional[float] = None
     
     class Config:
         from_attributes = True

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Query, HTTPException, Depends, Request
 from app.api.auth import get_current_user
 from app.models.user import User
 from app.models.car import Car
+from app.models.charges import AdditionalCharges
 from app.database.sqlite import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, text
@@ -20,13 +21,15 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-def car_to_dict(car: Car) -> dict:
+def car_to_dict(car: Car, vat: bool = False, vat_rate: float = 0.0) -> dict:
+    price = car.price * (1 + vat_rate / 100) if vat else car.price
+    logger.debug(f"Car id={car.id}: VAT={vat}, vat_rate={vat_rate}%, price={price}")
     return {
         "id": car.id,
         "brand": car.brand,
         "model": car.model,
         "version": car.version,
-        "price": car.price,
+        "price": price,
         "mileage": car.mileage,
         "age": car.age,
         "power": car.power,
@@ -42,7 +45,8 @@ def car_to_dict(car: Car) -> dict:
         "engine_size": car.engine_size,
         "body_type": car.body_type,
         "colour": car.colour,
-        "features": car.features
+        "features": car.features,
+        "total_price": car.total_price
     }
 
 @router.get("/best-deals", response_model=PaginatedCarResponse)
@@ -53,11 +57,20 @@ async def get_best_deals(
     brand: Optional[str] = None,
     model: Optional[str] = None,
     year: Optional[int] = None,
+    vat: Optional[bool] = None,
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    logger.info(f"[REQUEST] Fetching best deals - page={page}, limit={limit}, brand={brand}, model={model}, year={year}")
+    logger.info(f"[REQUEST] Fetching best deals - page={page}, limit={limit}, brand={brand}, model={model}, year={year}, vat={vat}")
     start_time = time.time()
+
+    # Fetch VAT percentage
+    charges = db.query(AdditionalCharges).first()
+    if not charges:
+        logger.error("[ERROR] No additional_charges record found")
+        raise HTTPException(status_code=500, detail="No additional charges configuration found")
+    vat_rate = max(charges.vat, 0.0) if vat else 0.0
+    logger.info(f"[VAT] Using vat_rate={vat_rate}%")
 
     offset = (page - 1) * limit
 
@@ -69,10 +82,13 @@ async def get_best_deals(
     if year:
         filters.append(Car.year == year)
 
+    # Adjust price for VAT in subquery
+    price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+
     avg_prices = db.query(
         Car.brand,
         Car.model,
-        func.avg(Car.price).label('avg_price'),
+        func.avg(price_column).label('avg_price'),
         func.count().label('group_count')
     ).filter(
         Car.price.isnot(None),
@@ -85,10 +101,10 @@ async def get_best_deals(
         avg_prices,
         and_(Car.brand == avg_prices.c.brand, Car.model == avg_prices.c.model)
     ).filter(
-        Car.price < avg_prices.c.avg_price,
+        price_column < avg_prices.c.avg_price,
         Car.price.isnot(None),
         *filters
-    ).order_by((avg_prices.c.avg_price - Car.price).desc())
+    ).order_by((avg_prices.c.avg_price - price_column).desc())
 
     total = primary_query.count()
     cars = primary_query.offset(offset).limit(limit).all()
@@ -97,20 +113,20 @@ async def get_best_deals(
     if cars:
         logger.info("[DATA] Sample primary cars (2-3 shown):")
         for car in cars[:3]:
-            logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+            logger.info(f"[CAR] {json.dumps(car_to_dict(car, vat, vat_rate), indent=2)}")
 
     if remove_outliers and cars:
         logger.info("[INFO] Removing outliers from primary results...")
-        car_dicts = [car_to_dict(car) for car in cars]
+        car_dicts = [car_to_dict(car, vat, vat_rate) for car in cars]
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
-        cars = [car for car in cars if car_to_dict(car) in clean_data]
+        cars = [car for car in cars if car_to_dict(car, vat, vat_rate) in clean_data]
         total = len(clean_data) if total > len(clean_data) else total
         logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
         if cars:
             logger.info("[DATA] Sample cars after outlier removal (2-3 shown):")
             for car in cars[:3]:
-                logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+                logger.info(f"[CAR] {json.dumps(car_to_dict(car, vat, vat_rate), indent=2)}")
 
     if not cars:
         logger.info("[FALLBACK] No suitable cars found in primary query. Executing fallback logic...")
@@ -118,9 +134,9 @@ async def get_best_deals(
         median_prices = db.query(
             Car.brand,
             Car.model,
-            func.min(Car.price).label('min_price'),
-            func.max(Car.price).label('max_price'),
-            ((func.min(Car.price) + func.max(Car.price)) / 2).label('price_threshold'),
+            func.min(price_column).label('min_price'),
+            func.max(price_column).label('max_price'),
+            ((func.min(price_column) + func.max(price_column)) / 2).label('price_threshold'),
             func.count().label('group_count')
         ).filter(
             Car.price.isnot(None),
@@ -135,10 +151,10 @@ async def get_best_deals(
             median_prices,
             and_(Car.brand == median_prices.c.brand, Car.model == median_prices.c.model)
         ).filter(
-            Car.price <= median_prices.c.price_threshold,
+            price_column <= median_prices.c.price_threshold,
             Car.price.isnot(None),
             *filters
-        ).order_by(Car.price.asc())
+        ).order_by(price_column.asc())
 
         total = fallback_query.count()
         cars = fallback_query.offset(offset).limit(limit).all()
@@ -147,20 +163,20 @@ async def get_best_deals(
         if cars:
             logger.info("[DATA] Sample fallback cars (2-3 shown):")
             for car in cars[:3]:
-                logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+                logger.info(f"[CAR] {json.dumps(car_to_dict(car, vat, vat_rate), indent=2)}")
 
         if remove_outliers and cars:
             logger.info("[INFO] Removing outliers from fallback results...")
-            car_dicts = [car_to_dict(car) for car in cars]
+            car_dicts = [car_to_dict(car, vat, vat_rate) for car in cars]
             clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
-            cars = [car for car in cars if car_to_dict(car) in clean_data]
+            cars = [car for car in cars if car_to_dict(car, vat, vat_rate) in clean_data]
             total = len(clean_data) if total > len(clean_data) else total
             logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
             if cars:
                 logger.info("[DATA] Sample cars after outlier removal (2-3 shown):")
                 for car in cars[:3]:
-                    logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+                    logger.info(f"[CAR] {json.dumps(car_to_dict(car, vat, vat_rate), indent=2)}")
 
     query_time = time.time() - start_time
     logger.info(f"[SUCCESS] Best deals query completed in {query_time:.2f}s")
@@ -173,7 +189,8 @@ async def get_best_deals(
             "remove_outliers": remove_outliers,
             "brand": brand,
             "model": model,
-            "year": year
+            "year": year,
+            "vat": vat
         }
         search_history = SearchHistory(
             user_id=current_user.id,
@@ -184,14 +201,12 @@ async def get_best_deals(
         logger.info(f"[HISTORY] Saved search for user_id={current_user.id}")
 
     return {
-        "data": [CarResponse(**car_to_dict(car)) for car in cars],
+        "data": [CarResponse(**car_to_dict(car, vat, vat_rate)) for car in cars],
         "total": total,
         "page": page,
         "limit": limit,
         "pages": (total + limit - 1) // limit if limit > 0 else 0
     }
-
-
 
 @router.get("/", response_model=PaginatedCarResponse)
 async def get_cars(
@@ -210,13 +225,24 @@ async def get_cars(
     body_type: Optional[str] = None,
     colour: Optional[str] = None,
     features: Optional[List[str]] = Query(None),
+    vat: Optional[bool] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    logger.info(f"[REQUEST] Fetching cars - page={page}, limit={limit}, brand={brand}, model={model}, vat={vat}")
     start_time = time.time()
+
+    # Fetch VAT percentage
+    charges = db.query(AdditionalCharges).first()
+    if not charges:
+        logger.error("[ERROR] No additional_charges record found")
+        raise HTTPException(status_code=500, detail="No additional charges configuration found")
+    vat_rate = max(charges.vat, 0.0) if vat else 0.0
+    logger.info(f"[VAT] Using vat_rate={vat_rate}%")
+
     query = db.query(Car)
     filters = []
 
@@ -225,9 +251,11 @@ async def get_cars(
     if model:
         filters.append(Car.model == model)
     if min_price:
-        filters.append(Car.price >= min_price)
+        price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+        filters.append(price_column >= min_price)
     if max_price:
-        filters.append(Car.price <= max_price)
+        price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+        filters.append(price_column <= max_price)
     if min_year:
         filters.append(Car.year >= min_year)
     if max_year:
@@ -250,7 +278,6 @@ async def get_cars(
         filters.append(Car.colour == colour)
     if features:
         for feature in features:
-            # Filter cars where feature exists in any category
             filters.append(
                 text("json_extract(features, '$.\"Comfort & Convenience\"') LIKE :feature "
                      "OR json_extract(features, '$.\"Safety & Security\"') LIKE :feature "
@@ -265,13 +292,15 @@ async def get_cars(
     cars = query.offset(offset).limit(limit).all()
 
     if remove_outliers and cars:
-        car_dicts = [car_to_dict(car) for car in cars]
+        logger.info("[INFO] Removing outliers...")
+        car_dicts = [car_to_dict(car, vat, vat_rate) for car in cars]
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
-        cars = [car for car in cars if car_to_dict(car) in clean_data]
+        cars = [car for car in cars if car_to_dict(car, vat, vat_rate) in clean_data]
         total = len(clean_data) if total > len(clean_data) else total
+        logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
     query_time = time.time() - start_time
-    logger.info(f"Get cars query took {query_time:.2f} seconds")
+    logger.info(f"[SUCCESS] Get cars query took {query_time:.2f} seconds")
 
     if current_user:
         from app.models.user import SearchHistory
@@ -291,6 +320,7 @@ async def get_cars(
             "body_type": body_type,
             "colour": colour,
             "features": features,
+            "vat": vat,
             "page": page,
             "limit": limit,
             "remove_outliers": remove_outliers
@@ -301,9 +331,10 @@ async def get_cars(
         )
         db.add(search_history)
         db.commit()
+        logger.info(f"[HISTORY] Saved search for user_id={current_user.id}")
 
     return {
-        "data": [CarResponse(**car_to_dict(car)) for car in cars],
+        "data": [CarResponse(**car_to_dict(car, vat, vat_rate)) for car in cars],
         "total": total,
         "page": page,
         "limit": limit,
@@ -328,17 +359,19 @@ async def search_cars(
     body_type: Optional[str] = None,
     colour: Optional[str] = None,
     features: Optional[List[str]] = Query(None),
+    vat: Optional[bool] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.info(f"[REQUEST] Searching cars - page={page}, limit={limit}, brand={brand}, model={model}, vat={vat}")
     search_params = dict(request.query_params)
     result = await get_cars(
         brand, model, min_price, max_price, min_year, max_year, 
         min_mileage, max_mileage, fuel, gear, power_min, power_max,
-        body_type, colour, features, page, limit, remove_outliers, 
+        body_type, colour, features, vat, page, limit, remove_outliers, 
         current_user, db
     )
     
@@ -350,6 +383,7 @@ async def search_cars(
         )
         db.add(search_history)
         db.commit()
+        logger.info(f"[HISTORY] Saved search for user_id={current_user.id}")
     
     return result
 
@@ -412,4 +446,6 @@ async def get_similar_cars(
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
         cars = [c for c in cars if car_to_dict(c) in clean_data]
 
+    query_time = time.time() - start_time
+    logger.info(f"Get similar cars query took {query_time:.2f} seconds")
     return [CarResponse(**car_to_dict(c)) for c in cars]
