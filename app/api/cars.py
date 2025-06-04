@@ -56,7 +56,7 @@ async def get_best_deals(
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    logger.info(f"Fetching best deals: page={page}, limit={limit}, remove_outliers={remove_outliers}, brand={brand}, model={model}, year={year}")
+    logger.info(f"[REQUEST] Fetching best deals - page={page}, limit={limit}, brand={brand}, model={model}, year={year}")
     start_time = time.time()
 
     offset = (page - 1) * limit
@@ -91,18 +91,21 @@ async def get_best_deals(
     ).order_by((avg_prices.c.avg_price - Car.price).desc())
 
     total = primary_query.count()
-    logger.info(f"Primary query found {total} best deals")
-
     cars = primary_query.offset(offset).limit(limit).all()
+    logger.info(f"[DATA] Primary query fetched {len(cars)} cars (total matching: {total})")
+    if cars:
+        logger.info(f"[DATA] Sample car IDs from primary: {[car.id for car in cars[:5]]}")
 
     if remove_outliers and cars:
+        logger.info("[INFO] Removing outliers from primary results...")
         car_dicts = [car_to_dict(car) for car in cars]
         clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
         cars = [car for car in cars if car_to_dict(car) in clean_data]
         total = len(clean_data) if total > len(clean_data) else total
+        logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
     if not cars:
-        logger.info("No cars found with primary query, using fallback")
+        logger.info("[FALLBACK] No suitable cars found in primary query. Executing fallback logic...")
         median_prices = db.query(
             Car.brand,
             Car.model,
@@ -129,17 +132,21 @@ async def get_best_deals(
         ).order_by(Car.price.asc())
 
         total = fallback_query.count()
-        logger.info(f"Fallback query found {total} cars")
         cars = fallback_query.offset(offset).limit(limit).all()
+        logger.info(f"[DATA] Fallback query fetched {len(cars)} cars (total matching: {total})")
+        if cars:
+            logger.info(f"[DATA] Sample car IDs from fallback: {[car.id for car in cars[:5]]}")
 
         if remove_outliers and cars:
+            logger.info("[INFO] Removing outliers from fallback results...")
             car_dicts = [car_to_dict(car) for car in cars]
             clean_data, _ = detect_outliers(car_dicts, numeric_columns=['price', 'mileage', 'age'])
             cars = [car for car in cars if car_to_dict(car) in clean_data]
             total = len(clean_data) if total > len(clean_data) else total
+            logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
     query_time = time.time() - start_time
-    logger.info(f"Best deals query took {query_time:.2f} seconds")
+    logger.info(f"[SUCCESS] Best deals query completed in {query_time:.2f}s")
 
     if current_user:
         from app.models.user import SearchHistory
@@ -157,6 +164,7 @@ async def get_best_deals(
         )
         db.add(search_history)
         db.commit()
+        logger.info(f"[HISTORY] Saved search for user_id={current_user.id}")
 
     return {
         "data": [CarResponse(**car_to_dict(car)) for car in cars],
@@ -165,6 +173,7 @@ async def get_best_deals(
         "limit": limit,
         "pages": (total + limit - 1) // limit if limit > 0 else 0
     }
+
 
 @router.get("/", response_model=PaginatedCarResponse)
 async def get_cars(
