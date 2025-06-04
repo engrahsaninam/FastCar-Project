@@ -107,6 +107,11 @@ async def get_best_deals(
         total = len(clean_data) if total > len(clean_data) else total
         logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
+        if cars:
+            logger.info("[DATA] Sample cars after outlier removal (2-3 shown):")
+            for car in cars[:3]:
+                logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+
     if not cars:
         logger.info("[FALLBACK] No suitable cars found in primary query. Executing fallback logic...")
 
@@ -152,6 +157,11 @@ async def get_best_deals(
             total = len(clean_data) if total > len(clean_data) else total
             logger.info(f"[INFO] {len(cars)} cars left after outlier removal")
 
+            if cars:
+                logger.info("[DATA] Sample cars after outlier removal (2-3 shown):")
+                for car in cars[:3]:
+                    logger.info(f"[CAR] {json.dumps(car_to_dict(car), indent=2)}")
+
     query_time = time.time() - start_time
     logger.info(f"[SUCCESS] Best deals query completed in {query_time:.2f}s")
 
@@ -180,6 +190,7 @@ async def get_best_deals(
         "limit": limit,
         "pages": (total + limit - 1) // limit if limit > 0 else 0
     }
+
 
 
 @router.get("/", response_model=PaginatedCarResponse)

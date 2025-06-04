@@ -174,11 +174,13 @@ async def startup_event():
     """Initialize application on startup."""
     logger.info("Starting EUCar API application")
 
+    # Create SQLite tables for user data and cars
+    create_tables()              
+
     # Apply database migrations
     apply_migrations()
     
-    # Create SQLite tables for user data and cars
-    create_tables()
+    
 
     # Populate dummy data for new car columns
     populate_dummy_data()
