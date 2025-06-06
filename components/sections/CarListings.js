@@ -870,7 +870,7 @@ const FilterSidebarWithParams = ({ isMobileOpen, setIsMobileOpen }) => {
     if (max_year) params.set('max_year', max_year);
     if (min_mileage) params.set('min_mileage', min_mileage);
     if (max_mileage) params.set('max_mileage', max_mileage);
-    if (transmission) params.set('transmission', transmission);
+    if (transmission) params.set('gear', transmission);
     if (vatDeduction) params.set('vat', 'true');
     if (discountedCars) params.set('discounted', 'true');
 

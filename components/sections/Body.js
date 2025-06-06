@@ -863,7 +863,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
     if (gear) {
       filters.push({
         id: 'gear',
-        label: Transmission
+        label: gear
       });
     }
 

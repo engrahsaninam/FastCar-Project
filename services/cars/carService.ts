@@ -10,7 +10,7 @@ export interface CarFilters {
     max_year?: string;
     min_mileage?: string;
     max_mileage?: string;
-    transmission?: string;
+    gear?: string;
     vat?: string;
     discounted?: string;
     fuel?: string[];
@@ -45,7 +45,7 @@ export const getCars = async (page: string, limit: string, filters?: CarFilters)
         if (filters.max_year) params.append('max_year', filters.max_year);
         if (filters.min_mileage) params.append('min_mileage', filters.min_mileage);
         if (filters.max_mileage) params.append('max_mileage', filters.max_mileage);
-        if (filters.transmission) params.append('transmission', filters.transmission);
+        if (filters.gear) params.append('gear', filters.gear);
         if (filters.vat) params.append('vat', filters.vat);
         if (filters.discounted) params.append('discounted', filters.discounted);
         if (filters.electric) params.append('electric', filters.electric);
