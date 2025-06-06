@@ -455,21 +455,26 @@ export default function CarsList3() {
 
 																			{/* Features - keeping size with less vertical space */}
 																			<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-																				{bestDealsData?.data?.features?.slice(0, 4).map((feature: string, index: number) => (
-																					<Badge
-																						key={index}
-																						px="2"
-																						bg={badgeBg}
-																						color={badgeColor}
-																						borderRadius="md"
-																						fontSize="sm"
-																						fontWeight="medium"
-																						style={{ textTransform: "none" }}
-																					>
-																						{feature}
-																					</Badge>
-																				))}
-																				{bestDealsData?.data?.features && bestDealsData?.data?.features.length > 4 && (
+																				{car.features &&
+																					(Object.values(car.features) as string[][])
+																						.flat()
+																						.slice(0, 4)
+																						.map((feature, index) => (
+																							<Badge
+																								key={index}
+																								px="2"
+																								bg={badgeBg}
+																								color={badgeColor}
+																								borderRadius="md"
+																								fontSize="sm"
+																								fontWeight="medium"
+																								style={{ textTransform: "none" }}
+																							>
+																								{feature}
+																							</Badge>
+																						))
+																				}
+																				{car.features && Object.values(car.features).flat().length > 4 && (
 																					<Button
 																						variant="unstyled"
 																						color={buttonLinkColor}
@@ -479,10 +484,10 @@ export default function CarsList3() {
 																						padding="0"
 																						lineHeight="1.5"
 																						_hover={{ textDecoration: "underline" }}
-																						onClick={(e) => e.preventDefault()}
+																						onClick={e => e.preventDefault()}
 																						style={{ textTransform: "none" }}
 																					>
-																						+ {bestDealsData?.data?.features.length - 4} more
+																						+ {Object.values(car.features).flat().length - 4} more
 																					</Button>
 																				)}
 																			</Flex>

@@ -404,7 +404,7 @@ export const CarCard = ({ car }) => {
 };
 
 // Car Card Skeleton for loading state
-const CarCardSkeleton = () => {
+export const CarCardSkeleton = () => {
   const cardBg = useColorModeValue("white", "#1a1a1a");
   const cardBorderColor = useColorModeValue("gray.100", "#333333");
 
@@ -464,7 +464,7 @@ const CarCardSkeleton = () => {
 };
 
 // List of Car Card Skeletons
-const CarListSkeleton = () => {
+export const CarListSkeleton = () => {
   return (
     <Box w="full">
       <Box w="full" px="10px">

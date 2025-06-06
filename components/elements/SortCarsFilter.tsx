@@ -53,14 +53,14 @@ export default function SortCarsFilter({
 								<option value="20">20</option>
 							</select>
 						</div>
-						<div className="item-sort border-1">
+						{/* <div className="item-sort border-1">
 							<span className="text-xs-medium neutral-500 mr-5 d-block m-w-50px">Sort by:</span>
 							<select value={sortCriteria} onChange={handleSortChange}>
 								<option value="name">Name</option>
 								<option value="price">Price</option>
 								<option value="rating">Rating</option>
 							</select>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</div>

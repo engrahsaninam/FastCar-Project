@@ -210,13 +210,13 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     }, [user, loading, router]);
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minH="100vh">
-                <Text>Loading...</Text>
-            </Box>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <Box display="flex" justifyContent="center" alignItems="center" minH="100vh">
+    //             {/* <Text>Loading...</Text> */}
+    //         </Box>
+    //     );
+    // }
 
     return user ? <>{children}</> : null;
 };
