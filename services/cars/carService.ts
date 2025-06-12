@@ -157,3 +157,17 @@ export const getSavedCars = async () => {
     const response = await axiosInstance.get(apiRoutes.car.getSavedCars);
     return response.data;
 }
+
+export const getCar = async (id: string) => {
+    const response = await axiosInstance.get(`${apiRoutes.car.getCar(id)}`);
+    return response.data;
+}
+export const getSimilarCars = async (id: string, limit: string = '4') => {
+    const response = await axiosInstance.get(`${apiRoutes.car.similar(id)}`, {
+        params: {
+            limit,
+            remove_outliers: false
+        }
+    });
+    return response.data;
+}

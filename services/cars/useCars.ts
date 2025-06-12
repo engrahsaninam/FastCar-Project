@@ -15,6 +15,8 @@ import {
     saveCar,
     unsaveCar,
     getSavedCars,
+    getCar,
+    getSimilarCars,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -181,6 +183,24 @@ export const useGetSavedCars = () =>
     useQuery({
         queryKey: ["savedCars"],
         queryFn: getSavedCars,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
+    });
+
+export const useGetCar = (id: string) =>
+    useQuery({
+        queryKey: ["car", id],
+        queryFn: () => getCar(id),
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
+    });
+
+export const useGetSimilarCars = (id: string, limit: string = '4') =>
+    useQuery({
+        queryKey: ["similarCars", id, limit],
+        queryFn: () => getSimilarCars(id, limit),
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,

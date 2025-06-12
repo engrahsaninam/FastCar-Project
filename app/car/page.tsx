@@ -9,7 +9,7 @@ import Slider from "react-slick"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useColorModeValue } from "@chakra-ui/react"
 import logo from '@/public/assets/imgs/template/logo-d.svg';
-import { useBestDeals } from "@/services/cars/useCars";
+import { useBestDeals, useGetCar, useGetSimilarCars } from "@/services/cars/useCars";
 import {
 	Heart,
 	MapPin,
@@ -132,7 +132,9 @@ export default function CarsDetails1() {
 	const carId = searchParams.get('id');
 	const [isDrawerOpen, setDrawerOpen] = useState(false)
 	const isMobile = useBreakpointValue({ base: true, md: false })
-
+	const { data: carData, isLoading, error } = useGetCar(carId || '');
+	const { data: similarCars, isLoading: isSimilarLoading } = useGetSimilarCars(carId || "");
+	console.log('Car Data:', similarCars);
 	useEffect(() => {
 		console.log('Car ID:', carId);
 		// Here you would fetch the car data based on the ID
@@ -366,7 +368,7 @@ export default function CarsDetails1() {
 					/>
 
 					<Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor={borderColor}>
-						<Text fontSize="lg" fontWeight="semibold" color={textColor}>Toyota C-HR 2.0 Hybrid 135 kW</Text>
+						<Text fontSize="lg" fontWeight="semibold" color={textColor}>{carData?.brand} {carData?.model}</Text>
 						<IconButton
 							variant="ghost"
 							icon={<Icon as={X} w={5} h={5} />}
@@ -403,7 +405,7 @@ export default function CarsDetails1() {
 						{/* Vehicle details */}
 						<Box borderBottom="1px" borderColor={borderColor} mb={1} p={2}>
 							<Text fontSize="md" fontWeight="semibold" color={textColor} mb={3}>
-								Mercedes-Benz A 200 d 110 kW
+								{carData?.brand} {carData?.model}
 							</Text>
 							<VStack spacing={1} align="stretch">
 								<Flex justify="space-between" align="center">
@@ -558,7 +560,7 @@ export default function CarsDetails1() {
 						zIndex={2}
 					>
 						<Link href="/checkout" passHref legacyBehavior>
-							<Button as="a" bg="red.500"  color="white" size="lg" w="100%">
+							<Button as="a" bg="red.500" color="white" size="lg" w="100%">
 								Buy Now
 							</Button>
 						</Link>
@@ -710,7 +712,7 @@ export default function CarsDetails1() {
 													_hover={{ color: "red.500" }}
 												// mb={["1", "1", "0"]}
 												>
-													BMW Cooper 100 kW
+													{carData?.brand} {carData?.model}
 												</Heading>
 												<Box mt={["1", "1", "0"]} className='light-mode'>
 													<Image
@@ -737,62 +739,70 @@ export default function CarsDetails1() {
 												<Flex direction="row" gap={6} mb={1}>
 													<HStack spacing="1">
 														<LucideIcon icon={Power} boxSize="4" color={textColor} />
-														<Text fontSize="sm" color={textColor}>100 kW (136 hp)</Text>
+														<Text fontSize="sm" color={textColor}>{carData?.power} kW	</Text>
 													</HStack>
 													<HStack spacing="1">
 														<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-														<Text fontSize="sm" color={textColor}>9/2021</Text>
+														<Text fontSize="sm" color={textColor}>{carData?.year}</Text>
 													</HStack>
 													<HStack spacing="1">
 														<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-														<Text fontSize="sm" color={textColor}>18,496 km</Text>
+														<Text fontSize="sm" color={textColor}>{carData?.mileage} km</Text>
 													</HStack>
 												</Flex>
 												<Flex direction="row" gap={6}>
 													<HStack spacing="1">
 														<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-														<Text fontSize="sm" color={textColor} fontWeight="semibold">Automatic</Text>
+														<Text fontSize="sm" color={textColor} fontWeight="semibold">{carData?.gear}</Text>
 													</HStack>
 													<HStack spacing="1">
 														<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-														<Text fontSize="sm" color={textColor} fontWeight="semibold">Petrol</Text>
+														<Text fontSize="sm" color={textColor} fontWeight="semibold">{carData?.fuel}</Text>
 													</HStack>
 												</Flex>
 											</Box>
 
 											{/* Features - keeping size with less vertical space */}
 											<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-												{car.features.slice(0, 4).map((feature: string, index: number) => (
-													<Badge
-														key={index}
-														px="2"
-														bg={badgeBg}
-														// className="bg-gray-100"
-														color={badgeColor}
-														borderRadius="md"
-														fontSize="sm"
-														fontWeight="medium"
-														style={{ textTransform: "none" }}
-													>
-														{feature}
-													</Badge>
-												))}
-												{car.features.length > 4 && (
-													<Button
-														variant="unstyled"
-														color={buttonLinkColor}
-														fontSize="sm"
-														fontWeight="medium"
-														height="auto"
-														padding="0"
-														lineHeight="1.5"
-														_hover={{ textDecoration: "underline" }}
-														onClick={(e) => e.preventDefault()}
-														style={{ textTransform: "none" }}
-													>
-														+ {car.features.length - 4} more
-													</Button>
-												)}
+												{carData?.features &&
+													Object.entries(carData?.features)
+														.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+														.slice(0, 4)
+														.map((feature, index) => (
+															<Badge
+																key={index}
+																px="2"
+																bg={badgeBg}
+																// className="bg-gray-100"
+																color={badgeColor}
+																borderRadius="md"
+																fontSize="sm"
+																fontWeight="medium"
+																style={{ textTransform: "none" }}
+															>
+																{feature}
+															</Badge>
+														))}
+												{carData?.features && Object.entries(carData?.features)
+													.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+													.length > 4 && (
+														<Button
+															variant="unstyled"
+															color={buttonLinkColor}
+															fontSize="sm"
+															fontWeight="medium"
+															height="auto"
+															padding="0"
+															lineHeight="1.5"
+															_hover={{ textDecoration: "underline" }}
+															onClick={(e) => e.preventDefault()}
+															style={{ textTransform: "none" }}
+														>
+															+ {Object.entries(carData?.features)
+																.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+																.length - 4} more
+														</Button>
+													)}
 											</Flex>
 										</Box>
 
@@ -941,7 +951,7 @@ export default function CarsDetails1() {
 																</div>
 																<div>
 																	<div className="text-gray-500 dark:text-gray-400 small">CO2 EMISSIONS</div>
-																	<div className="fw-bold text-gray-900 dark:text-white">92 g/km</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">{carData?.CO2_emissions}/km</div>
 																</div>
 															</div>
 														</div>
@@ -957,7 +967,7 @@ export default function CarsDetails1() {
 																</div>
 																<div>
 																	<div className="text-gray-500 dark:text-gray-400 small">LOCATION</div>
-																	<div className="fw-bold text-gray-900 dark:text-white">Germany</div>
+																	<div className="fw-bold text-gray-900 dark:text-white">{carData?.country}</div>
 																</div>
 															</div>
 														</div>
@@ -1112,279 +1122,30 @@ export default function CarsDetails1() {
 									<div className="container-fluid px-0">
 										<h2 className="mb-4 text-gray-900 dark:text-white">Features</h2>
 										<div className="row">
-											{/* Security, Safety and Assistance */}
-											<div className="col-md-6 mb-4">
-												<div className="card border-0 h-100 bg-gray-50 dark:bg-gray-800">
-													{/* Accordion Header */}
-													<div
-														className="d-flex align-items-center justify-content-between p-4"
-														style={{ cursor: isMobile ? 'pointer' : 'default' }}
-														onClick={() => isMobile && handleAccordion('security')}
-													>
-														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-md md:text-lg lg:text-xl">
-															Security, Safety and Assistance
-														</h6>
-														{/* Chevron for mobile */}
-														{isMobile && (
-															<Icon
-																as={ChevronUp}
-																boxSize={5}
-																style={{
-																	transform: isAccordion === 'security' ? 'rotate(180deg)' : 'rotate(0deg)',
-																	transition: 'transform 0.2s',
-																}}
-															/>
-														)}
-													</div>
-													{/* Accordion Content */}
-													{(!isMobile || isAccordion === 'security') && (
+											{Object.entries(carData?.features || {}).map(([category, features]) => (
+												<div key={category} className="col-md-6 mb-4">
+													<div className="card border-0 h-100 bg-gray-50 dark:bg-gray-800">
+														<div className="d-flex align-items-center justify-content-between p-4">
+															<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-md md:text-lg lg:text-xl">
+																{category}
+															</h6>
+														</div>
 														<div className="card-body p-4 pt-0">
 															<div className="row">
 																<div className="col-md-6">
 																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white rounded">Parking camera</span>
-																		</li>
-																		<li className="mb-2">
-																			<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Parking assist system self-steering</a>
-																		</li>
-																		<li className="mb-2">
-																			<a href="#" className="text-gray-900 dark:text-white text-decoration-none">Blind spot assist</a>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">ABS</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Emergency braking assist (EBA, BAS)</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Emergency call</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Fatigue warning system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Front collision warning system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Hill-start assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Immobilizer</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Lane assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Front and rear parking sensors</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Power assisted steering</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Rain sensor</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Rear seats ISOFIX points</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Traction control (TC, ASR)</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Traffic sign recognition</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Tyre pressure monitoring</span>
-																		</li>
+																		{(features as string[]).map((feature: string, index: number) => (
+																			<li key={index} className="mb-2">
+																				<span className="text-gray-900 dark:text-white">{feature}</span>
+																			</li>
+																		))}
 																	</ul>
 																</div>
 															</div>
 														</div>
-													)}
-												</div>
-											</div>
-											{/* Comfort and Convenience */}
-											<div className="col-md-6 mb-4">
-												<div className="card border-0 h-100">
-													{/* Accordion Header */}
-													<div
-														className="d-flex align-items-center justify-content-between p-4"
-														style={{ cursor: isMobile ? 'pointer' : 'default' }}
-														onClick={() => isMobile && handleAccordion('comfort')}
-													>
-														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-sm md:text-md lg:text-lg">
-															Comfort and Convenience
-														</h6>
-														{isMobile && (
-															<Icon
-																as={ChevronUp}
-																boxSize={5}
-																style={{
-																	transform: isAccordion === 'comfort' ? 'rotate(180deg)' : 'rotate(0deg)',
-																	transition: 'transform 0.2s',
-																}}
-															/>
-														)}
 													</div>
-													{(!isMobile || isAccordion === 'comfort') && (
-														<div className="card-body p-4 pt-0">
-															<div className="row">
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">USB</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Navigation system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Keyless entry</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Heated steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Heated front seats</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Apple CarPlay</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Android Auto</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Automatic 2-zones air conditioning</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Alloy wheels</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Armrest front</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">JBL audio</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Automatic parking brake</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Bluetooth</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Central locking</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Adaptive cruise control</span>
-																		</li>
-																	</ul>
-																</div>
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">DAB radio</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Daytime running lights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Front electric windows</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Front Fog lights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Hands-free</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">LED headlights</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">High beam assist</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Integrated music streaming</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Keyless ignition</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Leather steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Light sensor</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Multifunctional steering wheel</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">On-board computer</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Radio</span>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													)}
 												</div>
-											</div>
-											{/* Accessories and Extra features */}
-											<div className="col-md-6 mb-4">
-												<div className="card border-0 h-100">
-													{/* Accordion Header */}
-													<div
-														className="d-flex align-items-center justify-content-between p-4"
-														style={{ cursor: isMobile ? 'pointer' : 'default' }}
-														onClick={() => isMobile && handleAccordion('accessories')}
-													>
-														<h6 className="card-title text-gray-900 dark:text-white mb-0 sm:text-sm md:text-md lg:text-lg">
-															Accessories and Extra features
-														</h6>
-														{isMobile && (
-															<Icon
-																as={ChevronUp}
-																boxSize={5}
-																style={{
-																	transform: isAccordion === 'accessories' ? 'rotate(180deg)' : 'rotate(0deg)',
-																	transition: 'transform 0.2s',
-																}}
-															/>
-														)}
-													</div>
-													{(!isMobile || isAccordion === 'accessories') && (
-														<div className="card-body p-4 pt-0">
-															<div className="row">
-																<div className="col-md-6">
-																	<ul className="list-unstyled feature-list">
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Tyre repair kit</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Divided rear seats</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Side mirrors with electric adjustment</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Start-stop system</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Tinted windows</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Touch screen</span>
-																		</li>
-																		<li className="mb-2">
-																			<span className="text-gray-900 dark:text-white">Voice control</span>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													)}
-												</div>
-											</div>
+											))}
 										</div>
 									</div>
 								</div>
@@ -1714,7 +1475,7 @@ export default function CarsDetails1() {
 										<div className="col-md-6">
 											<div className="card border-0 rounded-4 h-100">
 												<div className="position-relative">
-													<img src="/assets/imgs/cars-details/banner.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
+													<img src={carData?.images[0]} className="card-img-top rounded-top-4" alt={carData?.brand} style={{ height: '200px', objectFit: 'cover' }} />
 													<div className="position-absolute top-0 start-0 m-3">
 														<span className="badge bg-primary text-white px-3 py-2">THIS CAR</span>
 													</div>
@@ -1730,30 +1491,30 @@ export default function CarsDetails1() {
 														fontFamily="inter"
 														_hover={{ color: "red.500" }}
 													// mb={["1", "1", "0"]}
-													>Toyota C-HR Hybrid 135 kW</Heading>
+													>{carData?.brand} {carData?.model}</Heading>
 													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
 														<Flex direction="row" gap={3} mb={1}>
 															<HStack spacing="1">
 																<LucideIcon icon={Power} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.power}</Text>
+																<Text fontSize="sm" color={textColor}>{carData?.power} hp</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.date}</Text>
+																<Text fontSize="sm" color={textColor}>{carData?.year}</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+																<Text fontSize="sm" color={textColor}>{carData?.mileage} km</Text>
 															</HStack>
 														</Flex>
 														<Flex direction="row" gap={6}>
 															<HStack spacing="1">
 																<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{carData?.gear}</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{carData?.fuel}</Text>
 															</HStack>
 														</Flex>
 													</Box>
@@ -1773,22 +1534,46 @@ export default function CarsDetails1() {
 														</VStack>
 														<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
 															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
-																€ {car.price.toLocaleString()}
+																€ {carData?.price.toLocaleString()}
 															</Text>
 															<Text fontSize="xs" color={textColor}>
-																€{(car.price / 4).toFixed(2)} without VAT
+																€{(carData?.price / 4).toFixed(2)} without VAT
 															</Text>
 														</Box>
 													</Flex>
 
 													<h6 className="mt-4 mb-3">Equipment</h6>
-													<div className="d-flex flex-wrap gap-2">
-														<span className="badge bg-light text-primary px-3 py-2">Parking assist</span>
-														<span className="badge bg-light text-primary px-3 py-2">Keyless entry</span>
-														<span className="badge bg-light text-primary px-3 py-2">Heated wheel</span>
-														<span className="badge bg-light text-primary px-3 py-2">Apple CarPlay</span>
-														<span className="badge bg-light text-primary px-3 py-2">Android Auto</span>
-													</div>
+													<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+														{carData?.features &&
+															Object.entries(carData?.features)
+																.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+																.slice(0, 4)
+																.map((feature, index) => (
+																	<span key={`feature-${index}`} className="badge bg-light text-primary px-3 py-2">
+																		{feature}
+																	</span>
+																))}
+														{/* {carData?.features && Object.entries(carData?.features)
+															.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+															.length > 4 && (
+																<Button
+																	variant="unstyled"
+																	color={buttonLinkColor}
+																	fontSize="sm"
+																	fontWeight="medium"
+																	height="auto"
+																	padding="0"
+																	lineHeight="1.5"
+																	_hover={{ textDecoration: "underline" }}
+																	onClick={(e) => e.preventDefault()}
+																	style={{ textTransform: "none" }}
+																>
+																	+ {Object.entries(carData?.features)
+																		.flatMap(([category, features]) => (Array.isArray(features) ? features : []))
+																		.length - 4} more
+																</Button>
+															)} */}
+													</Flex>
 												</div>
 											</div>
 										</div>
@@ -1796,7 +1581,7 @@ export default function CarsDetails1() {
 										<div className="col-md-6">
 											<div className="card border-0 rounded-4 h-100">
 												<div className="position-relative">
-													<img src="/assets/imgs/cars-details/banner2.png" className="card-img-top rounded-top-4" alt="Toyota C-HR" style={{ height: '200px', objectFit: 'cover' }} />
+													<img src={similarCars?.[0]?.image || "/assets/imgs/cars-details/banner2.png"} className="card-img-top rounded-top-4" alt={similarCars?.[0]?.name || "Similar Car"} style={{ height: '200px', objectFit: 'cover' }} />
 													<div className="position-absolute top-0 start-0 m-3">
 														<span className="badge bg-warning text-dark px-3 py-2">COMPARED TO</span>
 													</div>
@@ -1811,35 +1596,33 @@ export default function CarsDetails1() {
 														letterSpacing="wide"
 														fontFamily="inter"
 														_hover={{ color: "red.500" }}
-													// mb={["1", "1", "0"]}
-													>Toyota C-HR Hybrid 135 kW</Heading>
+													>{similarCars?.[0]?.brand} {similarCars?.[0]?.model || "Loading..."}</Heading>
 													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
 														<Flex direction="row" gap={3} mb={1}>
 															<HStack spacing="1">
 																<LucideIcon icon={Power} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.power}</Text>
+																<Text fontSize="sm" color={textColor}>{similarCars?.[0]?.power} hp</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.date}</Text>
+																<Text fontSize="sm" color={textColor}>{similarCars?.[0]?.year}</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor}>{car.mileage}</Text>
+																<Text fontSize="sm" color={textColor}>{similarCars?.[0]?.mileage}</Text>
 															</HStack>
 														</Flex>
 														<Flex direction="row" gap={6}>
 															<HStack spacing="1">
 																<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{similarCars?.[0]?.gear || "N/A"}</Text>
 															</HStack>
 															<HStack spacing="1">
 																<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{similarCars?.[0]?.fuel || "N/A"}</Text>
 															</HStack>
 														</Flex>
 													</Box>
-
 
 													<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
 														<VStack display="flex" alignItems="center" justifyContent="center" gap="1" mt="3" ml="0">
@@ -1851,33 +1634,26 @@ export default function CarsDetails1() {
 																	Very Good Price
 																</Text>
 															</HStack>
-															{/* <HStack> <Flex align="center" gap="1">
-																<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-																	€ 5043
-																</Text>
-																<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-																	Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-																</Text>
-															</Flex>
-															</HStack> */}
 														</VStack>
 														<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
 															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
-																€ {car.price.toLocaleString()}
+																€ {similarCars?.[0]?.price?.toLocaleString() || "N/A"}
 															</Text>
 															<Text fontSize="xs" color={textColor}>
-																€{(car.price / 4).toFixed(2)} without VAT
+																€{(similarCars?.[0]?.price ? (similarCars[0].price / 4).toFixed(2) : "N/A")} without VAT
 															</Text>
 														</Box>
 													</Flex>
 
 													<h6 className="mt-4 mb-3">Equipment</h6>
 													<div className="d-flex flex-wrap gap-2">
-														<span className="badge bg-light text-primary px-3 py-2">Parking assist</span>
-														<span className="badge bg-light text-primary px-3 py-2">Keyless entry</span>
-														<span className="badge bg-light text-primary px-3 py-2">Heated wheel</span>
-														<span className="badge bg-light text-primary px-3 py-2">Apple CarPlay</span>
-														<span className="badge bg-light text-primary px-3 py-2">Android Auto</span>
+														{similarCars?.[0]?.features && Object.entries(similarCars[0].features as Record<string, string[]>).map(([category, features]) => (
+															features.map((feature: string, index: number) => (
+																<span key={`${category}-${index}`} className="badge bg-light text-primary px-3 py-2">
+																	{feature}
+																</span>
+															))
+														))}
 													</div>
 												</div>
 											</div>
@@ -1985,7 +1761,7 @@ export default function CarsDetails1() {
 												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
 											Buy Now
-											
+
 										</Link>
 
 										<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
