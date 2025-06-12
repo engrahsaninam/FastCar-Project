@@ -9,7 +9,7 @@ import Slider from "react-slick"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useColorModeValue } from "@chakra-ui/react"
 import logo from '@/public/assets/imgs/template/logo-d.svg';
-import { useBestDeals, useGetCar, useGetSimilarCars } from "@/services/cars/useCars";
+import { useBestDeals, useGetCar, useGetSimilarCars, useGetCharges } from "@/services/cars/useCars";
 import {
 	Heart,
 	MapPin,
@@ -134,6 +134,7 @@ export default function CarsDetails1() {
 	const isMobile = useBreakpointValue({ base: true, md: false })
 	const { data: carData, isLoading, error } = useGetCar(carId || '');
 	const { data: similarCars, isLoading: isSimilarLoading } = useGetSimilarCars(carId || "");
+	// const { data: charges, isLoading: isChargesLoading } = useGetCharges(carId || "");
 	console.log('Car Data:', similarCars);
 	useEffect(() => {
 		console.log('Car ID:', carId);
@@ -619,7 +620,80 @@ export default function CarsDetails1() {
 	];
 
 	const axisColor = useColorModeValue("#6B7280", "#E5E7EB"); // gray-500 for light, gray-200 for dark
-	const gridColor = useColorModeValue("#E5EAF2", "#444857"); // light gray for light, dark gray for dark
+	const gridColor = useColorModeValue("#E5AF2", "#444857"); // light gray for light, dark gray for dark
+
+	const allPrices = [
+		...(similarCars?.map((car: any) => car.price) || []),
+		carData?.price
+	].filter((p) => typeof p === 'number' && !isNaN(p));
+	allPrices.sort((a, b) => a - b);
+
+	const minPrice = allPrices[0];
+	const maxPrice = allPrices[allPrices.length - 1];
+	const segmentSize = (maxPrice - minPrice) / 5;
+	// 6 boundaries for 5 segments
+	const segmentPrices = Array.from({ length: 6 }).map((_, i) =>
+		minPrice + i * segmentSize
+	);
+
+	const carPrice = carData?.price;
+	let carSegment = 0;
+	if (carPrice !== undefined) {
+		carSegment = Math.min(
+			4,
+			Math.floor((carPrice - minPrice) / segmentSize)
+		);
+	}
+
+	// Calculate marker position for THIS CAR
+	let markerLeft = '0%';
+	if (carPrice !== undefined) {
+		for (let i = 0; i < 5; i++) {
+			if (carPrice >= segmentPrices[i] && carPrice <= segmentPrices[i + 1]) {
+				const segmentStart = segmentPrices[i];
+				const segmentEnd = segmentPrices[i + 1];
+				const percentWithin = (carPrice - segmentStart) / (segmentEnd - segmentStart);
+				const markerPercent = ((i + percentWithin) / 5) * 100;
+				markerLeft = `${markerPercent}%`;
+				console.log("markerLeft", markerLeft);
+				console.log("carPrice", carPrice);
+				console.log("segmentPrices", segmentPrices);
+				console.log("segmentStart", segmentStart);
+				console.log("segmentEnd", segmentEnd);
+				console.log("percentWithin", percentWithin);
+				break;
+			}
+		}
+	}
+
+	const allMileages = [
+		...(similarCars?.map((car: any) => car.mileage) || []),
+		carData?.mileage
+	].filter((m) => typeof m === 'number' && !isNaN(m));
+	allMileages.sort((a, b) => a - b);
+
+	const minMileage = allMileages[0];
+	const maxMileage = allMileages[allMileages.length - 1];
+
+	const getX = (mileage: number) =>
+		((mileage - minMileage) / (maxMileage - minMileage)) * 100;
+
+	const getY = (price: number) =>
+		100 - ((price - minPrice) / (maxPrice - minPrice)) * 100; // 0% is top, 100% is bottom
+
+	// Generate 6 ticks for X (mileage) and Y (price) axes
+	const xTicks = Array.from({ length: 6 }).map((_, i) =>
+		Math.round(minMileage + ((maxMileage - minMileage) / 5) * i)
+	);
+	const yTicks = Array.from({ length: 6 }).map((_, i) =>
+		Math.round(maxPrice - ((maxPrice - minPrice) / 5) * i)
+	);
+
+	// Add state for zipcode and charges
+	const [zipcode, setZipcode] = useState("");
+	const [submittedZip, setSubmittedZip] = useState("");
+	const { data: charges, isLoading: isChargesLoading } = useGetCharges(carData?.id || "", submittedZip);
+
 	return (
 		<Layout footerStyle={1}>
 			<div>
@@ -635,23 +709,13 @@ export default function CarsDetails1() {
 											asNavFor={nav2 as any}
 											ref={(slider) => setSlider1(slider as any)}
 											className="banner-activities-detail">
-											<div className="banner-slide-activity">
-												<img src="/assets/imgs/cars-details/banner.png" alt="Fast4Car" className="w-100" />
-											</div>
-											<div className="banner-slide-activity">
-												<img src="/assets/imgs/cars-details/banner2.png" alt="Fast4Car" className="w-100" />
-											</div>
-											<div className="banner-slide-activity">
-												<img src="/assets/imgs/cars-details/banner3.png" alt="Fast4Car" className="w-100" />
-											</div>
-											<div className="banner-slide-activity">
-												<img src="/assets/imgs/cars-details/banner4.png" alt="Fast4Car" className="w-100" />
-											</div>
-											<div className="banner-slide-activity">
-												<img src="/assets/imgs/cars-details/banner5.png" alt="Fast4Car" className="w-100" />
-											</div>
+											{carData?.images?.map((img: string, idx: number) => (
+												<div className="banner-slide-activity" key={idx}>
+													<img src={img} alt={`Car image ${idx + 1}`} className="w-100" />
+												</div>
+											))}
 										</Slider>
-										<div className="box-button-abs">
+										{/* <div className="box-button-abs">
 											<Link className="btn btn-red rounded-pill text-white" href="#">
 												<svg className="me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 													<path d="M4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6Z" fill="currentColor" />
@@ -666,7 +730,7 @@ export default function CarsDetails1() {
 												</svg>
 												Video Clips
 											</a>
-										</div>
+										</div> */}
 									</div>
 									<div className="slider-thumnail-activities d-none d-md-block">
 										<Slider
@@ -674,14 +738,11 @@ export default function CarsDetails1() {
 											asNavFor={nav1 as any}
 											ref={(slider) => setSlider2(slider as any)}
 											className="slider-nav-thumbnails-activities-detail">
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn2.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn4.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn5.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn6.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn.png" alt="Fast4Car" /></div>
-											<div className="banner-slide"><img src="/assets/imgs/page/car/banner-thumn3.png" alt="Fast4Car" /></div>
+											{carData?.images?.map((img: string, idx: number) => (
+												<div className="banner-slide" key={idx}>
+													<img src={img} alt={`Car thumbnail ${idx + 1}`} />
+												</div>
+											))}
 										</Slider>
 									</div>
 								</div>
@@ -907,7 +968,7 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-														<div className="col-6 col-md-4">
+														{/* <div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -919,8 +980,8 @@ export default function CarsDetails1() {
 																	<div className="fw-bold text-gray-900 dark:text-white">4x2</div>
 																</div>
 															</div>
-														</div>
-														<div className="col-6 col-md-4">
+														</div> */}
+														{/* <div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
 																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -936,7 +997,7 @@ export default function CarsDetails1() {
 																	<div className="fw-bold text-gray-900 dark:text-white">4 l/100km</div>
 																</div>
 															</div>
-														</div>
+														</div> */}
 														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3">
@@ -980,7 +1041,7 @@ export default function CarsDetails1() {
 														<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
 													</div>
 
-													<div className="row g-4 mt-2">
+													{/* <div className="row g-4 mt-2">
 														<div className="col-6 col-md-4">
 															<div className="d-flex align-items-center">
 																<div className="icon-container me-3 text-primary">
@@ -1044,16 +1105,16 @@ export default function CarsDetails1() {
 																</div>
 															</div>
 														</div>
-													</div>
+													</div> */}
 
-													<div className="row mt-4">
+													{/* <div className="row mt-4">
 														<div className="col-6 col-md-4">
 															<div className="mb-3">
 																<div className="text-muted small">Battery type</div>
 																<div className="fw-bold">Nickel-metal hydride (Ni-MH)</div>
 															</div>
 														</div>
-													</div>
+													</div> */}
 
 													<div className="mt-2">
 														<a href="#" className="text-primary d-flex align-items-center">
@@ -1081,11 +1142,11 @@ export default function CarsDetails1() {
 																		<tbody>
 																			<tr>
 																				<td className="text-muted">Vehicle ID</td>
-																				<td className="fw-medium">74002238</td>
+																				<td className="fw-medium">{carData?.id}</td>
 																			</tr>
 																			<tr>
 																				<td className="text-muted">Make</td>
-																				<td className="fw-medium">Toyota</td>
+																				<td className="fw-medium">{carData?.brand}</td>
 																			</tr>
 																		</tbody>
 																	</table>
@@ -1100,12 +1161,12 @@ export default function CarsDetails1() {
 																		<tbody>
 																			<tr>
 																				<td className="text-muted">Engine capacity</td>
-																				<td className="fw-medium">1,987 ccm</td>
+																				<td className="fw-medium">{carData?.engine_size}</td>
 																			</tr>
-																			<tr>
+																			{/* <tr>
 																				<td className="text-muted">Consumption (comb.)</td>
-																				<td className="fw-medium">4 l/100km</td>
-																			</tr>
+																				<td className="fw-medium">{carData?.CO2_emissions}</td>
+																			</tr> */}
 																		</tbody>
 																	</table>
 																</div>
@@ -1326,10 +1387,10 @@ export default function CarsDetails1() {
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
 														<span className="small text-black">Similar models</span>
 													</div>
-													<div className="d-flex align-items-center">
+													{/* <div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
 														<span className="small text-black">Market average</span>
-													</div>
+													</div> */}
 												</div>
 											</div>
 
@@ -1337,44 +1398,26 @@ export default function CarsDetails1() {
 
 												{/* Enhanced price map chart */}
 												<div className="position-relative h-100">
-													{/* Y-axis labels */}
+													{/* Y-axis (prices) */}
 													<div className="position-absolute start-0 h-100 d-flex flex-column justify-content-between" style={{ width: '60px' }}>
-														<div
-															className="text-muted small"
-															style={{ color: useColorModeValue("#222", "#E5E7EB") }}
-														>
-															€31,000
-														</div>
-														<div
-															className="text-muted small"
-															style={{ color: axisLabelColor }}
-														>
-															€31,000
-														</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>€27,000</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>€25,000</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>€23,000</div>
+														{yTicks.map((price, i) => (
+															<div key={i} className="text-muted small" style={{ color: axisLabelColor }}>
+																€{price.toLocaleString()}
+															</div>
+														))}
 													</div>
 
-													{/* X-axis labels */}
-													<div className="position-absolute bottom-0 start-0 w-100 d-flex justify-content-between ps-5 pe-3">
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>40,000 km</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>44,000 km</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>48,000 km</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>52,000 km</div>
-														<div className="text-muted small"
-															style={{ color: axisLabelColor }}>56,000 km</div>
+													{/* X-axis (mileages) */}
+													<div className="position-absolute bottom-0 start-0 w-100 d-flex justify-content-between ">
+														{xTicks.map((mileage, i) => (
+															<div key={i} className="text-muted small" style={{ color: axisLabelColor }}>
+																{mileage.toLocaleString()} km
+															</div>
+														))}
 													</div>
 
 													{/* Chart with grid lines and dots */}
-													<div className="position-absolute top-0 start-0 w-100 h-100 ps-5 pe-3 pt-3 pb-5">
+													<div className="position-absolute top-0 start-0 w-100 h-100 ">
 														{/* Horizontal grid lines */}
 														{[0, 25, 50, 75, 100].map((pos) => (
 															<div key={pos} className="position-absolute w-100 border-top border-gray-200" style={{ top: `${pos}%`, opacity: 0.3 }}></div>
@@ -1385,88 +1428,65 @@ export default function CarsDetails1() {
 															<div key={`v-${pos}`} className="position-absolute h-100 border-start border-gray-200" style={{ left: `${pos}%`, opacity: 0.3 }}></div>
 														))}
 
-														{/* This car dot with tooltip */}
-														<div className="position-absolute" style={{ top: '40%', left: '25%' }}>
+														{/* Similar cars dots */}
+														{similarCars?.map((car: any, idx: number) => (
 															<div
-																className="rounded-circle position-relative"
+																key={car.id}
+																className="position-absolute"
 																style={{
-																	width: '16px',
-																	height: '16px',
-																	backgroundColor: '#FF7A00',
-																	boxShadow: '0 0 0 4px rgba(255, 122, 0, 0.2)',
-																	cursor: 'pointer'
+																	top: `${getY(car.price)}%`,
+																	left: `${getX(car.mileage)}%`
 																}}
-																data-bs-toggle="tooltip"
-																data-bs-placement="top"
-																title="This car: €24,999 | 46,042 km"
-															></div>
-														</div>
-
-														{/* Comparison car dots with pulsing effect */}
-														<div className="position-absolute" style={{ top: '35%', left: '45%' }}>
-															<div
-																className="rounded-circle"
-																style={{
-																	width: '14px',
-																	height: '14px',
-																	backgroundColor: '#3B66FF',
-																	boxShadow: '0 0 0 3px rgba(59, 102, 255, 0.2)',
-																	cursor: 'pointer'
-
-
-																}}
-																data-bs-toggle="tooltip"
-																data-bs-placement="top"
-																title="Toyota C-HR: €25,499 | 48,500 km"
-															></div>
-														</div>
-
-														<div className="position-absolute" style={{ top: '50%', left: '55%' }}>
-															<div
-																className="rounded-circle"
-																style={{
-																	width: '14px',
-																	height: '14px',
-																	backgroundColor: '#3B66FF',
-																	boxShadow: '0 0 0 3px rgba(59, 102, 255, 0.2)',
-																	cursor: 'pointer'
-																}}
-																data-bs-toggle="tooltip"
-																data-bs-placement="top"
-																title="Toyota C-HR: €23,750 | 51,200 km"
-															></div>
-														</div>
-
-														{/* Background dots for other cars */}
-														{Array.from({ length: 15 }).map((_, index) => (
-															<div key={index} className="position-absolute" style={{
-																top: `${20 + Math.random() * 60}%`,
-																left: `${15 + Math.random() * 70}%`
-															}}>
+															>
 																<div
 																	className="rounded-circle"
 																	style={{
-																		width: '8px',
-																		height: '8px',
-																		backgroundColor: '#BBC5D5',
-																		opacity: 0.8,
+																		width: '14px',
+																		height: '14px',
+																		backgroundColor: '#3B66FF',
+																		boxShadow: '0 0 0 3px rgba(59, 102, 255, 0.2)',
+																		cursor: 'pointer',
+																		transform: 'translate(-50%, -50%)'
+																	}}
+																	data-bs-toggle="tooltip"
+																	data-bs-placement="top"
+																	title={`${car.brand} ${car.model}: €${car.price.toLocaleString()} | ${car.mileage.toLocaleString()} km`}
+																></div>
+															</div>
+														))}
+
+														{/* Current car dot */}
+														{carData && (
+															<div
+																className="position-absolute"
+																style={{
+																	top: `${getY(carData.price)}%`,
+																	left: `${getX(carData.mileage)}%`
+																}}
+															>
+																<div
+																	className="rounded-circle position-relative"
+																	style={{
+																		width: '16px',
+																		height: '16px',
+																		backgroundColor: '#FF7A00',
+																		boxShadow: '0 0 0 4px rgba(255, 122, 0, 0.2)',
 																		cursor: 'pointer'
 																	}}
 																	data-bs-toggle="tooltip"
 																	data-bs-placement="top"
-																	title={`Toyota ${Math.random() > 0.5 ? 'C-HR' : 'RAV4'}: €${(23000 + Math.random() * 4000).toFixed(0)} | ${(42000 + Math.random() * 14000).toFixed(0)} km`}
+																	title={`This car: €${carData.price.toLocaleString()} | ${carData.mileage.toLocaleString()} km`}
 																></div>
 															</div>
-														))}
+														)}
 													</div>
 												</div>
 											</div>
 
-											<div className="d-flex justify-content-between align-items-center mt-3">
-												<div className="text-muted small">Data from similar vehicles in market</div>
-												<div className="bg-light-green rounded-2 py-1 px-2 d-flex align-items-center">
-													<span className="text-success small fw-medium">Good price positioning</span>
-												</div>
+											<div className="d-flex justify-content-between align-items-center mt-3 px-3">
+												{segmentPrices.map((price, index) => (
+													<div key={index} className="text-muted">€{price}</div>
+												))}
 											</div>
 										</div>
 									</div>
@@ -1581,7 +1601,7 @@ export default function CarsDetails1() {
 										<div className="col-md-6">
 											<div className="card border-0 rounded-4 h-100">
 												<div className="position-relative">
-													<img src={similarCars?.[0]?.image || "/assets/imgs/cars-details/banner2.png"} className="card-img-top rounded-top-4" alt={similarCars?.[0]?.name || "Similar Car"} style={{ height: '200px', objectFit: 'cover' }} />
+													<img src={similarCars?.[0]?.image} className="card-img-top rounded-top-4" alt={similarCars?.[0]?.name || "Similar Car"} style={{ height: '200px', objectFit: 'cover' }} />
 													<div className="position-absolute top-0 start-0 m-3">
 														<span className="badge bg-warning text-dark px-3 py-2">COMPARED TO</span>
 													</div>
@@ -1667,40 +1687,57 @@ export default function CarsDetails1() {
 										<div className="card-body p-4">
 											<div className="text-center mb-4">
 												<p className="mb-2 fs-6">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
-												<p className="mb-5">We take in account <span className="fw-bold">up to 70 vehicle characteristics</span>.</p>
+												<p className="mb-5 pb-10">We take in account <span className="fw-bold">up to 70 vehicle characteristics</span>.</p>
 
 												<div className="position-relative mt-5 pt-4">
 													<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
-														<div className="text-white text-center p-3 rounded-3 mb-5 position-relative comparison-price-box" style={{ width: '200px', margin: '0 auto', backgroundColor: '#E53E3E' }}>
-															<div className="mb-1 fw-bold">THIS CAR</div>
-															<div className="fs-4 fw-bold">€24,999</div>
-															<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
-																<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #E53E3E' }}></div>
+														{/* Price marker */}
+														<div style={{ position: 'relative', width: '100%' }}>
+															{/* Marker */}
+															<div
+																className="text-white text-center p-3 rounded-3 mb-5 position-absolute comparison-price-box"
+																style={{
+																	width: '200px',
+																	backgroundColor: '#E53E3E',
+																	left: markerLeft,
+
+																	top: '-110px', // moved further up
+																	transform: 'translateX(-50%)',
+																	zIndex: 2,
+																	marginBottom: '50px'
+																}}
+															>
+																<div className="mb-1 fw-bold">THIS CAR</div>
+																<div className="fs-4 fw-bold">€{carPrice?.toLocaleString('en-US')}</div>
+																<div className="position-absolute start-50 translate-middle-x" style={{ bottom: '-12px' }}>
+																	<div style={{ width: '0', height: '0', borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '12px solid #E53E3E' }}></div>
+																</div>
+															</div>
+															{/* Price bar */}
+															<div style={{ height: '8px', display: 'flex', borderRadius: '4px', overflow: 'hidden', position: 'relative', zIndex: 1, marginTop: '70px' }}>
+																<div style={{ width: '20%', backgroundColor: '#64C359' }}></div>
+																<div style={{ width: '20%', backgroundColor: '#8BD980' }}></div>
+																<div style={{ width: '20%', backgroundColor: '#FFD25F' }}></div>
+																<div style={{ width: '20%', backgroundColor: '#FFC107' }}></div>
+																<div style={{ width: '20%', backgroundColor: '#FF8A00' }}></div>
+															</div>
+															{/* Price labels below each segment */}
+															<div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+																{segmentPrices.map((price, i) => (
+																	<div
+																		key={i}
+																		style={{
+																			width: '20%',
+																			textAlign: i === 0 ? 'left' : i === 5 ? 'right' : 'center',
+																			color: '#bbb',
+																			fontWeight: 600,
+																		}}
+																	>
+																		€{Math.round(price).toLocaleString('en-US')}
+																	</div>
+																))}
 															</div>
 														</div>
-													</div>
-
-													<div className="d-flex justify-content-between align-items-center mt-4 mb-2 px-4 comparison-labels">
-														<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Top offer</div>
-														<div className="text-success fw-medium" style={{ fontSize: '14px' }}>Very good price</div>
-														<div className="text-warning fw-medium" style={{ fontSize: '14px' }}>Fair price</div>
-														<div className="text-warning fw-medium" style={{ fontSize: '14px' }}>Higher price</div>
-														<div style={{ color: '#FF8A00', fontWeight: '500', fontSize: '14px' }}>High price</div>
-													</div>
-
-													<div style={{ height: '8px', display: 'flex', borderRadius: '4px', overflow: 'hidden' }}>
-														<div style={{ width: '20%', backgroundColor: '#64C359' }}></div>
-														<div style={{ width: '20%', backgroundColor: '#8BD980' }}></div>
-														<div style={{ width: '20%', backgroundColor: '#FFD25F' }}></div>
-														<div style={{ width: '20%', backgroundColor: '#FFC107' }}></div>
-														<div style={{ width: '20%', backgroundColor: '#FF8A00' }}></div>
-													</div>
-
-													<div className="d-flex justify-content-between align-items-center mt-3 px-3">
-														<div className="text-muted">€24,165</div>
-														<div className="text-muted">€25,675</div>
-														<div className="text-muted">€27,218</div>
-														<div className="text-muted">€28,729</div>
 													</div>
 												</div>
 											</div>
@@ -1747,11 +1784,11 @@ export default function CarsDetails1() {
 
 										<div className="d-flex justify-content-between align-items-center mb-2">
 											<h6 className="text-lg-bold neutral-1000 m-0">Car price</h6>
-											<p className="text-xl-bold m-0 fs-3">€24,999</p>
+											<p className="text-xl-bold m-0 fs-3">€{charges?.car_price}</p>
 										</div>
 										<div className="d-flex justify-content-between align-items-center mb-4">
 											<p className="text-md-medium text-muted m-0">Price without VAT</p>
-											<p className="text-md-medium text-muted m-0">€20,491</p>
+											<p className="text-md-medium text-muted m-0">€{charges?.price_without_vat}</p>
 										</div>
 
 										<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#E53E3E", color: "white" }} >
@@ -1780,12 +1817,12 @@ export default function CarsDetails1() {
 													<path d="M8 10.6667L4 6.66675H12L8 10.6667Z" fill="currentColor" />
 												</svg>
 											</h6>
-											<p className="text-md-bold m-0">€1,111</p>
+											<p className="text-md-bold m-0">€{charges?.services_total}</p>
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0">Car Inspection</p>
-											<p className="text-md-medium m-0">€119</p>
+											<p className="text-md-medium m-0">€{charges?.car_inspection}</p>
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2 border-bottom">
@@ -1800,8 +1837,36 @@ export default function CarsDetails1() {
 													<path d="M2.66659 12H1.99992V4.66667C1.99992 4.29848 2.29841 4 2.66659 4H10.6666V9.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 												</svg>
 											</p>
-											<Link href="#" className="text-primary text-decoration-none">Enter ZIP code</Link>
+											<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+												<input
+													type="text"
+													value={zipcode}
+													onChange={e => setZipcode(e.target.value)}
+													placeholder="Enter ZIP code"
+													style={{ width: 100, marginRight: 8, padding: '2px 6px', borderRadius: 4, border: '1px solid #ccc', height: '38px' }}
+												/>
+												<button
+													className="btn btn-primary btn-sm"
+													style={{ padding: '2px 12px' }}
+													onClick={() => setSubmittedZip(zipcode)}
+													disabled={!zipcode || isChargesLoading}
+												>
+													{isChargesLoading ? 'Loading...' : 'Check'}
+												</button>
+											</div>
 										</div>
+										{submittedZip && (
+											<div style={{ marginTop: 8 }}>
+												{isChargesLoading && <span>Loading charges...</span>}
+												{charges && (
+													<div className="d-flex justify-content-between align-items-center py-2">
+														<p className="text-md-medium m-0">Delivery</p>
+
+														<p className="text-md-medium m-0">€{charges?.delivery}</p>
+													</div>
+												)}
+											</div>
+										)}
 
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0 d-flex align-items-center">
@@ -1812,7 +1877,7 @@ export default function CarsDetails1() {
 													<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 												</svg>
 											</p>
-											<p className="text-md-medium m-0">€293</p>
+											<p className="text-md-medium m-0">€{charges?.registration_tax}</p>
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2">
@@ -1824,7 +1889,7 @@ export default function CarsDetails1() {
 													<path d="M8 5H8.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 												</svg>
 											</p>
-											<p className="text-md-medium m-0">€699</p>
+											<p className="text-md-medium m-0">€{charges?.pre_delivery_prep}</p>
 										</div>
 
 
@@ -1850,7 +1915,7 @@ export default function CarsDetails1() {
 													Total price
 												</Text>
 												<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
-													EUR 667,765
+													EUR {charges?.total_price}
 												</Text>
 											</Flex>
 										</Box>

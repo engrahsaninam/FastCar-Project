@@ -19,6 +19,7 @@ export const apiRoutes = {
         getSavedCars: "/users/saved-cars",
         getCar: (id: string) => `/cars/${id}`,
         similar: (id: string) => `/cars/${id}/similar`,
+        getCharges: (id: string, zipcode?: string) => zipcode ? `/charges?car_id=${id}&zipcode=${zipcode}` : `/charges?car_id=${id}`,
     },
     filters: {
         fuel: '/filters/fuel-types',

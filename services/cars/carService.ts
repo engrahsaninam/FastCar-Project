@@ -162,12 +162,17 @@ export const getCar = async (id: string) => {
     const response = await axiosInstance.get(`${apiRoutes.car.getCar(id)}`);
     return response.data;
 }
-export const getSimilarCars = async (id: string, limit: string = '4') => {
+export const getSimilarCars = async (id: string) => {
     const response = await axiosInstance.get(`${apiRoutes.car.similar(id)}`, {
         params: {
-            limit,
+            // limit,
             remove_outliers: false
         }
     });
+    return response.data;
+}
+export const getCharges = async (id: string, zipcode?: string) => {
+    const url = apiRoutes.car.getCharges(id, zipcode);
+    const response = await axiosInstance.get(url);
     return response.data;
 }
