@@ -27,6 +27,7 @@ class CarResponse(BaseModel):
     model: str
     version: Optional[str] = None
     price: float  # May include VAT if vat=true
+    price_without_vat: Optional[float] = None  # Price excluding VAT
     mileage: float
     age: float
     power: Optional[int] = None

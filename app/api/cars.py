@@ -22,14 +22,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 def car_to_dict(car: Car, vat: bool = False, vat_rate: float = 0.0) -> dict:
-    price = car.price * (1 + vat_rate / 100) if vat else car.price
-    logger.debug(f"Car id={car.id}: VAT={vat}, vat_rate={vat_rate}%, price={price}")
+    price = car.price if vat else car.price_without_vat
+    logger.debug(f"Car id={car.id}: VAT={vat}, vat_rate={vat_rate}%, price={price}, price_without_vat={car.price_without_vat}")
     return {
         "id": car.id,
         "brand": car.brand,
         "model": car.model,
         "version": car.version,
         "price": price,
+        "price_without_vat": car.price_without_vat,
         "mileage": car.mileage,
         "age": car.age,
         "power": car.power,
@@ -83,7 +84,7 @@ async def get_best_deals(
         filters.append(Car.year == year)
 
     # Adjust price for VAT in subquery
-    price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+    price_column = Car.price if vat else Car.price_without_vat
 
     avg_prices = db.query(
         Car.brand,
@@ -251,10 +252,10 @@ async def get_cars(
     if model:
         filters.append(Car.model == model)
     if min_price:
-        price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+        price_column = Car.price if vat else Car.price_without_vat
         filters.append(price_column >= min_price)
     if max_price:
-        price_column = Car.price * (1 + vat_rate / 100) if vat else Car.price
+        price_column = Car.price if vat else Car.price_without_vat
         filters.append(price_column <= max_price)
     if min_year:
         filters.append(Car.year >= min_year)

@@ -1,5 +1,5 @@
 #app/models/purchase.py
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey, Float
 from sqlalchemy.sql import func
 from app.database.base import Base
 
@@ -40,13 +40,12 @@ class BankTransferInfo(Base):
     company_name = Column(String, nullable=True)
     created_at = Column(DateTime, default=func.now())
 
-class PaymentInfo(Base):
-    __tablename__ = "payment_info"
+class Purchase(Base):
+    __tablename__ = "purchases"
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    car_id = Column(String, nullable=False)  # From cars table
-    card_number = Column(String, nullable=False)  # Store last 4 digits only
-    expiration_date = Column(String, nullable=False)  # Format: MM/YY
-    cvc_cvv = Column(String, nullable=False)  # Store temporarily, clear after processing
+    car_id = Column(String, ForeignKey("cars.id"), nullable=False)
+    total_price = Column(Float, nullable=False)
+    stripe_payment_id = Column(String, nullable=True)
     created_at = Column(DateTime, default=func.now())

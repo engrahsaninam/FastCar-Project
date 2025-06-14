@@ -10,6 +10,7 @@ class Car(Base):
     model = Column(String, index=True, nullable=False)
     version = Column(String, nullable=True)
     price = Column(Float, index=True, nullable=False)
+    price_without_vat = Column(Float, nullable=False)  # Price excluding VAT
     mileage = Column(Float, nullable=True)
     age = Column(Float, nullable=True)
     power = Column(Integer, nullable=True)
@@ -26,4 +27,5 @@ class Car(Base):
     body_type = Column(String, nullable=True)
     colour = Column(String, nullable=True)
     features = Column(JSON, nullable=True)
-    total_price = Column(Float, nullable=True)  # New: Total price including charges
+    total_price = Column(Float, nullable=True)  # Total price including charges
+    status = Column(String, default="available")  # available, sold

@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
 import asyncio
+import stripe
+from app.config import STRIPE_SECRET_KEY
 from app.database.mysql import execute_query, optimize_database
 from app.database.sqlite import get_db, create_tables, is_cars_table_empty
 from app.database.migrations import apply_migrations
@@ -16,11 +18,17 @@ from sqlalchemy.sql import text
 # Import routers
 from app.api import cars, auth, users, filters, purchase, charges
 
+logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
+
+# Initialize Stripe
+stripe.api_key = STRIPE_SECRET_KEY
+if not stripe.api_key:
+    logger.error("STRIPE_SECRET_KEY not set")
+    raise RuntimeError("STRIPE_SECRET_KEY not set")
 
 app = FastAPI(
     title="EUCar API",
@@ -65,6 +73,7 @@ def update_total_prices(db: Session):
     cars = db.query(Car).all()
     for car in cars:
         vat_amount = car.price * charges.vat / 100
+        car.price_without_vat = car.price / (1 + charges.vat / 100)
         car.total_price = (
             car.price +
             vat_amount +
@@ -77,27 +86,31 @@ def update_total_prices(db: Session):
             charges.extended_warranty
         )
     db.commit()
-    logger.info(f"Updated total_price for {len(cars)} cars")
+    logger.info(f"Updated total_price and price_without_vat for {len(cars)} cars")
 
 async def sync_mysql_to_sqlite(db: Session):
-    """Fetch 50,000 cars from MySQL and store in SQLite if cars table is empty"""
+    """Fetch 300,000 cars from MySQL and store in SQLite if cars table is empty."""
     if not is_cars_table_empty():
         logger.info("SQLite cars table already populated, skipping sync")
         return
 
-    logger.info("Fetching 50,000 cars from MySQL")
+    logger.info("Fetching 300,000 cars from MySQL")
     query = """
     SELECT id, brand, model, version, price, mileage, age, power, gear, fuel, 
            country, zipcode, images, url, attrs, FLOOR(age) as year
     FROM cars
     WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL
-    LIMIT 50000
+    LIMIT 300000
     """
     cars = await execute_query(query, fetch=True, remove_outliers=False)
 
     if not cars:
         logger.warning("No cars fetched from MySQL")
         return
+
+    # Get VAT rate for price_without_vat calculation
+    charges = db.query(AdditionalCharges).first()
+    vat_rate = charges.vat if charges else 22.0  # Default to 22% if no charges
 
     logger.info(f"Inserting {len(cars)} cars into SQLite")
     batch_size = 1000
@@ -120,7 +133,9 @@ async def sync_mysql_to_sqlite(db: Session):
                 images=car["images"],
                 url=car["url"],
                 attrs=car["attrs"],
-                year=car["year"]
+                year=car["year"],
+                price_without_vat=car["price"] / (1 + vat_rate / 100),
+                status="available"
             ) for car in batch
         ]
         db.bulk_save_objects(db_cars)
@@ -134,7 +149,6 @@ async def refresh_materialized_views():
         db = next(db_gen)
         try:
             with db.begin():
-                # Refresh avg_prices
                 db.execute(text("""
                     DELETE FROM avg_prices;
                     INSERT INTO avg_prices (brand, model, avg_price, group_count, last_updated)
@@ -143,7 +157,6 @@ async def refresh_materialized_views():
                     WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL
                     GROUP BY brand, model
                 """))
-                # Refresh car_filters
                 db.execute(text("""
                     DELETE FROM car_filters;
                     INSERT INTO car_filters (fuel, gear, country, body_type, colour)
@@ -152,7 +165,6 @@ async def refresh_materialized_views():
                     WHERE fuel IS NOT NULL OR gear IS NOT NULL OR country IS NOT NULL
                         OR body_type IS NOT NULL OR colour IS NOT NULL
                 """))
-                # Refresh car_features
                 db.execute(text("""
                     DELETE FROM car_features;
                     INSERT INTO car_features (car_id, feature)
@@ -167,7 +179,7 @@ async def refresh_materialized_views():
             logger.error(f"Failed to refresh materialized views: {str(e)}")
         finally:
             db.close()
-        await asyncio.sleep(86400)  # Refresh daily
+        await asyncio.sleep(86400)
 
 @app.on_event("startup")
 async def startup_event():
@@ -180,8 +192,6 @@ async def startup_event():
     # Apply database migrations
     apply_migrations()
     
-    
-
     # Populate dummy data for new car columns
     populate_dummy_data()
     
@@ -190,7 +200,6 @@ async def startup_event():
     db = next(db_gen)
     try:
         await sync_mysql_to_sqlite(db)
-        # Update total prices after sync
         update_total_prices(db)
     finally:
         db.close()

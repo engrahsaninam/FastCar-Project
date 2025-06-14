@@ -31,5 +31,10 @@ SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "EUCar Support")
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "46662326432-69uij1vn69d3f8987qgtit02vmp4ndcg.apps.googleusercontent.com")
 
+# Stripe settings
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+DOMAIN = os.getenv("DOMAIN", "http://localhost:8000")
+
 # API settings
 API_V1_PREFIX = "/api"

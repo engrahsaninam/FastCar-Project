@@ -1,19 +1,22 @@
 #app/api/purchase.py
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel, validator
 import re
+import stripe
+from app.config import STRIPE_SECRET_KEY, DOMAIN
 from app.database.sqlite import get_db
 from app.api.auth import get_current_user
 from app.models.user import User
-from app.models.purchase import FinanceApplication, BankTransferInfo, PaymentInfo
+from app.models.car import Car
+from app.models.purchase import FinanceApplication, BankTransferInfo, Purchase
 import logging
+import os
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-router = APIRouter(prefix="/api/purchase", tags=["purchase"])
+router = APIRouter(tags=["purchase"])
 
 # Pydantic Schemas
 class FinanceApplicationCreate(BaseModel):
@@ -122,39 +125,7 @@ class BankTransferResponse(BaseModel):
     company_name: Optional[str]
     created_at: str
 
-class PaymentCreate(BaseModel):
-    car_id: str
-    card_number: str
-    expiration_date: str
-    cvc_cvv: str
-
-    @validator("card_number")
-    def validate_card_number(cls, v):
-        if not re.match(r"^\d{16}$", v):
-            raise ValueError("Card number must be 16 digits")
-        return v
-
-    @validator("expiration_date")
-    def validate_expiration(cls, v):
-        if not re.match(r"^\d{2}/\d{2}$", v):
-            raise ValueError("Invalid expiration date, use MM/YY")
-        return v
-
-    @validator("cvc_cvv")
-    def validate_cvc(cls, v):
-        if not re.match(r"^\d{3,4}$", v):
-            raise ValueError("CVC/CVV must be 3 or 4 digits")
-        return v
-
-class PaymentResponse(BaseModel):
-    id: int
-    user_id: int
-    car_id: str
-    card_number: str  # Masked
-    expiration_date: str
-    created_at: str
-
-# Endpoints
+# Finance Endpoints
 @router.post("/finance/apply", response_model=FinanceApplicationResponse)
 async def apply_finance(
     data: FinanceApplicationCreate,
@@ -283,6 +254,7 @@ async def get_my_finance_application(
         updated_at=application.updated_at.isoformat()
     )
 
+# Bank Transfer Endpoints
 @router.post("/bank-transfer/submit", response_model=BankTransferResponse)
 async def submit_bank_transfer(
     data: BankTransferCreate,
@@ -398,56 +370,151 @@ async def get_my_bank_transfer_data(
         created_at=bank_info.created_at.isoformat()
     )
 
-@router.post("/payment/submit", response_model=PaymentResponse)
-async def submit_payment(
-    data: PaymentCreate,
+# Stripe Payment Endpoints
+@router.post("/checkout/{car_id}")
+async def create_checkout_session(
+    car_id: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Create a Stripe Checkout Session for a car purchase."""
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    
-    # Mask card number (store last 4 digits)
-    masked_card = "****-****-****-" + data.card_number[-4:]
-    
-    payment = PaymentInfo(
-        user_id=user.id,
-        car_id=data.car_id,
-        card_number=masked_card,
-        expiration_date=data.expiration_date,
-        cvc_cvv="***"  # Do not store CVC
-    )
-    db.add(payment)
-    db.commit()
-    db.refresh(payment)
-    
-    logger.info(f"Payment info submitted: user_id={user.id}, car_id={data.car_id}")
-    return PaymentResponse(
-        id=payment.id,
-        user_id=payment.user_id,
-        car_id=payment.car_id,
-        card_number=payment.card_number,
-        expiration_date=payment.expiration_date,
-        created_at=payment.created_at.isoformat()
-    )
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-@router.get("/payment/my-info", response_model=Optional[PaymentResponse])
-async def get_my_payment_info(
+    # Fetch car
+    car = db.query(Car).filter(Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    if car.status != "available":
+        raise HTTPException(status_code=400, detail="Car is not available")
+    if not car.total_price:
+        raise HTTPException(status_code=400, detail="Total price not set")
+
+    try:
+        # Create Stripe Checkout Session
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {
+                            "name": f"{car.brand} {car.model} {car.version or ''}",
+                            "description": f"Year: {car.year}, Mileage: {car.mileage}km",
+                        },
+                        "unit_amount": int(car.total_price * 100),  # Cents
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url=f"{DOMAIN}/api/purchase/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{DOMAIN}/api/purchase/cancel",
+            client_reference_id=car_id,
+            metadata={"user_id": str(user.id)},
+        )
+        return {"checkout_url": session.url}
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/success")
+async def checkout_success(
+    session_id: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Handle successful checkout."""
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    
-    payment = db.query(PaymentInfo).filter(PaymentInfo.user_id == user.id).first()
-    if not payment:
-        return None
-    
-    return PaymentResponse(
-        id=payment.id,
-        user_id=payment.user_id,
-        car_id=payment.car_id,
-        card_number=payment.card_number,
-        expiration_date=payment.expiration_date,
-        created_at=payment.created_at.isoformat()
-    )
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    try:
+        # Retrieve Stripe session
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status != "paid":
+            raise HTTPException(status_code=400, detail="Payment not completed")
+
+        car_id = session.client_reference_id
+        user_id = int(session.metadata.get("user_id"))
+
+        if user_id != user.id:
+            raise HTTPException(status_code=403, detail="Unauthorized")
+
+        # Fetch car
+        car = db.query(Car).filter(Car.id == car_id).first()
+        if not car:
+            raise HTTPException(status_code=404, detail="Car not found")
+        if car.status != "available":
+            raise HTTPException(status_code=400, detail="Car is not available")
+
+        # Create purchase record
+        purchase = Purchase(
+            user_id=user_id,
+            car_id=car_id,
+            total_price=car.total_price,
+            stripe_payment_id=session.payment_intent
+        )
+        db.add(purchase)
+        car.status = "sold"
+        db.commit()
+
+        logger.info(f"Purchase completed for car {car_id} by user {user_id}")
+        return RedirectResponse(url="/purchase/complete")  # Adjust to frontend
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/cancel")
+async def checkout_cancel():
+    """Handle canceled checkout."""
+    return RedirectResponse(url="/purchase/canceled")  # Adjust to frontend
+
+
+@router.get("/purchase/complete")
+async def purchase_complete():
+    """Handle purchase completion page."""
+    return {"message": "Purchase completed successfully! Thank you for your order."}
+
+@router.get("/purchase/canceled")
+async def purchase_canceled():
+    """Handle purchase cancellation page."""
+    return {"message": "Purchase was canceled. Please try again or contact support."}
+
+
+@router.post("/webhook")
+async def stripe_webhook(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Handle Stripe webhook for payment confirmation."""
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, webhook_secret
+        )
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
+        logger.error(f"Webhook error: {str(e)}")
+        raise HTTPException(status_code=400, detail="Webhook error")
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        if session["payment_status"] == "paid":
+            car_id = session["client_reference_id"]
+            user_id = int(session["metadata"]["user_id"])
+            car = db.query(Car).filter(Car.id == car_id).first()
+            if car and car.status == "available":
+                purchase = Purchase(
+                    user_id=user_id,
+                    car_id=car_id,
+                    total_price=car.total_price,
+                    stripe_payment_id=session["payment_intent"]
+                )
+                db.add(purchase)
+                car.status = "sold"
+                db.commit()
+                logger.info(f"Webhook: Purchase completed for car {car_id}")
+
+    return {"status": "success"}

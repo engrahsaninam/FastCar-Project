@@ -12,7 +12,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Import models after Base to avoid circular imports
 from app.models.user import User, SearchHistory, PasswordReset
-from app.models.purchase import FinanceApplication, BankTransferInfo, PaymentInfo
+from app.models.purchase import FinanceApplication, BankTransferInfo, Purchase
 
 def get_db():
     """Get SQLite database session"""
