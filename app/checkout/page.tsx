@@ -1,4 +1,13 @@
 'use client'
+import { Viewport } from 'next'
+
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+}
+
 import CheckoutCarDetails from '@/components/checkout/CheckoutCarDetails'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps'
 import React from 'react'

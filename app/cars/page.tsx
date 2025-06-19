@@ -1,4 +1,13 @@
 "use client";
+import { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
 import { useState, useRef } from "react";
 import Link from "next/link";
 import Marquee from "react-fast-marquee";

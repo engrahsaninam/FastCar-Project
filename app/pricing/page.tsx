@@ -4,6 +4,15 @@ import { swiperGroup3 } from '@/util/swiperOptions'
 import Link from "next/link"
 import { useState } from "react"
 import { Swiper, SwiperSlide } from "swiper/react"
+import { Metadata, Viewport } from 'next'
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+}
+
 export default function Pricing() {
 	const [isTab, setIsTab] = useState(1)
 	const handleTab = (i: number) => {
@@ -26,7 +35,7 @@ export default function Pricing() {
 							</div>
 							<div className="container position-absolute z-1 top-50 start-50 translate-middle">
 								<h2 className="text-white">Pricing</h2>
-								<span className="text-white text-xl-medium">Choose The Best Plan That’s For You</span>
+								<span className="text-white text-xl-medium">Choose The Best Plan That's For You</span>
 							</div>
 							<div className="background-body position-absolute z-1 top-100 start-50 translate-middle px-3 py-2 rounded-12 border d-flex gap-3 d-none">
 								<Link href="/" className="neutral-700 text-md-medium">Home</Link>

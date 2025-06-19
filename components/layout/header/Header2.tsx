@@ -8,7 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import { Link as ChakraLink, Text, Flex, HStack, useColorModeValue, useToken, Menu, MenuButton, MenuList, MenuItem, Box, useDisclosure, Button, Divider, VStack } from '@chakra-ui/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ShoppingCart, User, Heart, LogOut } from 'lucide-react'
 import { ChevronDown } from 'lucide-react'
 import { MenuItemLink } from './Header1';
@@ -18,6 +18,18 @@ import { useAuth } from '@/context/AuthContext'
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/app/i18/useLanguage';
 
+type LanguageCode = 'en' | 'fr' | 'ch';
+
+type LanguageInfo = {
+	code: LanguageCode;
+	label: string;
+	short: string;
+};
+
+type LanguageMap = {
+	[key in LanguageCode]: LanguageInfo;
+};
+
 export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handleOffcanvas, isOffcanvas }: any) {
 	const pathname = usePathname();
 	const isMainPage = pathname === '/';
@@ -25,6 +37,27 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 	const dropdownRef = useRef(null);
 	const { t, i18n } = useTranslation();
 	const { currentLanguage, changeLanguage } = useLanguage();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	const languageMap: LanguageMap = {
+		en: { code: 'en', label: 'English', short: 'En' },
+		fr: { code: 'fr', label: 'Français', short: 'Fr' },
+		ch: { code: 'ch', label: 'Chinese', short: 'Ch' }
+	};
+
+	// Get current language safely
+	const getCurrentLanguage = (): LanguageCode => {
+		if (!mounted) return 'en';
+		const lang = i18n.language || 'en';
+		return (lang in languageMap ? lang : 'en') as LanguageCode;
+	};
+
+	const currentLang = getCurrentLanguage();
+	const currentLanguageInfo = languageMap[currentLang];
 
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [showSignupModal, setShowSignupModal] = useState(false);
@@ -159,12 +192,17 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 												alignItems="center"
 												h="40px"
 											>
-												{i18n.language === 'en' ? 'En' : i18n.language === 'fr' ? 'Fr' : 'Ch'} <ChevronDownIcon ml={1} />
+												{currentLanguageInfo.short} <ChevronDownIcon ml={1} />
 											</MenuButton>
 											<MenuList>
-												<MenuItem onClick={() => changeLanguage('en')}>English</MenuItem>
-												<MenuItem onClick={() => changeLanguage('fr')}>Français</MenuItem>
-												<MenuItem onClick={() => changeLanguage('ch')}>Chinese</MenuItem>
+												{Object.values(languageMap).map((lang) => (
+													<MenuItem
+														key={lang.code}
+														onClick={() => changeLanguage(lang.code)}
+													>
+														{lang.label}
+													</MenuItem>
+												))}
 											</MenuList>
 										</Menu>
 									</Box>

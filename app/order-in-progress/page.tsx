@@ -1,4 +1,13 @@
 "use client"
+import { Viewport } from 'next'
+
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+}
+
 import React, { useState } from 'react';
 import { Car, Plus, Clock, Euro, PhoneCall } from 'lucide-react';
 import Link from "next/link";

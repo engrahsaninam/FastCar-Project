@@ -9,6 +9,7 @@ import logo from "@/public/assets/imgs/template/logo-d.svg"
 import ReactQueryProvider from "@/services/ReactQueryProvider"
 import { AuthProvider } from "@/context/AuthContext"
 import { Inter } from 'next/font/google'
+import { LanguageProvider } from '@/components/LanguageProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -75,7 +76,9 @@ export default function RootLayout({
         <Providers>
           <ReactQueryProvider>
             <AuthProvider>
-              {children}
+              <LanguageProvider>
+                {children}
+              </LanguageProvider>
             </AuthProvider>
           </ReactQueryProvider>
         </Providers>

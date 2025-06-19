@@ -1,5 +1,14 @@
-
 'use client'
+
+import { Metadata, Viewport } from 'next'
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+}
+
 import CarCard1 from '@/components/elements/carcard/CarCard1'
 import CarCard2 from '@/components/elements/carcard/CarCard2'
 import HeroSearch from '@/components/elements/HeroSearch'
@@ -111,7 +120,7 @@ export default function CarsList4() {
 							</div>
 						</div>
 					</section>
-					
+
 					<section className="box-section block-content-tourlist background-body">
 						<div className="container">
 							<div className="box-content-main pt-20">

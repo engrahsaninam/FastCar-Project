@@ -1,4 +1,13 @@
 'use client'
+import { Viewport } from 'next'
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+}
+
 import CounterUp from '@/components/elements/CounterUp'
 import Layout from "@/components/layout/Layout"
 import { swiperGroup1, swiperGroup3, swiperGroupAnimate } from '@/util/swiperOptions'

@@ -1,4 +1,13 @@
 'use client'
+import { Viewport } from 'next'
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+}
+
 import MyDatePicker from '@/components/elements/MyDatePicker'
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
