@@ -21,10 +21,12 @@ import {
 import { useState } from 'react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 // import { useLogin } from '@/services/auth/useAuth'
 import { useLogin } from '@/services/auth/useAuth'
 
 const Login = () => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -42,7 +44,7 @@ const Login = () => {
           console.log(data)
           localStorage.setItem('token', data.token);
           toast({
-            title: 'Login successful',
+            title: t('auth.loginSuccess'),
             status: 'success',
             duration: 3000,
             isClosable: true,
@@ -50,8 +52,8 @@ const Login = () => {
         },
         onError: (error: any) => {
           toast({
-            title: 'Login failed',
-            description: error?.response?.data?.message || 'An error occurred.',
+            title: t('auth.loginFailed'),
+            description: error?.response?.data?.message || t('auth.loginError'),
             status: 'error',
             duration: 3000,
             isClosable: true,
@@ -95,11 +97,11 @@ const Login = () => {
       >
         <VStack spacing="6">
           <VStack spacing="3" align="center">
-            <Heading size="lg" color={textColor}>Welcome back</Heading>
+            <Heading size="lg" color={textColor}>{t('auth.welcomeBack')}</Heading>
             <Text color="gray.500" fontSize="sm">
-              Don't have an account?{' '}
+              {t('auth.noAccount')}{' '}
               <Link href="/signup" style={{ color: '#F56565' }}>
-                Sign up
+                {t('auth.signUp')}
               </Link>
             </Text>
           </VStack>
@@ -107,7 +109,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} style={{ width: '100%', backgroundColor: 'red' }} >
             <VStack spacing="5">
               <FormControl isRequired>
-                <FormLabel color={textColor}>Email</FormLabel>
+                <FormLabel color={textColor}>{t('auth.email')}</FormLabel>
                 <Input
                   type="email"
                   value={email}
@@ -120,7 +122,7 @@ const Login = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel color={textColor}>Password</FormLabel>
+                <FormLabel color={textColor}>{t('auth.password')}</FormLabel>
                 <InputGroup>
                   <Input
                     type={showPassword ? 'text' : 'password'}
@@ -134,7 +136,7 @@ const Login = () => {
                   <InputRightElement>
                     <IconButton
                       variant="ghost"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                       icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                       onClick={() => setShowPassword(!showPassword)}
                     />
@@ -150,7 +152,7 @@ const Login = () => {
                 _hover={{ bg: '#E53E3E' }}
                 size="lg"
               >
-                Sign in
+                {t('auth.signIn')}
               </Button>
             </VStack>
           </form>

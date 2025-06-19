@@ -2,8 +2,10 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import { useTranslation } from 'react-i18next'
 
 export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
+	const { t } = useTranslation();
 	const [isAccordion, setIsAccordion] = useState(0)
 
 	const handleAccordion = (key: any) => {
@@ -98,18 +100,18 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
 												<li><Link href="/blog-details">News Details</Link></li>
 											</ul>
 										</li> */}
-										<li><Link href="/cars">Buy</Link></li>
-										<li><Link href="/deals">Daily Deals 🔥</Link></li>
-										<li><Link href="/how-it-works">How it Works</Link></li>
-										<li><Link href="/reviews">Reviews</Link></li>
-										<li><Link href="/calculator">Loan Calculator</Link></li>									</ul>
+										<li><Link href="/cars">{t('common.buy')}</Link></li>
+										<li><Link href="/deals">{t('common.dailyDeals')} 🔥</Link></li>
+										<li><Link href="/how-it-works">{t('common.howItWorks')}</Link></li>
+										<li><Link href="/reviews">{t('common.reviews')}</Link></li>
+										<li><Link href="/calculator">{t('common.loanCalculator')}</Link></li>									</ul>
 								</nav>
 							</div>
 						</div>
 					</div>
 				</PerfectScrollbar>
 			</div>
-			{isMobileMenu && <div className="body-overlay-1" onClick={handleMobileMenu} />			}
+			{isMobileMenu && <div className="body-overlay-1" onClick={handleMobileMenu} />}
 		</>
 	)
 }

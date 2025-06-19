@@ -3,11 +3,14 @@ import type { Metadata } from "next"
 import "@/node_modules/react-modal-video/css/modal-video.css"
 import "/public/assets/css/main.css"
 import "/public/assets/css/globals.css"
-import { Providers } from './provider'
+import { Providers } from './providers'
 import logo from "@/public/assets/imgs/template/logo-d.svg"
-import { appWithTranslation } from 'next-i18next';
+// import { appWithTranslation } from 'next-i18next'
 import ReactQueryProvider from "@/services/ReactQueryProvider"
 import { AuthProvider } from "@/context/AuthContext"
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: "Fast4Car - #1 Import Car Marketplace",
@@ -68,7 +71,7 @@ export default function RootLayout({
       <head>
         <link rel="canonical" href="https://fast4car.com" />
       </head>
-      <body className={`font-euclid`}  >
+      <body className={`font-euclid ${inter.className}`}>
         <Providers>
           <ReactQueryProvider>
             <AuthProvider>

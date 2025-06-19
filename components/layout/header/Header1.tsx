@@ -28,6 +28,8 @@ import { usePathname } from 'next/navigation';
 import { useState, useRef } from 'react';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/app/i18/useLanguage';
 
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
@@ -94,7 +96,8 @@ export default function Header1({
 			if (isOpen) onClose();
 		},
 	});
-
+	const { t } = useTranslation();
+	const { currentLanguage, changeLanguage } = useLanguage();
 	return (
 		<>
 			{/* <Box display={{ base: 'none', md: 'block' }}> */}
@@ -118,12 +121,12 @@ export default function Header1({
 								</Link>
 							</Box>
 
-							<div className="header-nav">
+							<div className="header-nav whitespace-nowrap">
 								<nav className="nav-main-menu">
 									<ul className="main-menu">
 										<li>
 											<ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color="white">
-												Buy
+												{t('common.buy')}
 											</ChakraLink>
 										</li>
 										<li>
@@ -135,7 +138,7 @@ export default function Header1({
 												color="white"
 												_hover={{ color: textColorHover, textDecoration: 'none' }}
 											>
-												Daily Deals
+												{t('common.dailyDeals')}
 											</ChakraLink>
 										</li>
 										<li>
@@ -147,7 +150,7 @@ export default function Header1({
 												color="white"
 												_hover={{ color: textColorHover, textDecoration: 'none' }}
 											>
-												How it Works
+												{t('common.howItWorks')}
 											</ChakraLink>
 										</li>
 										<li>
@@ -159,7 +162,7 @@ export default function Header1({
 												color="white"
 												_hover={{ color: textColorHover, textDecoration: 'none' }}
 											>
-												Reviews
+												{t('common.reviews')}
 											</ChakraLink>
 										</li>
 										<li>
@@ -171,7 +174,7 @@ export default function Header1({
 												color="white"
 												_hover={{ color: textColorHover, textDecoration: 'none' }}
 											>
-												Loan Calculator
+												{t('common.loanCalculator')}
 											</ChakraLink>
 										</li>
 									</ul>
@@ -182,7 +185,8 @@ export default function Header1({
 								<Box display={{ base: 'none', xl: 'flex' }} px={3} alignItems="center" whiteSpace="nowrap">
 									<Menu>
 										<MenuButton
-											as={Text}
+											as={Button}
+											variant="ghost"
 											fontSize={['10px', '16px']}
 											fontWeight="medium"
 											color={textColor}
@@ -190,19 +194,18 @@ export default function Header1({
 											cursor="pointer"
 											display="flex"
 											alignItems="center"
-
 										>
-											EN <ChevronDownIcon ml={1} />
+											{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'fr' ? 'Fr' : 'Ch'} <ChevronDownIcon ml={1} />
 										</MenuButton>
 										<MenuList>
-											<MenuItem as="a" >
-												English
+											<MenuItem onClick={() => changeLanguage('en')}>
+												{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}
 											</MenuItem>
-											<MenuItem as="a">
-												French
+											<MenuItem onClick={() => changeLanguage('fr')}>
+												{localStorage.getItem('i18nextLng') === 'fr' ? 'Français' : 'Français'}
 											</MenuItem>
-											<MenuItem as="a">
-												Chinese
+											<MenuItem onClick={() => changeLanguage('ch')}>
+												{localStorage.getItem('i18nextLng') === 'ch' ? 'Chinese' : 'Chinese'}
 											</MenuItem>
 										</MenuList>
 									</Menu>
@@ -254,16 +257,15 @@ export default function Header1({
 												</HStack>
 											)}
 											<VStack align="start" spacing={0} p={4}>
-												{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
-											<MenuItemLink label="Last searches" Icon={Clock} /> */}
-												<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
-												<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
+												<MenuItemLink label={t('common.favoriteCars')} Icon={Heart} href="/favourite-cars" />
+												<MenuItemLink label={t('common.ordersInProgress')} Icon={ShoppingCart} href="/order-in-progress" />
 											</VStack>
 											<HStack justify="center" align="center" p={0} m={0} spacing={1}>
 												<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0}>
 													<Menu>
 														<MenuButton
-															as={Text}
+															as={Button}
+															variant="ghost"
 															fontSize="16px"
 															fontWeight="medium"
 															color={textColor}
@@ -272,12 +274,12 @@ export default function Header1({
 															display="flex"
 															alignItems="center"
 														>
-															EN <ChevronDownIcon />
+															{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'fr' ? 'Fr' : 'Ch'} <ChevronDownIcon />
 														</MenuButton>
 														<MenuList>
-															<MenuItem as="a">English</MenuItem>
-															<MenuItem as="a">French</MenuItem>
-															<MenuItem as="a">Chinese</MenuItem>
+															<MenuItem onClick={() => changeLanguage('en')}>{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</MenuItem>
+															<MenuItem onClick={() => changeLanguage('fr')}>{localStorage.getItem('i18nextLng') === 'fr' ? 'Français' : 'Français'}</MenuItem>
+															<MenuItem onClick={() => changeLanguage('ch')}>{localStorage.getItem('i18nextLng') === 'ch' ? 'Chinese' : 'Chinese'}</MenuItem>
 														</MenuList>
 													</Menu>
 												</Box>
@@ -311,7 +313,7 @@ export default function Header1({
 													</Button>
 												</Link>
 												<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
-													Don't have an account?
+													{t('auth.noAccount')}
 													<Link href="/register">
 														<Button
 															variant="link"
@@ -323,7 +325,7 @@ export default function Header1({
 																setShowSignupModal(true);
 															}}
 														>
-															Register
+															{t('auth.register')}
 														</Button>
 													</Link>
 												</Text>

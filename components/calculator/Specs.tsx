@@ -20,6 +20,7 @@ import FinancingParameters from '../checkout/PaymentMethod/FinancingParameters';
 import FinancingInfoSection from '../checkout/PaymentMethod/FinancingInfoSection';
 import FinancingCTASection from '../checkout/PaymentMethod/FinancingCTASection';
 import OptionF from './OptionF';
+import { useTranslation } from 'react-i18next';
 const MotionBox = motion(Box);
 
 const Specs: React.FC<FinancingSpecsProps> = ({
@@ -27,6 +28,7 @@ const Specs: React.FC<FinancingSpecsProps> = ({
     onFullPayment,
     onToggleSpecs
 }) => {
+    const { t } = useTranslation();
     // Responsive values
     const containerPadding = useBreakpointValue({ base: 2, sm: 3, md: 5 });
     const containerMarginTop = useBreakpointValue({ base: 2, sm: 4, md: 6 });
@@ -61,9 +63,9 @@ const Specs: React.FC<FinancingSpecsProps> = ({
     const options: FinancingOption[] = [
         {
             id: 'regular-loan',
-            title: 'Enter Your Desired Loan Amount',
+            title: t('calculator.enterDesiredLoanAmount'),
             percentage: '8.45 %',
-            description: 'choose to avoid an increased final payment'
+            description: t('calculator.avoidIncreasedFinalPayment')
         }
     ];
 
@@ -164,7 +166,7 @@ const Specs: React.FC<FinancingSpecsProps> = ({
                 >
                     <TimeIcon w={iconSize} h={iconSize} color={iconColor} aria-label="time-icon" />
                     <Heading as="h4" fontSize={headingSize} fontWeight="semibold" color={textColor} noOfLines={1}>
-                        Financing specifications
+                        {t('calculator.financingSpecifications')}
                     </Heading>
                 </Flex>
 

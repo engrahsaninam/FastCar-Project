@@ -22,8 +22,10 @@ import { useRegister } from "@/services/auth/useAuth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import GoogleSignIn from "@/components/GoogleSignIn";
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
+	const { t } = useTranslation();
 	const bg = useColorModeValue("gray.50", "gray.900");
 	const cardBg = useColorModeValue("white", "gray.800");
 	const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -58,8 +60,8 @@ export default function Register() {
 
 		if (formData.password !== formData.confirm_password) {
 			toast({
-				title: "Error",
-				description: "Passwords do not match",
+				title: t('auth.error'),
+				description: t('auth.passwordsDoNotMatch'),
 				status: "error",
 				duration: 3000,
 				isClosable: true,
@@ -69,8 +71,8 @@ export default function Register() {
 
 		if (!formData.terms) {
 			toast({
-				title: "Error",
-				description: "Please accept the terms and conditions",
+				title: t('auth.error'),
+				description: t('auth.acceptTerms'),
 				status: "error",
 				duration: 3000,
 				isClosable: true,
@@ -81,8 +83,8 @@ export default function Register() {
 		try {
 			await registerMutation.mutateAsync(formData);
 			toast({
-				title: "Success",
-				description: "Registration successful!",
+				title: t('auth.success'),
+				description: t('auth.registrationSuccessful'),
 				status: "success",
 				duration: 3000,
 				isClosable: true,
@@ -91,8 +93,8 @@ export default function Register() {
 		} catch (error: any) {
 			console.log(error)
 			toast({
-				title: "Error",
-				description: error.response?.data?.detail || "Registration failed",
+				title: t('auth.error'),
+				description: error.response?.data?.detail || t('auth.registrationFailed'),
 				status: "error",
 				duration: 3000,
 				isClosable: true,
@@ -105,7 +107,7 @@ export default function Register() {
 			<Flex minH="100vh" align="center" justify="center" bg={bg}>
 				<Box position="absolute" top={4} right={4}>
 					<IconButton
-						aria-label="Toggle color mode"
+						aria-label={t('auth.toggleColorMode')}
 						icon={colorMode === "light" ? <Moon /> : <Sun />}
 						onClick={toggleColorMode}
 						variant="ghost"
@@ -135,10 +137,10 @@ export default function Register() {
 								fontSize="sm"
 								mb={2}
 							>
-								Register
+								{t('auth.register')}
 							</Text>
 							<Heading size="md" color={textColor}>
-								Create an Account
+								{t('auth.createAccount')}
 							</Heading>
 						</Box>
 						<VStack as="form" spacing={4} align="stretch" onSubmit={handleSubmit}>
@@ -146,7 +148,7 @@ export default function Register() {
 								name="username"
 								value={formData.username}
 								onChange={handleInputChange}
-								placeholder="Username"
+								placeholder={t('auth.username')}
 								type="text"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
@@ -156,7 +158,7 @@ export default function Register() {
 								name="email"
 								value={formData.email}
 								onChange={handleInputChange}
-								placeholder="Email"
+								placeholder={t('auth.email')}
 								type="email"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
@@ -166,7 +168,7 @@ export default function Register() {
 								name="password"
 								value={formData.password}
 								onChange={handleInputChange}
-								placeholder="Password"
+								placeholder={t('auth.password')}
 								type="password"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
@@ -176,7 +178,7 @@ export default function Register() {
 								name="confirm_password"
 								value={formData.confirm_password}
 								onChange={handleInputChange}
-								placeholder="Confirm Password"
+								placeholder={t('auth.confirmPassword')}
 								type="password"
 								variant="filled"
 								bg={useColorModeValue("gray.100", "gray.700")}
@@ -192,7 +194,7 @@ export default function Register() {
 									mr={2}
 									border='gray'
 								>
-									I agree to terms and conditions
+									{t('auth.agreeToTerms')}
 								</Checkbox>
 							</Flex>
 							<Button
@@ -214,19 +216,19 @@ export default function Register() {
 									</svg>
 								}
 							>
-								Sign up
+								{t('auth.signUp')}
 							</Button>
 						</VStack>
 						<Text color={subTextColor} fontSize="md" textAlign="center">
-							Or connect with your social account
+							{t('auth.orConnectWithSocial')}
 						</Text>
 						<HStack spacing={4} justify="center">
 							<GoogleSignIn />
 						</HStack>
 						<Text color={subTextColor} fontSize="sm" textAlign="center" mt={8}>
-							Already have an account?{" "}
+							{t('auth.alreadyHaveAccount')}{" "}
 							<ChakraLink as={NextLink} href="/login" color={textColor}>
-								Login Here!
+								{t('auth.loginHere')}
 							</ChakraLink>
 						</Text>
 					</VStack>

@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { InfoIcon } from '@chakra-ui/icons';
 import { DownPaymentSliderProps } from '../types/financing';
+import { useTranslation } from 'react-i18next';
 
 const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
     downPayment,
@@ -19,6 +20,7 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
     lastPaymentPercentage = 49,
     selectedOption
 }) => {
+    const { t } = useTranslation();
     // Define percentage range and steps based on selected option
     const minPercentage = selectedOption === 'low-installment' ? 10 : 20;
     const maxPercentage = 90;
@@ -74,7 +76,7 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
             {/* Header with title and value */}
             <Flex justify="space-between" align="center" mb={3}>
                 <Flex align="center">
-                    <Text fontWeight="medium" fontSize="sm" color={textColor}>Down payment (%)</Text>
+                    <Text fontWeight="medium" fontSize="sm" color={textColor}>{t('financing.downPaymentPercent')}</Text>
                     <Box ml={1} cursor="help">
                         <InfoIcon boxSize="14px" color={infoIconColor} aria-label="info-Icon" />
                     </Box>
@@ -182,7 +184,7 @@ const DownPaymentSlider: React.FC<DownPaymentSliderProps> = ({
             {/* Last payment section */}
             <Flex justify="space-between" align="center" mt={2}>
                 <Text fontWeight="medium" fontSize="sm" color={mutedTextColor}>
-                    Last payment
+                    {t('financing.lastPayment')}
                 </Text>
                 <Text fontWeight="bold" fontSize="sm" color={textColor}>
                     {lastPaymentPercentage}% = {lastPaymentAmount}

@@ -6,7 +6,10 @@ import Link from "next/link"
 import { useState } from 'react'
 import ModalVideo from 'react-modal-video'
 import { Swiper, SwiperSlide } from "swiper/react"
+import { useTranslation } from 'react-i18next';
+
 export default function AboutUs() {
+	const { t } = useTranslation();
 	const [isOpen, setOpen] = useState(false)
 	const [isAccordion, setIsAccordion] = useState(1)
 
@@ -24,8 +27,8 @@ export default function AboutUs() {
 								<img className="w-100 h-100 img-banner" src="/assets/imgs/page-header/banner.png" alt="Fast4Car" />
 							</div>
 							<div className="container position-absolute z-1 top-50 start-50 translate-middle">
-								<h2 className="text-white">About Us</h2>
-								<span className="text-white text-xl-medium">Get the latest news, updates and tips</span>
+								<h2 className="text-white">{t('about.headerTitle')}</h2>
+								<span className="text-white text-xl-medium">{t('about.headerSubtitle')}</span>
 							</div>
 							<div className="background-body position-absolute z-1 top-100 start-50 translate-middle px-3 py-2 rounded-12 border d-flex gap-3 @@navigation-page">
 								<Link href="/" className="neutral-700 text-md-medium">Home</Link>
@@ -42,13 +45,13 @@ export default function AboutUs() {
 							<div className="row pb-50">
 								<div className="col-lg-4">
 									<h3 className="neutral-1000">
-										The Future of <br />
-										<span className="text-primary">Car Rental</span>
-										is Here
+										{t('about.futureOfCarRental1')} <br />
+										<span className="text-primary">{t('about.futureOfCarRental2')}</span>
+										{t('about.futureOfCarRental3')}
 									</h3>
 								</div>
 								<div className="col-lg-7 offset-lg-1">
-									<p className="text-lg-medium neutral-500">Welcome to Fast4Car, your trusted partner in car rentals. Since our founding, we have been committed to providing our customers with a seamless and reliable car rental experience. Whether you're planning a business trip, a family vacation, or just need a vehicle for everyday use, we offer a wide range of vehicles to meet your needs.</p>
+									<p className="text-lg-medium neutral-500">{t('about.introParagraph')}</p>
 								</div>
 							</div>
 							<div className="row g-4">
@@ -56,10 +59,10 @@ export default function AboutUs() {
 									<div className="box-image rounded-12 position-relative overflow-hidden">
 										<img className="rounded-12" src="/assets/imgs/section-1/img-1.png" alt="Fast4Car" />
 										<div className="box-tag bg-white p-3 d-flex position-absolute bottom-0 end-0 rounded-12 m-3">
-											<span className="text-dark fs-72 me-3">86</span>
+											<span className="text-dark fs-72 me-3">{t('about.industryExperts')}</span>
 											<h6>
-												Industry <br />
-												Experts
+												{t('about.yearsInBusiness')} <br />
+												{t('about.industryExperts')}
 											</h6>
 										</div>
 									</div>
@@ -72,10 +75,10 @@ export default function AboutUs() {
 								<div className="col-lg-4 col-12">
 									<div className="d-flex flex-column gap-4 align-self-stretch h-100">
 										<div className="box-tag background-brand-2 p-5 d-flex rounded-12">
-											<span className="text-dark fs-96 me-3">25</span>
+											<span className="text-dark fs-96 me-3">{t('about.yearsInBusiness')}</span>
 											<h4>
-												Years in <br />
-												Business
+												{t('about.yearsInBusiness')} <br />
+												{t('about.industryExperts')}
 											</h4>
 										</div>
 										<img className="rounded-12" src="/assets/imgs/section-1/img-3.png" alt="Fast4Car" />
@@ -104,8 +107,8 @@ export default function AboutUs() {
 											</svg>
 										</div>
 										<div className="card-info">
-											<h6 className="text-xl-bold neutral-1000 text-start">Choose a Location</h6>
-											<p className="text-md-medium neutral-500">Select the ideal destination to begin your journey with ease</p>
+											<h6 className="text-xl-bold neutral-1000 text-start">{t('about.chooseALocation')}</h6>
+											<p className="text-md-medium neutral-500">{t('about.chooseALocationDesc')}</p>
 										</div>
 									</div>
 								</div>
@@ -120,8 +123,8 @@ export default function AboutUs() {
 											</svg>
 										</div>
 										<div className="card-info">
-											<h6 className="text-xl-bold neutral-1000 text-start">Transparent Pricing</h6>
-											<p className="text-md-medium neutral-500">Enjoy clear and upfront pricing with no surprises, ensuring you know exactly what you're paying for.</p>
+											<h6 className="text-xl-bold neutral-1000 text-start">{t('about.transparentPricing')}</h6>
+											<p className="text-md-medium neutral-500">{t('about.transparentPricingDesc')}</p>
 										</div>
 									</div>
 								</div>
@@ -134,6 +137,7 @@ export default function AboutUs() {
 											</svg>
 										</div>
 										<div className="card-info">
+											<h6 className="text-xl-bold neutral-1000 text-start">{t('about.convenientBooking')}</h6>
 											<h6 className="text-xl-bold neutral-1000 text-start">Convenient Booking</h6>
 											<p className="text-md-medium neutral-500">Benefit from a variety of rental options, including short-term, long-term, and weekend specials</p>
 										</div>

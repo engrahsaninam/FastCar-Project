@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useBrands, useModels, useyearsRange } from "@/services/cars/useCars";
+import { useTranslation } from 'react-i18next';
 
 // Define TypeScript interfaces
 interface ModelOptionsType {
@@ -24,6 +25,7 @@ interface HeroSearchProps {
 }
 
 const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [make, setMake] = useState<string>("Brand");
@@ -238,7 +240,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
       <div className="box-bottom-search background-card">
         {/* First row */}
         <div className="item-search">
-          <label className="text-sm-bold neutral-500">Brand</label>
+          <label className="text-sm-bold neutral-500">{t('search.brand')}</label>
           <Dropdown
             className="dropdown"
             show={showMakeDropdown}
@@ -275,7 +277,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
         </div>
 
         <div className="item-search item-search-2">
-          <label className="text-sm-bold neutral-500">Model</label>
+          <label className="text-sm-bold neutral-500">{t('search.model')}</label>
           <Dropdown
             className="dropdown"
             show={showModelDropdown && !isModelDisabled}
@@ -320,7 +322,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
         </div>
 
         <div className="item-search">
-          <label className="text-sm-bold neutral-500">Registration from</label>
+          <label className="text-sm-bold neutral-500">{t('search.registrationFrom')}</label>
           <Dropdown
             className="dropdown"
             show={showYearDropdown}
@@ -376,7 +378,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                 className={`vat-label text-sm-bold ${vatDeduction ? "neutral-800" : "neutral-500"
                   }`}
               >
-                VAT
+                {t('search.vat')}
               </span>
             </div>
           </div>
@@ -406,7 +408,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span className="text-white">Find a Vehicle</span>
+                <span className="text-white">{t('search.findVehicle')}</span>
               </button>
             </div>
           </>
@@ -418,7 +420,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
         <div className="box-bottom-search background-card mt-3">
           <div className="item-search">
             <label className="text-sm-bold neutral-500">
-              {isMobile ? "Kilometers" : "Kilometers range"}
+              {isMobile ? t('search.kilometers') : t('search.kilometersRange')}
             </label>
             <Dropdown
               className="dropdown"
@@ -443,24 +445,24 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
               >
                 <div className="mb-2">
                   <label className="form-label small">
-                    Min kilometers (km)
+                    {t('search.minKilometers')}
                   </label>
                   <input
                     type="number"
                     className="form-control"
-                    placeholder="Min kilometers"
+                    placeholder={t('search.minKilometers')}
                     value={minMileage}
                     onChange={(e) => setMinMileage(e.target.value)}
                   />
                 </div>
                 <div className="mb-2">
                   <label className="form-label small">
-                    Max kilometers (km)
+                    {t('search.maxKilometers')}
                   </label>
                   <input
                     type="number"
                     className="form-control"
-                    placeholder="Max kilometers"
+                    placeholder={t('search.maxKilometers')}
                     value={maxMileage}
                     onChange={(e) => setMaxMileage(e.target.value)}
                   />
@@ -470,7 +472,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                     className="btn btn-sm btn-primary"
                     onClick={applyMileageRange}
                   >
-                    Apply
+                    {t('search.apply')}
                   </button>
                 </div>
               </Dropdown.Menu>
@@ -479,7 +481,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
 
           <div className="item-search item-search-2">
             <label className="text-sm-bold neutral-500">
-              {isMobile ? "Price" : "Price range"}
+              {isMobile ? t('search.price') : t('search.priceRange')}
             </label>
             <Dropdown
               className="dropdown"
@@ -503,21 +505,21 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                 style={{ minWidth: "300px" }}
               >
                 <div className="mb-2">
-                  <label className="form-label small">Min price (€)</label>
+                  <label className="form-label small">{t('search.minPrice')}</label>
                   <input
                     type="number"
                     className="form-control"
-                    placeholder="Min price"
+                    placeholder={t('search.minPrice')}
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
                   />
                 </div>
                 <div className="mb-2">
-                  <label className="form-label small">Max price (€)</label>
+                  <label className="form-label small">{t('search.maxPrice')}</label>
                   <input
                     type="number"
                     className="form-control"
-                    placeholder="Max price"
+                    placeholder={t('search.maxPrice')}
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                   />
@@ -527,7 +529,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                     className="btn btn-sm btn-primary"
                     onClick={applyPriceRange}
                   >
-                    Apply
+                    {t('search.apply')}
                   </button>
                 </div>
               </Dropdown.Menu>
@@ -555,7 +557,7 @@ const HeroSearch: React.FC<HeroSearchProps> = ({ showAdvanced = false }) => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-white">Find a Vehicle</span>
+              <span className="text-white">{t('search.findVehicle')}</span>
             </button>
           </div>
         </div>

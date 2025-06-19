@@ -18,43 +18,45 @@ import {
 } from '@chakra-ui/react';
 import { StarIcon } from '@chakra-ui/icons';
 import Layout from '@/components/layout/Layout';
+import { useTranslation } from 'react-i18next';
 // import { Container } from 'lucide-react';
 
 const reviews = [
     {
         name: 'Rakesh K P',
         date: 'May 8, 2025',
-        text: 'It was nice experience with Anand, with hands-on experience and all',
+        textKey: 'reviews.review1.text',
     },
     {
         name: 'Jaap',
         date: 'May 7, 2025',
-        text: 'I loved the way Alex took us on an Scrum journey, taking the time to talk about our experiences.',
+        textKey: 'reviews.review2.text',
     },
     {
         name: 'Ping Ping Lau',
         date: 'May 7, 2025',
-        text: 'Lorenz is an amazing tutor. He gave us a lot of examples and real-life case studies.',
+        textKey: 'reviews.review3.text',
     },
     {
         name: 'Rakesh K P',
         date: 'May 8, 2025',
-        text: 'It was nice experience with Anand, with hands-on experience and all',
+        textKey: 'reviews.review1.text',
     },
     {
         name: 'Jaap',
         date: 'May 7, 2025',
-        text: 'I loved the way Alex took us on an Scrum journey, taking the time to talk about our experiences.',
+        textKey: 'reviews.review2.text',
     },
     {
         name: 'Ping Ping Lau',
         date: 'May 7, 2025',
-        text: 'Lorenz is an amazing tutor. He gave us a lot of examples and real-life case studies.',
+        textKey: 'reviews.review3.text',
     },
 
 ];
 
 export default function ReviewsPage() {
+    const { t } = useTranslation();
     const bg = useColorModeValue('gray.50', 'black');
     const cardBg = useColorModeValue('white', 'gray.900');
     const textColor = useColorModeValue('gray.800', 'gray.100');
@@ -69,10 +71,10 @@ export default function ReviewsPage() {
                     <Box minH="100vh" bg={bg} px={[4, 4, 50]} py={10} margin="0 auto">
                         <Box mb={8} paddingInline={8}>
                             <Heading size="2xl" mb={2} color={textColor} fontFamily='satoshi' fontWeight={900}>
-                                Trustpilot Testimonials
+                                {t('reviews.title')}
                             </Heading>
                             <Text fontSize="lg" color={subTextColor}>
-                                Read what our customers say about us on Trustpilot.
+                                {t('reviews.subtitle')}
                             </Text>
                         </Box>
                         <Flex align="center" mb={8} gap={6} flexWrap="wrap" paddingInline={8}>
@@ -84,7 +86,7 @@ export default function ReviewsPage() {
                                     <StarIcon key={i} color={starColor} fontSize="2xl" />
                                 ))}
                             </HStack>
-                            <Text color={subTextColor}>27K reviews</Text>
+                            <Text color={subTextColor}>{t('reviews.reviewCount')}</Text>
                             <Link href="https://www.trustpilot.com" target="_blank" ml="auto">
                                 <Button
                                     bg="#003C2F"
@@ -94,7 +96,7 @@ export default function ReviewsPage() {
                                     px={6}
                                     fontWeight="medium"
                                 >
-                                    Review Us on Trustpilot
+                                    {t('reviews.reviewButton')}
                                 </Button>
                             </Link>
                         </Flex>
@@ -117,7 +119,7 @@ export default function ReviewsPage() {
                                     alignItems="center"
                                 >
                                     <Text mb={4} fontSize="md">
-                                        {review.text}
+                                        {t(review.textKey)}
                                     </Text>
                                     <Text fontWeight="bold" fontSize="xl">
                                         {review.name}
@@ -144,10 +146,10 @@ export default function ReviewsPage() {
                                         </Box>
                                         <VStack spacing={0}>
                                             <Text fontSize="sm" color={subTextColor}>
-                                                posted on
+                                                {t('reviews.postedOn')}
                                             </Text>
                                             <Text fontSize="sm" color="green.400" fontWeight="bold">
-                                                TrustPilot
+                                                {t('reviews.trustpilot')}
                                             </Text>
                                         </VStack>
                                     </HStack>

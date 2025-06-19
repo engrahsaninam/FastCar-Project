@@ -17,9 +17,9 @@ export default function Offcanvas({ isOffcanvas, handleOffcanvas }: any) {
 								<span className="text-14-medium icon-list icon-account icon-lang"><span className="text-14-medium arrow-down text-dark">EN</span></span>
 								<div className="dropdown-account">
 									<ul>
-										<li><Link className="text-sm-medium" href="#">English</Link></li>
-										<li><Link className="text-sm-medium" href="#">French</Link></li>
-										<li><Link className="text-sm-medium" href="#">Chinese</Link></li>
+										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</Link></li>
+										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'fr' ? 'Français' : 'Français'}</Link></li>
+										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'ch' ? 'Chinese' : 'Chinese'}</Link></li>
 									</ul>
 								</div>
 							</div>

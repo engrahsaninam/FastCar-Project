@@ -1,0 +1,366 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "search": "Search",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "buy": "Buy",
+    "dailyDeals": "Daily Deals",
+    "howItWorks": "How it Works",
+    "reviews": "Reviews",
+    "loanCalculator": "Loan Calculator",
+    "favoriteCars": "Favorite Cars",
+    "ordersInProgress": "Orders in Progress"
+  },
+  "hero": {
+    "tagline": "We Inspect It And Deliver It",
+    "title": "Your Car, From Europe.",
+    "features": {
+      "quality": "High quality at a low cost.",
+      "service": "Premium services",
+      "support": "24/7 roadside support."
+    },
+    "search": {
+      "allCars": "All cars",
+      "advancedSearch": "Advanced Search",
+      "needHelp": "Need help?"
+    },
+    "partner": {
+      "title": "Official Partner",
+      "subtitle": "Exclusive partner of AutoScout24"
+    }
+  },
+  "car": {
+    "brand": "Brand",
+    "model": "Model",
+    "year": "Year",
+    "price": "Price",
+    "mileage": "Mileage",
+    "transmission": "Transmission",
+    "fuelType": "Fuel Type"
+  },
+  "buttons": {
+    "viewDetails": "View Details",
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "submit": "Submit"
+  },
+  "auth": {
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout",
+    "welcomeBack": "Welcome back",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed",
+    "loginError": "An error occurred.",
+    "error": "Error",
+    "success": "Success",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "acceptTerms": "Please accept the terms and conditions",
+    "registrationSuccessful": "Registration successful!",
+    "registrationFailed": "Registration failed",
+    "toggleColorMode": "Toggle color mode",
+    "createAccount": "Create an Account",
+    "agreeToTerms": "I agree to terms and conditions",
+    "orConnectWithSocial": "Or connect with your social account",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginHere": "Login Here!"
+  },
+  "search": {
+    "brand": "Brand",
+    "model": "Model",
+    "year": "Year",
+    "registrationFrom": "Registration from",
+    "vat": "VAT",
+    "kilometers": "Kilometers",
+    "kilometersRange": "Kilometers range",
+    "minKilometers": "Min kilometers (km)",
+    "maxKilometers": "Max kilometers (km)",
+    "price": "Price",
+    "priceRange": "Price range",
+    "minPrice": "Min price (€)",
+    "maxPrice": "Max price (€)",
+    "apply": "Apply",
+    "findVehicle": "Find a Vehicle"
+  },
+  "cars": {
+    "featuredVehicles": "Featured Vehicles",
+    "leadingBrands": "The world's leading car brands",
+    "veryGoodPrice": "Very Good Price",
+    "withoutVAT": "without VAT",
+    "loadMore": "Load More Cars",
+    "failedToLoad": "Failed to load featured vehicles"
+  },
+  "cta": {
+    "seeHowItWorks": "See how it works",
+    "howDoesWork": "How does Fast4Car Work?",
+    "description": "Simply. Choose a car. We will arrange a detailed inspection. Based on that you can decide whether you want the car. We then buy it, arrange an extended warranty, register it and deliver it to you.",
+    "checkFirst": "Check the car first, decide later",
+    "reasonablePrice": "Get Reasonable Price",
+    "standByGuarantee": "We stand by the guarantee!",
+    "chooseCar": "Choose a car",
+    "orderAndPay": "Order and pay",
+    "provideGuarantee": "We will provide a guarantee",
+    "title": "Try out how Fast4Car works.",
+    "button": "Show vehicles"
+  },
+  "cta2": {
+    "wantToCalculate": "Want to Calculate Your Car Payment?",
+    "matchLenders": "Match with up to 4 lenders to get the lowest rate available with no markups, no fees, and no obligations.",
+    "step1Title": "Check the car first, decide later",
+    "step1Desc1": "Before you commit, we'll arrange a thorough inspection and provide you with a detailed report on the car's technical condition.",
+    "step1Desc2": "Only after reviewing the results do you decide if you want to proceed with the purchase.",
+    "step2Title": "We stand by the guarantee!",
+    "step2Desc1": "We're confident in the cars we sell, but for your peace of mind, every purchase comes with a 6-month warranty covering key components—engine, transmission, and differential—plus protection against hidden defects.",
+    "step2Desc2": "If you're not satisfied, you can return the car within 14 days of receiving it",
+    "step3Title": "Fast Delivery",
+    "step3Desc1": "Most vehicles can be delivered within 20 business days after your order is confirmed and payment is received.",
+    "step3Desc2": "Please note: Delivery times may vary depending on the car's location and the administrative requirements in each country.",
+    "of": "/"
+  },
+  "footer": {
+    "discount": "Get a <span class='text-pink'>10% </span>discount on your first car",
+    "register": "Register",
+    "subscribeTitle": "Subscribe to see secret deals prices drop the moment you sign up!",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "hours": "Hours: 8:00 - 17:00, Mon - Sat",
+    "support": "support@Fast4Car.com",
+    "needHelp": "Need help? Call us",
+    "buy": "Buy",
+    "howItWorks": "How it works",
+    "bestDeals": "Best Deals",
+    "loanCalculator": "Loan Calculator",
+    "ourServices": "Our Services",
+    "carAudit": "CarAudit",
+    "delivery": "Delivery",
+    "financing": {
+      "downPaymentPercent": "Down payment (%)",
+      "lastPayment": "Last payment"
+    },
+    "fleet": "Fleet Management Solutions",
+    "ourPartners": "Our Partners",
+    "autoScout": "AutoScout",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "helpCenter": "Help Center",
+    "terms": "Terms of Service",
+    "followUs": "Follow Us",
+    "global": "Global",
+    "branches": "Branches",
+    "destinations": "Destinations",
+    "collaboration": "Collaboration",
+    "years": "Years",
+    "experience": "Experience",
+    "happy": "Happy",
+    "customers": "Customers",
+    "copyright": "© {{year}} Fast4car AG: Terms of Use, Cookie Policy, Privacy Policy, Manage Cookies"
+  },
+  "calculator": {
+    "financingSpecifications": "Financing specifications",
+    "enterDesiredLoanAmount": "Enter Your Desired Loan Amount",
+    "avoidIncreasedFinalPayment": "Choose to avoid an increased final payment",
+    "workflowTitle": "How does Fast4Car financing work?",
+    "workflowStep1Title": "Select your car",
+    "workflowStep1Desc": "Browse our extensive selection of over 1,000,000 verified vehicles across Europe, then click the 'Buy' button to get started.",
+    "workflowStep2Title": "Complete the online form",
+    "workflowStep2Desc": "Click the 'I'm interested in financing' option and fill out the short application. We'll handle the rest from there.",
+    "workflowStep3Title": "Receive your financing quote",
+    "workflowStep3Desc": "We'll forward your application to our lending partners and get back to you with personalized financing options.",
+    "checkOneOfOurCars": "Check one of our cars",
+    "competitiveLoanOffer": "Get a competitive loan offer. Apply with us today. Unlock the best rates and terms for your car loan with our easy application process.",
+    "regularLoan": "Regular loan",
+    "monthlyInstalment": "Monthly instalment",
+    "installments": "{{count}} installments",
+    "months": "months",
+    "evenInstallments": "Even installments",
+    "upToLoanDuration": "Up to {{months}} months\nloan duration",
+    "sampleCalculationFor": "Sample calculation for {{car}}",
+    "carPrice": "CAR PRICE",
+    "downPayment": "DOWN PAYMENT",
+    "paybackPeriod": "Payback Period",
+    "numberOfInstallments": "NUMBER OF INSTALLMENTS",
+    "interestRateAPR": "INTEREST RATE/APR",
+    "financingThroughFast4Car": "Financing through Fast4Car",
+    "favourableFinancingDesc": "Our favourable financing makes car buying accessible to everyone. Simply choose your favourite car and a financing plan that suits your needs.",
+    "averageInterestRate": "Average interest rate",
+    "approvalTime": "Approval time",
+    "hours": "hours",
+    "bestCarRentDeals": "Best car rental deals",
+    "save15OrMore": "Save 15% or more when you book and drive before April 1st, 2025",
+    "findEarly2025Deals": "Find early 2025 deals",
+    "faqTitle": "Frequently Asked Questions",
+    "faqSubtitle": "Have questions? We'd love to help.",
+    "contactUs": "Contact Us",
+    "submitTicket": "Submit Ticket",
+    "faqQ1": "How do I make a reservation on your website?",
+    "faqA1": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ2": "What documents do I need for my trip, and how do I obtain them?",
+    "faqA2": "Provide a step-by-step guide ...",
+    "faqQ3": "How do I make a reservation on your website?",
+    "faqA3": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ4": "What documents do I need for my trip, and how do I obtain them?",
+    "faqA4": "Provide a step-by-step guide ...",
+    "faqQ5": "How do I make a reservation on your website?",
+    "faqA5": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ6": "What documents do I need for my trip, and how do I obtain them?",
+    "faqA6": "Provide a step-by-step guide ...",
+    "faqQ7": "How do I make a reservation on your website?",
+    "faqA7": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ8": "What documents do I need for my trip, and how do I obtain them?",
+    "faqA8": "Provide a step-by-step guide ...",
+    "faqQ9": "How do I make a reservation on your website?",
+    "faqA9": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",  
+    "faqQ10": "How do I make a reservation on your website?",
+    "faqA10": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ11": "What documents do I need for my trip, and how do I obtain them?",
+    "faqA11": "Provide a step-by-step guide ...",
+    "faqQ12": "How do I make a reservation on your website?",
+    "faqA12": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "faqQ13": "Are there any loyalty programs or rewards for frequent guests?",
+    "faqA13": "Provide a step-by-step guide ...",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years"
+  },
+  "about": {
+    "headerTitle": "About Us",
+    "headerSubtitle": "Get the latest news, updates and tips",
+    "breadcrumbHome": "Home",
+    "breadcrumbAbout": "About Us",
+    "futureOfCarRental1": "The Future of",
+    "futureOfCarRental2": "Car Rental",
+    "futureOfCarRental3": "is Here",
+    "introParagraph": "Welcome to Fast4Car, your trusted partner in car rentals. Since our founding, we have been committed to providing our customers with a seamless and reliable car rental experience. Whether you're planning a business trip, a family vacation, or just need a vehicle for everyday use, we offer a wide range of vehicles to meet your needs.",
+    "industryExperts": "Industry Experts",
+    "yearsInBusiness": "Years in Business",
+    "global": "Global",
+    "branches": "Branches",
+    "destinations": "Destinations",
+    "collaboration": "Collaboration",
+    "years": "Years",
+    "experience": "Experience",
+    "happy": "Happy",
+    "customers": "Customers",
+    "user": "User",
+    "account": "Account",
+    "ourMission": "Our Mission",
+    "sellYourCar": "Sell your car at a fair price. Get started with us today.",
+    "missionParagraph": "Our mission is to make car rental easy, accessible, and affordable for everyone. We believe that renting a car should be a hassle-free experience, and we're dedicated to ensuring that every customer finds the perfect vehicle for their journey.",
+    "flexibleRentalOptions": "Explore a wide range of flexible rental options to suit your needs",
+    "insuranceCoverage": "Comprehensive insurance coverage for complete peace of mind",
+    "customerSupport": "24/7 customer support for assistance anytime, anywhere",
+    "getStartedNow": "Get Started Now",
+    "ourCommitment": "Our Commitment",
+    "clearPricingSupport": "Fast4Car offers clear pricing and 24/7 great support.",
+    "commitmentParagraph": "We are committed to offering transparent pricing with no hidden fees, comprehensive insurance options for peace of mind, and 24/7 customer support to assist you whenever you need it. At Fast4Car, your satisfaction is our top priority.",
+    "ourSupport": "Our Support",
+    "faqTitle": "Frequently Asked Questions",
+    "faqAnswer": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
+    "contactUs": "Contact Us",
+    "helpCenter": "Help Center",
+    "upcomingCarsEvents": "Upcoming Cars & Events",
+    "stayAhead": "Stay ahead with the latest car releases and upcoming events",
+    "news": "News",
+    "trend": "Trend",
+    "discovery": "Discovery",
+    "keepReading": "Keep Reading",
+    "testimonials": "Testimonials",
+    "whatTheySay": "What they say about us?",
+    "noHiddenFees": "No Hidden Fees",
+    "noHiddenFeesDesc": "The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together.",
+    "mobileFriendly": "Mobile-Friendly and Fast!",
+    "mobileFriendlyDesc": "Embarking on our dream vacation was made a breeze through the seamless coordination of items and hotels using this exceptional booking platform.",
+    "excellentCustomerService": "Excellent Customer Service",
+    "excellentCustomerServiceDesc": "The overall process was not just efficient but also enriching, as the platform's intuitive design and user-friendly interface made every step enjoyable.",
+    "highlyFlexible": "Highly Flexible and Customizable",
+    "highlyFlexibleDesc": "The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together."
+  },
+  "financing":{
+    "downPaymentPercent": "Down payment (%)",
+    "lastPayment": "Last payment"
+  },
+  "howItWorks": {
+    "hero": {
+      "title": "How does Fast4Car work?",
+      "description": "Simply. Choose a car. We will arrange a detailed inspection. Based on that you can decide whether you want the car. We then buy it, arrange an extended warranty, register it and deliver it to you.",
+      "cta": "I want to know more"
+    },
+    "video": {
+      "playButton": "Play video"
+    },
+    "step1": {
+      "title": "Choose a car",
+      "description": "We process over 7 million ads every day, but we recommend only 10% of them for purchase. With the remaining cars, something often \"doesn't fit\" us."
+    },
+    "step2": {
+      "title": "We check up the car",
+      "description": "We do not own cars in our offer, so we must first thoroughly check them. We know specific models and motorizations perfectly and we know what to focus on for each of them."
+    },
+    "step3": {
+      "title": "Order and pay",
+      "description": "You can either pay for the car with your own money or use financing via Fast4Car. We have above-standard conditions agreed with many verified banks."
+    },
+    "step4": {
+      "title": "We will provide a guarantee",
+      "description": "There's no risk to you when you buy a car on Fast4Car. We pride ourselves on transparency and the perfect condition of the cars."
+    },
+    "step5": {
+      "title": "We buy out the car",
+      "description": "We purchase the car and deregister it in its country of origin. Each country has its own regulations."
+    },
+    "step6": {
+      "title": "We deliver",
+      "description": "Whether we deliver the car directly to your doorstep or you pick it up at one of our pick-up points is entirely up to you."
+    },
+    "guarantee1": {
+      "title": "Comprehensive Warranty",
+      "description": "Every vehicle comes with our premium warranty package covering major mechanical components for complete peace of mind."
+    },
+    "guarantee2": {
+      "title": "Quality Verified",
+      "description": "Each car undergoes rigorous 150-point inspection by certified technicians to ensure top-tier quality and reliability."
+    },
+    "guarantee3": {
+      "title": "Secure Transaction",
+      "description": "Your purchase is protected with our secure payment system and transparent documentation process."
+    },
+    "navigation": {
+      "previous": "Previous step",
+      "next": "Next step"
+    },
+    "cta": {
+      "title": "Try out how Fast4Car works.",
+      "description": "Now all that's left is to choose your next car. We'll be delighted if it's from us.",
+      "button": "Show vehicles"
+    }
+  },
+  "reviews": {
+    "title": "Trustpilot Testimonials",
+    "subtitle": "Read what our customers say about us on Trustpilot.",
+    "reviewCount": "27K reviews",
+    "reviewButton": "Review Us on Trustpilot",
+    "postedOn": "posted on",
+    "trustpilot": "TrustPilot",
+    "review1": {
+      "text": "It was nice experience with Anand, with hands-on experience and all"
+    },
+    "review2": {
+      "text": "I loved the way Alex took us on an Scrum journey, taking the time to talk about our experiences."
+    },
+    "review3": {
+      "text": "Lorenz is an amazing tutor. He gave us a lot of examples and real-life case studies."
+    }
+  }
+} 

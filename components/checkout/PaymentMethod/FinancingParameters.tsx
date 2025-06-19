@@ -9,6 +9,7 @@ import {
     useColorModeValue,
     useBreakpointValue,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 interface FinancingParametersProps {
     downPayment: number;
@@ -27,6 +28,8 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
     APR,
     monthlyPayment,
 }) => {
+    const { t } = useTranslation();
+
     // Responsive values
     const isMobile = useBreakpointValue({ base: true, sm: false });
     const fontSize = useBreakpointValue({ base: "xs", sm: "sm" });
@@ -61,7 +64,7 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
             >
                 <GridItem>
                     <ParameterItem
-                        title="Down payment"
+                        title={t('calculator.downPayment')}
                         value={`${downPayment}% (€${downPaymentAmount.toLocaleString()})`}
                         fontSize={fontSize}
                         titleSize={titleSize}
@@ -72,8 +75,8 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
 
                 <GridItem>
                     <ParameterItem
-                        title="Installment period"
-                        value={`${installmentPeriod} months`}
+                        title={t('calculator.numberOfInstallments')}
+                        value={`${installmentPeriod} ${t('calculator.months')}`}
                         fontSize={fontSize}
                         titleSize={titleSize}
                         textColor={textColor}
@@ -83,7 +86,7 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
 
                 <GridItem>
                     <ParameterItem
-                        title="Interest rate"
+                        title={t('calculator.interestRateAPR')}
                         value={`${interestRate}%`}
                         fontSize={fontSize}
                         titleSize={titleSize}
@@ -108,7 +111,7 @@ const FinancingParameters: React.FC<FinancingParametersProps> = ({
 
             <Flex direction="column" align="flex-end">
                 <Text fontSize={fontSize} color={mutedColor}>
-                    Monthly payment
+                    {t('calculator.monthlyInstalment')}
                 </Text>
                 <Text
                     fontSize={amountSize}

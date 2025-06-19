@@ -2,6 +2,7 @@
 import Layout from "@/components/layout/Layout"
 import { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
 import { useRef, useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 import {
     Box,
@@ -32,38 +33,38 @@ import { FaPlay, FaPause, FaBackward, FaForward } from "react-icons/fa";
 const steps = [
     {
         number: "01",
-        title: "Choose a car",
-        description: "We process over 7 million ads every day, but we recommend only 10% of them for purchase. With the remaining cars, something often \"doesn't fit\" us.",
+        titleKey: "howItWorks.step1.title",
+        descriptionKey: "howItWorks.step1.description",
         image: "/choose.jpg"
     },
     {
         number: "02",
-        title: "We check up the car",
-        description: "We do not own cars in our offer, so we must first thoroughly check them. We know specific models and motorizations perfectly and we know what to focus on for each of them.",
+        titleKey: "howItWorks.step2.title",
+        descriptionKey: "howItWorks.step2.description",
         image: "/check.jpg"
     },
     {
         number: "03",
-        title: "Order and pay",
-        description: "You can either pay for the car with your own money or use financing via Fast4Car. We have above-standard conditions agreed with many verified banks.",
+        titleKey: "howItWorks.step3.title",
+        descriptionKey: "howItWorks.step3.description",
         image: "/pay.jpg"
     },
     {
         number: "04",
-        title: "We will provide a guarantee",
-        description: "There's no risk to you when you buy a car on Fast4Car. We pride ourselves on transparency and the perfect condition of the cars.",
+        titleKey: "howItWorks.step4.title",
+        descriptionKey: "howItWorks.step4.description",
         image: "/4.jpg"
     },
     {
         number: "05",
-        title: "We buy out the car",
-        description: "We purchase the car and deregister it in its country of origin. Each country has its own regulations.",
+        titleKey: "howItWorks.step5.title",
+        descriptionKey: "howItWorks.step5.description",
         image: "/5.jpg"
     },
     {
         number: "06",
-        title: "We deliver",
-        description: "Whether we deliver the car directly to your doorstep or you pick it up at one of our pick-up points is entirely up to you.",
+        titleKey: "howItWorks.step6.title",
+        descriptionKey: "howItWorks.step6.description",
         image: "/order.jpg"
     }
 ];
@@ -71,22 +72,24 @@ const steps = [
 const guarantees = [
     {
         icon: "/cashback.png",
-        title: "Comprehensive Warranty",
-        description: "Every vehicle comes with our premium warranty package covering major mechanical components for complete peace of mind."
+        titleKey: "howItWorks.guarantee1.title",
+        descriptionKey: "howItWorks.guarantee1.description"
     },
     {
         icon: "/payment-method.png",
-        title: "Quality Verified",
-        description: "Each car undergoes rigorous 150-point inspection by certified technicians to ensure top-tier quality and reliability."
+        titleKey: "howItWorks.guarantee2.title",
+        descriptionKey: "howItWorks.guarantee2.description"
     },
     {
         icon: "/guarantee.png",
-        title: "Secure Transaction",
-        description: "Your purchase is protected with our secure payment system and transparent documentation process."
+        titleKey: "howItWorks.guarantee3.title",
+        descriptionKey: "howItWorks.guarantee3.description"
     }
 ];
 
 export default function HowItWorks() {
+    const { t } = useTranslation();
+
     const scrollToContent = () => {
         // Add smooth scroll functionality
         const content = document.getElementById('content');
@@ -215,7 +218,7 @@ export default function HowItWorks() {
                                     fontFamily='satoshi'
                                     marginTop={['20px', '0px', '0px']}
                                 >
-                                    How does Fast4Car work?
+                                    {t('howItWorks.hero.title')}
                                 </Heading>
                                 <Text
                                     fontSize={{ base: "lg", md: "xl" }}
@@ -224,7 +227,7 @@ export default function HowItWorks() {
                                     p={6}
                                     lineHeight="1.6"
                                 >
-                                    Simply. Choose a car. We will arrange a detailed inspection. Based on that you can decide whether you want the car. We then buy it, arrange an extended warranty, register it and deliver it to you.
+                                    {t('howItWorks.hero.description')}
                                 </Text>
                                 <Button
                                     leftIcon={<ChevronDownIcon />}
@@ -233,7 +236,7 @@ export default function HowItWorks() {
                                     bg="#F56565"
                                     onClick={scrollToContent}
                                 >
-                                    I want to know more
+                                    {t('howItWorks.hero.cta')}
                                 </Button>
                             </Box>
                         </GridItem>
@@ -295,7 +298,7 @@ export default function HowItWorks() {
                                         <FaPlay color="white" size="24px" />
                                     </Box>
                                     <Text color="white" fontWeight="bold" mt={2}>
-                                        Play video
+                                        {t('howItWorks.video.playButton')}
                                     </Text>
                                 </Flex>
                             )}
@@ -390,7 +393,7 @@ export default function HowItWorks() {
                                         >
                                             <Image
                                                 src={item.icon}
-                                                alt={item.title}
+                                                alt={t(item.titleKey)}
                                                 w="32px"
                                                 h="32px"
                                                 objectFit="contain"
@@ -404,14 +407,14 @@ export default function HowItWorks() {
                                                 mb={3}
                                                 fontSize="xl"
                                             >
-                                                {item.title}
+                                                {t(item.titleKey)}
                                             </Heading>
                                             <Text
                                                 color={subTextColor}
                                                 fontSize="md"
                                                 lineHeight="1.7"
                                             >
-                                                {item.description}
+                                                {t(item.descriptionKey)}
                                             </Text>
                                         </Box>
                                     </Flex>
@@ -451,7 +454,7 @@ export default function HowItWorks() {
                                                 >
                                                     <Image
                                                         src={item.icon}
-                                                        alt={item.title}
+                                                        alt={t(item.titleKey)}
                                                         w="24px"
                                                         h="24px"
                                                         objectFit="contain"
@@ -464,7 +467,7 @@ export default function HowItWorks() {
                                                     flex="1"
                                                     textAlign="left"
                                                 >
-                                                    {item.title}
+                                                    {t(item.titleKey)}
                                                 </Heading>
                                                 <AccordionIcon color="red.500" />
                                             </Flex>
@@ -475,7 +478,7 @@ export default function HowItWorks() {
                                                 fontSize="sm"
                                                 lineHeight="1.6"
                                             >
-                                                {item.description}
+                                                {t(item.descriptionKey)}
                                             </Text>
                                         </AccordionPanel>
                                     </AccordionItem>
@@ -494,7 +497,7 @@ export default function HowItWorks() {
                         <Box position="relative">
                             {/* Navigation Arrows */}
                             <IconButton
-                                aria-label="Previous step"
+                                aria-label={t('howItWorks.navigation.previous')}
                                 icon={<ChevronLeftIcon />}
                                 position="absolute"
                                 left={{ base: "2", md: "-4" }}
@@ -511,7 +514,7 @@ export default function HowItWorks() {
                                 display="flex"
                             />
                             <IconButton
-                                aria-label="Next step"
+                                aria-label={t('howItWorks.navigation.next')}
                                 icon={<ChevronRightIcon />}
                                 position="absolute"
                                 right={{ base: "2", md: "-4" }}
@@ -560,7 +563,7 @@ export default function HowItWorks() {
                                             >
                                                 <Image
                                                     src={step.image}
-                                                    alt={step.title}
+                                                    alt={t(step.titleKey)}
                                                     objectFit="cover"
                                                     w="100%"
                                                     h="100%"
@@ -583,14 +586,14 @@ export default function HowItWorks() {
                                                     mb={4}
                                                     color="red.500"
                                                 >
-                                                    {step.title}
+                                                    {t(step.titleKey)}
                                                 </Heading>
                                                 <Text
                                                     color={subTextColor}
                                                     fontSize="lg"
                                                     lineHeight="1.6"
                                                 >
-                                                    {step.description}
+                                                    {t(step.descriptionKey)}
                                                 </Text>
                                             </Box>
                                         </Box>
@@ -621,9 +624,9 @@ export default function HowItWorks() {
                 <Box py={20} textAlign="center" bg={bgColor}>
                     <Container maxW="container.xl">
                         <VStack spacing={6}>
-                            <Heading size="xl" color={textColor}>Try out how Fast4Car works.</Heading>
+                            <Heading size="xl" color={textColor}>{t('howItWorks.cta.title')}</Heading>
                             <Text fontSize="lg" color={subTextColor}>
-                                Now all that's left is to choose your next car. We'll be delighted if it's from us.
+                                {t('howItWorks.cta.description')}
                             </Text>
                             <Link href="/cars">
                                 <Button
@@ -634,7 +637,7 @@ export default function HowItWorks() {
                                     py={6}
                                     fontSize="lg"
                                 >
-                                    Show vehicles
+                                    {t('howItWorks.cta.button')}
                                 </Button>
                             </Link>
                         </VStack>

@@ -3,11 +3,13 @@ import Link from "next/link"
 import { useState } from 'react'
 import { Modal, ModalOverlay, ModalContent, ModalBody, IconButton } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 export default function Cta1() {
 	const [isOpen, setOpen] = useState(false)
 	const [isPlaying, setIsPlaying] = useState(false);
 	const videoRef = useState(null);
+	const { t } = useTranslation();
 	return (
 		<>
 
@@ -17,33 +19,28 @@ export default function Cta1() {
 						<div className="col-lg-6 pe-lg-5 wow fadeInUp">
 							<div className="card-video">
 								<div className="card-image">
-									<a  className="btn btn-play popup-youtube" onClick={() => setOpen(true)} />
+									<a className="btn btn-play popup-youtube" onClick={() => setOpen(true)} />
 									<img src="/assets/imgs/cta/cta-1/video.png" alt="Fast4Car" />
 								</div>
 							</div>
 						</div>
 						<div className="col-lg-6 mt-lg-0 mt-4">
-							<Link href="/how-it-works" className="btn btn-signin bg-white text-dark mb-4 wow fadeInUp">See how it works</Link>
-							<h4 className="mb-4 neutral-1000 wow fadeInUp">How does Fast4Car Work?</h4>
-							<p className="text-lg-medium neutral-500 mb-4 wow fadeInUp">Simply. Choose a car. We will arrange a detailed inspection. Based on that you can decide whether you want the car. We then buy it, arrange an extended warranty, register it and deliver it to you.</p>
+							<Link href="/how-it-works" className="btn btn-signin bg-white text-dark mb-4 wow fadeInUp">{t('cta.seeHowItWorks')}</Link>
+							<h4 className="mb-4 neutral-1000 wow fadeInUp">{t('cta.howDoesWork')}</h4>
+							<p className="text-lg-medium neutral-500 mb-4 wow fadeInUp">{t('cta.description')}</p>
 							<div className="row">
 								<div className="col-md-6">
 									<ul className="list-ticks-green">
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.1s">Check the car first, decide later</li>
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.2s">Get Reasonable Price
-										</li>
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.3s">We stand by the guarantee!
-										</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.1s">{t('cta.checkFirst')}</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.2s">{t('cta.reasonablePrice')}</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.3s">{t('cta.standByGuarantee')}</li>
 									</ul>
 								</div>
 								<div className="col-md-6">
 									<ul className="list-ticks-green wow fadeInUp">
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.1s">Choose a car
-										</li>
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.2s">Order and pay
-										</li>
-										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.3s">We will provide a guarantee
-										</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.1s">{t('cta.chooseCar')}</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.2s">{t('cta.orderAndPay')}</li>
+										<li className="neutral-1000 wow fadeInUp" data-wow-delay="0.3s">{t('cta.provideGuarantee')}</li>
 									</ul>
 								</div>
 							</div>

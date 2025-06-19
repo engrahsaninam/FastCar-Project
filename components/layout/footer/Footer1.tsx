@@ -5,67 +5,39 @@ import dynamic from 'next/dynamic'
 const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 	ssr: false,
 })
+import { useTranslation } from 'react-i18next';
 
 export default function Footer1() {
+	const { t } = useTranslation();
+	const year = new Date().getFullYear();
 	return (
 		<>
 			<div className="top-bar top-bar-2 top-bar-3" >
 				<div className="get">
 					<div className="text-header border-none shadow-none">
-						<Text className="text-unlock text-sm-medium text-white">Get a <span className="text-pink">10% </span>
-							discount on your first car</Text>
+						<Text className="text-unlock text-sm-medium text-white" dangerouslySetInnerHTML={{ __html: t('footer.discount') }} />
 						<Link className="btn btn-brand-2 btn-small px-3 py-2 text-xs-medium" href="/cars">
-							Register
+							{t('footer.register')}
 							<svg className="ms-1" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
 								<path fillRule="evenodd" clipRule="evenodd" d="M1 7.99965C1 7.86705 1.05268 7.73987 1.14645 7.6461C1.24021 7.55233 1.36739 7.49965 1.5 7.49965H13.293L10.146 4.35366C10.0521 4.25977 9.99937 4.13243 9.99937 3.99966C9.99937 3.86688 10.0521 3.73954 10.146 3.64565C10.2399 3.55177 10.3672 3.49902 10.5 3.49902C10.6328 3.49902 10.7601 3.55177 10.854 3.64565L14.854 7.64565C14.9006 7.6921 14.9375 7.74728 14.9627 7.80802C14.9879 7.86877 15.0009 7.93389 15.0009 7.99965C15.0009 8.06542 14.9879 8.13054 14.9627 8.19129C14.9375 8.25203 14.9006 8.30721 14.854 8.35365L10.854 12.3537C10.7601 12.4475 10.6328 12.5003 10.5 12.5003C10.3672 12.5003 10.2399 12.4475 10.146 12.3537C10.0521 12.2598 9.99937 12.1324 9.99937 11.9997C9.99937 11.8669 10.0521 11.7395 10.146 11.6457L13.293 8.49965H1.5C1.36739 8.49965 1.24021 8.44698 1.14645 8.35321C1.05268 8.25944 1 8.13226 1 7.99965Z" fill="white" />
 							</svg>
 						</Link>
 						<ThemeSwitch />
-
 					</div>
-					{/* <div className="top-right-header"> */}
-					{/* <Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle mr-15 head-lang">
-							<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-account icon-lang">
-								<span className="text-14-medium arrow-down">EN</span>
-							</Dropdown.Toggle>
-							<Dropdown.Menu className="dropdown-account" style={{ visibility: 'visible' }}>
-								<ul>
-									<li><Link className="text-sm-medium" href="#">English</Link></li>
-									<li><Link className="text-sm-medium" href="#">French</Link></li>
-									<li><Link className="text-sm-medium" href="#">Chinese</Link></li>
-								</ul>
-							</Dropdown.Menu>
-						</Dropdown>
-						<Dropdown className="d-none d-xl-inline-block box-dropdown-cart align-middle head-currency">
-							<Dropdown.Toggle as="span" className="text-14-medium icon-list icon-cart">
-								<span className="text-14-medium arrow-down">USD</span>
-							</Dropdown.Toggle>
-							<Dropdown.Menu style={{ visibility: 'visible' }} className="dropdown-cart">
-								<ul>
-									<li><Link className="text-sm-medium" href="#">USD</Link></li>
-									<li><Link className="text-sm-medium" href="#">EUR</Link></li>
-									<li><Link className="text-sm-medium" href="#">SGP</Link></li>
-								</ul>
-							</Dropdown.Menu>
-						</Dropdown> */}
-					{/* <div className="top-button-mode"> */}
-					{/* </div> */}
-					{/* </div> */}
 				</div>
 			</div>
 			<footer className="footer">
-
 				<div className="container">
 					<div className="footer-top">
 						<div className="row align-items-center">
 							<div className="col-lg-5 col-md-6 text-center text-md-start">
-								<h5 className="color-white wow fadeInDown">Subscribe to see secret deals prices drop the moment you sign up!</h5>
+								<h5 className="color-white wow fadeInDown">{t('footer.subscribeTitle')}</h5>
 							</div>
 							<div className="col-lg-7 col-md-6 text-center text-md-end mt-md-0 mt-4">
 								<div className="d-flex align-items-center justify-content-center justify-content-md-end">
 									<form className="form-newsletter wow fadeInUp" action="#">
-										<input className="form-control" type="text" placeholder="Enter your email" />
-										<input className="btn btn-brand-2" type="submit" defaultValue="Subscribe" />
+										<input className="form-control" type="text" placeholder={t('footer.emailPlaceholder')} />
+										<input className="btn btn-brand-2" type="submit" defaultValue={t('footer.subscribe')} />
 									</form>
 								</div>
 							</div>
@@ -79,11 +51,11 @@ export default function Footer1() {
 									<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
 								</Link>
 								<div className="box-info-contact mt-0">
-									<p className="text-md neutral-400 icon-worktime">Hours: 8:00 - 17:00, Mon - Sat</p>
-									<p className="text-md neutral-400 icon-email">support@Fast4Car.com</p>
+									<p className="text-md neutral-400 icon-worktime">{t('footer.hours')}</p>
+									<p className="text-md neutral-400 icon-email">{t('footer.support')}</p>
 								</div>
 								<div className="box-need-help">
-									<p className="need-help text-md-medium mb-5">Need help? Call us</p>
+									<p className="need-help text-md-medium mb-5">{t('footer.needHelp')}</p>
 									<br /><Link className="heading-6 phone-support" href="/tel:‪‪+34 618 00 73 25">‪‪+34 618 00 73 25</Link>
 								</div>
 							</div>
@@ -91,41 +63,37 @@ export default function Footer1() {
 						<div className="col-lg-3 col-md-6 col-sm-6 footer-2">
 							<h6 className="text-linear-3">Fast4Car</h6>
 							<ul className="menu-footer">
-								<li><Link href="/cars">Buy</Link></li>
-								<li><Link href="/how-it-works">How it works</Link></li>
-								<li><Link href="/deals">Best Deals</Link></li>
-								<li><Link href="/calculator">Loan Calculator</Link></li>
+								<li><Link href="/cars">{t('footer.buy')}</Link></li>
+								<li><Link href="/how-it-works">{t('footer.howItWorks')}</Link></li>
+								<li><Link href="/deals">{t('footer.bestDeals')}</Link></li>
+								<li><Link href="/calculator">{t('footer.loanCalculator')}</Link></li>
 							</ul>
-
 						</div>
 						<div className="col-lg-3 col-md-6 col-sm-12 footer-3">
-
-							<h6 className="text-linear-3">Our Services</h6>
+							<h6 className="text-linear-3">{t('footer.ourServices')}</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">CarAudit</Link></li>
-								<li><Link href="#">Delivery</Link></li>
-								<li><Link href="#">Financing</Link></li>
-								<li><Link href="#">Fleet Management Solutions</Link></li>
+								<li><Link href="#">{t('footer.carAudit')}</Link></li>
+								<li><Link href="#">{t('footer.delivery')}</Link></li>
+								<li><Link href="#">{t('footer.financing')}</Link></li>
+								<li><Link href="#">{t('footer.fleet')}</Link></li>
 							</ul>
 						</div>
 						<div className="col-lg-3 col-md-6 col-sm-12 footer-3">
-							<h6 className="text-linear-3">Our Partners</h6>
+							<h6 className="text-linear-3">{t('footer.ourPartners')}</h6>
 							<ul className="menu-footer">
-								<li><Link href="#">AutoScout</Link></li>
+								<li><Link href="#">{t('footer.autoScout')}</Link></li>
 							</ul>
-							
 						</div>
 						<div className="col-lg-3 col-md-6 col-sm-12 footer-3">
-
-						<h6 className="text-linear-3 mt-4">Company</h6>
-						<ul className="menu-footer">
-							<li><Link href="#">About Us</Link></li>
-							<li><Link href="#">Help Center</Link></li>
-							<li><Link href="#">Terms of Service</Link></li>
-						</ul>
+							<h6 className="text-linear-3 mt-4">{t('footer.company')}</h6>
+							<ul className="menu-footer">
+								<li><Link href="#">{t('footer.aboutUs')}</Link></li>
+								<li><Link href="#">{t('footer.helpCenter')}</Link></li>
+								<li><Link href="#">{t('footer.terms')}</Link></li>
+							</ul>
 						</div>
 						<div className="col-lg-3 col-md-6 col-sm-12 footer-4">
-							<h6 className="text-linear-3">Follow Us</h6>
+							<h6 className="text-linear-3">{t('footer.followUs')}</h6>
 							<div className="box-socials-footer mt-4">
 								<Link className="icon-socials icon-instagram" href="#">
 									<svg xmlns="http://www.w3.org/2000/svg" width={21} height={20} viewBox="0 0 21 20" fill="none">
@@ -153,11 +121,11 @@ export default function Footer1() {
 					<div className="footer-bottom mt-50">
 						<div className="row align-items-center justify-content-center">
 							<div className="col-md-6 text-md-start text-center mb-20">
-								<p className="text-sm color-white">© {new Date().getFullYear()} Fast4car AG: Terms of Use, Cookie Policy, Privacy Policy, Manage Cookies</p>
+								<p className="text-sm color-white">{t('footer.copyright', { year })}</p>
 							</div>
 							<div className="col-md-6 text-md-end text-center mb-20">
 								<div className="d-flex align-items-center justify-content-center justify-content-md-end">
-									<p className="text-lg-bold neutral-0 d-inline-block mr-10">Follow us</p>
+									<p className="text-lg-bold neutral-0 d-inline-block mr-10">{t('footer.followUs')}</p>
 									<div className="box-socials-footer d-inline-block">
 										<Link className="icon-socials icon-instagram" href="#">
 											<svg xmlns="http://www.w3.org/2000/svg" width={21} height={20} viewBox="0 0 21 20" fill="none">

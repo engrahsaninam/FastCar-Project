@@ -3,8 +3,11 @@ import { CheckCircleIcon } from '@chakra-ui/icons';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+
 export default function FinancingCard() {
     const router = useRouter()
+    const { t } = useTranslation();
     const isMobile = useBreakpointValue({ base: true, md: false });
     const textColor = useColorModeValue("gray.900", "gray.100");
     const bgColor = useColorModeValue("gray.50", "gray.900");
@@ -22,7 +25,7 @@ export default function FinancingCard() {
                         fontFamily='satoshi'
                         marginTop={['20px', '0px', '0px']}
                     >
-                        Check one of our cars
+                        {t('calculator.checkOneOfOurCars')}
                     </Heading>
                     <Text
                         fontSize={{ base: "lg", md: "xl" }}
@@ -31,8 +34,7 @@ export default function FinancingCard() {
                         p={6}
                         lineHeight="1.6"
                     >
-                        Get a competitive loan offer. Apply with us today.<br />
-                        Unlock the best rates and terms for your car loan with our easy application process.
+                        {t('calculator.competitiveLoanOffer')}
                     </Text>
                 </Box>
                 {/* Centered Regular Loan Button */}
@@ -48,7 +50,7 @@ export default function FinancingCard() {
                         minW="180px"
                         bg="#F56565"
                     >
-                        Regular loan
+                        {t('calculator.regularLoan')}
                     </Button>
                 </Flex>
                 {/* Financing Cards */}
@@ -103,28 +105,28 @@ export default function FinancingCard() {
                             }}
                         >
                             <Text fontSize="lg" fontWeight="medium" opacity={0.85} mb={2}>
-                                Monthly instalment
+                                {t('calculator.monthlyInstalment')}
                             </Text>
                             <Text fontSize="5xl" fontWeight="bold" mb={1}>
                                 441 €
                             </Text>
                             <Text fontSize="md" opacity={0.85} mb={8}>
-                                48 installments
+                                {t('calculator.installments', { count: 48 })}
                             </Text>
                             <Text fontSize="2xl" fontWeight="extrabold" mb={4}>
-                                Regular loan
+                                {t('calculator.regularLoan')}
                             </Text>
                             <VStack align="start" spacing={3} mx="auto" maxW="fit-content">
                                 <HStack spacing={3} align="flex-start">
                                     <Icon as={CheckCircleIcon} color="green.300" boxSize={5} mt={1} />
                                     <Text fontWeight="medium" textAlign="left">
-                                        Even installments
+                                        {t('calculator.evenInstallments')}
                                     </Text>
                                 </HStack>
                                 <HStack spacing={3} align="flex-start">
                                     <Icon as={CheckCircleIcon} color="green.300" boxSize={5} mt={1} />
                                     <Text fontWeight="medium" textAlign="left">
-                                        Up to 96 months<br />loan duration
+                                        {t('calculator.upToLoanDuration', { months: 96 })}
                                     </Text>
                                 </HStack>
                             </VStack>
@@ -153,10 +155,7 @@ export default function FinancingCard() {
                             }}
                         >
                             <Text fontSize="lg" fontWeight="medium" mb={4} textAlign="center">
-                                Sample calculation for{" "}
-                                <Text as="span" fontWeight="bold" color={textColor}>
-                                    Audi A3 2023
-                                </Text>
+                                {t('calculator.sampleCalculationFor', { car: 'Audi A3 2023' })}
                             </Text>
 
                             <Flex align="center" justify="center" direction="column" gap={4} mb={6}>
@@ -172,23 +171,23 @@ export default function FinancingCard() {
                             </Flex>
                             <VStack align="start" spacing={2} fontSize="md" color={textColor}>
                                 <HStack w="full" justify="space-between">
-                                    <Text fontWeight="bold" color={textColor}>CAR PRICE</Text>
+                                    <Text fontWeight="bold" color={textColor}>{t('calculator.carPrice')}</Text>
                                     <Text fontWeight="bold">25 000 €</Text>
                                 </HStack>
                                 <HStack w="full" justify="space-between">
-                                    <Text fontWeight="bold" color={textColor}>DOWN PAYMENT</Text>
+                                    <Text fontWeight="bold" color={textColor}>{t('calculator.downPayment')}</Text>
                                     <Text fontWeight="bold">30% / 7 500 €</Text>
                                 </HStack>
                                 <HStack w="full" justify="space-between">
-                                    <Text fontWeight="bold" color={textColor}>PAYBACK PERIOD</Text>
+                                    <Text fontWeight="bold" color={textColor}>{t('calculator.paybackPeriod')}</Text>
                                     <Text fontWeight="bold">48 months / 441 €</Text>
                                 </HStack>
                                 <HStack w="full" justify="space-between">
-                                    <Text fontWeight="bold" color={textColor}>NUMBER OF INSTALLMENTS</Text>
+                                    <Text fontWeight="bold" color={textColor}>{t('calculator.numberOfInstallments')}</Text>
                                     <Text fontWeight="bold">48</Text>
                                 </HStack>
                                 <HStack w="full" justify="space-between">
-                                    <Text fontWeight="bold" color={textColor}>INTEREST RATE/APR</Text>
+                                    <Text fontWeight="bold" color={textColor}>{t('calculator.interestRateAPR')}</Text>
                                     <Text fontWeight="bold">8,45% / 10,137%</Text>
                                 </HStack>
                             </VStack>

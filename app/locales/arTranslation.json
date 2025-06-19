@@ -1,0 +1,364 @@
+{
+  "common": {
+    "home": "首页",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "search": "搜索",
+    "login": "登录",
+    "register": "注册",
+    "logout": "登出",
+    "buy": "购买",
+    "dailyDeals": "每日特惠",
+    "howItWorks": "如何运作",
+    "reviews": "评价",
+    "loanCalculator": "贷款计算器",
+    "favoriteCars": "收藏车辆",
+    "ordersInProgress": "进行中的订单"
+  },
+  "hero": {
+    "tagline": "检验并交付",
+    "title": "您的车，从欧洲来。",
+    "features": {
+      "quality": "高品质，低成本。",
+      "service": "优质服务",
+      "support": "全天候支持。"
+    },
+    "search": {
+      "allCars": "所有车辆",
+      "advancedSearch": "高级搜索",
+      "needHelp": "需要帮助？"
+    },
+    "partner": {
+      "title": "官方合作伙伴",
+      "subtitle": "AutoScout24 独家合作伙伴"
+    }
+  },
+  "car": {
+    "brand": "品牌",
+    "model": "型号",
+    "year": "年份",
+    "price": "价格",
+    "mileage": "里程",
+    "transmission": "变速箱",
+    "fuelType": "燃料类型"
+  },
+  "buttons": {
+    "viewDetails": "查看详情",
+    "bookNow": "立即预订",
+    "learnMore": "了解更多",
+    "submit": "提交"
+  },
+  "auth": {
+  "noAccount": "没有账号？",
+  "register": "注册",
+  "login": "登录",
+  "logout": "登出",
+  "welcomeBack": "欢迎回来",
+  "signUp": "创建账户",
+  "signIn": "登录",
+  "email": "电子邮件",
+  "password": "密码",
+  "confirmPassword": "确认密码",
+  "username": "用户名",
+  "showPassword": "显示密码",
+  "hidePassword": "隐藏密码",
+  "loginSuccess": "登录成功",
+  "loginFailed": "登录失败",
+  "loginError": "发生错误。",
+  "error": "错误",
+  "success": "成功",
+  "passwordsDoNotMatch": "密码不匹配",
+  "acceptTerms": "请接受条款和条件",
+  "registrationSuccessful": "注册成功！",
+  "registrationFailed": "注册失败",
+  "toggleColorMode": "切换颜色模式",
+  "createAccount": "创建账户",
+  "agreeToTerms": "我同意条款和条件",
+  "orConnectWithSocial": "或通过社交账号登录",
+  "alreadyHaveAccount": "已有账户？",
+  "loginHere": "点此登录！"
+
+  },
+  "search": {
+    "brand": "品牌",
+    "model": "型号",
+    "year": "年份",
+    "registrationFrom": "上牌年份从",
+    "vat": "增值税",
+    "kilometers": "公里数",
+    "kilometersRange": "公里范围",
+    "minKilometers": "最少公里 (km)",
+    "maxKilometers": "最多公里 (km)",
+    "price": "价格",
+    "priceRange": "价格范围",
+    "minPrice": "最低价 (€)",
+    "maxPrice": "最高价 (€)",
+    "apply": "应用",
+    "findVehicle": "搜索车辆"
+  },
+  "cars": {
+    "featuredVehicles": "精选车辆",
+    "leadingBrands": "全球知名车品牌",
+    "veryGoodPrice": "非常优惠",
+    "withoutVAT": "不含增值税",
+    "loadMore": "加载更多车辆",
+    "failedToLoad": "精选车辆加载失败"
+  },
+  "cta": {
+    "seeHowItWorks": "查看如何运作",
+    "howDoesWork": "Fast4Car 如何运作？",
+    "description": "简单。选择一辆车。我们安排详检。基于此您可决定是否要这辆车。然后我们购买、安排延保、注册并交付。",
+    "checkFirst": "先检验，后决定",
+    "reasonablePrice": "享受合理价格",
+    "standByGuarantee": "我们为您保驾护航！",
+    "chooseCar": "选择车辆",
+    "orderAndPay": "下单并支付",
+    "provideGuarantee": "我们提供保修",
+    "title": "体验 Fast4Car 的运作方式。",
+    "button": "查看车辆"
+  },
+  "cta2": {
+    "wantToCalculate": "想计算您的月供？",
+    "matchLenders": "匹配最多 4 家贷款机构，为您提供无手续费、无义务的最低利率。",
+    "step1Title": "先检验，后决定",
+    "step1Desc1": "在您承诺前，我们安排全面检测并提供详细车辆状况报告。",
+    "step1Desc2": "仅在审阅结果后再决定是否购买。",
+    "step2Title": "我们为您保驾护航！",
+    "step2Desc1": "我们对所售车辆充满信心，但为了您的安心，所有购车均提供 6 个月延保，涵盖发动机、变速器和差速器，并防隐性缺陷。",
+    "step2Desc2": "若不满意，您可在收车后 14 天内退车。",
+    "step3Title": "快速交付",
+    "step3Desc1": "大多数车辆将在确认订单并付款后 20 个工作日内交付。",
+    "step3Desc2": "请注意：交付时间可能因车辆所在地及各国行政要求不同而异。",
+    "of": "/"
+  },
+  "footer": {
+    "discount": "首次购车立享 <span class='text-pink'>10% 折扣</span>",
+    "register": "注册",
+    "subscribeTitle": "订阅后即可即时查看隐藏价格优惠！",
+    "emailPlaceholder": "输入您的邮箱",
+    "subscribe": "订阅",
+    "hours": "工作时间：周一至周六 8:00 - 17:00",
+    "support": "support@Fast4Car.com",
+    "needHelp": "需要帮助？联系我们",
+    "buy": "购买",
+    "howItWorks": "如何运作",
+    "bestDeals": "最佳优惠",
+    "loanCalculator": "贷款计算器",
+    "ourServices": "我们的服务",
+    "carAudit": "车辆检测",
+    "delivery": "交付",
+    "financing": "融资",
+    "fleet": "车队管理方案",
+    "ourPartners": "我们的合作伙伴",
+    "autoScout": "AutoScout",
+    "company": "公司",
+    "aboutUs": "关于我们",
+    "helpCenter": "帮助中心",
+    "terms": "服务条款",
+    "followUs": "关注我们",
+    "global": "全球",
+    "branches": "分支机构",
+    "destinations": "目的地",
+    "collaboration": "合作",
+    "years": "年",
+    "experience": "经验",
+    "happy": "开心",
+    "customers": "客户",
+    "copyright": "© {{year}} Fast4car AG：使用条款，Cookie 政策，隐私政策，Cookie 管理"
+  },
+  "calculator": {
+    "financingSpecifications": "融资规格",
+    "enterDesiredLoanAmount": "输入所需贷款金额",
+    "avoidIncreasedFinalPayment": "选择以避免高额尾款",
+    "workflowTitle": "Fast4Car 融资流程",
+    "workflowStep1Title": "选择您的车辆",
+    "workflowStep1Desc": "浏览我们在欧洲超过 100 万辆可靠车源，然后点击\"购买\"开始流程。",
+    "workflowStep2Title": "填写在线表单",
+    "workflowStep2Desc": "点击\"需要融资\"并填写简短申请，我们将处理余下部分。",
+    "workflowStep3Title": "获取贷款方案",
+    "workflowStep3Desc": "我们会将您的申请提交给合作金融机构，并为您带来量身定制的融资方案。",
+    "checkOneOfOurCars": "查看我们的车辆之一",
+    "competitiveLoanOffer": "获取有竞争力的贷款方案。今天申请，享受最优价格和条款。",
+    "regularLoan": "普通贷款",
+    "monthlyInstalment": "月供",
+    "installments": "{{count}} 期付款",
+    "months": "月",
+    "evenInstallments": "等额还款",
+    "upToLoanDuration": "贷款期限最高 {{months}} 月",
+    "sampleCalculationFor": "{{car}} 示例计算",
+    "carPrice": "车辆价格",
+    "downPayment": "首付",
+    "paybackPeriod": "偿还期",
+    "numberOfInstallments": "付款期数",
+    "interestRateAPR": "利率 / 年化利率",
+    "financingThroughFast4Car": "通过 Fast4Car 融资",
+    "favourableFinancingDesc": "我们的优质融资计划使购车触手可及。只需选择您的心仪车型和适合的融资方案。",
+    "averageInterestRate": "平均利率",
+    "approvalTime": "审批时间",
+    "hours": "小时",
+    "bestCarRentDeals": "最佳租车优惠",
+    "save15OrMore": "提前预订并驾驶，即可节省 15% 或更多，截止至 2025 年 4 月 1 日",
+    "findEarly2025Deals": "发现 2025 年初优惠",
+    "faqTitle": "常见问题",
+    "faqSubtitle": "有任何疑问？我们很乐意帮助您。",
+    "contactUs": "联系我们",
+    "submitTicket": "提交工单",
+    "faqQ1": "如何在网站上预订？",
+    "faqA1": "请附上需要更新的文章链接。",
+    "faqQ2": "我旅行需要哪些文件，如何获取？",
+    "faqA2": "请附上需要更新的文章链接。",
+    "faqQ3": "如何在网站上预订？",
+    "faqA3": "请附上需要更新的文章链接。",
+    "faqQ4": "我旅行需要哪些文件，如何获取？",
+    "faqA4": "请附上需要更新的文章链接。",
+    "faqQ5": "如何在网站上预订？",
+    "faqA5": "请附上需要更新的文章链接。",
+    "faqQ6": "我旅行需要哪些文件，如何获取？",
+    "faqA6": "请附上需要更新的文章链接。",
+    "faqQ7": "如何在网站上预订？",
+    "faqA7": "请附上需要更新的文章链接。",
+    "faqQ8": "我旅行需要哪些文件，如何获取？",
+    "faqA8": "请附上需要更新的文章链接。",
+    "faqQ9": "如何在网站上预订？",
+    "faqA9": "请附上需要更新的文章链接。",
+    "faqQ10": "我旅行需要哪些文件，如何获取？",
+    "faqA10": "请附上需要更新的文章链接。",
+    "faqQ11": "如何在网站上预订？",
+    "faqA11": "请附上需要更新的文章链接。",
+    "faqQ12": "我旅行需要哪些文件，如何获取？",
+    "faqA12": "请附上需要更新的文章链接。",
+    "faqQ13": "是否有为回访客人提供合作或奖励计划？",
+    "faqA13": "请附上需要更新的文章链接。",
+    "years_one": "{{count}} 年",
+    "years_other": "{{count}} 年"
+  },
+  "about": {
+    "headerTitle": "关于我们",
+    "headerSubtitle": "获取最新新闻、更新与建议",
+    "breadcrumbHome": "首页",
+    "breadcrumbAbout": "关于我们",
+    "futureOfCarRental1": "未来",
+    "futureOfCarRental2": "租车",
+    "futureOfCarRental3": "已到来",
+    "introParagraph": "欢迎来到 Fast4Car，您可靠的租车伙伴。自成立以来，我们致力于为客户提供顺畅、可靠的租车体验。不管您是出差、家庭度假，还是需要日常用车，我们都提供宽泛的车系以满足您的需求。",
+    "industryExperts": "行业专家",
+    "yearsInBusiness": "经营年数",
+    "global": "全球",
+    "branches": "分支机构",
+    "destinations": "目的地",
+    "collaboration": "合作",
+    "years": "年",
+    "experience": "经验",
+    "happy": "开心",
+    "customers": "客户",
+    "user": "用户",
+    "account": "账户",
+    "ourMission": "我们的使命",
+    "sellYourCar": "以公平价格出售您的车辆。今天就开始吧。",
+    "missionParagraph": "我们的使命是让租车变得简单、便利且负担得起。我们相信租车应当无负担，我们承诺确保每位客户都能找到适合其行程的车辆。",
+    "flexibleRentalOptions": "探索一系列灵活租赁选项以满足您的需求",
+    "insuranceCoverage": "全面保险覆盖，为您提供完全安心",
+    "customerSupport": "24/7 客户支持，随时随地为您服务",
+    "getStartedNow": "现在开始",
+    "ourCommitment": "我们的承诺",
+    "clearPricingSupport": "Fast4Car 提供透明定价与全天候优质支持。",
+    "commitmentParagraph": "我们承诺提供无隐藏费用的透明定价、全面保险选择以保障您，以及全天候客户支持随时协助。您的满意是我们的首要任务。",
+    "ourSupport": "我们的支持",
+    "faqTitle": "常见问题",
+    "faqAnswer": "提供用户如何浏览并预订旅游服务的逐步指南。包含目的地搜索、日期选择、住宿选择与完成预订过程。突出任何可帮助用户找到最佳优惠的特色或工具。",
+    "contactUs": "联系我们",
+    "helpCenter": "帮助中心",
+    "upcomingCarsEvents": "即将到来的车辆与活动",
+    "stayAhead": "掌握最新车辆与活动资讯",
+    "news": "新闻",
+    "trend": "趋势",
+    "discovery": "探索",
+    "keepReading": "继续阅读",
+    "testimonials": "客户反馈",
+    "whatTheySay": "他们怎么说？",
+    "noHiddenFees": "无隐藏费用",
+    "noHiddenFeesDesc": "预订流程的细节周全，让我们的旅程无压力，我们专注于创造难忘回忆。",
+    "mobileFriendly": "移动端友好且流畅！",
+    "mobileFriendlyDesc": "通过此出色平台轻松协调酒店与设施，帮助我们实现了假期梦想。",
+    "excellentCustomerService": "卓越客户服务",
+    "excellentCustomerServiceDesc": "整个过程高效愉快，直观设计与友好界面让每一步都变得愉悦。",
+    "highlyFlexible": "极具灵活性与可定制性",
+    "highlyFlexibleDesc": "预订流程周全，让我们的旅行无压力，我们专注于打造长期记忆。"
+  },
+  "financing": {
+    "downPaymentPercent": "首付比例 (%)",
+    "lastPayment": "尾款"
+  },
+  "howItWorks": {
+    "hero": {
+      "title": "Fast4Car 如何运作？",
+      "description": "简单。选择车辆。我们安排详检。基于此您可决定是否购买。然后我们购买、安排延保、注册并交付。",
+      "cta": "我想了解更多"
+    },
+    "video": {
+      "playButton": "播放视频"
+    },
+    "step1": {
+      "title": "选择车辆",
+      "description": "我们每天处理超过 700 万条广告，但只推荐其中 10% 供购车参考。其余车辆通常不符合我们的标准。"
+    },
+    "step2": {
+      "title": "我们检验车辆",
+      "description": "我们自己不囤车，因此必须对其进行彻底检查。我们熟知每款车型的细节与重点关注点。"
+    },
+    "step3": {
+      "title": "下单并支付",
+      "description": "您可以选择全款或通过 Fast4Car 融资支付。我们与多家可靠银行达成优质融资方案。"
+    },
+    "step4": {
+      "title": "我们提供保修",
+      "description": "在 Fast4Car 购车无需担心风险。我们自豪于透明度和优质车况。"
+    },
+    "step5": {
+      "title": "我们购买车辆",
+      "description": "我们购买车辆并注销其原产国注册。每个国家的法规不同。"
+    },
+    "step6": {
+      "title": "我们交付",
+      "description": "无论是直接配送到您家，还是您去提车点取车，由您决定。"
+    },
+    "guarantee1": {
+      "title": "全面保修",
+      "description": "每辆车都配备我们的优质保修套餐，涵盖关键机械部件，让您高枕无忧。"
+    },
+    "guarantee2": {
+      "title": "质量认证",
+      "description": "每辆车由认证技师进行 150 点严格检测，确保一流品质与可靠性。"
+    },
+    "guarantee3": {
+      "title": "安全交易",
+      "description": "您的购买受到我们安全支付系统保护，并通过透明流程完成验证。"
+    },
+    "navigation": {
+      "previous": "上一步",
+      "next": "下一步"
+    },
+    "cta": {
+      "title": "体验 Fast4Car 如何运作。",
+      "description": "现在只需选择您的下一个爱车。我们将很高兴为您服务。",
+      "button": "查看车辆"
+    }
+  },
+  "reviews": {
+    "title": "Trustpilot 评论",
+    "subtitle": "阅读客户在 Trustpilot 上的评价。",
+    "reviewCount": "27K 评论",
+    "reviewButton": "在 Trustpilot 上评价我们",
+    "postedOn": "发表于",
+    "trustpilot": "Trustpilot",
+    "review1": {
+      "text": "与 Anand 合作非常愉快，他很专业并处理周到。"
+    },
+    "review2": {
+      "text": "喜欢 Alex 带我们进行 Scrum 之旅，并花时间与我们分享经验。"
+    },
+    "review3": {
+      "text": "Lorenz 是一位出色的导师，给了我们很多实际案例和真实故事。"
+    }
+  }
+}

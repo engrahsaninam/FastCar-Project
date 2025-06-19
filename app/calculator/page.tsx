@@ -7,8 +7,10 @@ import { Box, Heading, Text, useColorModeValue } from "@chakra-ui/react"
 import Link from "next/link"
 import { useState } from 'react'
 import FinancingWorkflow from "@/components/calculator/FinancingWorkflow"
+import { useTranslation } from 'react-i18next'
 
 export default function Calculator() {
+	const { t } = useTranslation();
 	const [isAccordion, setIsAccordion] = useState(1)
 	const textColor = useColorModeValue("gray.900", "gray.100");
 	const handleAccordion = (key: any) => {
@@ -59,7 +61,7 @@ export default function Calculator() {
 										fontFamily='satoshi'
 										marginTop={['20px', '0px', '0px']}
 									>
-										Financing through Fast4Car
+										{t('calculator.financingThroughFast4Car')}
 									</Heading>
 									<Text
 										fontSize={{ base: "lg", md: "xl" }}
@@ -67,8 +69,8 @@ export default function Calculator() {
 										mb={8}
 										p={6}
 										lineHeight="1.6"
-									>										Our favourable financing makes car purchase affordable for anyone. Just choose your<br />
-										favourite car and a financing plan to suit your needs.
+									>
+										{t('calculator.favourableFinancingDesc')}
 									</Text>
 								</Box>
 								<div className="row align-items-start justify-content-between">
@@ -90,13 +92,13 @@ export default function Calculator() {
 											{/* Info section below car image */}
 											<Box mt={['20px', '0px', '200px']} mb={4} display="flex" flexDirection={{ base: 'row', md: 'row' }} justifyContent="center" alignItems={{ base: 'center', md: 'center' }} gap={{ base: 6, md: 16 }}>
 												<Box textAlign={{ base: 'center', md: 'center' }}>
-													<Text fontSize="sm" color={textColor} mt={1}>Average Interest rate</Text>
+													<Text fontSize="sm" color={textColor} mt={1}>{t('calculator.averageInterestRate')}</Text>
 
 													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">8.99 %</Text>
 												</Box>
 												<Box textAlign={{ base: 'center', md: 'center' }}>
-													<Text fontSize="sm" color={textColor} mt={1}>Approval time</Text>
-													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">24 hours</Text>
+													<Text fontSize="sm" color={textColor} mt={1}>{t('calculator.approvalTime')}</Text>
+													<Text fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }} fontWeight="bold" color="red">24 {t('calculator.hours')}</Text>
 
 												</Box>
 											</Box>
@@ -154,13 +156,12 @@ export default function Calculator() {
 						<div className="container pt-110 pb-110 position-relative z-1">
 							<div className="row justify-content-center">
 								<div className="col-auto text-center wow fadeInUp justify-content-center d-flex flex-column align-items-center">
-									<h2 className="text-white">Best Car Rent Deals</h2>
+									<h2 className="text-white">{t('calculator.bestCarRentDeals')}</h2>
 									<h6 className="text-white">
-										Save 15% or more when you book and ride <br />
-										before 1 April 2025
+										{t('calculator.save15OrMore')}
 									</h6>
 									<Link className="btn btn-primary rounded-pill btn-lg mt-20" href="#">
-										Find Early 2025 Deals
+										{t('calculator.findEarly2025Deals')}
 										<svg xmlns="http://www.w3.org/2000/svg" width={25} height={24} viewBox="0 0 25 24" fill="none">
 											<path d="M12.5 19L19.5 12L12.5 5M19.5 12L5.5 12" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 										</svg>
@@ -174,8 +175,8 @@ export default function Calculator() {
 					<section className="section-faqs-2 pt-80 pb-80 border-bottom background-body position-relative">
 						<div className="container position-relative z-2">
 							<div className="text-center mb-40 ">
-								<h3 className="my-3 neutral-1000 text-start">Frequently Asked Questions</h3>
-								<p className="text-xl-medium neutral-500 d-none">Any questions? We would be happy to help you.</p>
+								<h3 className="my-3 neutral-1000 text-start">{t('calculator.faqTitle')}</h3>
+								<p className="text-xl-medium neutral-500 d-none">{t('calculator.faqSubtitle')}</p>
 							</div>
 							<div className="row">
 								<div className="col-lg-6">
@@ -183,7 +184,7 @@ export default function Calculator() {
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(1)} >
-													<p className="text-lg-bold neutral-1000 pe-4">How do I make a reservation on your website?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ1')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -192,13 +193,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse01" className={`collapse ${isAccordion == 1 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA1')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(2)} >
-													<p className="text-lg-bold neutral-1000 pe-4">What documents do I need for my trip, and how do I obtain them?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ2')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -207,13 +208,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse02" className={`collapse ${isAccordion == 2 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA2')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(3)} >
-													<p className="text-lg-bold neutral-1000 pe-4">In the event that I need to modify or cancel my reservation, what are the policies in place?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ3')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -222,13 +223,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse03" className={`collapse ${isAccordion == 3 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA3')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(4)} >
-													<p className="text-lg-bold neutral-1000 pe-4">Can you specify the types of credit/debit cards, digital wallets, or other online payment methods accepted?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ4')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -237,13 +238,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse04" className={`collapse ${isAccordion == 4 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA4')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(5)} >
-													<p className="text-lg-bold neutral-1000 pe-4">What payment methods do you accept?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ5')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -252,13 +253,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse05" className={`collapse ${isAccordion == 5 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA5')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(6)} >
-													<p className="text-lg-bold neutral-1000 pe-4">Can I modify or cancel my reservation?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ6')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -267,13 +268,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse6" className={`collapse ${isAccordion == 6 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA6')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(7)} >
-													<p className="text-lg-bold neutral-1000 pe-4">Do you offer discounts for group bookings?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ7')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -282,7 +283,7 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapse7" className={`collapse ${isAccordion == 7 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA7')}</p>
 											</div>
 										</div>
 									</div>
@@ -292,7 +293,7 @@ export default function Calculator() {
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(8)} >
-													<p className="text-lg-bold neutral-1000 pe-4">How do I search for hotels on your website?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ8')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -301,13 +302,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseSevent" className={`collapse ${isAccordion == 8 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA8')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(9)} >
-													<p className="text-lg-bold neutral-1000 pe-4">In the event that I need to modify or cancel my reservation, what are the policies in place?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ9')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -316,13 +317,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseEight" className={`collapse ${isAccordion == 9 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA9')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(10)} >
-													<p className="text-lg-bold neutral-1000 pe-4">Is breakfast included in the room rate?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ10')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -331,13 +332,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseNine" className={`collapse ${isAccordion == 10 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA10')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(11)} >
-													<p className="text-lg-bold neutral-1000 pe-4">Are pets allowed in the hotels?</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ11')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -346,16 +347,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseTen" className={`collapse ${isAccordion == 11 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA11')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(12)} >
-													<p className="text-lg-bold neutral-1000 pe-4">
-														How do I contact customer support if I have a question or <br />
-														issue?
-													</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ12')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -364,16 +362,13 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseEleven" className={`collapse ${isAccordion == 12 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA12')}</p>
 											</div>
 										</div>
 										<div className="mb-2 card border">
 											<div className="px-0 card-header border-0 bg-gradient-1 background-card">
 												<a className="collapsed px-3 py-2 text-900 fw-bold d-flex align-items-center" onClick={() => handleAccordion(13)} >
-													<p className="text-lg-bold neutral-1000 pe-4">
-														Are there any loyalty programs or rewards for frequent <br />
-														guests?
-													</p>
+													<p className="text-lg-bold neutral-1000 pe-4">{t('calculator.faqQ13')}</p>
 													<span className="ms-auto arrow me-2">
 														<svg className="invert" xmlns="http://www.w3.org/2000/svg" width={13} height={8} viewBox="0 0 13 8" fill="none">
 															<path className="stroke-dark" d="M11.5 1L6.25 6.5L1 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -382,7 +377,7 @@ export default function Calculator() {
 												</a>
 											</div>
 											<div id="collapseTwelve" className={`collapse ${isAccordion == 13 ? 'show' : ''} `} data-bs-parent=".accordion">
-												<p className="pt-0 pb-4 card-body background-body">Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.</p>
+												<p className="pt-0 pb-4 card-body background-body">{t('calculator.faqA13')}</p>
 											</div>
 										</div>
 									</div>
@@ -392,13 +387,13 @@ export default function Calculator() {
 								<div className="col-12 wow fadeInUp mt-4">
 									<div className="d-flex justify-content-center gap-2">
 										<Link className="btn btn-gray2" href="#">
-											Contact Us
+											{t('calculator.contactUs')}
 											<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 												<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
 										</Link>
 										<Link className="btn btn-primary rounded-3" href="#">
-											Submit a Ticket
+											{t('calculator.submitTicket')}
 											<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 												<path d="M8 15L15 8L8 1M15 8L1 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>

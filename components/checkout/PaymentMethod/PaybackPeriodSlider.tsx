@@ -11,12 +11,17 @@ import {
     useColorModeValue
 } from '@chakra-ui/react';
 import { PaybackPeriodSliderProps } from '../types/financing';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/app/i18/useLanguage';
 
 const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
     paybackPeriod,
     onPeriodChange,
     selectedOption
 }) => {
+
+    const { t } = useTranslation();
+
     // Define the periods based on the selected financing option (in months)
     const periods = selectedOption === 'low-installment'
         ? [12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
@@ -39,7 +44,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
     // Convert months to years with decimal
     const getYearsDisplay = (months: number) => {
         const years = months / 12;
-        return years === 1 ? "1 year" : `${years} years`;
+        return t('calculator.years', { count: years });
     };
 
     // Handle slider change
@@ -60,7 +65,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
         <Box mt={8} px="20px">
             <Flex justify="space-between" align="center" mb={4}>
                 <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="medium" color={textColor}>
-                    Payback period
+                    {t('calculator.paybackPeriod')}
                 </Text>
                 <Text fontWeight="bold" color={textColor}>
                     {getYearsDisplay(paybackPeriod)}
@@ -71,7 +76,7 @@ const PaybackPeriodSlider: React.FC<PaybackPeriodSliderProps> = ({
                     value={sliderValue}
                     onChange={handleSliderChange}
                     min={0}
-                    
+
                     max={100}
                     step={100 / (periods.length - 1)}
                     aria-label="payback-period-slider"

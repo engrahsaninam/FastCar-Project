@@ -17,22 +17,25 @@ import {
 	Bell,
 	LucideIcon as LucideIconType
 } from 'lucide-react';
-import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack, Wrap, WrapItem, Spinner, Alert, AlertIcon } from "@chakra-ui/react";
+import { useBestDeals } from "@/services/cars/useCars";
+import { useTranslation as useAzureTranslation } from '@/services/translation/useTranslation';
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 
 // Car interface
 interface Car {
-	id: number;
-	image: string;
-	rating: string;
-	reviews: string;
-	title: string;
-	location: string;
+	id: string;
+	image: string[];
+	make: string;
+	model: string;
+	country: string;
 	power: string;
-	date: string;
+	year: string;
 	mileage: string;
-	fuelType: string;
+	fuel: string;
 	link: string;
-	transmission: string;
+	gear: string;
 	price: string;
 }
 
@@ -47,14 +50,42 @@ const CarCard = ({ car }: { car: Car }) => {
 	const cardBorderColor = useColorModeValue("gray.100", "#333333");
 	const priceColor = useColorModeValue("black", "white");
 
+	const { t } = useTranslation();
+	const { translate, isLoading } = useAzureTranslation({
+		apiKey: process.env.NEXT_PUBLIC_AZURE_TRANSLATOR_API_KEY!,
+		defaultTargetLanguage: 'en' // or get from user preferences
+	});
+
+	const [translatedModel, setTranslatedModel] = useState(car.model);
+	const [translatedCountry, setTranslatedCountry] = useState(car.country);
+
+	useEffect(() => {
+		const translateContent = async () => {
+			try {
+				const [translatedModelResult, translatedCountryResult] = await translate(
+					[car.model, car.country]
+				);
+				setTranslatedModel(translatedModelResult);
+				setTranslatedCountry(translatedCountryResult);
+			} catch (err) {
+				console.error('Translation failed:', err);
+			}
+		};
+
+		if (process.env.NEXT_PUBLIC_AZURE_TRANSLATOR_API_KEY) {
+			translateContent();
+		}
+	}, [car.model, car.country, translate]);
+
 	const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
 		return <Box as={Icon} {...props} />;
 	};
+
 	return (
 		<div className="card-journey-small background-card hover-up">
 			<div className="card-image">
 				<Link href={car.link}>
-					<img src={car.image} alt="Fast4Car" />
+					<img src={car.image[0]} alt="Fast4Car" />
 				</Link>
 			</div>
 			<div className="card-info">
@@ -68,13 +99,15 @@ const CarCard = ({ car }: { car: Car }) => {
 				</div> */}
 				<div className="card-title ">
 					<Link className="heading-6 neutral-1000" href={car.link}>
-						{car.title}
+						{car.make} {isLoading ? <Spinner size="sm" /> : translatedModel}
 					</Link>
 				</div>
 				<div className="card-program">
 					<div className="card-location">
 						<LucideIcon icon={MapPin} boxSize="4" color={textColor} />
-						<p className="text-md-medium ">{car.location}</p>
+						<p className="text-md-medium ">
+							{isLoading ? <Spinner size="sm" /> : translatedCountry}
+						</p>
 					</div>
 					{/* Specs Row - inline with minimal spacing */}
 					<Box mb={["2", "2", "1"]} ml="1">
@@ -85,7 +118,7 @@ const CarCard = ({ car }: { car: Car }) => {
 							</HStack>
 							<HStack spacing="1">
 								<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor}>{car.date}</Text>
+								<Text fontSize="sm" color={textColor}>{car.year}</Text>
 							</HStack>
 							<HStack spacing="1">
 								<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
@@ -93,11 +126,11 @@ const CarCard = ({ car }: { car: Car }) => {
 							</HStack>
 							<HStack spacing="1">
 								<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.transmission}</Text>
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
 							</HStack>
 							<HStack spacing="1">
 								<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuelType}</Text>
+								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
 							</HStack>
 						</SimpleGrid>
 					</Box>
@@ -118,17 +151,17 @@ const CarCard = ({ car }: { car: Car }) => {
 										<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 									))}
 									<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-										Very Good Price
+										{t('cars.veryGoodPrice')}
 									</Text>
 								</HStack>
-								
+
 							</VStack>
 							<Box borderRadius="md" textAlign="right" mt={["2", "1", "3"]}>
 								<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
 									€ {car.price.toLocaleString()}
 								</Text>
 								<Text fontSize="xs" color={textColor}>
-									€ {car.price.toLocaleString()} without VAT
+									€ {car.price.toLocaleString()} {t('cars.withoutVAT')}
 								</Text>
 							</Box>
 						</Flex>
@@ -141,111 +174,40 @@ const CarCard = ({ car }: { car: Car }) => {
 	);
 };
 
-// Car data array
-const carsData = [
-	{
-		id: 1,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-1.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Audi A3 1.6 TDI S line",
-		location: "Manchester, England",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	},
-	{
-		id: 2,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-2.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Volvo S60 D4 R-Design",
-		location: "New South Wales, Australia",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	},
-	{
-		id: 3,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-3.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Mercedes-Benz C220d",
-		location: "Manchester, England",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	},
-	{
-		id: 4,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-4.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Jaguar XE 2.0d R-Sport",
-		location: "Manchester, England",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	},
-	{
-		id: 5,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-5.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Volkswagen Golf GTD 2.0 TDI",
-		location: "Manchester, England",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	},
-	{
-		id: 6,
-		image: "/assets/imgs/cars-listing/cars-listing-1/car-6.png",
-		rating: "4.96",
-		reviews: "672",
-		title: "Lexus IS 300h F Sport",
-		location: "Manchester, England",
-		power: "100 kW (136 hp)",
-		date: "9/2021",
-		mileage: "18,496 km",
-		transmission: "Automatic",
-		fuelType: "Petrol",
-		price: "498.25",
-		link: "/car"
-	}
-];
-
 export default function CarsListing1() {
+	const { data: cars, isLoading, error } = useBestDeals({
+		limit: "6",
+		page: "1"
+	});
+	const { t } = useTranslation();
+
+	if (isLoading) {
+		return (
+			<Box display="flex" justifyContent="center" alignItems="center" minH="400px">
+				<Spinner size="xl" />
+			</Box>
+		);
+	}
+
+	if (error) {
+		return (
+			<Alert status="error">
+				<AlertIcon />
+				{t('cars.failedToLoad')}
+			</Alert>
+		);
+	}
+
 	return (
 		<>
 			<section className="section-box box-flights background-body">
 				<div className="container">
 					<div className="row align-items-end">
 						<div className="col-md-9 wow fadeInUp">
-							<h3 className="title-svg neutral-1000 mb-5">Featured Vehicles</h3>
-							<p className="text-lg-medium text-bold neutral-500">The world's leading car brands</p>
+							<h3 className="title-svg neutral-1000 mb-5">{t('cars.featuredVehicles')}</h3>
+							<p className="text-lg-medium text-bold neutral-500">{t('cars.leadingBrands')}</p>
 						</div>
-						<div className="col-md-3 position-relative mb-30 wow fadeInUp">
+						{/* <div className="col-md-3 position-relative mb-30 wow fadeInUp">
 							<div className="box-button-slider box-button-slider-team justify-content-end d-flex">
 								<div className="swiper-button-prev swiper-button-prev-style-1 swiper-button-prev-2 d-flex justify-content-center align-items-center">
 									<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
@@ -258,16 +220,16 @@ export default function CarsListing1() {
 									</svg>
 								</div>
 							</div>
-						</div>
+						</div> */}
 					</div>
 					<div className="block-flights wow fadeInUp">
 						<div className="box-swiper mt-30">
 							<Swiper {...swiperGroup3} className="swiper-container swiper-group-3 swiper-group-journey">
 								<div className="swiper-wrapper">
 									{/* Group cars into pairs for SwiperSlides */}
-									{Array.from({ length: Math.ceil(carsData.length / 2) }, (_, index) => (
+									{Array.from({ length: Math.ceil((cars?.length || 0) / 2) }, (_, index) => (
 										<SwiperSlide key={index}>
-											{carsData.slice(index * 2, index * 2 + 2).map((car) => (
+											{cars?.slice(index * 2, index * 2 + 2).map((car: Car) => (
 												<CarCard key={car.id} car={car} />
 											))}
 										</SwiperSlide>
@@ -289,7 +251,7 @@ export default function CarsListing1() {
 									</clipPath>
 								</defs>
 							</svg>
-							Load More Cars
+							{t('cars.loadMore')}
 						</Link>
 					</div>
 				</div>

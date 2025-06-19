@@ -1,29 +1,28 @@
 import React from 'react';
 import { Box, Text, Container, Heading, SimpleGrid, Image, Flex, useColorModeValue } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 const FinancingWorkflow = () => {
+    const { t } = useTranslation();
     const textColor = useColorModeValue("gray.900", "gray.100");
     const bgColor = useColorModeValue("gray.50", "gray.900");
     const steps = [
         {
             number: "01.",
-            title: "Select your car",
-            description:
-                "Browse our extensive selection of over 1,000,000 verified vehicles across Europe, then click the “Buy” button to get started.",
+            title: t('calculator.workflowStep1Title'),
+            description: t('calculator.workflowStep1Desc'),
             image: "/f-w-1.jpg",
         },
         {
             number: "02.",
-            title: "Complete the online form",
-            description:
-                "Click the “I'm interested in financing” option and fill out the short application. We'll handle the rest from there.",
+            title: t('calculator.workflowStep2Title'),
+            description: t('calculator.workflowStep2Desc'),
             image: "/f-w-2.jpg",
         },
         {
             number: "03.",
-            title: "Receive your financing quote",
-            description:
-                "We’ll forward your application to our lending partners and get back to you with personalized financing options.",
+            title: t('calculator.workflowStep3Title'),
+            description: t('calculator.workflowStep3Desc'),
             image: "/f-w-3.jpg",
         },
     ];
@@ -40,7 +39,7 @@ const FinancingWorkflow = () => {
                         color={textColor}
                         mb={4}
                     >
-                        How does Fast4Car financing work?
+                        {t('calculator.workflowTitle')}
                     </Heading>
                 </Box>
 

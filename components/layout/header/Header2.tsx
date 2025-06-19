@@ -9,18 +9,22 @@ import { Link as ChakraLink, Text, Flex, HStack, useColorModeValue, useToken, Me
 import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useState, useRef } from 'react'
-import { ShoppingCart, User, Heart } from 'lucide-react'
+import { ShoppingCart, User, Heart, LogOut } from 'lucide-react'
 import { ChevronDown } from 'lucide-react'
 import { MenuItemLink } from './Header1';
 import { useOutsideClick } from '@chakra-ui/react';
 import { UserAvatar } from '@/components/UserAvatar'
 import { useAuth } from '@/context/AuthContext'
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/app/i18/useLanguage';
 
 export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handleOffcanvas, isOffcanvas }: any) {
 	const pathname = usePathname();
 	const isMainPage = pathname === '/';
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const dropdownRef = useRef(null);
+	const { t, i18n } = useTranslation();
+	const { currentLanguage, changeLanguage } = useLanguage();
 
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [showSignupModal, setShowSignupModal] = useState(false);
@@ -47,203 +51,205 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 		},
 	});
 	const router = useRouter()
-	const {user}=useAuth()
+	const { user } = useAuth()
+
+	const handleLogout = () => {
+		// Implement the logout logic here
+		console.log('Logging out');
+	};
+
 	return (
 		<>
 			<div style={{ backgroundColor: resolvedBgColor }}>
 				<header style={{ backgroundColor: resolvedBgColor }} className={`header sticky-bar ${isMainPage ? 'header-home-2' : ''} ${scroll ? 'stick' : ''}`}>
 					<div className="container-fluid">
 						<div className="main-header">
-							<div className="header-left">
-								<div className="header-logo" style={{ display: 'none' }}>
-									<Link className="d-flex" href="/">
-										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-									</Link>
-								</div>
-								<Box className="header-logo" display={{ base: 'block', md: 'block' }}>
-									<Link className="d-flex" href="/">
-										<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
-										<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
-									</Link>
-								</Box>
-								<div className="header-nav">
-									<nav className="nav-main-menu">
-										<ul className="main-menu">
+							<Flex className="header-left" align="center" justify="space-between" w="full" flexWrap="nowrap">
+								<Flex align="center" flex="1" minW="0">
+									<div className="header-logo" style={{ display: 'none' }}>
+										<Link className="d-flex" href="/">
+											<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+											<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+										</Link>
+									</div>
+									<Box className="header-logo" display={{ base: 'block', md: 'block' }} flexShrink={0}>
+										<Link className="d-flex" href="/">
+											<img className="light-mode" alt="Fast4Car" src="/assets/imgs/template/logo-d.svg" />
+											<img className="dark-mode" alt="Fast4Car" src="/assets/imgs/template/logo-w.svg" />
+										</Link>
+									</Box>
+									<Box className="header-nav" flex="1" minW="0" ml={4}>
+										<nav className="nav-main-menu">
+											<Flex as="ul" className="main-menu" listStyleType="none" m={0} p={0} gap={6} flexWrap="nowrap" overflow="hidden">
+												<Box as="li" flexShrink={0}>
+													<ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color="white" whiteSpace="nowrap">
+														{t('common.buy')}
+													</ChakraLink>
+												</Box>
+												<Box as="li" flexShrink={0}>
+													<ChakraLink
+														as={Link}
+														href="/deals"
+														fontSize="md"
+														fontWeight="medium"
+														color="white"
+														whiteSpace="nowrap"
+														_hover={{ color: textColorHover, textDecoration: 'none' }}
+													>
+														{t('common.dailyDeals')}
+													</ChakraLink>
+												</Box>
+												<Box as="li" flexShrink={0}>
+													<ChakraLink
+														as={Link}
+														href="/how-it-works"
+														fontSize="md"
+														fontWeight="medium"
+														color="white"
+														whiteSpace="nowrap"
+														_hover={{ color: textColorHover, textDecoration: 'none' }}
+													>
+														{t('common.howItWorks')}
+													</ChakraLink>
+												</Box>
+												<Box as="li" flexShrink={0}>
+													<ChakraLink
+														as={Link}
+														href="/reviews"
+														fontSize="md"
+														fontWeight="medium"
+														color="white"
+														whiteSpace="nowrap"
+														_hover={{ color: textColorHover, textDecoration: 'none' }}
+													>
+														{t('common.reviews')}
+													</ChakraLink>
+												</Box>
+												<Box as="li" flexShrink={0}>
+													<ChakraLink
+														as={Link}
+														href="/calculator"
+														fontSize="md"
+														fontWeight="medium"
+														color="white"
+														whiteSpace="nowrap"
+														_hover={{ color: textColorHover, textDecoration: 'none' }}
+													>
+														{t('common.loanCalculator')}
+													</ChakraLink>
+												</Box>
+											</Flex>
+										</nav>
+									</Box>
+								</Flex>
 
-											<li><ChakraLink as={Link} href="/cars" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Buy</ChakraLink></li>
-											<li><ChakraLink as={Link} href="/deals" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Daily Deals</ChakraLink></li>
-											<li><ChakraLink as={Link} href="/how-it-works" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>How it Works</ChakraLink></li>
-											<li><ChakraLink as={Link} href="/reviews" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Reviews</ChakraLink></li>
-											<li><ChakraLink as={Link} href="/calculator" fontSize="md" fontWeight="medium" color={textColor} _hover={{ color: textColorHover, textDecoration: 'none' }}>Loan Calculator</ChakraLink></li>
-										</ul>
-									</nav>
-								</div>
-								<div className="header-left">
-									<div className="header-left " style={{ marginRight: '20px' }}>
-										<Box display={{ base: "none", xl: "flex" }} px={3} pb={1} borderColor={borderColor} alignItems="center" whiteSpace='nowrap'>
-											<Menu>
-												<MenuButton
-													as={Text}
-													fontSize={["10px", "16px"]}
-													fontWeight="medium"
-													color={textColor}
-													_hover={{ color: textColorHover }}
-													cursor="pointer"
-													display="flex"
-													alignItems="center"
-												>
-													EN <ChevronDownIcon ml={1} />
-												</MenuButton>
-												<MenuList>
-													<MenuItem as={Link} href="#">English</MenuItem>
-													<MenuItem as={Link} href="#">French</MenuItem>
-													<MenuItem as={Link} href="#">Chinese</MenuItem>
-												</MenuList>
-											</Menu>
-										</Box>
-
-
-										{/* Sign In */}
-										<Box position="relative">
-											<Button
-												onClick={isOpen ? onClose : onOpen}
+								<div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+									{/* Language Selector */}
+									<Box display={{ base: 'none', xl: 'flex' }} alignItems="center">
+										<Menu>
+											<MenuButton
+												as={Button}
 												variant="ghost"
-												px={2}
-												top="10px"
-												marginRight={[10, 0, 0]}
-
-												rightIcon={<ChevronDown size={16} />}
-												leftIcon={<User size={20} />}
-												_hover={{ color: textColorHover }}
-												color={textColor}
+												fontSize="sm"
 												fontWeight="medium"
+												color={textColor}
+												_hover={{ color: textColorHover }}
+												cursor="pointer"
+												display="flex"
+												alignItems="center"
+												h="40px"
 											>
+												{i18n.language === 'en' ? 'En' : i18n.language === 'fr' ? 'Fr' : 'Ch'} <ChevronDownIcon ml={1} />
+											</MenuButton>
+											<MenuList>
+												<MenuItem onClick={() => changeLanguage('en')}>English</MenuItem>
+												<MenuItem onClick={() => changeLanguage('fr')}>Français</MenuItem>
+												<MenuItem onClick={() => changeLanguage('ch')}>Chinese</MenuItem>
+											</MenuList>
+										</Menu>
+									</Box>
 
-											</Button>
+									{/* Login Dropdown */}
+									<Box position="relative">
+										<Button
+											onClick={isOpen ? onClose : onOpen}
+											variant="ghost"
+											rightIcon={<ChevronDown size={16} />}
+											leftIcon={<User size={20} />}
+											_hover={{ color: textColorHover }}
+											color={textColor}
+											fontWeight="medium"
+											h="40px"
+										/>
 
-											{isOpen && (
-												<Box
-													ref={dropdownRef}
-													position="absolute"
-													top="100%"
-													mt={2}
-													// left={-50}
-													right={-10}
-													bg={bgColor}
-													border="1px solid"
-													borderColor={borderColor}
-													borderRadius="md"
-													boxShadow="md"
-													zIndex={100}
-													width="300px"
-												>
-													{user && (
-														<HStack w="full" mb={2} spacing={3} padding={2}>
+										{isOpen && (
+											<Box
+												position="absolute"
+												zIndex={2}
+												top="100%"
+												mt={2}
+												right={0}
+												bg={bgColor}
+												borderRadius="lg"
+												boxShadow="lg"
+												border="1px solid"
+												borderColor={borderColor}
+												width="280px"
+												overflow="hidden"
+											>
+												{user ? (
+													<>
+														<HStack w="full" p={3} spacing={3}>
 															<UserAvatar size="sm" />
-															<VStack align="start" spacing={0}>
-																<HStack w="full" mb={2} spacing={3} display='flex' justifyContent='space-between'>
-																	<Text fontWeight="bold" fontSize="md">{user.username}</Text>
-																	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg>
-																</HStack>
-
-
-																<Text color="gray.500" fontSize="xs" noOfLines={1}>{user.email}</Text>
+															<VStack align="start" spacing={0} flex={1}>
+																<Text fontWeight="bold" fontSize="md" isTruncated maxW="200px">
+																	{user.username}
+																</Text>
 															</VStack>
-														</HStack>
-													)}
-													<VStack align="start" spacing={0} p={4}>
-														{/* <MenuItemLink label="Saved searches" Icon={Bookmark} />
-											<MenuItemLink label="Last searches" Icon={Clock} /> */}
-														<MenuItemLink label="Favorite cars" Icon={Heart} href="/favourite-cars" />
-														<MenuItemLink label="Orders in progress" Icon={ShoppingCart} href="/order-in-progress" />
-													</VStack>
-													<HStack justify="center" align="center" p={0} m={0} spacing={1}>
-														<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0}>
-															<Menu>
-																<MenuButton
-																	as={Text}
-																	fontSize="16px"
-																	fontWeight="medium"
-																	color={textColor}
-																	_hover={{ color: textColorHover }}
-																	cursor="pointer"
-																	display="flex"
-																	alignItems="center"
-																>
-																	EN <ChevronDownIcon />
-																</MenuButton>
-																<MenuList>
-																	<MenuItem as="a">English</MenuItem>
-																	<MenuItem as="a">French</MenuItem>
-																	<MenuItem as="a">Chinese</MenuItem>
-																</MenuList>
-															</Menu>
-														</Box>
-														<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0} ml={1}>
-															<Box className="top-button-mode">
-																<ThemeSwitch />
+															<Box cursor="pointer" onClick={handleLogout}>
+																<LogOut size={20} />
 															</Box>
-														</Box>
-													</HStack>
-
-													<Divider />
-
-													<Box p={4}>
-														<Link href="/login">
-
+														</HStack>
+													</>
+												) : (
+													<VStack p={3} spacing={2}>
+														<Link href="/login" style={{ width: '100%' }}>
 															<Button
-																onClick={() => {
-																	onClose();
-																	router.push('/login');
-																	setShowLoginModal(true);
-																}}
-																bg="red.500"
-																_hover={{ bg: 'red.600' }}
-																color="white"
+																colorScheme="blue"
 																width="full"
-																// leftIcon={<UserAvatar size="sm" />}
-																fontSize="15px"
+																fontSize="sm"
 																fontWeight="medium"
 															>
-																Login
+																{t('common.login')}
 															</Button>
 														</Link>
-														<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
-															Don't have an account?
-															<Link href="/register">
-																<Button
-																	variant="link"
-																	ml={2}
-																	color="red.500"
-																	fontWeight="medium"
-																	onClick={() => {
-																		onClose();
-																		setShowSignupModal(true);
-																	}}
-																>
-																	Register
-																</Button>
-															</Link>
-														</Text>
-													</Box>
-												</Box>
-											)}
-										</Box>
+													</VStack>
+												)}
+											</Box>
+										)}
+									</Box>
 
-										<Box display={{ base: 'none', xl: 'flex' }} >
-											<div className="top-button-mode " style={{ marginTop: '10px' }}>
-												<ThemeSwitch />
-											</div>
-										</Box>
-									</div>
-									<div className={`burger-icon ${burgerIconClass}`} style={{ top: '20px' }} onClick={handleMobileMenu}>
-										<span className="burger-icon-top" />
-										<span className="burger-icon-mid" />
-										<span className="burger-icon-bottom" />
-									</div>
+									{/* Theme Switch */}
+									<Box display={{ base: 'none', xl: 'flex' }} alignItems="center">
+										<div className="top-button-mode">
+											<ThemeSwitch />
+										</div>
+									</Box>
+
+									{/* Mobile Menu Button */}
+									<Box display={{ base: 'block', xl: 'none' }} ml={2}>
+										<div
+											className={`burger-icon ${burgerIconClass}`}
+											onClick={handleMobileMenu}
+											style={{ display: 'flex', alignItems: 'center', height: '40px' }}
+										>
+											<span className="burger-icon-top" />
+											<span className="burger-icon-mid" />
+											<span className="burger-icon-bottom" />
+										</div>
+									</Box>
 								</div>
-							</div>
+							</Flex>
 						</div>
 					</div>
 				</header>
