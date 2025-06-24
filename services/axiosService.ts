@@ -1,7 +1,8 @@
 import axios_ from "axios";
 const TOKEN_TYPE = "Bearer";
 const url = process.env.NEXT_PUBLIC_BACKEND_URL; // Use NEXT_PUBLIC_ prefix for frontend access
-
+console.log("url", url);
+console.log(url);
 if (!url) {
     console.error("BACKEND_URL is not defined. Check your .env.local file.");
 } else {

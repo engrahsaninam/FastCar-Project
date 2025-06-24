@@ -21,7 +21,6 @@ export const languageResources = {
 
 // Initialize i18next
 i18n
-    .use(HttpBackend)
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
