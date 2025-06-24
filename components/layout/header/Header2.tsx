@@ -212,57 +212,120 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 										<Button
 											onClick={isOpen ? onClose : onOpen}
 											variant="ghost"
+											px={2}
 											rightIcon={<ChevronDown size={16} />}
 											leftIcon={<User size={20} />}
 											_hover={{ color: textColorHover }}
 											color={textColor}
+											// display={{ base: 'none', xl: 'flex' }}
+											marginRight={[10, 0, 0]}
 											fontWeight="medium"
-											h="40px"
 										/>
 
 										{isOpen && (
 											<Box
+												ref={dropdownRef}
 												position="absolute"
-												zIndex={2}
 												top="100%"
 												mt={2}
-												right={0}
+												// left={-50}
+												right={-10}
 												bg={bgColor}
-												borderRadius="lg"
-												boxShadow="lg"
 												border="1px solid"
 												borderColor={borderColor}
-												width="280px"
-												overflow="hidden"
+												borderRadius="md"
+												boxShadow="md"
+												zIndex={100}
+												width="300px"
 											>
-												{user ? (
-													<>
-														<HStack w="full" p={3} spacing={3}>
-															<UserAvatar size="sm" />
-															<VStack align="start" spacing={0} flex={1}>
-																<Text fontWeight="bold" fontSize="md" isTruncated maxW="200px">
-																	{user.username}
-																</Text>
-															</VStack>
-															<Box cursor="pointer" onClick={handleLogout}>
-																<LogOut size={20} />
-															</Box>
-														</HStack>
-													</>
-												) : (
-													<VStack p={3} spacing={2}>
-														<Link href="/login" style={{ width: '100%' }}>
-															<Button
-																colorScheme="blue"
-																width="full"
-																fontSize="sm"
+												{user && (
+													<HStack w="full" mb={2} spacing={3} padding={2}>
+														<UserAvatar size="sm" />
+														<VStack align="start" spacing={0}>
+															<HStack w="full" mb={2} spacing={3} display='flex' justifyContent='space-between'>
+																<Text fontWeight="bold" fontSize="md">{user.username}</Text>
+																<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg>
+															</HStack>
+
+
+															<Text color="gray.500" fontSize="xs" noOfLines={1}>{user.email}</Text>
+														</VStack>
+													</HStack>
+												)}
+												<VStack align="start" spacing={0} p={4}>
+													<MenuItemLink label={t('common.favoriteCars')} Icon={Heart} href="/favourite-cars" />
+													<MenuItemLink label={t('common.ordersInProgress')} Icon={ShoppingCart} href="/order-in-progress" />
+												</VStack>
+												<HStack justify="center" align="center" p={0} m={0} spacing={1}>
+													<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0}>
+														<Menu>
+															<MenuButton
+																as={Button}
+																variant="ghost"
+																fontSize="16px"
 																fontWeight="medium"
+																color={textColor}
+																_hover={{ color: textColorHover }}
+																cursor="pointer"
+																display="flex"
+																alignItems="center"
 															>
-																{t('common.login')}
+																{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'fr' ? 'Fr' : 'Ch'} <ChevronDownIcon />
+															</MenuButton>
+															<MenuList>
+																<MenuItem onClick={() => changeLanguage('en')}>{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</MenuItem>
+																<MenuItem onClick={() => changeLanguage('fr')}>{localStorage.getItem('i18nextLng') === 'fr' ? 'Français' : 'Français'}</MenuItem>
+																<MenuItem onClick={() => changeLanguage('ch')}>{localStorage.getItem('i18nextLng') === 'ch' ? 'Chinese' : 'Chinese'}</MenuItem>
+															</MenuList>
+														</Menu>
+													</Box>
+													<Box display={{ base: 'block', xl: 'none' }} alignItems="center" whiteSpace="nowrap" p={0} m={0} ml={1}>
+														<Box className="top-button-mode">
+															<ThemeSwitch />
+														</Box>
+													</Box>
+												</HStack>
+
+												<Divider />
+
+												<Box p={4}>
+													<Link href="/login">
+
+														<Button
+															onClick={() => {
+																onClose();
+																router.push('/login');
+																setShowLoginModal(true);
+															}}
+															bg="red.500"
+															_hover={{ bg: 'red.600' }}
+															color="white"
+															width="full"
+															// leftIcon={<UserAvatar size="sm" />}
+															fontSize="15px"
+															fontWeight="medium"
+														>
+															Login
+														</Button>
+													</Link>
+													<Text mt={3} fontSize="sm" color="gray.500" textAlign="center">
+														{t('auth.noAccount')}
+														<Link href="/register">
+															<Button
+																variant="link"
+																ml={2}
+																color="red.500"
+																fontWeight="medium"
+																onClick={() => {
+																	onClose();
+																	setShowSignupModal(true);
+																}}
+															>
+																{t('auth.register')}
 															</Button>
 														</Link>
-													</VStack>
-												)}
+													</Text>
+												</Box>
 											</Box>
 										)}
 									</Box>

@@ -1,7 +1,7 @@
 'use client'
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link"
-import { swiperGroup3 } from '@/util/swiperOptions'
+
 import {
 	Heart,
 	MapPin,
@@ -14,15 +14,15 @@ import {
 	SlidersHorizontal,
 	ChevronLeft,
 	ChevronRight,
-	Bell,
-	LucideIcon as LucideIconType
+	Bell
 } from 'lucide-react';
-import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack, Wrap, WrapItem, Spinner, Alert, AlertIcon, AspectRatio, Heading, Badge, Button } from "@chakra-ui/react";
+import { Box, Flex, HStack, SimpleGrid, Text, useColorModeValue, VStack, Wrap, WrapItem, Spinner, Alert, AlertIcon, AspectRatio, Heading, Badge, Button, Skeleton } from "@chakra-ui/react";
 import { useBestDeals } from "@/services/cars/useCars";
 import { useTranslation as useAzureTranslation } from '@/services/translation/useTranslation';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+
 // Car interface
 interface Car {
 	id: string;
@@ -40,10 +40,9 @@ interface Car {
 	features: string[];
 }
 
-interface LucideIconProps {
-	icon: LucideIconType;
-	[key: string]: any;
-}
+// Add LucideIcon wrapper at the top level
+type LucideIconProps = { icon: React.ElementType;[key: string]: any };
+const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => <Box as={Icon} {...props} />;
 
 // CarCard Component
 const CarCard = ({ car }: { car: any }) => {
@@ -81,216 +80,220 @@ const CarCard = ({ car }: { car: any }) => {
 		}
 	}, [car.model, car.country, translate]);
 
-	const LucideIcon = ({ icon: Icon, ...props }: LucideIconProps) => {
-		return <Box as={Icon} {...props} />;
-	};
 	const cardBg = useColorModeValue("white", "#1a1a1a");
 	const headingColor = useColorModeValue("black", "red.400");
 
 	return (
-		<div className="col-lg-4 col-md-6" key={car.id}>
-		<Flex
-			direction={["column", "column", "column"]}
-			bg={cardBg}
-			borderRadius="md"
-			overflow="hidden"
-			borderWidth="1px"
-			borderColor={cardBorderColor}
-			transition="all 0.3s ease"
-			_hover={{
-				boxShadow: "xl",
-				transform: "scale(1.02)",
-				borderColor: "red.200"
-			}}
-			w="full"
-			position="relative"
-			zIndex="1"
-			alignItems={["flex-start", "flex-start", "flex-start"]}
-			gap={[2, 2, 2]}
-			mb={["4", "4", "4"]}
-		>
-			{/* Image Section */}
-			<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
-				<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
-					<Box position="relative" w="full" h="full" className='card-image'>
+		<Box w="100%" maxW="370px" mx="auto" mb={[4, 4, 4]}>
+			<Flex
+				direction={["column", "column", "column"]}
+				bg={cardBg}
+				borderRadius="md"
+				overflow="hidden"
+				borderWidth="1px"
+				borderColor={cardBorderColor}
+				transition="all 0.3s ease"
+				_hover={{
+					boxShadow: "xl",
+					transform: "scale(1.02)",
+					borderColor: "red.200"
+				}}
+				w="full"
+				position="relative"
+				zIndex="1"
+				alignItems={["flex-start", "flex-start", "flex-start"]}
+				gap={[2, 2, 2]}
+			>
+				{/* Image Section */}
+				<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
+					<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+						<Box position="relative" w="full" h="full" className='card-image'>
+							<Image
+								src={Array.isArray(car.images) && car.images.length > 0 ? car.images[0] : '/fallback-image.jpg'}
+								alt={car.make}
+								fill
+								priority
+								style={{ objectFit: "cover" }}
+							/>
+						</Box>
+					</AspectRatio>
+				</Box>
+
+				{/* Content Section - maintain size but reduce spacing */}
+				<Flex
+					flex="1"
+					p={["4", "4", "3"]}
+					flexDir="column"
+					justifyContent="space-between"
+				// mt={["3", "3", "0"]}
+				>
+					<Box>
+						<Flex
+							direction={["row", "row", "row"]}
+							justify="space-between"
+							align="center"
+							mb={["3", "3", "2"]}
+							mt={["2", "2", "0"]}
+						>
+							<Heading
+								as="h3"
+								ml='1'
+								fontSize={["lg", "lg", "xl"]}
+								fontWeight="bold"
+								color={headingColor}
+								letterSpacing="wide"
+								fontFamily="inter"
+								_hover={{ color: "red.500" }}
+							// mb={["1", "1", "0"]}
+							>
+								{[car?.make, car?.model].filter(Boolean).join(' ') || 'Car Details'}
+							</Heading>
+							{/* <Box mt={["1", "1", "0"]} className='light-mode'>
 						<Image
-							src={Array.isArray(car.images) && car.images.length > 0 ? car.images[0] : '/fallback-image.jpg'}
-							alt={car.make}
-							fill
-							priority
-							style={{ objectFit: "cover" }}
+							src={logo.src}
+							alt="Logo"
+							width={70}
+							height={35}
+							style={{ display: "inline-block" }}
 						/>
 					</Box>
-				</AspectRatio>
-			</Box>
-
-			{/* Content Section - maintain size but reduce spacing */}
-			<Flex
-				flex="1"
-				p={["4", "4", "3"]}
-				flexDir="column"
-				justifyContent="space-between"
-			// mt={["3", "3", "0"]}
-			>
-				<Box>
-					<Flex
-						direction={["row", "row", "row"]}
-						justify="space-between"
-						align="center"
-						mb={["3", "3", "2"]}
-						mt={["2", "2", "0"]}
-					>
-						<Heading
-							as="h3"
-							ml='1'
-							fontSize={["lg", "lg", "xl"]}
-							fontWeight="bold"
-							color={headingColor}
-							letterSpacing="wide"
-							fontFamily="inter"
-							_hover={{ color: "red.500" }}
-						// mb={["1", "1", "0"]}
-						>
-							{[car?.make, car?.model].filter(Boolean).join(' ') || 'Car Details'}
-						</Heading>
-						{/* <Box mt={["1", "1", "0"]} className='light-mode'>
+				<Box mt={["1", "1", "0"]} className='dark-mode'>
 					<Image
-						src={logo.src}
+						src={logoDark.src}
 						alt="Logo"
 						width={70}
 						height={35}
 						style={{ display: "inline-block" }}
 					/>
-				</Box>
-			<Box mt={["1", "1", "0"]} className='dark-mode'>
-				<Image
-					src={logoDark.src}
-					alt="Logo"
-					width={70}
-					height={35}
-					style={{ display: "inline-block" }}
-				/>
-			</Box> */}
-					</Flex>
-
-					{/* Specs Row - inline with minimal spacing */}
-					<Box mb={["4", "4", "4"]} ml="1">
-						<Flex direction="row" gap={4} mb={1} >
-							<HStack spacing="1">
-								<LucideIcon icon={Power} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
-							</HStack>
-							<HStack spacing="1">
-								<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor}>{car.year}</Text>
-							</HStack>
-							<HStack spacing="1">
-								<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
-							</HStack>
+				</Box> */}
 						</Flex>
-						<Flex direction="row" gap={6}>
-							<HStack spacing="1">
-								<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
-							</HStack>
-							<HStack spacing="1">
-								<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
-								<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
-							</HStack>
+
+						{/* Specs Row - inline with minimal spacing */}
+						<Box mb={["4", "4", "4"]} ml="1">
+							<Flex direction="row" gap={4} mb={1} >
+								<HStack spacing="1">
+									<LucideIcon icon={Power} boxSize="4" color={textColor} />
+									<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
+								</HStack>
+								<HStack spacing="1">
+									<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+									<Text fontSize="sm" color={textColor}>{car.year}</Text>
+								</HStack>
+								<HStack spacing="1">
+									<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+									<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
+								</HStack>
+							</Flex>
+							<Flex direction="row" gap={6}>
+								<HStack spacing="1">
+									<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+									<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
+								</HStack>
+								<HStack spacing="1">
+									<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+									<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
+								</HStack>
+							</Flex>
+						</Box>
+
+						{/* Features - keeping size with less vertical space */}
+						<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+							{car.features &&
+								(Object.values(car.features) as string[][])
+									.flat()
+									.slice(0, 4)
+									.map((feature, index) => (
+										<Badge
+											key={index}
+											px="2"
+											bg={badgeBg}
+											color={badgeColor}
+											borderRadius="md"
+											fontSize="sm"
+											fontWeight="medium"
+											style={{ textTransform: "none" }}
+										>
+											{feature}
+										</Badge>
+									))
+							}
+							{car.features && Object.values(car.features).flat().length > 4 && (
+								<Button
+									variant="unstyled"
+									color={buttonLinkColor}
+									fontSize="sm"
+									fontWeight="medium"
+									height="auto"
+									padding="0"
+									lineHeight="1.5"
+									_hover={{ textDecoration: "underline" }}
+									onClick={e => e.preventDefault()}
+									style={{ textTransform: "none" }}
+								>
+									+ {Object.values(car.features).flat().length - 4} more
+								</Button>
+							)}
 						</Flex>
 					</Box>
 
-					{/* Features - keeping size with less vertical space */}
-					<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
-						{car.features &&
-							(Object.values(car.features) as string[][])
-								.flat()
-								.slice(0, 4)
-								.map((feature, index) => (
-									<Badge
-										key={index}
-										px="2"
-										bg={badgeBg}
-										color={badgeColor}
-										borderRadius="md"
-										fontSize="sm"
-										fontWeight="medium"
-										style={{ textTransform: "none" }}
-									>
-										{feature}
-									</Badge>
-								))
-						}
-						{car.features && Object.values(car.features).flat().length > 4 && (
-							<Button
-								variant="unstyled"
-								color={buttonLinkColor}
-								fontSize="sm"
-								fontWeight="medium"
-								height="auto"
-								padding="0"
-								lineHeight="1.5"
-								_hover={{ textDecoration: "underline" }}
-								onClick={e => e.preventDefault()}
-								style={{ textTransform: "none" }}
-							>
-								+ {Object.values(car.features).flat().length - 4} more
-							</Button>
-						)}
-					</Flex>
-				</Box>
+					{/* Location and Price - maintain size with reduced space */}
+					<Box
+						// pt={["3", "3", "1.5"]}
+						px={["0", "0", "2"]}
+						borderTopWidth="1px"
+						borderColor={cardBorderColor}
+					// mt={["2", "2", "1"]}
+					>
+						{/* Top row: Very Good Price (left) and Main Price (right) */}
 
-				{/* Location and Price - maintain size with reduced space */}
-				<Box
-					// pt={["3", "3", "1.5"]}
-					px={["0", "0", "2"]}
-					borderTopWidth="1px"
-					borderColor={cardBorderColor}
-				// mt={["2", "2", "1"]}
-				>
-					{/* Top row: Very Good Price (left) and Main Price (right) */}
-
-					<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
-						<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
-							<HStack spacing="1" >
-								{[...Array(5)].map((_, i) => (
-									<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
-								))}
-								<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-									Very Good Price
+						<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+							<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+								<HStack spacing="1" >
+									{[...Array(5)].map((_, i) => (
+										<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+									))}
+									<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+										Very Good Price
+									</Text>
+								</HStack>
+								<HStack> <Flex align="center" gap="1">
+									<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+										€ 5043
+									</Text>
+									<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+										Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+									</Text>
+								</Flex>
+								</HStack>
+							</VStack>
+							<Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
+								<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+									€ {car.price.toLocaleString()}
 								</Text>
-							</HStack>
-							<HStack> <Flex align="center" gap="1">
-								<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-									€ 5043
+								<Text fontSize="xs" color={textColor}>
+									€{(car.price / 4).toFixed(2)} without VAT
 								</Text>
-								<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-									Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-								</Text>
-							</Flex>
-							</HStack>
-						</VStack>
-						<Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
-							<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
-								€ {car.price.toLocaleString()}
-							</Text>
-							<Text fontSize="xs" color={textColor}>
-								€{(car.price / 4).toFixed(2)} without VAT
-							</Text>
-						</Box>
-					</Flex>
-					{/* Bottom row: Cheaper than in Spain! */}
+							</Box>
+						</Flex>
+						{/* Bottom row: Cheaper than in Spain! */}
 
-				</Box>
+					</Box>
 
+				</Flex>
 			</Flex>
-		</Flex>
-	</div>
+		</Box>
 	);
 };
 
 export default function CarsListing1() {
+	const badgeBg = useColorModeValue("red.50", "rgba(255, 69, 58, 0.15)");
+	const badgeColor = useColorModeValue("red.400", "red.300");
+	const cardBg = useColorModeValue("white", "#1a1a1a");
+	const cardBorderColor = useColorModeValue("gray.100", "#333333");
+	const headingColor = useColorModeValue("black", "red.400");
+	const priceColor = useColorModeValue("black", "white");
+	const textColor = useColorModeValue("gray.700", "gray.300");
+	const buttonLinkColor = useColorModeValue("red.600", "red.300");
 	const { data: cars, isLoading, error } = useBestDeals({
 		limit: "6",
 		page: "1"
@@ -299,7 +302,7 @@ export default function CarsListing1() {
 	const { t } = useTranslation();
 
 	const mappedCars = Array.isArray(cars?.data)
-		? cars.data.map((item:any) => ({
+		? cars.data.map((item: any) => ({
 			id: item.id,
 			image: item.images || [],
 			make: item.brand || '', // API uses 'brand'
@@ -356,20 +359,217 @@ export default function CarsListing1() {
 							</div>
 						</div> */}
 					</div>
-					<div className="block-flights wow fadeInUp">
-						<div className="box-swiper mt-30">
-							<Swiper {...swiperGroup3} className="swiper-container swiper-group-3 swiper-group-journey">
-								<div className="swiper-wrapper">
-									{/* Group cars into pairs for SwiperSlides */}
-									{Array.from({ length: Math.ceil(mappedCars.length / 2) }, (_, index) => (
-										<SwiperSlide key={index}>
-											{mappedCars.slice(index * 2, index * 2 + 2).map((car: any) => (
-												<CarCard key={car.id} car={car} />
-											))}
-										</SwiperSlide>
-									))}
-								</div>
-							</Swiper>
+					<div className="box-grid-tours wow fadeIn">
+						<div className="row">
+							{isLoading ? (
+								Array.from({ length: 6 }).map((_, i) => (
+									<div className="col-lg-4 col-md-6" key={i}>
+										<Skeleton height="340px" borderRadius="md" mb="4" />
+									</div>
+								))
+							) : (
+								cars?.data.map((car: any) => (
+									<div className="col-lg-4 col-md-6" key={car.id}>
+										<Flex
+											direction={["column", "column", "column"]}
+											bg={cardBg}
+											borderRadius="md"
+											overflow="hidden"
+											borderWidth="1px"
+											borderColor={cardBorderColor}
+											transition="all 0.3s ease"
+											_hover={{
+												boxShadow: "xl",
+												transform: "scale(1.02)",
+												borderColor: "red.200"
+											}}
+											w="full"
+											position="relative"
+											zIndex="1"
+											alignItems={["flex-start", "flex-start", "flex-start"]}
+											gap={[2, 2, 2]}
+											mb={["4", "4", "4"]}
+										>
+											{/* Image Section */}
+											<Box position="relative" w={["full", "full", "full"]} h={["full", "full", "full"]}>
+												<AspectRatio ratio={[16 / 9, 16 / 9, 4 / 3]} w="full">
+													<Box position="relative" w="full" h="full" className='card-image'>
+														<Image
+															src={`/assets/imgs/cars-listing/cars-listing-6/${car.images[0]}`}
+															alt={car.brand}
+															fill
+															priority
+															style={{ objectFit: "cover" }}
+														/>
+													</Box>
+												</AspectRatio>
+											</Box>
+
+											{/* Content Section - maintain size but reduce spacing */}
+											<Flex
+												flex="1"
+												p={["4", "4", "3"]}
+												flexDir="column"
+												justifyContent="space-between"
+											// mt={["3", "3", "0"]}
+											>
+												<Box>
+													<Flex
+														direction={["row", "row", "row"]}
+														justify="space-between"
+														align="center"
+														mb={["3", "3", "2"]}
+														mt={["2", "2", "0"]}
+													>
+														<Heading
+															as="h3"
+															ml='1'
+															fontSize={["lg", "lg", "xl"]}
+															fontWeight="bold"
+															color={headingColor}
+															letterSpacing="wide"
+															fontFamily="inter"
+															_hover={{ color: "red.500" }}
+														// mb={["1", "1", "0"]}
+														>
+															{[car?.brand, car?.modal].filter(Boolean).join(' ') || 'Car Details'}
+														</Heading>
+														{/* <Box mt={["1", "1", "0"]} className='light-mode'>
+																			<Image
+																				src={logo.src}
+																				alt="Logo"
+																				width={70}
+																				height={35}
+																				style={{ display: "inline-block" }}
+																			/>
+																		</Box>
+																	<Box mt={["1", "1", "0"]} className='dark-mode'>
+																		<Image
+																			src={logoDark.src}
+																			alt="Logo"
+																			width={70}
+																			height={35}
+																			style={{ display: "inline-block" }}
+																		/>
+																	</Box> */}
+													</Flex>
+
+													{/* Specs Row - inline with minimal spacing */}
+													<Box mb={["4", "4", "4"]} ml="1">
+														<Flex direction="row" gap={4} mb={1} >
+															<HStack spacing="1">
+																<LucideIcon icon={Power} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.power} hp</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Calendar} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.year}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={ParkingMeterIcon} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor}>{car.mileage} km</Text>
+															</HStack>
+														</Flex>
+														<Flex direction="row" gap={6}>
+															<HStack spacing="1">
+																<LucideIcon icon={Gauge} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.gear}</Text>
+															</HStack>
+															<HStack spacing="1">
+																<LucideIcon icon={Fuel} boxSize="4" color={textColor} />
+																<Text fontSize="sm" color={textColor} fontWeight="semibold">{car.fuel}</Text>
+															</HStack>
+														</Flex>
+													</Box>
+
+													{/* Features - keeping size with less vertical space */}
+													<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
+														{car.features &&
+															(Object.values(car.features) as string[][])
+																.flat()
+																.slice(0, 4)
+																.map((feature, index) => (
+																	<Badge
+																		key={index}
+																		px="2"
+																		bg={badgeBg}
+																		color={badgeColor}
+																		borderRadius="md"
+																		fontSize="sm"
+																		fontWeight="medium"
+																		style={{ textTransform: "none" }}
+																	>
+																		{feature}
+																	</Badge>
+																))
+														}
+														{car.features && Object.values(car.features).flat().length > 4 && (
+															<Button
+																variant="unstyled"
+																color={buttonLinkColor}
+																fontSize="sm"
+																fontWeight="medium"
+																height="auto"
+																padding="0"
+																lineHeight="1.5"
+																_hover={{ textDecoration: "underline" }}
+																onClick={e => e.preventDefault()}
+																style={{ textTransform: "none" }}
+															>
+																+ {Object.values(car.features).flat().length - 4} more
+															</Button>
+														)}
+													</Flex>
+												</Box>
+
+												{/* Location and Price - maintain size with reduced space */}
+												<Box
+													// pt={["3", "3", "1.5"]}
+													px={["0", "0", "2"]}
+													borderTopWidth="1px"
+													borderColor={cardBorderColor}
+												// mt={["2", "2", "1"]}
+												>
+													{/* Top row: Very Good Price (left) and Main Price (right) */}
+
+													<Flex direction="row" justify="space-between" alignItems="flex-start" align="flex-start" w="100%">
+														<VStack display="flex" alignItems="flex-start" gap="1" mt="3" ml="0">
+															<HStack spacing="1" >
+																{[...Array(5)].map((_, i) => (
+																	<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
+																))}
+																<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
+																	Very Good Price
+																</Text>
+															</HStack>
+															<HStack> <Flex align="center" gap="1">
+																<Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
+																	€ 5043
+																</Text>
+																<Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+																	Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+																</Text>
+															</Flex>
+															</HStack>
+														</VStack>
+														<Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
+															<Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+																€ {car.price.toLocaleString()}
+															</Text>
+															<Text fontSize="xs" color={textColor}>
+																€{(car.price / 4).toFixed(2)} without VAT
+															</Text>
+														</Box>
+													</Flex>
+													{/* Bottom row: Cheaper than in Spain! */}
+
+												</Box>
+
+											</Flex>
+										</Flex>
+									</div>
+								))
+							)}
 						</div>
 					</div>
 					<div className="d-flex justify-content-center">
