@@ -15,8 +15,8 @@ import arTranslations from '../locales/arTranslation.json';
 
 export const languageResources = {
     en: { translation: enTranslations },
-    fr: { translation: frTranslations },
-    ch: { translation: arTranslations }
+    sp: { translation: frTranslations },
+    gr: { translation: arTranslations }
 };
 
 // Initialize i18next
@@ -26,7 +26,7 @@ i18n
     .init({
         debug: process.env.NODE_ENV === 'development',
         fallbackLng: 'en',
-        supportedLngs: ['en', 'fr', 'ch'],
+        supportedLngs: ['en', 'sp', 'gr'],
         resources: languageResources,
         interpolation: {
             escapeValue: false,
