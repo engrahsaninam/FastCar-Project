@@ -24,7 +24,8 @@ class BankTransferInfo(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    car_id = Column(String, nullable=False)  # From cars table
+    # car_id = Column(String, nullable=False)  # From cars table
+    car_id = Column(String, ForeignKey("cars.id"), nullable=False)
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     telephone_number = Column(String, nullable=False)
@@ -38,6 +39,7 @@ class BankTransferInfo(Base):
     is_vat_payer = Column(Boolean, default=False)
     company_id = Column(String, nullable=True)
     company_name = Column(String, nullable=True)
+    status = Column(String, default="in_progress")
     created_at = Column(DateTime, default=func.now())
 
 class Purchase(Base):
@@ -48,4 +50,55 @@ class Purchase(Base):
     car_id = Column(String, ForeignKey("cars.id"), nullable=False)
     total_price = Column(Float, nullable=False)
     stripe_payment_id = Column(String, nullable=True)
+    status = Column(String, default="in_progress")
+    created_at = Column(DateTime, default=func.now())
+    
+class DeliveryInfo(Base):
+    __tablename__ = "delivery_info"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    car_id = Column(String, ForeignKey("cars.id"), nullable=False)
+    
+    delivery_type = Column(Enum("home_delivery", "pickup", name="delivery_type_enum"), nullable=False)
+    
+    # Home delivery address fields (only required if delivery_type == "home_delivery")
+    name = Column(String, nullable=True, default="None")
+    email = Column(String, nullable=True, default="None")
+    pone_number = Column(String, nullable=True, default="None")
+    address = Column(String, nullable=True, default="None")
+    
+    # Billing address and delivery address aren't the same
+    billing_delivery_same = Column(Boolean, nullable=False, default=True)
+    delivery_address = Column(String, nullable=True, default="None")
+    city = Column(String, nullable=True, default="None")
+    postal_code = Column(String, nullable=True, default="None")
+    country = Column(String, nullable=True, default="None")
+
+    # Pickup location (only required if delivery_type == "pickup")
+    pickup_location_id = Column(String, nullable=True, default="None")
+
+    total_price = Column(Float, nullable=False)
+    status = Column(String, default="in_progress")
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+class ServiceAddon(Base):
+    __tablename__ = "service_addons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    price_eur = Column(Float, nullable=False)
+    
+
+    created_at = Column(DateTime, default=func.now())
+
+class PurchaseAddon(Base):
+    __tablename__ = "purchase_addons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    purchase_id = Column(Integer, ForeignKey("purchases.id"), nullable=False)
+    addon_name = Column(String, nullable=True)
+    addon_price = Column(Float, nullable=True)
+    status = Column(String, default="in_progress")
     created_at = Column(DateTime, default=func.now())

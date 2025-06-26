@@ -4,16 +4,17 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel, validator
-import re
+import re, unicodedata
 import stripe
 from app.config import STRIPE_SECRET_KEY, DOMAIN
 from app.database.sqlite import get_db
 from app.api.auth import get_current_user
 from app.models.user import User
 from app.models.car import Car
-from app.models.purchase import FinanceApplication, BankTransferInfo, Purchase
+from app.models.purchase import FinanceApplication, BankTransferInfo, Purchase, DeliveryInfo, PurchaseAddon, ServiceAddon
 import logging
 import os
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["purchase"])
@@ -30,9 +31,14 @@ class FinanceApplicationCreate(BaseModel):
 
     @validator("telephone_number")
     def validate_phone(cls, v):
+        # Normalize and remove invisible characters
+        v = unicodedata.normalize("NFKC", v)
+        v = ''.join(c for c in v if not unicodedata.category(c).startswith('C'))  # remove control characters
+
         if not re.match(r"^\+\d{1,3}\d{6,14}$", v):
-            raise ValueError("Invalid phone number format, e.g., +43...")
+            raise ValueError("Invalid phone number format, e.g., +39...")
         return v
+
 
     @validator("email")
     def validate_email(cls, v):
@@ -41,24 +47,24 @@ class FinanceApplicationCreate(BaseModel):
         return v
 
     @validator("date_of_birth")
-    def validate_dob(cls, v):
-        if not re.match(r"^\d{2}/\d{2}/\d{4}$", v):
-            raise ValueError("Invalid date format, use DD/MM/YYYY")
+    def validate_birth_date(cls, v):
+        if not re.match(r"^\d{2}\.\d{2}\.\d{4}$", v):
+            raise ValueError("Invalid date format, use DD.MM.YYYY")
         return v
 
 class FinanceApplicationResponse(BaseModel):
     id: int
     user_id: int
-    car_id: str
-    name: str
-    surname: str
-    telephone_number: str
-    email: str
-    identification_number: str
-    date_of_birth: str
-    status: str
-    created_at: str
-    updated_at: str
+    car_id: str = "no-any"
+    name: str 
+    surname: str = "no-any"
+    telephone_number: str = "Not provided"
+    email: str = "not_provided@example.com"
+    identification_number: str = "N/A"
+    date_of_birth: str = "1900-01-01"
+    status: str = "no-any"
+    created_at: str = "0000-00-00T00:00:00"
+    updated_at: str = "0000-00-00T00:00:00"
 
 class FinanceApplicationUpdate(BaseModel):
     status: str
@@ -85,8 +91,17 @@ class BankTransferCreate(BaseModel):
     company_id: Optional[str] = None
     company_name: Optional[str] = None
 
+    # @validator("telephone_number")
+    # def validate_phone(cls, v):
+    #     if not re.match(r"^\+\d{1,3}\d{6,14}$", v):
+    #         raise ValueError("Invalid phone number format, e.g., +39...")
+    #     return v
     @validator("telephone_number")
     def validate_phone(cls, v):
+        # Normalize and remove invisible characters
+        v = unicodedata.normalize("NFKC", v)
+        v = ''.join(c for c in v if not unicodedata.category(c).startswith('C'))  # remove control characters
+
         if not re.match(r"^\+\d{1,3}\d{6,14}$", v):
             raise ValueError("Invalid phone number format, e.g., +39...")
         return v
@@ -107,23 +122,79 @@ class BankTransferCreate(BaseModel):
         return v
 
 class BankTransferResponse(BaseModel):
+    id: int = 0
+    user_id: int = 0
+    car_id: str = "N/A"
+    name: str = "Unknown"
+    surname: str = "Unknown"
+    telephone_number: str = "Not provided"
+    birth_date: str = "1900-01-01"
+    billing_address_street: str = "N/A"
+    billing_address_house_number: str = "-"
+    billing_address_postal_code: str = "00000"
+    billing_address_city: str = "Unknown"
+    billing_address_country: str = "Unknown"
+    is_company: bool = False
+    is_vat_payer: Optional[bool] = False
+    company_id: Optional[str] = None
+    company_name: Optional[str] = None
+    status: str = "in_progress"
+    created_at: str = "0000-00-00T00:00:00"
+
+class DeliveryCreate(BaseModel):
+    car_id: str
+    delivery_type: str  # "home_delivery" or "pickup"
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    address: Optional[str] = None
+    billing_delivery_same: bool = True
+    delivery_address: Optional[str] = None
+    city: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    pickup_location_id: Optional[str] = None
+    total_price: float
+
+class DeliveryResponse(BaseModel):
     id: int
     user_id: int
     car_id: str
-    name: str
-    surname: str
-    telephone_number: str
-    birth_date: str
-    billing_address_street: str
-    billing_address_house_number: str
-    billing_address_postal_code: str
-    billing_address_city: str
-    billing_address_country: str
-    is_company: bool
-    is_vat_payer: Optional[bool]
-    company_id: Optional[str]
-    company_name: Optional[str]
+    delivery_type: str
+    name: Optional[str]
+    email: Optional[str]
+    phone_number: Optional[str]
+    address: Optional[str]
+    billing_delivery_same: bool
+    delivery_address: Optional[str]
+    city: Optional[str]
+    postal_code: Optional[str]
+    country: Optional[str]
+    pickup_location_id: Optional[str]
+    total_price: float
     created_at: str
+    updated_at: str
+
+
+class AddonCreate(BaseModel):
+    name: str
+    price_eur: float
+
+class AddonItem(BaseModel):
+    addon_name: str
+    addon_price: float
+
+class PurchaseAddonCreate(BaseModel):
+    addon_ids: List[AddonItem]
+
+class PurchaseAddonResponse(BaseModel):
+    id: int
+    purchase_id: int
+    addon_name: str
+    addon_price: float
+    status: str
+    created_at: datetime
+
 
 # Finance Endpoints
 @router.post("/finance/apply", response_model=FinanceApplicationResponse)
@@ -134,23 +205,38 @@ async def apply_finance(
 ):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    
-    application = FinanceApplication(
+
+    application = db.query(FinanceApplication).filter_by(
         user_id=user.id,
         car_id=data.car_id,
-        name=data.name,
-        surname=data.surname,
-        telephone_number=data.telephone_number,
-        email=data.email,
-        identification_number=data.identification_number,
-        date_of_birth=data.date_of_birth,
         status="in_progress"
-    )
-    db.add(application)
+    ).first()
+
+    if application:
+        application.name = data.name
+        application.surname = data.surname
+        application.telephone_number = data.telephone_number
+        application.email = data.email
+        application.identification_number = data.identification_number
+        application.date_of_birth = data.date_of_birth
+    else:
+        application = FinanceApplication(
+            user_id=user.id,
+            car_id=data.car_id,
+            name=data.name,
+            surname=data.surname,
+            telephone_number=data.telephone_number,
+            email=data.email,
+            identification_number=data.identification_number,
+            date_of_birth=data.date_of_birth,
+            status="in_progress"
+        )
+        db.add(application)
+
     db.commit()
     db.refresh(application)
-    
-    logger.info(f"Finance application created: user_id={user.id}, car_id={data.car_id}")
+
+    logger.info(f"Finance application saved: user_id={user.id}, car_id={data.car_id}")
     return FinanceApplicationResponse(
         id=application.id,
         user_id=application.user_id,
@@ -165,33 +251,6 @@ async def apply_finance(
         created_at=application.created_at.isoformat(),
         updated_at=application.updated_at.isoformat()
     )
-
-@router.get("/finance/applications", response_model=List[FinanceApplicationResponse])
-async def get_finance_applications(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if not user or not user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    
-    applications = db.query(FinanceApplication).all()
-    return [
-        FinanceApplicationResponse(
-            id=app.id,
-            user_id=app.user_id,
-            car_id=app.car_id,
-            name=app.name,
-            surname=app.surname,
-            telephone_number=app.telephone_number,
-            email=app.email,
-            identification_number=app.identification_number,
-            date_of_birth=app.date_of_birth,
-            status=app.status,
-            created_at=app.created_at.isoformat(),
-            updated_at=app.updated_at.isoformat()
-        )
-        for app in applications
-    ]
 
 @router.patch("/finance/applications/{id}/status", response_model=FinanceApplicationResponse)
 async def update_finance_status(
@@ -227,33 +286,6 @@ async def update_finance_status(
         updated_at=application.updated_at.isoformat()
     )
 
-@router.get("/finance/my-application", response_model=Optional[FinanceApplicationResponse])
-async def get_my_finance_application(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    
-    application = db.query(FinanceApplication).filter(FinanceApplication.user_id == user.id).first()
-    if not application:
-        return None
-    
-    return FinanceApplicationResponse(
-        id=application.id,
-        user_id=application.user_id,
-        car_id=application.car_id,
-        name=application.name,
-        surname=application.surname,
-        telephone_number=application.telephone_number,
-        email=application.email,
-        identification_number=application.identification_number,
-        date_of_birth=application.date_of_birth,
-        status=application.status,
-        created_at=application.created_at.isoformat(),
-        updated_at=application.updated_at.isoformat()
-    )
-
 # Bank Transfer Endpoints
 @router.post("/bank-transfer/submit", response_model=BankTransferResponse)
 async def submit_bank_transfer(
@@ -264,92 +296,57 @@ async def submit_bank_transfer(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     
-    bank_info = BankTransferInfo(
+    car = db.query(Car).filter(Car.id == data.car_id).first()
+    if not car:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Car not found")
+    if car.status != "available":
+        raise HTTPException(status_code=400, detail="Car is not available")
+
+    bank_info = db.query(BankTransferInfo).filter_by(
         user_id=user.id,
         car_id=data.car_id,
-        name=data.name,
-        surname=data.surname,
-        telephone_number=data.telephone_number,
-        birth_date=data.birth_date,
-        billing_address_street=data.billing_address_street,
-        billing_address_house_number=data.billing_address_house_number,
-        billing_address_postal_code=data.billing_address_postal_code,
-        billing_address_city=data.billing_address_city,
-        billing_address_country=data.billing_address_country,
-        is_company=data.is_company,
-        is_vat_payer=data.is_vat_payer if data.is_company else False,
-        company_id=data.company_id if data.is_company else None,
-        company_name=data.company_name if data.is_company else None
-    )
-    db.add(bank_info)
+        status="in_progress"
+    ).first()
+
+    if bank_info:
+        bank_info.name = data.name
+        bank_info.surname = data.surname
+        bank_info.telephone_number = data.telephone_number
+        bank_info.birth_date = data.birth_date
+        bank_info.billing_address_street = data.billing_address_street
+        bank_info.billing_address_house_number = data.billing_address_house_number
+        bank_info.billing_address_postal_code = data.billing_address_postal_code
+        bank_info.billing_address_city = data.billing_address_city
+        bank_info.billing_address_country = data.billing_address_country
+        bank_info.is_company = data.is_company
+        bank_info.is_vat_payer = data.is_vat_payer if data.is_company else False
+        bank_info.company_id = data.company_id if data.is_company else None
+        bank_info.company_name = data.company_name if data.is_company else None
+    else:
+        bank_info = BankTransferInfo(
+            user_id=user.id,
+            car_id=data.car_id,
+            name=data.name,
+            surname=data.surname,
+            telephone_number=data.telephone_number,
+            birth_date=data.birth_date,
+            billing_address_street=data.billing_address_street,
+            billing_address_house_number=data.billing_address_house_number,
+            billing_address_postal_code=data.billing_address_postal_code,
+            billing_address_city=data.billing_address_city,
+            billing_address_country=data.billing_address_country,
+            is_company=data.is_company,
+            is_vat_payer=data.is_vat_payer if data.is_company else False,
+            company_id=data.company_id if data.is_company else None,
+            company_name=data.company_name if data.is_company else None,
+            status="in_progress"
+        )
+        db.add(bank_info)
+
     db.commit()
     db.refresh(bank_info)
-    
-    logger.info(f"Bank transfer info submitted: user_id={user.id}, car_id={data.car_id}")
-    return BankTransferResponse(
-        id=bank_info.id,
-        user_id=bank_info.user_id,
-        car_id=bank_info.car_id,
-        name=bank_info.name,
-        surname=bank_info.surname,
-        telephone_number=bank_info.telephone_number,
-        birth_date=bank_info.birth_date,
-        billing_address_street=bank_info.billing_address_street,
-        billing_address_house_number=bank_info.billing_address_house_number,
-        billing_address_postal_code=bank_info.billing_address_postal_code,
-        billing_address_city=bank_info.billing_address_city,
-        billing_address_country=bank_info.billing_address_country,
-        is_company=bank_info.is_company,
-        is_vat_payer=bank_info.is_vat_payer,
-        company_id=bank_info.company_id,
-        company_name=bank_info.company_name,
-        created_at=bank_info.created_at.isoformat()
-    )
 
-@router.get("/bank-transfer/data", response_model=List[BankTransferResponse])
-async def get_bank_transfer_data(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if not user or not user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    
-    bank_infos = db.query(BankTransferInfo).all()
-    return [
-        BankTransferResponse(
-            id=info.id,
-            user_id=info.user_id,
-            car_id=info.car_id,
-            name=info.name,
-            surname=info.surname,
-            telephone_number=info.telephone_number,
-            birth_date=info.birth_date,
-            billing_address_street=info.billing_address_street,
-            billing_address_house_number=info.billing_address_house_number,
-            billing_address_postal_code=info.billing_address_postal_code,
-            billing_address_city=info.billing_address_city,
-            billing_address_country=info.billing_address_country,
-            is_company=info.is_company,
-            is_vat_payer=info.is_vat_payer,
-            company_id=info.company_id,
-            company_name=info.company_name,
-            created_at=info.created_at.isoformat()
-        )
-        for info in bank_infos
-    ]
-
-@router.get("/bank-transfer/my-data", response_model=Optional[BankTransferResponse])
-async def get_my_bank_transfer_data(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    
-    bank_info = db.query(BankTransferInfo).filter(BankTransferInfo.user_id == user.id).first()
-    if not bank_info:
-        return None
-    
+    logger.info(f"Bank transfer info saved: user_id={user.id}, car_id={data.car_id}")
     return BankTransferResponse(
         id=bank_info.id,
         user_id=bank_info.user_id,
@@ -418,7 +415,7 @@ async def create_checkout_session(
         logger.error(f"Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/success")
+@router.get("/success-car-inspection")
 async def checkout_success(
     session_id: str,
     user: User = Depends(get_current_user),
@@ -452,10 +449,25 @@ async def checkout_success(
             user_id=user_id,
             car_id=car_id,
             total_price=car.total_price,
-            stripe_payment_id=session.payment_intent
+            stripe_payment_id=session.payment_intent,
+            status="finalized"
         )
         db.add(purchase)
         car.status = "sold"
+        # db.commit()
+        
+        # Finalize other related user draft records
+        db.query(BankTransferInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
+        # db.query(DeliveryInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
+        # db.query(PurchaseAddon).filter(
+        #     PurchaseAddon.purchase_id.in_(
+        #         db.query(Purchase.id).filter_by(user_id=user.id, status="in_progress")
+        #     )
+        # ).update({"status": "finalized"}, synchronize_session=False)
+
+        # Also finalize previous purchases marked in_progress (if any)
+        db.query(Purchase).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
+
         db.commit()
 
         logger.info(f"Purchase completed for car {car_id} by user {user_id}")
@@ -469,6 +481,507 @@ async def checkout_cancel():
     """Handle canceled checkout."""
     return RedirectResponse(url="/purchase/canceled")  # Adjust to frontend
 
+@router.post("/submit-delivery-info", response_model=DeliveryResponse)
+async def submit_delivery_info(
+    purchase_id: int,
+    data: DeliveryCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not purchase:
+        raise HTTPException(status_code=404, detail="Car Inspection isn't paid yet.")
+    if purchase.status != "finalized":
+        raise HTTPException(status_code=400, detail="Car Inspection is in progress.")
+
+    if data.delivery_type == "home_delivery":
+        if not all([data.name, data.email, data.phone_number, data.address]):
+            raise HTTPException(status_code=400, detail="Contact/address info is required for home delivery")
+        if data.billing_delivery_same is False and not all([data.delivery_address, data.city, data.postal_code, data.country]):
+            raise HTTPException(status_code=400, detail="Complete delivery address required when billing differs")
+
+    elif data.delivery_type == "pickup" and not data.pickup_location_id:
+        raise HTTPException(status_code=400, detail="Pickup location is required")
+
+    delivery = db.query(DeliveryInfo).filter_by(
+        user_id=user.id,
+        car_id=purchase.car_id,
+        status="in_progress"
+    ).first()
+
+    if delivery:
+        delivery.delivery_type = data.delivery_type
+        delivery.name = data.name
+        delivery.email = data.email
+        delivery.pone_number = data.phone_number
+        delivery.address = data.address
+        delivery.billing_delivery_same = data.billing_delivery_same
+        delivery.delivery_address = data.delivery_address
+        delivery.city = data.city
+        delivery.postal_code = data.postal_code
+        delivery.country = data.country
+        delivery.pickup_location_id = data.pickup_location_id
+        delivery.total_price = data.total_price
+    else:
+        delivery = DeliveryInfo(
+            user_id=user.id,
+            car_id=purchase.car_id,
+            delivery_type=data.delivery_type,
+            name=data.name,
+            email=data.email,
+            pone_number=data.phone_number,
+            address=data.address,
+            billing_delivery_same=data.billing_delivery_same,
+            delivery_address=data.delivery_address,
+            city=data.city,
+            postal_code=data.postal_code,
+            country=data.country,
+            pickup_location_id=data.pickup_location_id,
+            total_price=data.total_price,
+            status="in_progress"
+        )
+        db.add(delivery)
+
+    db.commit()
+    db.refresh(delivery)
+
+    return DeliveryResponse(
+        id=delivery.id,
+        user_id=delivery.user_id,
+        car_id=delivery.car_id,
+        delivery_type=delivery.delivery_type,
+        name=delivery.name,
+        email=delivery.email,
+        phone_number=delivery.pone_number,
+        address=delivery.address,
+        billing_delivery_same=delivery.billing_delivery_same,
+        delivery_address=delivery.delivery_address,
+        city=delivery.city,
+        postal_code=delivery.postal_code,
+        country=delivery.country,
+        pickup_location_id=delivery.pickup_location_id,
+        total_price=delivery.total_price,
+        created_at=delivery.created_at.isoformat(),
+        updated_at=delivery.updated_at.isoformat()
+    )
+
+
+
+@router.get("/get-latest-purchase")
+async def get_all_purchases(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+
+    purchases = db.query(Purchase).filter(user.id==Purchase.user_id).order_by(Purchase.created_at.desc()).first()
+    return purchases
+
+@router.post("/purchase-addon", response_model=List[PurchaseAddonResponse])
+async def assign_addons(
+    purchase_id: int,
+    data: PurchaseAddonCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    if not data.addon_ids:
+        raise HTTPException(status_code=400, detail="No addon data provided")
+    
+    purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not purchase:
+        raise HTTPException(status_code=404, detail="Car inspection not completed.")
+    if purchase.status != "finalized":
+        raise HTTPException(status_code=400, detail="Car inspection is in progress.")
+
+    assigned = []
+    for addon in data.addon_ids:
+        existing_addon = db.query(PurchaseAddon).filter_by(
+            purchase_id=purchase_id,
+            addon_name=addon.addon_name,
+            status="in_progress"
+        ).first()
+
+        if existing_addon:
+            existing_addon.addon_price = addon.addon_price
+            db.commit()
+            db.refresh(existing_addon)
+            assigned.append(PurchaseAddonResponse(**existing_addon.__dict__))
+        else:
+            new_addon = PurchaseAddon(
+                purchase_id=purchase_id,
+                addon_name=addon.addon_name,
+                addon_price=addon.addon_price,
+                status="in_progress"
+            )
+            db.add(new_addon)
+            db.commit()
+            db.refresh(new_addon)
+            assigned.append(PurchaseAddonResponse(**new_addon.__dict__))
+
+    return assigned
+
+
+@router.post("/checkout-delivery/{purchase_id}")
+async def create_delivery_checkout_session(
+    purchase_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Create a Stripe Checkout Session for delivery and addons."""
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    # Validate purchase
+    purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not purchase or purchase.status != "finalized":
+        raise HTTPException(status_code=400, detail="Car inspection is not finalized.")
+
+    # Get delivery info
+    delivery = db.query(DeliveryInfo).filter(
+        DeliveryInfo.user_id == user.id,
+        DeliveryInfo.status == "in_progress"
+    ).first()
+
+    if not delivery:
+        raise HTTPException(status_code=404, detail="No delivery info in progress.")
+
+    # Get add-ons (optional)
+    addons = db.query(PurchaseAddon).filter(
+        PurchaseAddon.purchase_id == purchase_id,
+        PurchaseAddon.status == "in_progress"
+    ).all()
+
+    addons_total = sum(addon.addon_price or 0 for addon in addons)
+    delivery_total = delivery.total_price or 0
+    total_price = delivery_total + addons_total
+
+    # Load car info for description
+    car = db.query(Car).filter(Car.id == purchase.car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+
+    try:
+        # Create Stripe Checkout Session
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {
+                            "name": f"Delivery & Add-ons for {car.brand} {car.model}",
+                            "description": f"Includes delivery ({delivery_total:.2f} EUR) + {len(addons)} add-ons ({addons_total:.2f} EUR)"
+                        },
+                        "unit_amount":  int(total_price * 100),  # EUR → cents 
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url=f"{DOMAIN}/api/purchase/success-delivery?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{DOMAIN}/api/purchase/cancel",
+            client_reference_id=purchase_id,
+            metadata={"user_id": str(user.id)},
+        )
+        return {"checkout_url": session.url}
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/success-delivery")
+async def checkout_success_delivery(
+    session_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Handle successful delivery payment."""
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status != "paid":
+            raise HTTPException(status_code=400, detail="Payment not completed")
+
+        purchase_id = int(session.client_reference_id)
+        user_id = int(session.metadata.get("user_id"))
+
+        if user_id != user.id:
+            raise HTTPException(status_code=403, detail="Unauthorized")
+
+        purchase = db.query(Purchase).filter(
+            Purchase.id == purchase_id,
+            Purchase.user_id == user.id,
+            Purchase.status == "finalized"
+        ).first()
+
+        if not purchase:
+            raise HTTPException(status_code=400, detail="Purchase is not finalized or not found.")
+
+        db.query(DeliveryInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
+        db.query(PurchaseAddon).filter_by(purchase_id=purchase_id, status="in_progress").update({"status": "finalized"})
+
+        db.commit()
+
+        logger.info(f"[Delivery] Finalized for purchase {purchase_id} (user {user_id})")
+        return RedirectResponse(url="/purchase/complete")
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# For admin
+@router.get("/admin/finance/applications", response_model=List[FinanceApplicationResponse])
+async def get_finance_applications(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    
+    applications = db.query(FinanceApplication).all()
+    return [
+        FinanceApplicationResponse(
+            id=app.id,
+            user_id=app.user_id,
+            car_id=app.car_id,
+            name=app.name,
+            surname=app.surname,
+            telephone_number=app.telephone_number,
+            email=app.email,
+            identification_number=app.identification_number,
+            date_of_birth=app.date_of_birth,
+            status=app.status,
+            created_at=app.created_at.isoformat(),
+            updated_at=app.updated_at.isoformat()
+        )
+        for app in applications
+    ]
+    
+@router.patch("/admin/finance/applications/{id}/status", response_model=FinanceApplicationResponse)
+async def update_finance_status(
+    id: int,
+    data: FinanceApplicationUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    
+    application = db.query(FinanceApplication).filter(FinanceApplication.id == id).first()
+    if not application:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
+    
+    application.status = data.status
+    db.commit()
+    db.refresh(application)
+    
+    logger.info(f"Finance application updated: id={id}, status={data.status}")
+    return FinanceApplicationResponse(
+        id=application.id,
+        user_id=application.user_id,
+        car_id=application.car_id,
+        name=application.name,
+        surname=application.surname,
+        telephone_number=application.telephone_number,
+        email=application.email,
+        identification_number=application.identification_number,
+        date_of_birth=application.date_of_birth,
+        status=application.status,
+        created_at=application.created_at.isoformat(),
+        updated_at=application.updated_at.isoformat()
+    )
+
+@router.get("/admin/bank-transfer/data", response_model=List[BankTransferResponse])
+async def get_bank_transfer_data(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    
+    bank_infos = db.query(BankTransferInfo).all()
+    return [
+        BankTransferResponse(
+            id=info.id,
+            user_id=info.user_id,
+            car_id=info.car_id,
+            name=info.name,
+            surname=info.surname,
+            telephone_number=info.telephone_number,
+            birth_date=info.birth_date,
+            billing_address_street=info.billing_address_street,
+            billing_address_house_number=info.billing_address_house_number,
+            billing_address_postal_code=info.billing_address_postal_code,
+            billing_address_city=info.billing_address_city,
+            billing_address_country=info.billing_address_country,
+            is_company=info.is_company,
+            is_vat_payer=info.is_vat_payer,
+            company_id=info.company_id,
+            company_name=info.company_name,
+            created_at=info.created_at.isoformat()
+        )
+        for info in bank_infos
+    ]
+
+# For user
+@router.get("/purchase-details-user")
+async def get_purchase_details_user(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+
+    # --- Latest In-Progress Finance Application ---
+    app = db.query(FinanceApplication).filter(
+        FinanceApplication.user_id == user.id,
+        FinanceApplication.status == "in_progress"
+    ).order_by(FinanceApplication.created_at.desc()).first()
+
+    finance_applications = [
+        FinanceApplicationResponse(
+            id=app.id,
+            user_id=app.user_id,
+            car_id=app.car_id,
+            name=app.name,
+            surname=app.surname,
+            telephone_number=app.telephone_number,
+            email=app.email,
+            identification_number=app.identification_number,
+            date_of_birth=app.date_of_birth,
+            status=app.status,
+            created_at=app.created_at.isoformat(),
+            updated_at=app.updated_at.isoformat()
+        )
+    ] if app else [
+        FinanceApplicationResponse(
+            id=0,
+            user_id=user.id,
+            car_id="N/A",
+            name=user.username,
+            surname="Unknown",
+            telephone_number="Not provided",
+            email=user.email,
+            identification_number="N/A",
+            date_of_birth="1900-01-01",
+            status="pending",
+            created_at="0000-00-00T00:00:00",
+            updated_at="0000-00-00T00:00:00"
+        )
+    ]
+
+    # --- Latest In-Progress Bank Transfer Info ---
+    info = db.query(BankTransferInfo).filter(
+        BankTransferInfo.user_id == user.id,
+        BankTransferInfo.status == "in_progress"
+    ).order_by(BankTransferInfo.created_at.desc()).first()
+
+    all_bank_infos = [
+        BankTransferResponse(
+            id=info.id,
+            user_id=info.user_id,
+            car_id=info.car_id,
+            name=info.name,
+            surname=info.surname,
+            telephone_number=info.telephone_number,
+            birth_date=info.birth_date,
+            billing_address_street=info.billing_address_street,
+            billing_address_house_number=info.billing_address_house_number,
+            billing_address_postal_code=info.billing_address_postal_code,
+            billing_address_city=info.billing_address_city,
+            billing_address_country=info.billing_address_country,
+            is_company=info.is_company,
+            is_vat_payer=info.is_vat_payer,
+            company_id=info.company_id,
+            company_name=info.company_name,
+            created_at=info.created_at.isoformat()
+        )
+    ] if info else [
+        BankTransferResponse(
+            id=0,
+            user_id=user.id,
+            car_id="N/A",
+            name=user.username,
+            surname="Unknown",
+            telephone_number="Not provided",
+            birth_date="1900-01-01",
+            billing_address_street="N/A",
+            billing_address_house_number="-",
+            billing_address_postal_code="00000",
+            billing_address_city="Unknown",
+            billing_address_country="Unknown",
+            is_company=False,
+            is_vat_payer=False,
+            company_id=None,
+            company_name=None,
+            created_at="0000-00-00T00:00:00"
+        )
+    ]
+
+    # --- Latest In-Progress Delivery Info ---
+    delivery = db.query(DeliveryInfo).filter(
+        DeliveryInfo.user_id == user.id,
+        DeliveryInfo.status == "in_progress"
+    ).order_by(DeliveryInfo.created_at.desc()).first()
+
+    delivery_info = [{
+        "id": delivery.id,
+        "user_id": delivery.user_id,
+        "car_id": delivery.car_id,
+        "delivery_type": delivery.delivery_type,
+        "name": delivery.name,
+        "email": delivery.email,
+        "phone_number": delivery.pone_number,
+        "address": delivery.address,
+        "billing_delivery_same": delivery.billing_delivery_same,
+        "delivery_address": delivery.delivery_address,
+        "city": delivery.city,
+        "postal_code": delivery.postal_code,
+        "country": delivery.country,
+        "pickup_location_id": delivery.pickup_location_id,
+        "total_price": delivery.total_price,
+        "created_at": delivery.created_at.isoformat(),
+        "updated_at": delivery.updated_at.isoformat()
+    }] if delivery else []
+
+    # --- Latest In-Progress Purchase & Add-ons ---
+    latest_purchase = db.query(Purchase).filter(
+        Purchase.user_id == user.id,
+        Purchase.status == "in_progress"
+    ).order_by(Purchase.created_at.desc()).first()
+
+    service_addons = []
+    if latest_purchase:
+        addon_entries = db.query(PurchaseAddon).filter(
+            PurchaseAddon.purchase_id == latest_purchase.id,
+            PurchaseAddon.status == "in_progress"
+        ).all()
+
+        for addon in addon_entries:
+            service_addons.append({
+                "id": addon.id,
+                "purchase_id": addon.purchase_id,
+                "addon_name": addon.addon_name,
+                "addon_price": addon.addon_price,
+                "status": addon.status,
+                "created_at": addon.created_at.isoformat()
+            })
+
+    return {
+        "finance_applications": finance_applications,
+        "bank_infos": all_bank_infos,
+        "delivery_info": delivery_info,
+        "service_addons": service_addons
+    }
 
 @router.get("/purchase/complete")
 async def purchase_complete():
@@ -479,6 +992,7 @@ async def purchase_complete():
 async def purchase_canceled():
     """Handle purchase cancellation page."""
     return {"message": "Purchase was canceled. Please try again or contact support."}
+
 
 
 @router.post("/webhook")
