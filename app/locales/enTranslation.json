@@ -33,15 +33,7 @@
       "subtitle": "Exclusive partner of AutoScout24"
     }
   },
-  "car": {
-    "brand": "Brand",
-    "model": "Model",
-    "year": "Year",
-    "price": "Price",
-    "mileage": "Mileage",
-    "transmission": "Transmission",
-    "fuelType": "Fuel Type"
-  },
+ 
   "buttons": {
     "viewDetails": "View Details",
     "bookNow": "Book Now",
@@ -222,7 +214,7 @@
     "faqQ8": "What documents do I need for my trip, and how do I obtain them?",
     "faqA8": "Provide a step-by-step guide ...",
     "faqQ9": "How do I make a reservation on your website?",
-    "faqA9": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",  
+    "faqA9": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
     "faqQ10": "How do I make a reservation on your website?",
     "faqA10": "Provide a step-by-step guide on how users can browse and book travel services on your platform. Include information on searching for destinations, selecting dates, choosing accommodation, and completing the booking process. Mention any special features or tools that can help users find the best deals.",
     "faqQ11": "What documents do I need for my trip, and how do I obtain them?",
@@ -287,7 +279,7 @@
     "highlyFlexible": "Highly Flexible and Customizable",
     "highlyFlexibleDesc": "The attention to detail in the booking process made our trip stress-free, allowing us to focus on creating lasting memories together."
   },
-  "financing":{
+  "financing": {
     "downPaymentPercent": "Down payment (%)",
     "lastPayment": "Last payment"
   },
@@ -362,5 +354,98 @@
     "review3": {
       "text": "Lorenz is an amazing tutor. He gave us a lot of examples and real-life case studies."
     }
+   
+  },
+  "car": {
+    "brand": "Brand",
+    "model": "Model",
+    "year": "Year",
+    "fuelType": "Fuel Type",
+    "totalPriceInclServices": "TOTAL PRICE INCL. SERVICES",
+    "details": "Details",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "priceMap": "Price map",
+    "comparison": "Comparison",
+    "financing": "Financing",
+    "mileage": "Mileage",
+    "firstRegistration": "First Registration",
+    "power": "Power",
+    "transmission": "Transmission",
+    "co2Emissions": "CO2 Emissions",
+    "location": "Location",
+    "moreAbout": "More about electric cars",
+    "specifications": "Electric motor specifications for a new car",
+    "spec": "Hybrid(HEV)",
+    "moreAboutDesc": "The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.",
+    "general": "General",
+    "engine": "Engine",
+    "gearbox": "Gearbox",
+    "fuel": "Fuel",
+    "vehicleId": "Vehicle ID",
+    "make": "Make",
+    "enginecapacity": "Engine Capacity",
+    "equipmentDesc": "The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.",
+    "driveType": "Drive Type",
+    "consumption": "Consumption (comb.)",
+    "marketAnalysis": "Market Analysis",
+    "thisVehicle": "This Vehicle",
+    "similarModels": "Similar Models",
+    "marketAverage": "Market Average",
+    "thisCar": "This Car",
+    "veryGoodPrice": "Very Good Price",
+    "price": "Price",
+    "priceWithoutVAT": "Price without VAT",
+    "servicesTotal": "Services Total",
+    "carInspection": "Car Inspection",
+    "delivery": "Delivery",
+    "registrationTax": "Registration Tax",
+    "preDeliveryPrep": "Pre-delivery Preparation",
+    "howitworks": {
+      "title": "How it works",
+      "step1Title": "Check the car first, decide later",
+      "step1Desc1": "Before you commit, we'll arrange a thorough inspection and provide you with a detailed report on the car's technical condition.\nOnly after reviewing the results do you decide if you want to proceed with the purchase.",
+      "step2Title": "We stand by the guarantee!",
+      "step2Desc1": "We're confident in the cars we sell, but for your peace of mind, every purchase comes with a 6-month warranty covering key components—engine, transmission, and differential—plus protection against hidden defects.\nIf you're not satisfied, you can return the car within 14 days of receiving it.",
+      "step3Title": "Fast Delivery",
+      "step3Desc1": "Most vehicles can be delivered within 20 business days after your order is confirmed and payment is received.\nPlease note: Delivery times may vary depending on the car's location and the administrative requirements in each country."
+    },
+    "pricemap": {
+      "title": "Price Map",
+      "thisVehicle": "This Vehicle",
+      "similarModels": "Similar Models",
+      "priceVsMileage": "Price vs Mileage Comparison",
+      "comparedTo": "Compared to",
+      "equipment": "Equipment",
+      "thisCar": "This Car"
+    },
+    "comparisonPage": {
+      "title": "Comparison",
+      "desc": "Compared with more than 408 similar vehicles offered in recent months.\nWe take in account up to 70 vehicle characteristics.",
+      "moreThan": "More than {{count}} similar vehicles analyzed",
+      "account": "{{count}}% of customers choose this price range"
+    },
+    "sideBar": {
+      "vgoodprice": "Very Good Price",
+      "price": "Price",
+      "priceWithoutVAT": "Price without VAT",
+      "financing": "Financing",
+      "buynow": "Buy Now",
+      "enterZipcode": "Enter ZIP code",
+      "loading": "Loading...",
+      "check": "Check",
+      "servicesTotal": "Services Total",
+      "carInspection": "Car Inspection",
+      "delivery": "Delivery",
+      "registrationTax": "Registration/Province Tax",
+      "preDeliveryPrep": "Preparing the car for delivery (with a license plate)",
+      "10litresfuel": "10 litres of fuel",
+      "extendedWarranty": "Extended Warranty",
+      "totalPrice": "Total Price",
+      "free": "Free",
+      "additionalServices": "Additional Services",
+      "optionalServices": "Optional Services",
+      "otherRecommendedServices": "Other recommended services can be selected in the car order"
+    }
   }
-} 
+}

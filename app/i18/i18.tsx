@@ -11,7 +11,7 @@ import { RootState } from './Store';
 // Import your translation files
 import enTranslations from '../locales/enTranslation.json';
 import frTranslations from '../locales/frTranslation.json';
-import arTranslations from '../locales/arTranslation.json';
+import arTranslations from '../locales/grTranslation.json';
 
 export const languageResources = {
     en: { translation: enTranslations },

@@ -33,15 +33,7 @@
       "subtitle": "Partenaire exclusif d'AutoScout24"
     }
   },
-  "car": {
-    "brand": "Marque",
-    "model": "Modèle",
-    "year": "Année",
-    "price": "Prix",
-    "mileage": "Kilométrage",
-    "transmission": "Transmission",
-    "fuelType": "Type de carburant"
-  },
+
   "buttons": {
     "viewDetails": "Voir les détails",
     "bookNow": "Réserver maintenant",
@@ -358,6 +350,98 @@
     },
     "review3": {
       "text": "Lorenz est un tuteur incroyable. Il nous a donné beaucoup d'exemples et d'études de cas réels."
+    }
+  },
+  "car": {
+    "brand": "Marca",
+    "model": "Modelo",
+    "year": "Año",
+    "fuelType": "Tipo de combustible",
+    "totalPriceInclServices": "PRECIO TOTAL INCL. SERVICIOS",
+    "details": "Detalles",
+    "features": "Características",
+    "howItWorks": "Cómo funciona",
+    "priceMap": "Mapa de precios",
+    "comparison": "Comparación",
+    "financing": "Financiación",
+    "mileage": "Kilometraje",
+    "firstRegistration": "Primera matriculación",
+    "power": "Potencia",
+    "transmission": "Transmisión",
+    "co2Emissions": "Emisiones de CO2",
+    "location": "Ubicación",
+    "moreAbout": "Más sobre coches eléctricos",
+    "specifications": "Especificaciones del motor eléctrico para un coche nuevo",
+    "spec": "Híbrido (HEV)",
+    "moreAboutDesc": "Los parámetros especificados del sistema de propulsión eléctrica son indicativos y representan la mejor opción posible para un vehículo nuevo. Los valores reales pueden variar según la configuración, la antigüedad y el estado técnico del vehículo.",
+    "general": "General",
+    "engine": "Motor",
+    "gearbox": "Caja de cambios",
+    "fuel": "Combustible",
+    "vehicleId": "ID del vehículo",
+    "make": "Fabricante",
+    "enginecapacity": "Cilindrada",
+    "equipmentDesc": "Los parámetros especificados del sistema de propulsión eléctrica son indicativos y representan la mejor opción posible para un vehículo nuevo. Los valores reales pueden variar según la configuración, la antigüedad y el estado técnico del vehículo.",
+    "driveType": "Tipo de tracción",
+    "consumption": "Consumo (comb.)",
+    "marketAnalysis": "Análisis de mercado",
+    "thisVehicle": "Este vehículo",
+    "similarModels": "Modelos similares",
+    "marketAverage": "Promedio del mercado",
+    "thisCar": "Este coche",
+    "veryGoodPrice": "Muy buen precio",
+    "price": "Precio",
+    "priceWithoutVAT": "Precio sin IVA",
+    "servicesTotal": "Total de servicios",
+    "carInspection": "Inspección del coche",
+    "delivery": "Entrega",
+    "registrationTax": "Impuesto de matriculación",
+    "preDeliveryPrep": "Preparación previa a la entrega",
+    "howitworks": {
+      "title": "Cómo funciona",
+      "step1Title": "Primero revisa el coche, decide después",
+      "step1Desc1": "Antes de comprometerte, organizaremos una inspección exhaustiva y te proporcionaremos un informe detallado sobre el estado técnico del coche.\nSolo después de revisar los resultados decides si quieres continuar con la compra.",
+      "step2Title": "¡Con garantía incluida!",
+      "step2Desc1": "Confiamos en los coches que vendemos, pero para tu tranquilidad, cada compra incluye una garantía de 6 meses que cubre los componentes clave: motor, transmisión y diferencial, además de protección contra defectos ocultos.\nSi no estás satisfecho, puedes devolver el coche dentro de los 14 días posteriores a su recepción.",
+      "step3Title": "Entrega rápida",
+      "step3Desc1": "La mayoría de los vehículos pueden entregarse en un plazo de 20 días hábiles después de confirmar el pedido y recibir el pago.\nNota: Los plazos de entrega pueden variar según la ubicación del coche y los requisitos administrativos de cada país."
+    },
+    "pricemap": {
+      "title": "Mapa de precios",
+      "thisVehicle": "Este vehículo",
+      "similarModels": "Modelos similares",
+      "priceVsMileage": "Comparación de precio vs kilometraje",
+      "comparedTo": "Comparado con",
+      "equipment": "Equipamiento",
+      "thisCar": "Este coche"
+    },
+    "comparisonPage": {
+      "title": "Comparación",
+      "desc": "Comparado con más de 408 vehículos similares ofrecidos en los últimos meses.\nTenemos en cuenta hasta 70 características del vehículo.",
+      "moreThan": "Más de {{count}} vehículos similares analizados",
+      "account": "El {{count}}% de los clientes eligen este rango de precios"
+    },
+    "sideBar": {
+      "vgoodprice": "Muy buen precio",
+      "price": "Precio",
+      "priceWithoutVAT": "Precio sin IVA",
+      "financing": "Financiación",
+      "buynow": "Comprar ahora",
+      "enterZipcode": "Introduce el código postal",
+      "loading": "Cargando...",
+      "check": "Comprobar",
+      "servicesTotal": "Total de servicios",
+      "carInspection": "Inspección del coche",
+      "delivery": "Entrega",
+      "registrationTax": "Impuesto de matriculación/provincia",
+      "preDeliveryPrep": "Preparación del coche para la entrega (con matrícula)",
+      "10litresfuel": "10 litros de combustible",
+      "extendedWarranty": "Garantía extendida",
+      "totalPrice": "Precio total",
+      "free": "Gratis",
+      "additionalServices": "Servicios adicionales",
+      "optionalServices": "Servicios opcionales",
+      "otherRecommendedServices": "Otros servicios recomendados se pueden seleccionar al hacer el pedido del coche"
     }
   }
 } 

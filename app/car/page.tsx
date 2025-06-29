@@ -72,6 +72,8 @@ import Image from 'next/image'
 import { ChevronUp, X, ChevronDown, Calendar, Clock, Info, Gauge, Fuel } from "lucide-react"
 
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
+import { useTranslation } from 'react-i18next'
+import { t } from 'i18next'
 // import { XAxis, YAxis, CartesianGrid } from "recharts";
 
 const arrowButtonStyle = {
@@ -338,7 +340,7 @@ export default function CarsDetails1() {
 			{ label: 'Car registration', price: 'EUR 1,990' },
 			{ label: 'Extended warranty', price: 'FREE', isFree: true }
 		];
-
+		const { t } = useTranslation()
 		return (
 			<>
 				<Box
@@ -391,7 +393,7 @@ export default function CarsDetails1() {
 						{/* Price Card */}
 						<Box bgGradient="linear(to-br, red.500, red.600, red.700)" borderRadius="xl" p={5} mx={3} mt={3} mb={4} color="white" textAlign="left">
 							<Text fontSize="sm" fontWeight="medium" color="red.100" opacity={0.9}>
-								TOTAL PRICE INCL. SERVICES
+								{t('car.totalPriceInclServices')}
 							</Text>
 							<Text fontSize="3xl" fontWeight="bold" mt={2} color="white" letterSpacing="tight">
 								EUR 647,765
@@ -405,7 +407,7 @@ export default function CarsDetails1() {
 										<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 									))}
 									<Text fontSize="sm" color='white' fontWeight="semibold" mb="0">
-										Very Good Price
+										{t('car.sideBar.vgoodprice')}
 									</Text>
 								</HStack>
 
@@ -419,15 +421,15 @@ export default function CarsDetails1() {
 							</Text>
 							<VStack spacing={1} align="stretch">
 								<Flex justify="space-between" align="center">
-									<Text fontSize="sm" color={mutedTextColor}>Price incl. necessary import services</Text>
+									<Text fontSize="sm" color={mutedTextColor}>{t('car.sideBar.price')}</Text>
 									<Text fontSize="sm" fontWeight="semibold" color={textColor}>EUR 634,490</Text>
 								</Flex>
 								<Flex justify="space-between" align="center">
-									<Text fontSize="sm" color={lightMutedTextColor}>Price without VAT</Text>
+									<Text fontSize="sm" color={lightMutedTextColor}>{t('car.sideBar.priceWithoutVAT')}</Text>
 									<Text fontSize="sm" color={lightMutedTextColor}>EUR 447,915</Text>
 								</Flex>
 								<Flex align="center" gap={1} mt={2} bg={gray50BgColor} rounded="lg">
-									<Text fontSize="xs" color={mutedTextColor}>The price is recalculated from 25.65 €</Text>
+									<Text fontSize="xs" color={mutedTextColor}>{t('car.sideBar.price')}</Text>
 									<Icon as={Info} w={3.5} h={3.5} color={lightMutedTextColor} aria-label="info-Icon" />
 								</Flex>
 							</VStack>
@@ -458,7 +460,7 @@ export default function CarsDetails1() {
 								letterSpacing="wider"
 								mb={1}
 							>
-								Additional Services
+								{t('car.sideBar.additionalServices')}
 							</Text>
 							<VStack spacing={1} align="stretch">
 								{services.map((service, index) => (
@@ -513,10 +515,10 @@ export default function CarsDetails1() {
 								textTransform="uppercase"
 								letterSpacing="wider"
 							>
-								Optional Services
+								{t('car.sideBar.optionalServices')}
 							</Text>
 							<Text fontSize="xs" color={mutedTextColor}>
-								Other recommended services can be selected in the car order
+								{t('car.sideBar.otherRecommendedServices')}
 							</Text>
 						</Box>
 
@@ -524,7 +526,7 @@ export default function CarsDetails1() {
 						<Box borderTop="1px" borderColor={borderColor} p={2}>
 							<Flex justify="space-between" align="center">
 								<Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
-									Total price
+									{t('car.sideBar.totalPrice')}
 								</Text>
 								<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
 									EUR 667,765
@@ -571,7 +573,7 @@ export default function CarsDetails1() {
 					>
 						<Link href="/checkout" passHref legacyBehavior>
 							<Button as="a" bg="red.500" color="white" size="lg" w="100%">
-								Buy Now
+								{t('car.sideBar.buynow')}
 							</Button>
 						</Link>
 					</Box>
@@ -886,22 +888,19 @@ export default function CarsDetails1() {
 										<div className="nav-scroll py-3  rounded" style={{ overflowX: "auto", whiteSpace: "nowrap", backgroundColor: bgColor }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a onClick={() => setActiveTab('#details')} href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>Details</a>
+													<a onClick={() => setActiveTab('#details')} href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.details')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>Features</a>
+													<a onClick={() => setActiveTab('features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.features')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>How it works</a>
+													<a onClick={() => setActiveTab('how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.howItWorks')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>Price map</a>
+													<a onClick={() => setActiveTab('price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.priceMap')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('comparison')} href="#comparison" className={`text-md md:text-lg nav-link ${activeTab === 'comparison' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'comparison' ? { backgroundColor: "#E53E3E" } : {}}>Comparison</a>
-												</li>
-												<li className="nav-item">
-													<a onClick={() => setActiveTab('financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>Financing</a>
+													<a onClick={() => setActiveTab('financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.financing')}</a>
 												</li>
 											</ul>
 										</div>
@@ -912,7 +911,7 @@ export default function CarsDetails1() {
 									<div className="group-collapse-expand border-none">
 										<div className="card card-body">
 											<div className="car-details-specifications py-4">
-												<h2 className="mb-4 text-gray-900 dark:text-white">Details</h2>
+												<h2 className="mb-4 text-gray-900 dark:text-white">{t('car.details')}</h2>
 
 												<div className="bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4">
 													<div className="row g-4">
@@ -925,7 +924,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">MILEAGE</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.mileage')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">46,042 km</div>
 																</div>
 															</div>
@@ -941,7 +940,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">FIRST REGISTRATION</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.firstRegistration')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">12/2020</div>
 																</div>
 															</div>
@@ -956,7 +955,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">POWER</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.power')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">181 hp</div>
 																</div>
 															</div>
@@ -972,7 +971,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">TRANSMISSION</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.transmission')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">Automatic</div>
 																</div>
 															</div>
@@ -985,7 +984,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">DRIVE TYPE</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.driveType')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">4x2</div>
 																</div>
 															</div>
@@ -1002,7 +1001,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">CONSUMPTION</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.consumption')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">4 l/100km</div>
 																</div>
 															</div>
@@ -1020,7 +1019,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">CO2 EMISSIONS</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.co2Emissions')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">{carData?.CO2_emissions}/km</div>
 																</div>
 															</div>
@@ -1036,7 +1035,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-gray-500 dark:text-gray-400 small">LOCATION</div>
+																	<div className="text-gray-500 dark:text-gray-400 small">{t('car.location')}</div>
 																	<div className="fw-bold text-gray-900 dark:text-white">{carData?.country}</div>
 																</div>
 															</div>
@@ -1046,8 +1045,8 @@ export default function CarsDetails1() {
 
 												<div className="electric-specs bg-gray-50 dark:bg-gray-800 p-4 rounded mb-4" >
 													<div className="d-flex justify-content-between mb-3">
-														<h6 className='sm:text-md md:text-lg lg:text-xl text-gray-900 dark:text-white'>Electric motor specifications for a new car</h6>
-														<span className="badge bg-red-500 text-dark p-2 rounded">Hybrid (HEV) ⓘ</span>
+														<h6 className='sm:text-md md:text-lg lg:text-xl text-gray-900 dark:text-white'>{t('car.specifications')}</h6>
+														<span className="badge bg-red-500 text-dark p-2 rounded">{t('car.spec')}ⓘ</span>
 													</div>
 
 													{/* <div className="row g-4 mt-2">
@@ -1062,7 +1061,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-muted small">BATTERY CAPACITY</div>
+																	<div className="text-muted small">{t('car.batteryCapacity')}</div>
 																	<div className="fw-bold">2 kWh</div>
 																</div>
 															</div>
@@ -1075,7 +1074,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-muted small">ELECTRIC MOTOR POWER ⓘ</div>
+																	<div className="text-muted small">{t('car.electricMotorPower')}</div>
 																	<div className="fw-bold">80 kW</div>
 																</div>
 															</div>
@@ -1092,7 +1091,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-muted small">INTERNAL COMB. ENGINE POWER ⓘ</div>
+																	<div className="text-muted small">{t('car.internalCombEnginePower')}</div>
 																	<div className="fw-bold">112 kW</div>
 																</div>
 															</div>
@@ -1109,7 +1108,7 @@ export default function CarsDetails1() {
 																	</svg>
 																</div>
 																<div>
-																	<div className="text-muted small">SECONDARY FUEL ⓘ</div>
+																	<div className="text-muted small">{t('car.secondaryFuel')}</div>
 																	<div className="fw-bold">Petrol</div>
 																</div>
 															</div>
@@ -1127,7 +1126,7 @@ export default function CarsDetails1() {
 
 													<div className="mt-2">
 														<a href="#" className="text-primary d-flex align-items-center">
-															<span>More about electric cars</span>
+															<span>{t('car.moreAbout')}</span>
 															<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ms-2">
 																<path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
 																<path d="M14 2h6v6"></path>
@@ -1137,7 +1136,7 @@ export default function CarsDetails1() {
 													</div>
 
 													<div className="mt-4 pt-3 border-top text-muted small">
-														<p className="mb-0">The specified parameters of the electric drive are indicative and represent the best possible option for a new vehicle. Actual values may vary depending on the configuration, age, and technical condition of the vehicle.</p>
+														<p className="mb-0">{t('car.moreAboutDesc')}</p>
 													</div>
 												</div>
 
@@ -1145,16 +1144,16 @@ export default function CarsDetails1() {
 													<div className="row">
 														<div className="col-6 col-md-4 ">
 															<div className="card border-0 mb-4">
-																<div className="card-header bg-gray-50 dark:bg-gray-800">General</div>
+																<div className="card-header bg-gray-50 dark:bg-gray-800">{t('car.general')}</div>
 																<div className="card-body p-0">
 																	<table className="table table-striped mb-0">
 																		<tbody>
 																			<tr>
-																				<td className="text-muted">Vehicle ID</td>
+																				<td className="text-muted">{t('car.vehicleId')}</td>
 																				<td className="fw-medium">{carData?.id}</td>
 																			</tr>
 																			<tr>
-																				<td className="text-muted">Make</td>
+																				<td className="text-muted">{t('car.make')}</td>
 																				<td className="fw-medium">{carData?.brand}</td>
 																			</tr>
 																		</tbody>
@@ -1164,16 +1163,16 @@ export default function CarsDetails1() {
 														</div>
 														<div className="col-6 col-md-4">
 															<div className="card border-0 mb-4">
-																<div className="card-header bg-gray-50 dark:bg-gray-800">Engine</div>
+																<div className="card-header bg-gray-50 dark:bg-gray-800">{t('car.engine')}</div>
 																<div className="card-body p-0">
 																	<table className="table table-striped mb-0">
 																		<tbody>
 																			<tr>
-																				<td className="text-muted">Engine capacity</td>
+																				<td className="text-muted">{t('car.enginecapacity')}</td>
 																				<td className="fw-medium">{carData?.engine_size}</td>
 																			</tr>
 																			{/* <tr>
-																				<td className="text-muted">Consumption (comb.)</td>
+																				<td className="text-muted">{t('car.consumptionComb')}</td>
 																				<td className="fw-medium">{carData?.CO2_emissions}</td>
 																			</tr> */}
 																		</tbody>
@@ -1190,7 +1189,7 @@ export default function CarsDetails1() {
 
 								<div className="features-section py-5" id="features">
 									<div className="container-fluid px-0">
-										<h2 className="mb-4 text-gray-900 dark:text-white">Features</h2>
+										<h2 className="mb-4 text-gray-900 dark:text-white">{t('car.features')}</h2>
 										<div className="row">
 											{Object.entries(carData?.features || {}).map(([category, features]) => (
 												<div key={category} className="col-md-6 mb-4">
@@ -1221,7 +1220,7 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="how-it-works" className="mt-5 pt-3 w-full">
-									<h3 className="mb-4 text-gray-900 dark:text-white">How it works</h3>
+									<h3 className="mb-4 text-gray-900 dark:text-white">{t('car.howitworks.title')}</h3>
 									<div className="card border-0 rounded-4 overflow-hidden ">
 										<div id="howItWorksCarousel" className="carousel slide" data-bs-ride="carousel">
 											<div className="carousel-inner">
@@ -1235,13 +1234,11 @@ export default function CarsDetails1() {
 																<div className="position-absolute" style={{ top: 0, right: 0, bottom: 0, left: 0, background: "linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(255,122,0,0.4) 100%)" }}></div>
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }}>
-																<h4 className="text-gray-900 dark:text-white mb-3">Check the car first, decide later</h4>
+																<h4 className="text-gray-900 dark:text-white mb-3">{t('car.howitworks.step1Title')}</h4>
 																<p className="mb-4 text-gray-900 dark:text-gray-200">
-																	Before you commit, we'll arrange a thorough inspection and provide you with a detailed report on the car's technical condition.
+																	{t('car.howitworks.step1Desc1')}
 																</p>
-																<p className="text-gray-500 dark:text-gray-400">
-																	Only after reviewing the results do you decide if you want to proceed with the purchase.
-																</p>
+																
 																<div className="mt-4 position-relative">
 																	<div className="rounded-circle d-flex align-items-center justify-content-center"
 																		style={{
@@ -1273,11 +1270,9 @@ export default function CarsDetails1() {
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
 																<h4 className="text-gray-900 dark:text-white mb-3">We stand by the guarantee!</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
-																	We're confident in the cars we sell, but for your peace of mind, every purchase comes with a 6-month warranty covering key components—engine, transmission, and differential—plus protection against hidden defects.
+																	{t('car.howitworks.step2Desc1')}
 																</p>
-																<p className="text-gray-500 dark:text-white">
-																	If you're not satisfied, you can return the car within 14 days of receiving it
-																</p>
+																
 															</div>
 														</div>
 													</div>
@@ -1293,12 +1288,12 @@ export default function CarsDetails1() {
 															</div>
 															<div className="py-5 px-4 px-md-5" style={{ width: "fit-content" }} color='black'>
 
-																<h4 className="text-gray-900 dark:text-white mb-3">Fast Delivery </h4>
+																<h4 className="text-gray-900 dark:text-white mb-3">{t('car.howitworks.step3Title')}</h4>
 																<p className="mb-4 text-gray-900 dark:text-white">
-																	Most vehicles can be delivered within 20 business days after your order is confirmed and payment is received.
+																	{t('car.howitworks.step3Desc1')}
 																</p>
 																<p className="text-xs sm:text-sm md:text-base text-gray-500 dark:text-white">
-																	Please note: Delivery times may vary depending on the car's location and the administrative requirements in each country.
+																	{t('car.howitworks.step3Desc2')}
 																</p>
 															</div>
 														</div>
@@ -1382,19 +1377,19 @@ export default function CarsDetails1() {
 									</div>
 								</div>
 								<div id="price-map" className="mt-5 pt-3">
-									<h2 className="mb-4 text-gray-900">Price Map <span className="badge bg-light text-primary fs-6 ms-2">Market Analysis</span></h2>
+									<h2 className="mb-4 text-gray-900">{t('car.pricemap.title')}</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4 bg-white">
 											<div className="d-flex justify-content-between align-items-center mb-3 bg-white">
-												<h5 className="mb-0 fs-6 text-black">Price vs Mileage Comparison</h5>
+												<h5 className="mb-0 fs-6 text-black">{t('car.pricemap.priceVsMileage')}</h5>
 												<div className="d-flex gap-3 align-items-center">
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#FF7A00' }}></div>
-														<span className="small text-black">This vehicle</span>
+														<span className="small text-black">{t('car.pricemap.thisVehicle')}</span>
 													</div>
 													<div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#3B66FF' }}></div>
-														<span className="small text-black">Similar models</span>
+														<span className="small text-black">{t('car.pricemap.similarModels')}</span>
 													</div>
 													{/* <div className="d-flex align-items-center">
 														<div className="rounded-circle me-2" style={{ width: '12px', height: '12px', backgroundColor: '#BBC5D5' }}></div>
@@ -1556,7 +1551,7 @@ export default function CarsDetails1() {
 																	<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 																))}
 																<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-																	Very Good Price
+																	{t('cars.veryGoodPrice')}
 																</Text>
 															</HStack>
 
@@ -1566,12 +1561,12 @@ export default function CarsDetails1() {
 																€ {carData?.price.toLocaleString()}
 															</Text>
 															<Text fontSize="xs" color={textColor}>
-																€{(carData?.price / 4).toFixed(2)} without VAT
+																€{(carData?.price / 4).toFixed(2)} {t('cars.withoutVAT')}
 															</Text>
 														</Box>
 													</Flex>
 
-													<h6 className="mt-4 mb-3">Equipment</h6>
+													<h6 className="mt-4 mb-3">{t('car.pricemap.equipment')}</h6>
 													<Flex wrap="wrap" gap={["2", "2", "1.5"]} mt="0" mb={["4", "4", "0"]} ml="1">
 														{carData?.features &&
 															Object.entries(carData?.features)
@@ -1612,7 +1607,7 @@ export default function CarsDetails1() {
 												<div className="position-relative">
 													<img src={similarCars?.[0]?.image} className="card-img-top rounded-top-4" alt={similarCars?.[0]?.name || "Similar Car"} style={{ height: '200px', objectFit: 'cover' }} />
 													<div className="position-absolute top-0 start-0 m-3">
-														<span className="badge bg-warning text-dark px-3 py-2">COMPARED TO</span>
+														<span className="badge bg-warning text-dark px-3 py-2">{t('car.pricemap.comparedTo')}</span>
 													</div>
 												</div>
 												<div className="card-body p-4">
@@ -1660,7 +1655,7 @@ export default function CarsDetails1() {
 																	<Box key={i} w="7px" h="7px" borderRadius="full" bg="#64E364" />
 																))}
 																<Text fontSize="sm" color={textColor} fontWeight="semibold" mb="0">
-																	Very Good Price
+																	{t('cars.veryGoodPrice')}
 																</Text>
 															</HStack>
 														</VStack>
@@ -1669,12 +1664,12 @@ export default function CarsDetails1() {
 																€ {similarCars?.[0]?.price?.toLocaleString() || "N/A"}
 															</Text>
 															<Text fontSize="xs" color={textColor}>
-																€{(similarCars?.[0]?.price ? (similarCars[0].price / 4).toFixed(2) : "N/A")} without VAT
+																€{(similarCars?.[0]?.price ? (similarCars[0].price / 4).toFixed(2) : "N/A")} {t('cars.	withoutVAT')}
 															</Text>
 														</Box>
 													</Flex>
 
-													<h6 className="mt-4 mb-3">Equipment</h6>
+													<h6 className="mt-4 mb-3">{t('car.pricemap.equipment')}</h6>
 													<div className="d-flex flex-wrap gap-2">
 														{similarCars?.[0]?.features && Object.entries(similarCars[0].features as Record<string, string[]>).map(([category, features]) => (
 															features.map((feature: string, index: number) => (
@@ -1691,12 +1686,12 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="comparison" className="mt-5 pt-3">
-									<h2 className="mb-4 ">Comparison</h2>
+									<h2 className="mb-4 ">{t('car.comparisonPage.title')}</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 											<div className="text-center mb-4">
-												<p className="mb-2 fs-6">Compared with more than <span className="fw-bold text-primary">408 similar vehicles</span> offered in recent months.</p>
-												<p className="mb-5 pb-10">We take in account <span className="fw-bold">up to 70 vehicle characteristics</span>.</p>
+												<p className="mb-2 fs-6">{t('car.comparisonPage.desc')}</p>
+												
 
 												<div className="position-relative mt-5 pt-4">
 													<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
@@ -1755,7 +1750,7 @@ export default function CarsDetails1() {
 								</div>
 
 								<div id="financing" className="mt-5 pt-3">
-									<h2 className="mb-4">Financing</h2>
+									<h2 className="mb-4">{t('car.financing')}</h2>
 									<div className="card border-0 rounded-4 overflow-hidden mb-4">
 										<div className="card-body p-4">
 
@@ -1788,15 +1783,15 @@ export default function CarsDetails1() {
 												<span className="d-inline-block me-1 rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#64E364" }}></span>
 												<span className="d-inline-block rounded-circle" style={{ width: "10px", height: "10px", backgroundColor: "#E9FAE3" }}></span>
 											</div>
-											<p className="text-success m-0 fw-semibold">Very good price</p>
+											<p className="text-success m-0 fw-semibold">{t('car.sideBar.vgoodprice')}</p>
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center mb-2">
-											<h6 className="text-lg-bold neutral-1000 m-0">Car price</h6>
+											<h6 className="text-lg-bold neutral-1000 m-0">{t('car.sideBar.price')}</h6>
 											<p className="text-xl-bold m-0 fs-3">€{charges?.car_price}</p>
 										</div>
 										<div className="d-flex justify-content-between align-items-center mb-4">
-											<p className="text-md-medium text-muted m-0">Price without VAT</p>
+											<p className="text-md-medium text-muted m-0">{t('car.sideBar.priceWithoutVAT')}</p>
 											<p className="text-md-medium text-muted m-0">€{charges?.price_without_vat}</p>
 										</div>
 
@@ -1806,7 +1801,7 @@ export default function CarsDetails1() {
 												<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
 												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
-											Buy Now
+											{t('car.sideBar.buynow')}
 
 										</Link>
 
@@ -1816,12 +1811,12 @@ export default function CarsDetails1() {
 												<path d="M16.5 7.5C15.6716 7.5 15 8.17157 15 9C15 9.82843 15.6716 10.5 16.5 10.5C17.3284 10.5 18 9.82843 18 9C18 8.17157 17.3284 7.5 16.5 7.5Z" fill="currentColor" />
 												<path d="M8.25 12L5.25 15.75H18.75L14.25 9.75L11.25 13.5L8.25 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
-											Financing €327/mo
+											{t('car.sideBar.financing')} €327/mo
 										</Link>
 
 										<div className="d-flex justify-content-between align-items-center mb-3">
 											<h6 className="m-0 d-flex align-items-center">
-												Services total
+												{t('car.sideBar.servicesTotal')}
 												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2">
 													<path d="M8 10.6667L4 6.66675H12L8 10.6667Z" fill="currentColor" />
 												</svg>
@@ -1830,13 +1825,13 @@ export default function CarsDetails1() {
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0">Car Inspection</p>
+											<p className="text-md-medium m-0">{t('car.sideBar.carInspection')}</p>
 											<p className="text-md-medium m-0">€{charges?.car_inspection}</p>
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2 border-bottom">
 											<p className="text-md-medium m-0 d-flex align-items-center">
-												Delivery
+												{t('car.sideBar.delivery')}
 												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-primary">
 													<path d="M12.6667 6.00008H10.6667V2.66675H12L12.6667 6.00008ZM12.6667 6.00008H3.33333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													<path d="M11.9999 10H12.6666C13.0348 10 13.3333 9.70152 13.3333 9.33333V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1851,7 +1846,7 @@ export default function CarsDetails1() {
 													type="text"
 													value={zipcode}
 													onChange={e => setZipcode(e.target.value)}
-													placeholder="Enter ZIP code"
+													placeholder={t('car.sideBar.enterZipcode')}
 													style={{ width: 100, marginRight: 8, padding: '2px 6px', borderRadius: 4, border: '1px solid #ccc', height: '38px' }}
 												/>
 												<button
@@ -1860,7 +1855,7 @@ export default function CarsDetails1() {
 													onClick={() => setSubmittedZip(zipcode)}
 													disabled={!zipcode || isChargesLoading}
 												>
-													{isChargesLoading ? 'Loading...' : 'Check'}
+													{isChargesLoading ? t('car.sideBar.loading') : t('car.sideBar.check')}
 												</button>
 											</div>
 										</div>
@@ -1869,7 +1864,7 @@ export default function CarsDetails1() {
 												{isChargesLoading && <span>Loading charges...</span>}
 												{charges && (
 													<div className="d-flex justify-content-between align-items-center py-2">
-														<p className="text-md-medium m-0">Delivery</p>
+														<p className="text-md-medium m-0">{t('car.sideBar.delivery')}</p>
 
 														<p className="text-md-medium m-0">€{charges?.delivery}</p>
 													</div>
@@ -1879,7 +1874,7 @@ export default function CarsDetails1() {
 
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0 d-flex align-items-center">
-												Registration / Province Tax
+												{t('car.sideBar.registrationTax')}
 												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
 													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1891,7 +1886,7 @@ export default function CarsDetails1() {
 
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0 d-flex align-items-center">
-												Preparing the car for delivery (with a license plate)
+												{t('car.sideBar.preDeliveryPrep')}
 												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
 													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1904,7 +1899,7 @@ export default function CarsDetails1() {
 
 										<div className="d-flex justify-content-between align-items-center py-2">
 											<p className="text-md-medium m-0 d-flex align-items-center">
-												10 liters of fuel
+												{t('car.sideBar.10litresfuel')}
 												<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="ms-2 text-muted">
 													<path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 													<path d="M8 11V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1915,13 +1910,13 @@ export default function CarsDetails1() {
 										</div>
 
 										<div className="d-flex justify-content-between align-items-center py-2">
-											<p className="text-md-medium m-0">Extended warranty</p>
+											<p className="text-md-medium m-0">{t('car.sideBar.extendedWarranty')}</p>
 											<p className="text-md-medium m-0 px-3 py-1 bg-success text-white rounded-3">Free</p>
 										</div>
 										<Box borderTop="1px" borderColor={borderColor} p={2}>
 											<Flex justify="space-between" align="center">
 												<Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
-													Total price
+														{t('car.sideBar.totalPrice')}
 												</Text>
 												<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
 													EUR {charges?.total_price}
@@ -2064,7 +2059,7 @@ export default function CarsDetails1() {
 							<div>
 								<Link href="/checkout" passHref legacyBehavior >
 									<Button as="a" bg="#E53E3E" color="white" size="lg" w="100%" >
-										Buy Now
+										{t('car.sideBar.buynow')}
 									</Button>
 								</Link>
 							</div>
