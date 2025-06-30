@@ -129,8 +129,17 @@ class BankTransferCreate(BaseModel):
             raise ValueError("Invalid phone number format, e.g., +39...")
         return v
 
+    # @validator("birth_date")
+    # def validate_birth_date(cls, v):
+    #     if not re.match(r"^\d{2}\.\d{2}\.\d{4}$", v):
+    #         raise ValueError("Invalid date format, use DD.MM.YYYY")
+    #     return v
     @validator("birth_date")
     def validate_birth_date(cls, v):
+        # Remove invisible control characters
+        v = ''.join(c for c in v if c.isprintable())
+
+        # Validate the cleaned date format
         if not re.match(r"^\d{2}\.\d{2}\.\d{4}$", v):
             raise ValueError("Invalid date format, use DD.MM.YYYY")
         return v
@@ -183,7 +192,8 @@ class DeliveryResponse(BaseModel):
     id: int
     user_id: int
     car_id: str
-    finance_id: int
+    purchase_id: Optional[int] = None
+    finance_id: Optional[int] = None
     delivery_type: str
     name: Optional[str]
     email: Optional[str]
@@ -230,6 +240,12 @@ async def apply_finance(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
 
+    car = db.query(Car).filter(Car.id == data.car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    if car.status != "available":
+        raise HTTPException(status_code=400, detail="Car is already sold or not available for financing")
+    
     application = db.query(FinanceApplication).filter_by(
         user_id=user.id,
         car_id=data.car_id,
@@ -418,6 +434,79 @@ async def submit_bank_transfer(
         created_at=bank_info.created_at.isoformat()
     )
 
+@router.get("/get-latest-user-context")
+async def get_latest_user_context_api(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    # Fetch latest finalized purchase
+    purchase = db.query(Purchase).filter(
+        Purchase.user_id == user.id,
+        Purchase.status == "finalized"
+    ).order_by(Purchase.created_at.desc()).first()
+
+    # Fetch latest in-progress finance application
+    finance = db.query(FinanceApplication).filter(
+        FinanceApplication.user_id == user.id,
+        FinanceApplication.status == "in_progress"
+    ).order_by(FinanceApplication.updated_at.desc()).first()
+
+    # Decide which context is latest
+    if purchase and finance:
+        if purchase.created_at > finance.updated_at:
+            return {
+                "context_type": "purchase",
+                "data": {
+                    "id": purchase.id,
+                    "car_id": purchase.car_id,
+                    "status": purchase.status,
+                    "created_at": purchase.created_at.isoformat()
+                }
+            }
+        else:
+            return {
+                "context_type": "finance",
+                "data": {
+                    "id": finance.id,
+                    "car_id": finance.car_id,
+                    "status": finance.status,
+                    "created_at": finance.created_at.isoformat(),
+                    "updated_at": finance.updated_at.isoformat()
+                }
+            }
+
+    elif purchase:
+        return {
+            "context_type": "purchase",
+            "data": {
+                "id": purchase.id,
+                "car_id": purchase.car_id,
+                "status": purchase.status,
+                "created_at": purchase.created_at.isoformat()
+            }
+        }
+
+    elif finance:
+        return {
+            "context_type": "finance",
+            "data": {
+                "id": finance.id,
+                "car_id": finance.car_id,
+                "status": finance.status,
+                "created_at": finance.created_at.isoformat(),
+                "updated_at": finance.updated_at.isoformat()
+            }
+        }
+
+    # No context found
+    return {
+        "context_type": None,
+        "data": None
+    }
+
 # Stripe Payment Endpoints
 @router.post("/checkout/{car_id}")
 async def create_checkout_session(
@@ -579,79 +668,6 @@ async def checkout_cancel():
 #         } if finance else None
 #     }
 
-@router.get("/get-latest-user-context")
-async def get_latest_user_context_api(
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if not user:
-        raise HTTPException(status_code=401, detail="Authentication required")
-
-    # Fetch latest finalized purchase
-    purchase = db.query(Purchase).filter(
-        Purchase.user_id == user.id,
-        Purchase.status == "finalized"
-    ).order_by(Purchase.created_at.desc()).first()
-
-    # Fetch latest in-progress finance application
-    finance = db.query(FinanceApplication).filter(
-        FinanceApplication.user_id == user.id,
-        FinanceApplication.status == "in_progress"
-    ).order_by(FinanceApplication.updated_at.desc()).first()
-
-    # Decide which context is latest
-    if purchase and finance:
-        if purchase.created_at > finance.updated_at:
-            return {
-                "context_type": "purchase",
-                "data": {
-                    "id": purchase.id,
-                    "car_id": purchase.car_id,
-                    "status": purchase.status,
-                    "created_at": purchase.created_at.isoformat()
-                }
-            }
-        else:
-            return {
-                "context_type": "finance",
-                "data": {
-                    "id": finance.id,
-                    "car_id": finance.car_id,
-                    "status": finance.status,
-                    "created_at": finance.created_at.isoformat(),
-                    "updated_at": finance.updated_at.isoformat()
-                }
-            }
-
-    elif purchase:
-        return {
-            "context_type": "purchase",
-            "data": {
-                "id": purchase.id,
-                "car_id": purchase.car_id,
-                "status": purchase.status,
-                "created_at": purchase.created_at.isoformat()
-            }
-        }
-
-    elif finance:
-        return {
-            "context_type": "finance",
-            "data": {
-                "id": finance.id,
-                "car_id": finance.car_id,
-                "status": finance.status,
-                "created_at": finance.created_at.isoformat(),
-                "updated_at": finance.updated_at.isoformat()
-            }
-        }
-
-    # No context found
-    return {
-        "context_type": None,
-        "data": None
-    }
-
 
 @router.post("/submit-delivery-info", response_model=DeliveryResponse)
 async def submit_delivery_info(
@@ -667,37 +683,56 @@ async def submit_delivery_info(
     car_id = None
     total_price = 0.0
 
-    # Identify context
+    # --- Identify Context ---
     if purchase_id:
         purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
         if not purchase or purchase.status != "finalized":
             raise HTTPException(status_code=400, detail="Car inspection not finalized.")
         car_id = purchase.car_id
         total_price = data.total_price
+
     elif finance_id:
         finance = db.query(FinanceApplication).filter(FinanceApplication.id == finance_id).first()
-        if not finance or finance.status != "in_progress":
-            raise HTTPException(status_code=400, detail="Finance application not valid.")
+        if not finance:
+            raise HTTPException(status_code=404, detail="Finance application not found.")
+        if finance.status != "approved" or finance.flow_status != "in_progress":
+            raise HTTPException(
+                status_code=400,
+                detail=f"Finance application is {finance.status}. Delivery not allowed until it's approved."
+            )
         car_id = finance.car_id
-        total_price = data.total_price  # Or: finance.down_payment_amount + finance.monthly_installment
+        total_price = data.total_price
+        # --- Check Car Validity ---
+        car = db.query(Car).filter(Car.id == car_id).first()
+        if not car:
+            raise HTTPException(status_code=404, detail="Car not found.")
+        if car.status != "available":
+            raise HTTPException(status_code=400, detail="Car is already sold.")
 
-    # Validate address inputs
+    else:
+        raise HTTPException(status_code=400, detail="Either purchase_id or finance_id is required.")
+
+    # --- Prevent Duplicate Delivery (any status) ---
+    existing_delivery = db.query(DeliveryInfo).filter_by(
+        user_id=user.id,
+        car_id=car_id
+    ).first()
+
+    if existing_delivery and existing_delivery.status != "in_progress":
+        raise HTTPException(status_code=400, detail="Delivery has already been submitted for this car.")
+
+    # --- Validate Delivery Address ---
     if data.delivery_type == "home_delivery":
         if not all([data.name, data.email, data.phone_number, data.address]):
             raise HTTPException(status_code=400, detail="Contact/address info is required for home delivery")
-        if data.billing_delivery_same is False and not all([data.delivery_address, data.city, data.postal_code, data.country]):
+        if not data.billing_delivery_same and not all([data.delivery_address, data.city, data.postal_code, data.country]):
             raise HTTPException(status_code=400, detail="Complete delivery address required when billing differs")
     elif data.delivery_type == "pickup" and not data.pickup_location_id:
         raise HTTPException(status_code=400, detail="Pickup location is required")
 
-    # Upsert delivery
-    delivery = db.query(DeliveryInfo).filter_by(
-        user_id=user.id,
-        car_id=car_id,
-        status="in_progress"
-    ).first()
-
-    if delivery:
+    # --- Upsert Delivery ---
+    if existing_delivery:
+        delivery = existing_delivery
         delivery.delivery_type = data.delivery_type
         delivery.name = data.name
         delivery.email = data.email
@@ -716,6 +751,7 @@ async def submit_delivery_info(
             user_id=user.id,
             car_id=car_id,
             finance_id=finance_id,
+            purchase_id=purchase_id,
             delivery_type=data.delivery_type,
             name=data.name,
             email=data.email,
@@ -740,6 +776,7 @@ async def submit_delivery_info(
         user_id=delivery.user_id,
         car_id=delivery.car_id,
         finance_id=delivery.finance_id,
+        purchase_id=delivery.purchase_id,
         delivery_type=delivery.delivery_type,
         name=delivery.name,
         email=delivery.email,
@@ -790,7 +827,7 @@ async def assign_addons(
             raise HTTPException(status_code=400, detail="Car inspection not finalized.")
     elif finance_id:
         finance = db.query(FinanceApplication).filter(FinanceApplication.id == finance_id).first()
-        if not finance or finance.status != "in_progress":
+        if not finance or finance.status != "approved" or finance.flow_status != "in_progress":
             raise HTTPException(status_code=400, detail="Finance application not valid.")
     else:
         raise HTTPException(status_code=400, detail="Either purchase_id or finance_id is required.")
@@ -865,7 +902,7 @@ async def create_delivery_checkout_session(
     # Finance flow
     if finance_id:
         finance = db.query(FinanceApplication).filter(FinanceApplication.id == finance_id).first()
-        if not finance or finance.status != "in_progress":
+        if not finance or finance.status != "approved" or finance.flow_status != "in_progress":
             raise HTTPException(status_code=400, detail="Finance application not valid.")
         flow = "finance"
         car_id = finance.car_id
@@ -915,7 +952,7 @@ async def create_delivery_checkout_session(
             raise HTTPException(status_code=400, detail="Car inspection not finalized.")
         flow = "purchase"
         car_id = purchase.car_id
-        reference_id = f"purchase_{purchase.id}"
+        reference_id = car_id
 
         addons = db.query(PurchaseAddon).filter(
             PurchaseAddon.purchase_id == purchase.id,
@@ -973,7 +1010,7 @@ async def checkout_success_delivery(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Handle successful car inspection payment, create unified Purchase."""
+    """Handle successful car inspection/delivery checkout and create unified Purchase."""
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
 
@@ -983,7 +1020,6 @@ async def checkout_success_delivery(
             raise HTTPException(status_code=400, detail="Payment not completed")
 
         car_id = session.client_reference_id
-        print(car_id)
         user_id = int(session.metadata.get("user_id"))
 
         if user_id != user.id:
@@ -993,21 +1029,65 @@ async def checkout_success_delivery(
         car = db.query(Car).filter(Car.id == car_id).first()
         if not car:
             raise HTTPException(status_code=404, detail="Car not found")
-        if car.status != "available":
-            raise HTTPException(status_code=400, detail="Car is not available")
 
-        # Try to load finance application — skip if not found
+        # --- Check existing finalized purchase ---
+        existing_purchase = db.query(Purchase).filter_by(
+            car_id=car_id,
+            user_id=user.id,
+            status="in_progress"
+        ).order_by(Purchase.created_at.desc()).first()
+        
+        if existing_purchase:
+            purchase = existing_purchase
+            # Update existing purchase
+            purchase.stripe_payment_id = session.payment_intent
+            purchase.status = "finalized"
+        else:
+            purchase_application = db.query(Purchase).filter_by(
+                car_id=car_id,
+                user_id=user_id,
+                status="finalized",
+            ).first()
+
+            delivery = db.query(DeliveryInfo).filter_by(
+                    user_id=user.id,
+                    car_id=car_id,
+                    status="in_progress"
+                ).first()
+            delivery_total = delivery.total_price if delivery else 0.0
+
+            addons = db.query(PurchaseAddon).filter_by(
+                purchase_id=purchase_application.id,
+                status="in_progress"
+            ).all()
+            addons_total = sum(addon.addon_price or 0.0 for addon in addons)
+
+            total_price = delivery_total + addons_total
+            print(total_price)
+
+            # Create new purchase
+            purchase = Purchase(
+                user_id=user_id,
+                car_id=car_id,
+                total_price=total_price,
+                stripe_payment_id=session.payment_intent,
+                status="finalized",
+            )
+            db.add(purchase)
+
+        # Try finance application
         finance_application = db.query(FinanceApplication).filter_by(
             car_id=car_id,
             user_id=user_id,
-            status="in_progress"
+            status="approved",
+            flow_status="in_progress"
         ).first()
-
+        
         is_financed = False
         if finance_application:
             is_financed = True
             down_payment = finance_application.down_payment_amount or 0.0
-            
+
             delivery = db.query(DeliveryInfo).filter_by(
                 user_id=user.id,
                 car_id=car_id,
@@ -1016,48 +1096,78 @@ async def checkout_success_delivery(
             delivery_total = delivery.total_price if delivery else 0.0
 
             addons = db.query(PurchaseAddon).filter_by(
-                finance_id=finance_application.id if is_financed else None,
-                purchase_id=None if is_financed else None,
+                finance_id=finance_application.id,
                 status="in_progress"
             ).all()
             addons_total = sum(addon.addon_price or 0.0 for addon in addons)
 
-            # --- Calculate Full Total ---
-            total_price = (delivery_total*100) + (addons_total*100) + (down_payment*100)
- 
-            # Create purchase
-            purchase = Purchase(
-                user_id=user_id,
-                car_id=car_id,
-                total_price=total_price,
-                stripe_payment_id=session.payment_intent,
-                status="finalized",
-                # is_financed=is_financed
-            )            
+            total_price = delivery_total + addons_total + down_payment
             
-        else:
-            # Create purchase
-            purchase = Purchase(
-                user_id=user_id,
-                car_id=car_id,
-                total_price=car.total_price,
-                stripe_payment_id=session.payment_intent,
-                status="finalized",
-                # is_financed=is_financed
-            )
-        db.add(purchase)
+            # Update purchase with finance info
+            purchase.total_price = total_price
+
+        # Flush to get the purchase ID before updating related records
+        db.flush()
 
         # Mark car as sold
         car.status = "sold"
 
-        # Finalize other related records
-        db.query(BankTransferInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
-        db.query(Purchase).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
+        # Finalize related records
+        if finance_application:
+            db.query(FinanceApplication).filter_by(
+                user_id=user.id, 
+                flow_status="in_progress"
+            ).update({"flow_status": "finalized"})
+        
+        db.query(DeliveryInfo).filter_by(
+            user_id=user.id, 
+            status="in_progress"
+        ).update({"status": "finalized"})
+        
+        # Update PurchaseAddon status - Fixed logic
+        if is_financed and finance_application:
+            # For financed purchases, update addons linked to finance application
+            addons_to_update = db.query(PurchaseAddon).filter_by(
+                finance_id=finance_application.id,
+                status="in_progress"
+            ).all()
+            
+            logger.info(f"Found {len(addons_to_update)} financed addons to update for finance_id: {finance_application.id}")
+            
+            updated_count = db.query(PurchaseAddon).filter_by(
+                finance_id=finance_application.id,
+                status="in_progress"
+            ).update({"status": "finalized"}, synchronize_session=False)
+            
+            logger.info(f"Updated {updated_count} financed addons to finalized status")
+        else:
+            # For non-financed purchases, update addons linked to purchase
+            addons_to_update = db.query(PurchaseAddon).filter_by(
+                purchase_id=purchase_application.id,
+                status="in_progress"
+            ).all()
+            
+            logger.info(f"Found {len(addons_to_update)} purchase addons to update for purchase_id: {purchase.id}")
+            
+            updated_count = db.query(PurchaseAddon).filter_by(
+                purchase_id=purchase_application.id,
+                status="in_progress"
+            ).update({"status": "finalized"}, synchronize_session=False)
+            
+            logger.info(f"Updated {updated_count} purchase addons to finalized status")
 
         db.commit()
 
-        logger.info(f"Purchase completed for car {car_id} by user {user_id} (finance={is_financed})")
-        return RedirectResponse(url="/purchase/complete")
+        logger.info(f"[Purchase Success] Purchase #{purchase.id} completed for user {user_id} (finance={is_financed})")
+
+        return {
+            "message": "Purchase completed successfully.",
+            "purchase_id": purchase.id,
+            "car_id": car_id,
+            "is_financed": is_financed,
+            "total_price": purchase.total_price,
+            "stripe_payment_id": session.payment_intent
+        }
 
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error: {str(e)}")

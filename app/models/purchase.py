@@ -25,6 +25,7 @@ class FinanceApplication(Base):
     identification_number = Column(String, nullable=False)
     date_of_birth = Column(String, nullable=False)  # Format: DD/MM/YYYY
     status = Column(Enum("in_progress", "approved", "rejected", name="finance_status"), default="in_progress")
+    flow_status = Column(String, default="in_progress")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
@@ -69,6 +70,7 @@ class DeliveryInfo(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     car_id = Column(String, ForeignKey("cars.id"), nullable=False)
     finance_id = Column(Integer, ForeignKey("finance_applications.id"), nullable=True)
+    purchase_id = Column(Integer, ForeignKey("purchases.id"), nullable=True)
     
     delivery_type = Column(Enum("home_delivery", "pickup", name="delivery_type_enum"), nullable=False)
     
