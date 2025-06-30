@@ -9,6 +9,15 @@ class FinanceApplication(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     car_id = Column(String, nullable=False)  # From cars table
+    loan_type = Column(String, default="regular") 
+    apr = Column(Float, nullable=False) # Annual Percentage Rate
+    interest_rate = Column(Float, nullable=False)
+    payback_period_months = Column(Integer, nullable=False) 
+    down_payment_percent = Column(Float, nullable=False) 
+    down_payment_amount = Column(Float, nullable=False)
+    last_payment_percent = Column(Float, nullable=False) 
+    last_payment_amount = Column(Float, nullable=False)
+    monthly_installment = Column(Float, nullable=False)
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     telephone_number = Column(String, nullable=False)
@@ -59,6 +68,7 @@ class DeliveryInfo(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     car_id = Column(String, ForeignKey("cars.id"), nullable=False)
+    finance_id = Column(Integer, ForeignKey("finance_applications.id"), nullable=True)
     
     delivery_type = Column(Enum("home_delivery", "pickup", name="delivery_type_enum"), nullable=False)
     
@@ -97,7 +107,8 @@ class PurchaseAddon(Base):
     __tablename__ = "purchase_addons"
 
     id = Column(Integer, primary_key=True, index=True)
-    purchase_id = Column(Integer, ForeignKey("purchases.id"), nullable=False)
+    purchase_id = Column(Integer, ForeignKey("purchases.id"), nullable=True)
+    finance_id = Column(Integer, ForeignKey("finance_applications.id"), nullable=True)
     addon_name = Column(String, nullable=True)
     addon_price = Column(Float, nullable=True)
     status = Column(String, default="in_progress")

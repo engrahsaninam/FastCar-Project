@@ -1,5 +1,6 @@
 #app/models/car.py
-from sqlalchemy import Column, String, Float, Integer, JSON, Text
+from sqlalchemy import Column, String, Float, Integer, JSON, Text, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from app.database.base import Base
 
 class Car(Base):
@@ -29,3 +30,12 @@ class Car(Base):
     features = Column(JSON, nullable=True)
     total_price = Column(Float, nullable=True)  # Total price including charges
     status = Column(String, default="available")  # available, sold
+    
+class SavedSearch(Base):
+    __tablename__ = "saved_searches"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)  # Custom name provided by user
+    search_params = Column(String, nullable=False)  # JSON string of filters
+    created_at = Column(DateTime, default=func.now())

@@ -12,7 +12,9 @@ import json
 import logging
 import time
 from sqlalchemy import and_, or_
-
+from pydantic import BaseModel
+from typing import Optional, List
+from app.models.car import SavedSearch
 from app.schemas.car import CarResponse, PaginatedCarResponse
 from app.utils.outlier_detection import detect_outliers
 
@@ -20,6 +22,32 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+class SaveSearchRequest(BaseModel):
+    name: str
+    brand: Optional[str] = None
+    model: Optional[str] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    min_year: Optional[int] = None
+    max_year: Optional[int] = None
+    min_mileage: Optional[float] = None
+    max_mileage: Optional[float] = None
+    fuel: Optional[str] = None
+    gear: Optional[str] = None
+    power_min: Optional[int] = None
+    power_max: Optional[int] = None
+    body_type: Optional[str] = None
+    colour: Optional[str] = None
+    features: Optional[List[str]] = None
+    vat: Optional[bool] = None
+    
+class SavedSearchResponse(BaseModel):
+    id: int
+    name: str
+    search_params: dict
+    created_at: str
+
 
 def car_to_dict(car: Car, vat: bool = False, vat_rate: float = 0.0) -> dict:
     price = car.price if vat else car.price_without_vat
@@ -29,8 +57,8 @@ def car_to_dict(car: Car, vat: bool = False, vat_rate: float = 0.0) -> dict:
         "brand": car.brand,
         "model": car.model,
         "version": car.version,
-        "price": price,
-        "price_without_vat": car.price_without_vat,
+        "price": round(price, 2),
+        "price_without_vat": round(car.price_without_vat, 2),
         "mileage": car.mileage,
         "age": car.age,
         "power": car.power,
@@ -49,6 +77,52 @@ def car_to_dict(car: Car, vat: bool = False, vat_rate: float = 0.0) -> dict:
         "features": car.features,
         "total_price": car.total_price
     }
+
+@router.post("/save-search")
+async def save_user_search(
+    data: SaveSearchRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    search_data = data.dict()
+    name = search_data.pop("name")
+
+    saved = SavedSearch(
+        user_id=user.id,
+        name=name,
+        search_params=json.dumps(search_data)
+    )
+
+    db.add(saved)
+    db.commit()
+
+    logger.info(f"[SAVED SEARCH] user_id={user.id} saved '{name}'")
+    return {"message": f"Search '{name}' saved successfully."}
+
+@router.get("/saved-searches", response_model=List[SavedSearchResponse])
+async def get_saved_searches(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    saved_searches = db.query(SavedSearch).filter_by(user_id=user.id).order_by(SavedSearch.created_at.desc()).all()
+
+    if not saved_searches:
+        return [] 
+
+    return [
+        SavedSearchResponse(
+            id=search.id,
+            name=search.name,
+            search_params=json.loads(search.search_params),
+            created_at=search.created_at.isoformat()
+        ) for search in saved_searches
+    ]
 
 @router.get("/best-deals", response_model=PaginatedCarResponse)
 async def get_best_deals(
