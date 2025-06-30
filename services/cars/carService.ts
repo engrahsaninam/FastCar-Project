@@ -176,3 +176,8 @@ export const getCharges = async (id: string, zipcode?: string) => {
     const response = await axiosInstance.get(url);
     return response.data;
 }
+
+export const applyfinance = async (data: any) => {
+    const response = await axiosInstance.post(apiRoutes.car.financing.apply, data)
+    return response.data;
+}

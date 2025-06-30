@@ -16,7 +16,15 @@ import Marquee from 'react-fast-marquee'
 import ModalVideo from 'react-modal-video'
 import Slider from "react-slick"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useColorModeValue } from "@chakra-ui/react"
+import {
+	useColorModeValue, Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	ModalCloseButton
+} from "@chakra-ui/react"
 import logo from '@/public/assets/imgs/template/logo-d.svg';
 import { useBestDeals, useGetCar, useGetSimilarCars, useGetCharges } from "@/services/cars/useCars";
 import {
@@ -74,6 +82,7 @@ import { ChevronUp, X, ChevronDown, Calendar, Clock, Info, Gauge, Fuel } from "l
 import FinancingSpecs from '@/components/checkout/PaymentMethod/FinancingSpecs'
 import { useTranslation } from 'react-i18next'
 import { t } from 'i18next'
+import { useRouter } from 'next/navigation'
 // import { XAxis, YAxis, CartesianGrid } from "recharts";
 
 const arrowButtonStyle = {
@@ -304,6 +313,7 @@ export default function CarsDetails1() {
 	const textMuted = useColorModeValue("gray.600", "gray.400");
 	// Custom mobile drawer component for Buy Car
 	const MobileBuyCarDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+
 		const bgColor = useColorModeValue("white", "gray.800")
 		const borderColor = useColorModeValue("gray.200", "gray.700")
 		const overlayBg = useColorModeValue("blackAlpha.600", "blackAlpha.800")
@@ -571,11 +581,9 @@ export default function CarsDetails1() {
 						p={4}
 						zIndex={2}
 					>
-						<Link href="/checkout" passHref legacyBehavior>
-							<Button as="a" bg="red.500" color="white" size="lg" w="100%">
-								{t('car.sideBar.buynow')}
-							</Button>
-						</Link>
+						<Button onClick={handleBuyNow} bg="red.500" color="white" size="lg" w="100%">
+							{t('car.sideBar.buynow')}
+						</Button>
 					</Box>
 				</Box>
 			</>
@@ -705,10 +713,41 @@ export default function CarsDetails1() {
 	const [submittedZip, setSubmittedZip] = useState("");
 	const { data: charges, isLoading: isChargesLoading } = useGetCharges(carData?.id || "", submittedZip);
 
+	// Add this handler inside CarsDetails1 component, before the return statement
+	const handleBuyNow = () => {
+		if (typeof window !== 'undefined') {
+			const token = localStorage.getItem('token');
+			if (!token) {
+				setIsLoginModalOpen(true);
+				return;
+			}
+			window.location.href = `/checkout?carId=${carData?.id}`;
+		}
+	};
+	const router = useRouter()
+	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	return (
 		<Layout footerStyle={1}>
 			<div>
-
+				<Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} isCentered>
+					<ModalOverlay />
+					<ModalContent>
+						<ModalHeader>Please Login</ModalHeader>
+						<ModalCloseButton />
+						<ModalBody>
+							<Text>You need to be logged In.</Text>
+						</ModalBody>
+						<ModalFooter>
+							<Button colorScheme="red" mr={3} onClick={() => {
+								setIsLoginModalOpen(false);
+								router.push('/login');
+							}}>
+								Go to Login
+							</Button>
+							<Button variant="ghost" onClick={() => setIsLoginModalOpen(false)}>Cancel</Button>
+						</ModalFooter>
+					</ModalContent>
+				</Modal>
 				<section className="section-box box-banner-home2 background-body">
 					<div className="container">
 						<div className="row">
@@ -1238,7 +1277,7 @@ export default function CarsDetails1() {
 																<p className="mb-4 text-gray-900 dark:text-gray-200">
 																	{t('car.howitworks.step1Desc1')}
 																</p>
-																
+
 																<div className="mt-4 position-relative">
 																	<div className="rounded-circle d-flex align-items-center justify-content-center"
 																		style={{
@@ -1272,7 +1311,7 @@ export default function CarsDetails1() {
 																<p className="mb-4 text-gray-900 dark:text-white">
 																	{t('car.howitworks.step2Desc1')}
 																</p>
-																
+
 															</div>
 														</div>
 													</div>
@@ -1691,7 +1730,7 @@ export default function CarsDetails1() {
 										<div className="card-body p-4">
 											<div className="text-center mb-4">
 												<p className="mb-2 fs-6">{t('car.comparisonPage.desc')}</p>
-												
+
 
 												<div className="position-relative mt-5 pt-4">
 													<div className="position-relative" style={{ maxWidth: '550px', margin: '0 auto' }}>
@@ -1795,15 +1834,14 @@ export default function CarsDetails1() {
 											<p className="text-md-medium text-muted m-0">€{charges?.price_without_vat}</p>
 										</div>
 
-										<Link href="/checkout" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center" style={{ background: "#E53E3E", color: "white" }} >
+										<Button onClick={handleBuyNow} bg="#E53E3E" color="white" size="lg" w="100%" className="btn w-100 rounded-3 py-3 mb-3 d-flex align-items-center justify-content-center">
 											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
 												<path d="M7.5 21.75C8.32843 21.75 9 21.0784 9 20.25C9 19.4216 8.32843 18.75 7.5 18.75C6.67157 18.75 6 19.4216 6 20.25C6 21.0784 6.67157 21.75 7.5 21.75Z" fill="currentColor" />
 												<path d="M17.25 21.75C18.0784 21.75 18.75 21.0784 18.75 20.25C18.75 19.4216 18.0784 18.75 17.25 18.75C16.4216 18.75 15.75 19.4216 15.75 20.25C15.75 21.0784 16.4216 21.75 17.25 21.75Z" fill="currentColor" />
 												<path d="M3.96562 6.75H20.7844L18.3094 15.4125C18.2211 15.7269 18.032 16.0036 17.7711 16.2C17.5103 16.3965 17.1922 16.5019 16.8656 16.5H7.88437C7.55783 16.5019 7.2397 16.3965 6.97886 16.2C6.71803 16.0036 6.52893 15.7269 6.44062 15.4125L3.04688 3.54375C3.00203 3.38696 2.9073 3.24905 2.77704 3.15093C2.64677 3.05282 2.48808 2.99983 2.325 3H0.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
 											{t('car.sideBar.buynow')}
-
-										</Link>
+										</Button>
 
 										<Link href="#" className="btn w-100 rounded-3 py-3 d-flex align-items-center justify-content-center mb-4" style={{ background: "#F0F0FF", color: "#E53E3E", border: "1px solid #E2E2E2" }}>
 											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="me-2">
@@ -1916,7 +1954,7 @@ export default function CarsDetails1() {
 										<Box borderTop="1px" borderColor={borderColor} p={2}>
 											<Flex justify="space-between" align="center">
 												<Text fontSize="md" fontWeight="medium" color={darkGrayTextColor}>
-														{t('car.sideBar.totalPrice')}
+													{t('car.sideBar.totalPrice')}
 												</Text>
 												<Text fontSize="2xl" fontWeight="bold" color={redTextColor}>
 													EUR {charges?.total_price}
@@ -2057,11 +2095,9 @@ export default function CarsDetails1() {
 								</Text>
 							</div>
 							<div>
-								<Link href="/checkout" passHref legacyBehavior >
-									<Button as="a" bg="#E53E3E" color="white" size="lg" w="100%" >
-										{t('car.sideBar.buynow')}
-									</Button>
-								</Link>
+								<Button onClick={handleBuyNow} bg="red.500" color="white" size="lg" w="100%" >
+									{t('car.sideBar.buynow')}
+								</Button>
 							</div>
 						</Box>
 

@@ -18,6 +18,7 @@ import {
     getCar,
     getSimilarCars,
     getCharges,
+    applyfinance,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -214,4 +215,9 @@ export const useGetCharges = (id: string, zipcode?: string) =>
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,
+    });
+
+export const useApplyFinance = () =>
+    useMutation({
+        mutationFn: (data: any) => applyfinance(data),
     });

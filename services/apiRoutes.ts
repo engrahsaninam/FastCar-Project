@@ -20,6 +20,9 @@ export const apiRoutes = {
         getCar: (id: string) => `/cars/${id}`,
         similar: (id: string) => `/cars/${id}/similar`,
         getCharges: (id: string, zipcode?: string) => zipcode ? `/charges?car_id=${id}&zipcode=${zipcode}` : `/charges?car_id=${id}`,
+        financing: {
+            apply: "/purchase/finance/apply"
+        }
     },
     filters: {
         fuel: '/filters/fuel-types',
@@ -33,5 +36,7 @@ export const apiRoutes = {
         bodyTypes: "/filters/body-types",
         colors: "/filters/colours",
         features: "/filters/features",
+       
     },
+    
 }

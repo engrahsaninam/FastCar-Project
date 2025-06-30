@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// import { useApplyFinance } from '@/services/cars/useCars';
 import {
     Box,
     Text,
@@ -16,32 +17,34 @@ import {
     useColorModeValue
 } from '@chakra-ui/react';
 import { Check, Info, Mail } from 'lucide-react';
+import { useApplyFinance } from '@/services/cars/useCars'; // adjust path as needed
+import { useSearchParams } from 'next/navigation';
 
 interface FormData {
-    client_name: string;
+    name: string;
     surname: string;
-    telephone: string;
+    telephone_number: string;
     email: string;
-    customer_DNI_NIE: string;
-    customer_DOB: string;
+    identification_number: string;
+    date_of_birth: string;
 }
 
 interface FormErrors {
-    client_name?: string;
+    name?: string;
     surname?: string;
-    telephone?: string;
+    telephone_number?: string;
     email?: string;
-    customer_DNI_NIE?: string;
-    customer_DOB?: string;
+    identification_number?: string;
+    date_of_birth?: string;
 }
 
 interface TouchedFields {
-    client_name?: boolean;
+    name?: boolean;
     surname?: boolean;
-    telephone?: boolean;
+    telephone_number?: boolean;
     email?: boolean;
-    customer_DNI_NIE?: boolean;
-    customer_DOB?: boolean;
+    identification_number?: boolean;
+    date_of_birth?: boolean;
 }
 
 interface FinancingFormProps {
@@ -107,36 +110,39 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
     };
 
     const [formData, setFormData] = useState<FormData>({
-        client_name: '',
+        
+        name: '',
         surname: '',
-        telephone: '',
+        telephone_number: '',
         email: '',
-        customer_DNI_NIE: '',
-        customer_DOB: ''
+        identification_number: '',
+        date_of_birth: ''
     });
 
     const [errors, setErrors] = useState<FormErrors>({
-        client_name: undefined,
+        name: undefined,
         surname: undefined,
-        telephone: undefined,
+        telephone_number: undefined,
         email: undefined,
-        customer_DNI_NIE: undefined,
-        customer_DOB: undefined
+        identification_number: undefined,
+        date_of_birth: undefined
     });
 
     const [touched, setTouched] = useState<TouchedFields>({
-        client_name: false,
+        name: false,
         surname: false,
-        telephone: false,
+        telephone_number: false,
         email: false,
-        customer_DNI_NIE: false,
-        customer_DOB: false
+        identification_number: false,
+        date_of_birth: false
     });
 
     const [consentChecked, setConsentChecked] = useState(false);
     const [applicationSent, setApplicationSent] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const toast = useToast();
+
+    const applyFinanceMutation = useApplyFinance();
 
     const validateField = (field: keyof FormData, value: string): string | undefined => {
         if (!value.trim()) {
@@ -148,15 +154,15 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                 return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
                     ? 'Please enter a valid email address'
                     : undefined;
-            case 'telephone':
+            case 'telephone_number':
                 return !/^\d{9,}$/.test(value.replace(/\s/g, ''))
                     ? 'Please enter a valid telephone number'
                     : undefined;
-            case 'customer_DNI_NIE':
+            case 'identification_number':
                 return value.length < 8
                     ? 'Please enter a valid identification number'
                     : undefined;
-            case 'customer_DOB':
+            case 'date_of_birth':
                 return !/^\d{2}\/\d{2}\/\d{4}$/.test(value)
                     ? 'Please enter date in format DD/MM/YYYY'
                     : undefined;
@@ -190,18 +196,20 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
     const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConsentChecked(e.target.checked);
     };
+    const searchParams = useSearchParams();
 
+    const carId = searchParams?.get('carId');
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         // Validate all fields
         const newErrors: FormErrors = {
-            client_name: undefined,
+            name: undefined,
             surname: undefined,
-            telephone: undefined,
+            telephone_number: undefined,
             email: undefined,
-            customer_DNI_NIE: undefined,
-            customer_DOB: undefined
+            identification_number: undefined,
+            date_of_birth: undefined
         };
 
         let hasErrors = false;
@@ -217,12 +225,12 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
         if (hasErrors) {
             setErrors(newErrors);
             setTouched({
-                client_name: true,
+                name: true,
                 surname: true,
-                telephone: true,
+                telephone_number: true,
                 email: true,
-                customer_DNI_NIE: true,
-                customer_DOB: true
+                identification_number: true,
+                date_of_birth: true
             });
             return;
         }
@@ -237,21 +245,33 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
             });
             return;
         }
-
-        setApplicationSent(true);
-        setShowConfirmation(true);
-
-        // Scroll to the confirmation message
-        toast({
-            title: "",
-            position: 'top',
-            description: "You'll receive an email in 24 hours. Thank You",
-            status: "error",
-            duration: 3000,
-            isClosable: true
-        });
-
-        onSubmit();
+        console.log("form data", formData)
+        if (!hasErrors && consentChecked) {
+            // Call the API here
+            // formData.append("car_id", carId)
+            applyFinanceMutation.mutate({
+                ...formData,
+                telephone_number: `+43${formData.telephone_number.replace(/^(\+43)?/, '')}`,
+                car_id: carId
+            }, {
+                onSuccess: (data) => {
+                    // handle success (show confirmation, etc.)
+                    setApplicationSent(true);
+                    setShowConfirmation(true);
+                    onSubmit();
+                },
+                onError: (error) => {
+                    // handle error (show error message)
+                    toast({
+                        title: "Error",
+                        description: "Failed to submit financing application.",
+                        status: "error",
+                        duration: 3000,
+                        isClosable: true
+                    });
+                }
+            });
+        }
     };
 
     const getFieldStatusIcon = (field: keyof FormData) => {
@@ -366,7 +386,7 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                     {/* Name field */}
                                     <FormControl width={{ base: "100%", md: "48%" }} isDisabled={applicationSent}>
                                         <FormLabel
-                                            htmlFor="client_name"
+                                            htmlFor="name"
                                             color={colors.headerTextColor}
                                             fontWeight="500"
                                             fontSize="sm"
@@ -375,28 +395,28 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                         </FormLabel>
                                         <Box position="relative">
                                             <Input
-                                                id="client_name"
-                                                value={formData.client_name}
-                                                onChange={handleChange('client_name')}
-                                                onBlur={handleBlur('client_name')}
+                                                id="name"
+                                                value={formData.name}
+                                                onChange={handleChange('name')}
+                                                onBlur={handleBlur('name')}
                                                 placeholder="Name"
-                                                borderColor={errors.client_name && touched.client_name ? colors.errorColor : formData.client_name && !errors.client_name ? colors.validColor : colors.borderColor}
+                                                borderColor={errors.name && touched.name ? colors.errorColor : formData.name && !errors.name ? colors.validColor : colors.borderColor}
                                                 borderWidth="1px"
                                                 height="40px"
                                                 _focus={{
-                                                    borderColor: errors.client_name ? colors.errorColor : colors.validColor,
+                                                    borderColor: errors.name ? colors.errorColor : colors.validColor,
                                                     boxShadow: "none"
                                                 }}
                                                 isDisabled={applicationSent}
-                                                aria-invalid={errors.client_name ? "true" : "false"}
+                                                aria-invalid={errors.name ? "true" : "false"}
                                                 aria-required="true"
                                                 autoComplete="given-name"
                                                 bg={colors.cardBackground}
                                             />
-                                            {getFieldStatusIcon('client_name')}
+                                            {getFieldStatusIcon('name')}
                                         </Box>
-                                        {errors.client_name && touched.client_name && (
-                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.client_name}</Text>
+                                        {errors.name && touched.name && (
+                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.name}</Text>
                                         )}
                                     </FormControl>
 
@@ -440,7 +460,7 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                     {/* Telephone field */}
                                     <FormControl width={{ base: "100%", md: "48%" }} isDisabled={applicationSent}>
                                         <FormLabel
-                                            htmlFor="telephone"
+                                            htmlFor="telephone_number"
                                             color={colors.headerTextColor}
                                             fontWeight="500"
                                             fontSize="sm"
@@ -454,30 +474,30 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                             </Box>
                                             <Box position="relative" flex="1">
                                                 <Input
-                                                    id="telephone"
-                                                    value={formData.telephone}
-                                                    onChange={handleChange('telephone')}
-                                                    onBlur={handleBlur('telephone')}
+                                                    id="telephone_number"
+                                                    value={formData.telephone_number}
+                                                    onChange={handleChange('telephone_number')}
+                                                    onBlur={handleBlur('telephone_number')}
                                                     placeholder="Telephone number"
-                                                    borderColor={errors.telephone && touched.telephone ? colors.errorColor : formData.telephone && !errors.telephone ? colors.validColor : colors.borderColor}
+                                                    borderColor={errors.telephone_number && touched.telephone_number ? colors.errorColor : formData.telephone_number && !errors.telephone_number ? colors.validColor : colors.borderColor}
                                                     borderWidth="1px"
                                                     height="40px"
                                                     _focus={{
-                                                        borderColor: errors.telephone ? colors.errorColor : colors.validColor,
+                                                        borderColor: errors.telephone_number ? colors.errorColor : colors.validColor,
                                                         boxShadow: "none"
                                                     }}
                                                     isDisabled={applicationSent}
-                                                    aria-invalid={errors.telephone ? "true" : "false"}
+                                                    aria-invalid={errors.telephone_number ? "true" : "false"}
                                                     aria-required="true"
                                                     autoComplete="tel"
                                                     inputMode="tel"
                                                     bg={colors.cardBackground}
                                                 />
-                                                {getFieldStatusIcon('telephone')}
+                                                {getFieldStatusIcon('telephone_number')}
                                             </Box>
                                         </Flex>
-                                        {errors.telephone && touched.telephone && (
-                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.telephone}</Text>
+                                        {errors.telephone_number && touched.telephone_number && (
+                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.telephone_number}</Text>
                                         )}
                                     </FormControl>
 
@@ -531,27 +551,27 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                         </FormLabel>
                                         <Box position="relative">
                                             <Input
-                                                id="customer_DNI_NIE"
-                                                value={formData.customer_DNI_NIE}
-                                                onChange={handleChange('customer_DNI_NIE')}
-                                                onBlur={handleBlur('customer_DNI_NIE')}
+                                                id="identification_number"
+                                                value={formData.identification_number}
+                                                onChange={handleChange('identification_number')}
+                                                onBlur={handleBlur('identification_number')}
                                                 placeholder="Identification number"
-                                                borderColor={errors.customer_DNI_NIE && touched.customer_DNI_NIE ? colors.errorColor : formData.customer_DNI_NIE && !errors.customer_DNI_NIE ? colors.validColor : colors.borderColor}
+                                                borderColor={errors.identification_number && touched.identification_number ? colors.errorColor : formData.identification_number && !errors.identification_number ? colors.validColor : colors.borderColor}
                                                 borderWidth="1px"
                                                 height="40px"
                                                 _focus={{
-                                                    borderColor: errors.customer_DNI_NIE ? colors.errorColor : colors.validColor,
+                                                    borderColor: errors.identification_number ? colors.errorColor : colors.validColor,
                                                     boxShadow: "none"
                                                 }}
                                                 isDisabled={applicationSent}
-                                                aria-invalid={errors.customer_DNI_NIE ? "true" : "false"}
+                                                aria-invalid={errors.identification_number ? "true" : "false"}
                                                 aria-required="true"
                                                 bg={colors.cardBackground}
                                             />
-                                            {getFieldStatusIcon('customer_DNI_NIE')}
+                                            {getFieldStatusIcon('identification_number')}
                                         </Box>
-                                        {errors.customer_DNI_NIE && touched.customer_DNI_NIE && (
-                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.customer_DNI_NIE}</Text>
+                                        {errors.identification_number && touched.identification_number && (
+                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.identification_number}</Text>
                                         )}
                                     </FormControl>
 
@@ -567,28 +587,28 @@ const FinancingForm: React.FC<FinancingFormProps> = ({ onSubmit }) => {
                                         </FormLabel>
                                         <Box position="relative">
                                             <Input
-                                                id="customer_DOB"
-                                                value={formData.customer_DOB}
-                                                onChange={handleChange('customer_DOB')}
-                                                onBlur={handleBlur('customer_DOB')}
+                                                id="date_of_birth"
+                                                value={formData.date_of_birth}
+                                                onChange={handleChange('date_of_birth')}
+                                                onBlur={handleBlur('date_of_birth')}
                                                 placeholder="DD/MM/YYYY"
-                                                borderColor={errors.customer_DOB && touched.customer_DOB ? colors.errorColor : formData.customer_DOB && !errors.customer_DOB ? colors.validColor : colors.borderColor}
+                                                borderColor={errors.date_of_birth && touched.date_of_birth ? colors.errorColor : formData.date_of_birth && !errors.date_of_birth ? colors.validColor : colors.borderColor}
                                                 borderWidth="1px"
                                                 height="40px"
                                                 _focus={{
-                                                    borderColor: errors.customer_DOB ? colors.errorColor : colors.validColor,
+                                                    borderColor: errors.date_of_birth ? colors.errorColor : colors.validColor,
                                                     boxShadow: "none"
                                                 }}
                                                 isDisabled={applicationSent}
-                                                aria-invalid={errors.customer_DOB ? "true" : "false"}
+                                                aria-invalid={errors.date_of_birth ? "true" : "false"}
                                                 aria-required="true"
                                                 autoComplete="bday"
                                                 bg={colors.cardBackground}
                                             />
-                                            {getFieldStatusIcon('customer_DOB')}
+                                            {getFieldStatusIcon('date_of_birth')}
                                         </Box>
-                                        {errors.customer_DOB && touched.customer_DOB && (
-                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.customer_DOB}</Text>
+                                        {errors.date_of_birth && touched.date_of_birth && (
+                                            <Text color={colors.errorColor} fontSize="xs" mt={1} role="alert">{errors.date_of_birth}</Text>
                                         )}
                                     </FormControl>
                                 </Flex>
