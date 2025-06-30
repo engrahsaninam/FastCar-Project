@@ -1287,19 +1287,171 @@ async def get_bank_transfer_data(
     ]
 
 # For user
+# @router.get("/purchase-details-user")
+# async def get_purchase_details_user(
+#     user: User = Depends(get_current_user),
+#     db: Session = Depends(get_db)
+# ):
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+
+#     # --- Latest In-Progress Finance Application ---
+#     app = db.query(FinanceApplication).filter(
+#         FinanceApplication.user_id == user.id,
+#         FinanceApplication.flow_status == "in_progress"
+#     ).order_by(FinanceApplication.created_at.desc()).first()
+
+#     finance_applications = [
+#         FinanceApplicationResponse(
+#             id=app.id,
+#             user_id=app.user_id,
+#             car_id=app.car_id,
+#             name=app.name,
+#             surname=app.surname,
+#             telephone_number=app.telephone_number,
+#             email=app.email,
+#             identification_number=app.identification_number,
+#             date_of_birth=app.date_of_birth,
+#             status=app.status,
+#             created_at=app.created_at.isoformat(),
+#             updated_at=app.updated_at.isoformat()
+#         )
+#     ] if app else [
+#         FinanceApplicationResponse(
+#             id=0,
+#             user_id=user.id,
+#             car_id="N/A",
+#             name=user.username,
+#             surname="Unknown",
+#             telephone_number="Not provided",
+#             email=user.email,
+#             identification_number="N/A",
+#             date_of_birth="1900-01-01",
+#             status="pending",
+#             created_at="0000-00-00T00:00:00",
+#             updated_at="0000-00-00T00:00:00"
+#         )
+#     ]
+
+#     # --- Latest In-Progress Bank Transfer Info ---
+#     info = db.query(BankTransferInfo).filter(
+#         BankTransferInfo.user_id == user.id,
+#         BankTransferInfo.status == "in_progress"
+#     ).order_by(BankTransferInfo.created_at.desc()).first()
+
+#     all_bank_infos = [
+#         BankTransferResponse(
+#             id=info.id,
+#             user_id=info.user_id,
+#             car_id=info.car_id,
+#             name=info.name,
+#             surname=info.surname,
+#             telephone_number=info.telephone_number,
+#             birth_date=info.birth_date,
+#             billing_address_street=info.billing_address_street,
+#             billing_address_house_number=info.billing_address_house_number,
+#             billing_address_postal_code=info.billing_address_postal_code,
+#             billing_address_city=info.billing_address_city,
+#             billing_address_country=info.billing_address_country,
+#             is_company=info.is_company,
+#             is_vat_payer=info.is_vat_payer,
+#             company_id=info.company_id,
+#             company_name=info.company_name,
+#             created_at=info.created_at.isoformat()
+#         )
+#     ] if info else [
+#         BankTransferResponse(
+#             id=0,
+#             user_id=user.id,
+#             car_id="N/A",
+#             name=user.username,
+#             surname="Unknown",
+#             telephone_number="Not provided",
+#             birth_date="1900-01-01",
+#             billing_address_street="N/A",
+#             billing_address_house_number="-",
+#             billing_address_postal_code="00000",
+#             billing_address_city="Unknown",
+#             billing_address_country="Unknown",
+#             is_company=False,
+#             is_vat_payer=False,
+#             company_id=None,
+#             company_name=None,
+#             created_at="0000-00-00T00:00:00"
+#         )
+#     ]
+
+#     # --- Latest In-Progress Delivery Info ---
+#     delivery = db.query(DeliveryInfo).filter(
+#         DeliveryInfo.user_id == user.id,
+#         DeliveryInfo.status == "in_progress"
+#     ).order_by(DeliveryInfo.created_at.desc()).first()
+
+#     delivery_info = [{
+#         "id": delivery.id,
+#         "user_id": delivery.user_id,
+#         "car_id": delivery.car_id,
+#         "delivery_type": delivery.delivery_type,
+#         "name": delivery.name,
+#         "email": delivery.email,
+#         "phone_number": delivery.pone_number,
+#         "address": delivery.address,
+#         "billing_delivery_same": delivery.billing_delivery_same,
+#         "delivery_address": delivery.delivery_address,
+#         "city": delivery.city,
+#         "postal_code": delivery.postal_code,
+#         "country": delivery.country,
+#         "pickup_location_id": delivery.pickup_location_id,
+#         "total_price": delivery.total_price,
+#         "created_at": delivery.created_at.isoformat(),
+#         "updated_at": delivery.updated_at.isoformat()
+#     }] if delivery else []
+
+#     # --- Latest In-Progress Purchase & Add-ons ---
+#     latest_purchase = db.query(Purchase).filter(
+#         Purchase.user_id == user.id,
+#         Purchase.status == "in_progress"
+#     ).order_by(Purchase.created_at.desc()).first()
+
+#     service_addons = []
+#     if latest_purchase:
+#         addon_entries = db.query(PurchaseAddon).filter(
+#             PurchaseAddon.purchase_id == latest_purchase.id,
+#             PurchaseAddon.status == "in_progress"
+#         ).all()
+
+#         for addon in addon_entries:
+#             service_addons.append({
+#                 "id": addon.id,
+#                 "purchase_id": addon.purchase_id,
+#                 "addon_name": addon.addon_name,
+#                 "addon_price": addon.addon_price,
+#                 "status": addon.status,
+#                 "created_at": addon.created_at.isoformat()
+#             })
+
+#     return {
+#         "finance_applications": finance_applications,
+#         "bank_infos": all_bank_infos,
+#         "delivery_info": delivery_info,
+#         "service_addons": service_addons
+#     }
+
 @router.get("/purchase-details-user")
 async def get_purchase_details_user(
+    car_id: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-    # --- Latest In-Progress Finance Application ---
+    # --- Finance Application ---
     app = db.query(FinanceApplication).filter(
         FinanceApplication.user_id == user.id,
+        FinanceApplication.car_id == car_id,
         FinanceApplication.flow_status == "in_progress"
-    ).order_by(FinanceApplication.created_at.desc()).first()
+    ).first()
 
     finance_applications = [
         FinanceApplicationResponse(
@@ -1312,30 +1464,25 @@ async def get_purchase_details_user(
             email=app.email,
             identification_number=app.identification_number,
             date_of_birth=app.date_of_birth,
+            loan_type=app.loan_type,
+            apr=app.apr,
+            interest_rate=app.interest_rate,
+            payback_period_months=app.payback_period_months,
+            down_payment_percent=app.down_payment_percent,
+            down_payment_amount=app.down_payment_amount,
+            last_payment_percent=app.last_payment_percent,
+            last_payment_amount=app.last_payment_amount,
+            monthly_installment=app.monthly_installment,
             status=app.status,
             created_at=app.created_at.isoformat(),
             updated_at=app.updated_at.isoformat()
         )
-    ] if app else [
-        FinanceApplicationResponse(
-            id=0,
-            user_id=user.id,
-            car_id="N/A",
-            name=user.username,
-            surname="Unknown",
-            telephone_number="Not provided",
-            email=user.email,
-            identification_number="N/A",
-            date_of_birth="1900-01-01",
-            status="pending",
-            created_at="0000-00-00T00:00:00",
-            updated_at="0000-00-00T00:00:00"
-        )
-    ]
+    ] if app else []
 
-    # --- Latest In-Progress Bank Transfer Info ---
+    # --- Bank Transfer Info ---
     info = db.query(BankTransferInfo).filter(
         BankTransferInfo.user_id == user.id,
+        BankTransferInfo.car_id == car_id,
         BankTransferInfo.status == "in_progress"
     ).order_by(BankTransferInfo.created_at.desc()).first()
 
@@ -1357,59 +1504,44 @@ async def get_purchase_details_user(
             is_vat_payer=info.is_vat_payer,
             company_id=info.company_id,
             company_name=info.company_name,
+            status=info.status,
             created_at=info.created_at.isoformat()
         )
-    ] if info else [
-        BankTransferResponse(
-            id=0,
-            user_id=user.id,
-            car_id="N/A",
-            name=user.username,
-            surname="Unknown",
-            telephone_number="Not provided",
-            birth_date="1900-01-01",
-            billing_address_street="N/A",
-            billing_address_house_number="-",
-            billing_address_postal_code="00000",
-            billing_address_city="Unknown",
-            billing_address_country="Unknown",
-            is_company=False,
-            is_vat_payer=False,
-            company_id=None,
-            company_name=None,
-            created_at="0000-00-00T00:00:00"
-        )
-    ]
+    ] if info else []
 
-    # --- Latest In-Progress Delivery Info ---
+    # --- Delivery Info ---
     delivery = db.query(DeliveryInfo).filter(
         DeliveryInfo.user_id == user.id,
+        DeliveryInfo.car_id == car_id,
         DeliveryInfo.status == "in_progress"
     ).order_by(DeliveryInfo.created_at.desc()).first()
 
-    delivery_info = [{
-        "id": delivery.id,
-        "user_id": delivery.user_id,
-        "car_id": delivery.car_id,
-        "delivery_type": delivery.delivery_type,
-        "name": delivery.name,
-        "email": delivery.email,
-        "phone_number": delivery.pone_number,
-        "address": delivery.address,
-        "billing_delivery_same": delivery.billing_delivery_same,
-        "delivery_address": delivery.delivery_address,
-        "city": delivery.city,
-        "postal_code": delivery.postal_code,
-        "country": delivery.country,
-        "pickup_location_id": delivery.pickup_location_id,
-        "total_price": delivery.total_price,
-        "created_at": delivery.created_at.isoformat(),
-        "updated_at": delivery.updated_at.isoformat()
-    }] if delivery else []
+    delivery_info = [dict(
+        id=delivery.id,
+        user_id=delivery.user_id,
+        car_id=delivery.car_id,
+        purchase_id=delivery.purchase_id,
+        finance_id=delivery.finance_id,
+        delivery_type=delivery.delivery_type,
+        name=delivery.name,
+        email=delivery.email,
+        phone_number=delivery.pone_number,
+        address=delivery.address,
+        billing_delivery_same=delivery.billing_delivery_same,
+        delivery_address=delivery.delivery_address,
+        city=delivery.city,
+        postal_code=delivery.postal_code,
+        country=delivery.country,
+        pickup_location_id=delivery.pickup_location_id,
+        total_price=delivery.total_price,
+        created_at=delivery.created_at.isoformat(),
+        updated_at=delivery.updated_at.isoformat()
+    )] if delivery else []
 
-    # --- Latest In-Progress Purchase & Add-ons ---
+    # --- Add-ons ---
     latest_purchase = db.query(Purchase).filter(
         Purchase.user_id == user.id,
+        Purchase.car_id == car_id,
         Purchase.status == "in_progress"
     ).order_by(Purchase.created_at.desc()).first()
 
@@ -1419,16 +1551,15 @@ async def get_purchase_details_user(
             PurchaseAddon.purchase_id == latest_purchase.id,
             PurchaseAddon.status == "in_progress"
         ).all()
-
         for addon in addon_entries:
-            service_addons.append({
-                "id": addon.id,
-                "purchase_id": addon.purchase_id,
-                "addon_name": addon.addon_name,
-                "addon_price": addon.addon_price,
-                "status": addon.status,
-                "created_at": addon.created_at.isoformat()
-            })
+            service_addons.append(dict(
+                id=addon.id,
+                purchase_id=addon.purchase_id,
+                addon_name=addon.addon_name,
+                addon_price=addon.addon_price,
+                status=addon.status,
+                created_at=addon.created_at.isoformat()
+            ))
 
     return {
         "finance_applications": finance_applications,
@@ -1436,6 +1567,7 @@ async def get_purchase_details_user(
         "delivery_info": delivery_info,
         "service_addons": service_addons
     }
+
 
 @router.get("/purchase/complete")
 async def purchase_complete():
