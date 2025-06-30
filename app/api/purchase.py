@@ -434,23 +434,99 @@ async def submit_bank_transfer(
         created_at=bank_info.created_at.isoformat()
     )
 
+# @router.get("/get-latest-user-context")
+# async def get_latest_user_context_api(
+#     user: User = Depends(get_current_user),
+#     db: Session = Depends(get_db)
+# ):
+#     if not user:
+#         raise HTTPException(status_code=401, detail="Authentication required")
+
+#     # Fetch latest finalized purchase
+#     purchase = db.query(Purchase).filter(
+#         Purchase.user_id == user.id,
+#         Purchase.status == "finalized"
+#     ).order_by(Purchase.created_at.desc()).first()
+
+#     # Fetch latest in-progress finance application
+#     finance = db.query(FinanceApplication).filter(
+#         FinanceApplication.user_id == user.id,
+#         FinanceApplication.status == "in_progress"
+#     ).order_by(FinanceApplication.updated_at.desc()).first()
+
+#     # Decide which context is latest
+#     if purchase and finance:
+#         if purchase.created_at > finance.updated_at:
+#             return {
+#                 "context_type": "purchase",
+#                 "data": {
+#                     "id": purchase.id,
+#                     "car_id": purchase.car_id,
+#                     "status": purchase.status,
+#                     "created_at": purchase.created_at.isoformat()
+#                 }
+#             }
+#         else:
+#             return {
+#                 "context_type": "finance",
+#                 "data": {
+#                     "id": finance.id,
+#                     "car_id": finance.car_id,
+#                     "status": finance.status,
+#                     "created_at": finance.created_at.isoformat(),
+#                     "updated_at": finance.updated_at.isoformat()
+#                 }
+#             }
+
+#     elif purchase:
+#         return {
+#             "context_type": "purchase",
+#             "data": {
+#                 "id": purchase.id,
+#                 "car_id": purchase.car_id,
+#                 "status": purchase.status,
+#                 "created_at": purchase.created_at.isoformat()
+#             }
+#         }
+
+#     elif finance:
+#         return {
+#             "context_type": "finance",
+#             "data": {
+#                 "id": finance.id,
+#                 "car_id": finance.car_id,
+#                 "status": finance.status,
+#                 "created_at": finance.created_at.isoformat(),
+#                 "updated_at": finance.updated_at.isoformat()
+#             }
+#         }
+
+#     # No context found
+#     return {
+#         "context_type": None,
+#         "data": None
+#     }
+
 @router.get("/get-latest-user-context")
 async def get_latest_user_context_api(
+    car_id: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
 
-    # Fetch latest finalized purchase
+    # Fetch latest finalized purchase for the given car
     purchase = db.query(Purchase).filter(
         Purchase.user_id == user.id,
+        Purchase.car_id == car_id,
         Purchase.status == "finalized"
     ).order_by(Purchase.created_at.desc()).first()
 
-    # Fetch latest in-progress finance application
+    # Fetch latest finance application for the given car
     finance = db.query(FinanceApplication).filter(
         FinanceApplication.user_id == user.id,
+        FinanceApplication.car_id == car_id,
         FinanceApplication.status == "in_progress"
     ).order_by(FinanceApplication.updated_at.desc()).first()
 
@@ -620,53 +696,6 @@ async def checkout_success(
 async def checkout_cancel():
     """Handle canceled checkout."""
     return RedirectResponse(url="/purchase/canceled")  # Adjust to frontend
-
-# @router.get("/get-latest-user-context")
-# async def get_latest_user_context_api(
-#     user: User = Depends(get_current_user),
-#     db: Session = Depends(get_db)
-# ):
-#     if not user:
-#         raise HTTPException(status_code=401, detail="Authentication required")
-
-#     # Fetch latest purchase
-#     purchase = db.query(Purchase).filter(
-#         Purchase.user_id == user.id,
-#         Purchase.status == "finalized"
-#     ).order_by(Purchase.created_at.desc()).first()
-
-#     # Fetch latest finance application
-#     finance = db.query(FinanceApplication).filter(
-#         FinanceApplication.user_id == user.id,
-#         FinanceApplication.status == "in_progress"
-#     ).order_by(FinanceApplication.updated_at.desc()).first()
-
-#     if purchase and finance:
-#         context_type = "purchase" if purchase.created_at > finance.updated_at else "finance"
-#     elif purchase:
-#         context_type = "purchase"
-#     elif finance:
-#         context_type = "finance"
-#     else:
-#         context_type = None
-
-#     return {
-#         "context_type": context_type,
-#         "purchase": {
-#             "id": purchase.id,
-#             "car_id": purchase.car_id,
-#             "status": purchase.status,
-#             "updated_at": purchase.created_at.isoformat(),
-#             "created_at": purchase.created_at.isoformat()
-#         } if purchase else None,
-#         "finance": {
-#             "id": finance.id,
-#             "car_id": finance.car_id,
-#             "status": finance.status,
-#             "updated_at": finance.updated_at.isoformat(),
-#             "created_at": finance.created_at.isoformat()
-#         } if finance else None
-#     }
 
 
 @router.post("/submit-delivery-info", response_model=DeliveryResponse)
