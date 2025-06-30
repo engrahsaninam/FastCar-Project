@@ -1298,7 +1298,7 @@ async def get_purchase_details_user(
     # --- Latest In-Progress Finance Application ---
     app = db.query(FinanceApplication).filter(
         FinanceApplication.user_id == user.id,
-        FinanceApplication.status == "in_progress"
+        FinanceApplication.flow_status == "in_progress"
     ).order_by(FinanceApplication.created_at.desc()).first()
 
     finance_applications = [
