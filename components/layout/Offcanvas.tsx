@@ -18,8 +18,8 @@ export default function Offcanvas({ isOffcanvas, handleOffcanvas }: any) {
 								<div className="dropdown-account">
 									<ul>
 										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</Link></li>
-										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'sp' ? 'Spanish' : 'Spanish'}</Link></li>
-										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'gr' ? 'German' : 'German'}</Link></li>
+										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'es' ? 'Spanish' : 'Spanish'}</Link></li>
+										<li><Link className="text-sm-medium" href="#">{localStorage.getItem('i18nextLng') === 'de' ? 'German' : 'German'}</Link></li>
 									</ul>
 								</div>
 							</div>

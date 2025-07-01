@@ -18,7 +18,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/app/i18/useLanguage';
 
-type LanguageCode = 'en' | 'sp' | 'gr';
+type LanguageCode = 'en' | 'es' | 'de';
 
 type LanguageInfo = {
 	code: LanguageCode;
@@ -45,8 +45,8 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 
 	const languageMap: LanguageMap = {
 		en: { code: 'en', label: 'English', short: 'En' },
-		sp: { code: 'sp', label: 'Spanish', short: 'Sp' },
-		gr: { code: 'gr', label: 'German', short: 'Gr' }
+		es: { code: 'es', label: 'Spanish', short: 'Es' },
+		de: { code: 'de', label: 'German', short: 'De' }
 	};
 
 	// Get current language safely
@@ -270,12 +270,12 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 																display="flex"
 																alignItems="center"
 															>
-																{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'sp' ? 'Sp' : 'Gr'} <ChevronDownIcon />
+																{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === '' ? 'Es' : 'De'} <ChevronDownIcon />
 															</MenuButton>
 															<MenuList>
 																<MenuItem onClick={() => changeLanguage('en')}>{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</MenuItem>
-																<MenuItem onClick={() => changeLanguage('fr')}>{localStorage.getItem('i18nextLng') === 'sp' ? 'Spanish' : 'Spanish'}</MenuItem>
-																<MenuItem onClick={() => changeLanguage('ch')}>{localStorage.getItem('i18nextLng') === 'gr' ? 'German' : 'German'}</MenuItem>
+																<MenuItem onClick={() => changeLanguage('fr')}>{localStorage.getItem('i18nextLng') === 'es' ? 'Spanish' : 'Spanish'}</MenuItem>
+																<MenuItem onClick={() => changeLanguage('ch')}>{localStorage.getItem('i18nextLng') === 'de' ? 'German' : 'German'}</MenuItem>
 															</MenuList>
 														</Menu>
 													</Box>

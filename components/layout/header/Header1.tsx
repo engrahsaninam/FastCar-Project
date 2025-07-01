@@ -195,17 +195,17 @@ export default function Header1({
 											display="flex"
 											alignItems="center"
 										>
-											{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'sp' ? 'Sp' : 'Gr'} <ChevronDownIcon ml={1} />
+											{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'es' ? 'Es' : 'De'} <ChevronDownIcon ml={1} />
 										</MenuButton>
 										<MenuList>
 											<MenuItem onClick={() => changeLanguage('en')}>
 												{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}
 											</MenuItem>
-											<MenuItem onClick={() => changeLanguage('sp')}>
-												{localStorage.getItem('i18nextLng') === 'sp' ? 'Spanish' : 'Spanish'}
+											<MenuItem onClick={() => changeLanguage('es')}>
+												{localStorage.getItem('i18nextLng') === 'es' ? 'Spanish' : 'Spanish'}
 											</MenuItem>
-											<MenuItem onClick={() => changeLanguage('gr')}>
-												{localStorage.getItem('i18nextLng') === 'gr' ? 'German' : 'German'}
+											<MenuItem onClick={() => changeLanguage('de')}>
+												{localStorage.getItem('i18nextLng') === 'de' ? 'German' : 'German'}
 											</MenuItem>
 										</MenuList>
 									</Menu>
@@ -274,12 +274,12 @@ export default function Header1({
 															display="flex"
 															alignItems="center"
 														>
-															{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'sp' ? 'Sp' : 'Gr'} <ChevronDownIcon />
+															{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'es' ? 'Es' : 'De'} <ChevronDownIcon />
 														</MenuButton>
 														<MenuList>
 															<MenuItem onClick={() => changeLanguage('en')}>{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</MenuItem>
-															<MenuItem onClick={() => changeLanguage('sp')}>{localStorage.getItem('i18nextLng') === 'sp' ? 'Spanish' : 'Spanish'}</MenuItem>
-															<MenuItem onClick={() => changeLanguage('gr')}>{localStorage.getItem('i18nextLng') === 'gr' ? 'German' : 'German'}</MenuItem>
+															<MenuItem onClick={() => changeLanguage('es')}>{localStorage.getItem('i18nextLng') === 'es' ? 'Spanish' : 'Spanish'}</MenuItem>
+															<MenuItem onClick={() => changeLanguage('de')}>{localStorage.getItem('i18nextLng') === 'de' ? 'German' : 'German'}</MenuItem>
 														</MenuList>
 													</Menu>
 												</Box>
