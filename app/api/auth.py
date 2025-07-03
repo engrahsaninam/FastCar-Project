@@ -160,6 +160,34 @@ async def verify_email(
     logger.info(f"Email verified successfully: email={user.email}")
     return {"message": "Email verified successfully! You can now log in."}
 
+@router.post("/verify-otp")
+async def verify_otp(
+    verification_data: OTPVerificationRequest,
+    db: Session = Depends(get_db)
+):
+    user = get_user_by_email(db, verification_data.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.is_email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+    
+    # Check if OTP is valid and not expired
+    if not user.email_verification_otp or user.email_verification_otp != verification_data.otp:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    if not user.otp_expires_at or user.otp_expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Verification code has expired")
+    
+    # Verify the email
+    user.is_email_verified = True
+    user.email_verification_otp = None
+    user.otp_expires_at = None
+    db.commit()
+    
+    logger.info(f"OTP verified successfully: email={user.email}")
+    return {"message": "OTP verified successfully! You can now log in."}
+
 @router.post("/resend-otp")
 async def resend_otp(
     resend_data: OTPResendRequest,
