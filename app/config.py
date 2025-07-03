@@ -28,6 +28,16 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "")
 SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "EUCar Support")
 
+# FastCar email settings for verification emails
+FASTCAR_SMTP_SERVER = os.getenv("FASTCAR_SMTP_SERVER", "smtp.gmail.com")
+FASTCAR_SMTP_PORT = int(os.getenv("FASTCAR_SMTP_PORT", "587"))
+FASTCAR_SMTP_USERNAME = "no-reply@fast4car.com"
+FASTCAR_SMTP_PASSWORD = "Ahsancito123"
+FASTCAR_FROM_EMAIL = "no-reply@fast4car.com"
+FASTCAR_FROM_NAME = "Fast4Car Support"
+
+# OTP settings
+OTP_EXPIRY_MINUTES = int(os.getenv("OTP_EXPIRY_MINUTES", "15"))  # OTP expires in 15 minutes
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "46662326432-69uij1vn69d3f8987qgtit02vmp4ndcg.apps.googleusercontent.com")
 

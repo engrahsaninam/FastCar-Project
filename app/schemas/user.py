@@ -33,6 +33,7 @@ class UserResponse(UserBase):
     is_active: bool
     created_at: datetime
     is_admin: bool  # Added to reflect admin status
+    is_email_verified: bool  # Added for email verification status
 
     class Config:
         from_attributes = True
@@ -54,3 +55,16 @@ class PasswordReset(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
+
+# OTP Verification schemas
+class OTPVerificationRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(..., min_length=6, max_length=6)
+
+class OTPResendRequest(BaseModel):
+    email: EmailStr
+
+class RegistrationResponse(BaseModel):
+    message: str
+    email: str
+    verification_required: bool = True

@@ -17,6 +17,27 @@ def apply_migrations():
                     logger.info("Adding is_admin column to users table")
                     conn.execute(text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0"))
                     logger.info("Successfully added is_admin column")
+                
+                # Email verification columns
+                if "is_email_verified" not in columns:
+                    logger.info("Adding is_email_verified column to users table")
+                    conn.execute(text("ALTER TABLE users ADD COLUMN is_email_verified BOOLEAN DEFAULT 0"))
+                    logger.info("Successfully added is_email_verified column")
+                
+                if "email_verification_otp" not in columns:
+                    logger.info("Adding email_verification_otp column to users table")
+                    conn.execute(text("ALTER TABLE users ADD COLUMN email_verification_otp VARCHAR"))
+                    logger.info("Successfully added email_verification_otp column")
+                
+                if "otp_expires_at" not in columns:
+                    logger.info("Adding otp_expires_at column to users table")
+                    conn.execute(text("ALTER TABLE users ADD COLUMN otp_expires_at DATETIME"))
+                    logger.info("Successfully added otp_expires_at column")
+                
+                # Set existing users as email verified to avoid breaking existing accounts
+                logger.info("Setting existing users as email verified")
+                conn.execute(text("UPDATE users SET is_email_verified = 1 WHERE is_email_verified IS NULL OR is_email_verified = 0"))
+                logger.info("Successfully updated existing users email verification status")
 
                 # Cars table migrations
                 result = conn.execute(text("PRAGMA table_info(cars)")).fetchall()

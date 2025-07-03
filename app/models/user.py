@@ -14,6 +14,10 @@ class User(Base):
     google_id = Column(String, unique=True, nullable=True)
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)  # Added for admin access
+    # Email verification fields
+    is_email_verified = Column(Boolean, default=False)
+    email_verification_otp = Column(String, nullable=True)
+    otp_expires_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=func.now())
 
 

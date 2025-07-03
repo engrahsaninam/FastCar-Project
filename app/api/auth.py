@@ -7,16 +7,18 @@ from datetime import datetime, timedelta
 from google.auth.transport import requests
 from google.oauth2 import id_token
 import secrets
+import random
 import logging
 
 from app.database.sqlite import get_db
 from app.models.user import User, PasswordReset
 from app.utils.security import verify_password, get_password_hash, create_access_token
-from app.config import JWT_SECRET, JWT_ALGORITHM, GOOGLE_CLIENT_ID
-from app.utils.email import send_email
+from app.config import JWT_SECRET, JWT_ALGORITHM, GOOGLE_CLIENT_ID, OTP_EXPIRY_MINUTES
+from app.utils.email import send_email, send_verification_email
 from app.schemas.user import (
     UserSignup, GoogleSignup, UserResponse, Token, TokenData, 
-    PasswordResetRequest, PasswordReset as PasswordResetSchema, LoginRequest
+    PasswordResetRequest, PasswordReset as PasswordResetSchema, LoginRequest,
+    OTPVerificationRequest, OTPResendRequest, RegistrationResponse
 )
 
 router = APIRouter()
@@ -32,12 +34,18 @@ def get_user_by_username(db: Session, username: str):
 def get_user_by_google_id(db: Session, google_id: str):
     return db.query(User).filter(User.google_id == google_id).first()
 
+def generate_otp():
+    """Generate a 6-digit OTP"""
+    return f"{random.randint(100000, 999999)}"
+
 def authenticate_user(db: Session, email: str, password: str):
     user = get_user_by_email(db, email)
     if not user or not user.hashed_password:
         return False
     if not verify_password(password, user.hashed_password):
         return False
+    if not user.is_email_verified:
+        return "unverified"
     return user
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -56,9 +64,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         return None
     return user
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=RegistrationResponse)
 async def register(
     user: UserSignup,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
     if get_user_by_email(db, user.email):
@@ -66,19 +75,89 @@ async def register(
     if get_user_by_username(db, user.username):
         raise HTTPException(status_code=400, detail="Username already taken")
     
+    # Generate OTP and expiry time
+    otp = generate_otp()
+    otp_expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_MINUTES)
+    
     hashed_password = get_password_hash(user.password)
     db_user = User(
         username=user.username,
         email=user.email,
         hashed_password=hashed_password,
         is_active=True,
-        is_admin=user.is_admin
+        is_admin=user.is_admin,
+        is_email_verified=False,  # Email not verified yet
+        email_verification_otp=otp,
+        otp_expires_at=otp_expires_at
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    logger.info(f"Registered user: email={user.email}, is_admin={user.is_admin}")
-    return db_user
+    
+    # Send verification email in background
+    background_tasks.add_task(send_verification_email, user.email, otp, user.username)
+    
+    logger.info(f"User registered with email verification required: email={user.email}, is_admin={user.is_admin}")
+    return RegistrationResponse(
+        message="Registration successful! Please check your email for verification code.",
+        email=user.email,
+        verification_required=True
+    )
+
+@router.post("/verify-email")
+async def verify_email(
+    verification_data: OTPVerificationRequest,
+    db: Session = Depends(get_db)
+):
+    user = get_user_by_email(db, verification_data.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.is_email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+    
+    # Check if OTP is valid and not expired
+    if not user.email_verification_otp or user.email_verification_otp != verification_data.otp:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    if not user.otp_expires_at or user.otp_expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Verification code has expired")
+    
+    # Verify the email
+    user.is_email_verified = True
+    user.email_verification_otp = None
+    user.otp_expires_at = None
+    db.commit()
+    
+    logger.info(f"Email verified successfully: email={user.email}")
+    return {"message": "Email verified successfully! You can now log in."}
+
+@router.post("/resend-otp")
+async def resend_otp(
+    resend_data: OTPResendRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    user = get_user_by_email(db, resend_data.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.is_email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+    
+    # Generate new OTP
+    otp = generate_otp()
+    otp_expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_MINUTES)
+    
+    user.email_verification_otp = otp
+    user.otp_expires_at = otp_expires_at
+    db.commit()
+    
+    # Send verification email in background
+    background_tasks.add_task(send_verification_email, user.email, otp, user.username)
+    
+    logger.info(f"OTP resent: email={user.email}")
+    return {"message": "Verification code sent! Please check your email."}
 
 @router.post("/google-signup", response_model=Token)
 async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)):
@@ -113,7 +192,8 @@ async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)
         email=email,
         google_id=google_id,
         is_active=True,
-        is_admin=False  # Explicitly set for Google Sign-In
+        is_admin=False,  # Explicitly set for Google Sign-In
+        is_email_verified=True  # Google emails are pre-verified
     )
     db.add(db_user)
     db.commit()
@@ -131,6 +211,12 @@ async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if user == "unverified":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Please verify your email before logging in",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -141,6 +227,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if user == "unverified":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Please verify your email before logging in",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(data={"sub": user.email})
