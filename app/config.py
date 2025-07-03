@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+
 # Database settings
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
