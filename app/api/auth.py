@@ -405,3 +405,52 @@ async def debug_user_status(email: str, db: Session = Depends(get_db)):
         "has_google_id": user.google_id is not None,
         "created_at": user.created_at
     }
+
+@router.delete("/testing/clear-all-users")
+async def clear_all_users_for_testing(
+    confirm: str,
+    db: Session = Depends(get_db)
+):
+    """
+    TESTING ONLY: Remove all users from database
+    Requires confirmation parameter 'confirm=DELETE_ALL_USERS'
+    """
+    if confirm != "DELETE_ALL_USERS":
+        raise HTTPException(
+            status_code=400, 
+            detail="This is a destructive operation. To confirm, pass 'confirm=DELETE_ALL_USERS' as query parameter"
+        )
+    
+    try:
+        # Get count before deletion for logging
+        user_count = db.query(User).count()
+        
+        # Delete all users
+        db.query(User).delete()
+        
+        # Also clear related tables
+        from app.models.user import SavedCar, SearchHistory, PasswordReset
+        db.query(SavedCar).delete()
+        db.query(SearchHistory).delete()
+        db.query(PasswordReset).delete()
+        
+        db.commit()
+        
+        logger.warning(f"TESTING: Deleted {user_count} users and all related data from database")
+        
+        return {
+            "message": "All users deleted successfully",
+            "deleted_users": user_count,
+            "warning": "This action is irreversible - all user data has been permanently removed"
+        }
+    
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error clearing users: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error clearing users: {str(e)}")
+
+@router.get("/testing/user-count")
+async def get_user_count(db: Session = Depends(get_db)):
+    """Get total number of users in database"""
+    count = db.query(User).count()
+    return {"total_users": count}
