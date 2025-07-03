@@ -61,6 +61,8 @@ def populate_dummy_data():
             return
         
         logger.info(f"Populating dummy data for {len(car_ids)} cars")
+        # populate only first 100k cars in the cars table
+        car_ids = car_ids[:100000]
         batch_size = 1000
         for i in range(0, len(car_ids), batch_size):
             batch = car_ids[i:i + batch_size]
