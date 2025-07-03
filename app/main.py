@@ -103,7 +103,7 @@ async def sync_mysql_to_sqlite(db: Session):
     LIMIT 300000
     """
     cars = await execute_query(query, fetch=True, remove_outliers=False)
-
+    cars = cars[:100000]
     if not cars:
         logger.warning("No cars fetched from MySQL")
         return
@@ -193,7 +193,7 @@ async def startup_event():
     apply_migrations()
     
     # Populate dummy data for new car columns
-    populate_dummy_data()
+    # populate_dummy_data()
     
     # Sync MySQL cars to SQLite
     db_gen = get_db()
