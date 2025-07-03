@@ -122,6 +122,9 @@ async def register(
     db.commit()
     db.refresh(db_user)
     
+    # Debug logging to verify the user was created correctly
+    logger.info(f"New user created: email={db_user.email}, is_verified={db_user.is_email_verified}, has_otp={db_user.email_verification_otp is not None}, otp={otp}")
+    
     # Send verification email in background
     background_tasks.add_task(send_verification_email, user.email, otp, user.username)
     
@@ -169,8 +172,20 @@ async def verify_otp(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Debug logging to understand the current state
+    logger.info(f"OTP verification attempt: email={user.email}, is_verified={user.is_email_verified}, has_otp={user.email_verification_otp is not None}, otp_expires_at={user.otp_expires_at}")
+    
     if user.is_email_verified:
-        raise HTTPException(status_code=400, detail="Email already verified")
+        # Check if user actually has an OTP set - if so, this might be a data inconsistency
+        if user.email_verification_otp:
+            logger.warning(f"Data inconsistency: User {user.email} is marked as verified but still has OTP set")
+            # Clear the OTP fields since user is already verified
+            user.email_verification_otp = None
+            user.otp_expires_at = None
+            db.commit()
+            return {"message": "Email is already verified! You can now log in."}
+        else:
+            raise HTTPException(status_code=400, detail="Email already verified")
     
     # Check if OTP is valid and not expired
     if not user.email_verification_otp or user.email_verification_otp != verification_data.otp:
@@ -233,10 +248,13 @@ async def google_signup(google_data: GoogleSignup, db: Session = Depends(get_db)
 
     user = get_user_by_google_id(db, google_id) or get_user_by_email(db, email)
     if user:
+        logger.info(f"Google Sign-In: Existing user found - email={email}, is_verified={user.is_email_verified}, has_google_id={user.google_id is not None}")
         if not user.google_id:
             user.google_id = google_id
+            # Note: We don't change is_email_verified here - it stays as is
             db.commit()
             db.refresh(user)
+            logger.info(f"Google Sign-In: Linked Google account to existing user - email={email}")
         access_token = create_access_token(data={"sub": user.email})
         return {"access_token": access_token, "token_type": "bearer"}
 
@@ -369,3 +387,21 @@ async def reset_password(reset_data: PasswordResetSchema, db: Session = Depends(
     reset_record.is_used = True
     db.commit()
     return {"message": "Password has been reset successfully"}
+
+@router.get("/debug-user-status/{email}")
+async def debug_user_status(email: str, db: Session = Depends(get_db)):
+    """Debug endpoint to check user verification status"""
+    user = get_user_by_email(db, email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {
+        "email": user.email,
+        "username": user.username,
+        "is_email_verified": user.is_email_verified,
+        "has_otp": user.email_verification_otp is not None,
+        "otp_expires_at": user.otp_expires_at,
+        "is_active": user.is_active,
+        "has_google_id": user.google_id is not None,
+        "created_at": user.created_at
+    }
