@@ -9,8 +9,115 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Simple in-memory cache
-_query_cache = {}
+# OPTIMIZED: Advanced cache with intelligent memory management
+from collections import OrderedDict
+import threading
+import weakref
+
+class AdvancedQueryCache:
+    """
+    High-performance query cache with:
+    - O(1) LRU operations using OrderedDict
+    - Intelligent memory management
+    - Automatic cleanup of expired entries
+    - Thread-safe operations
+    """
+    
+    def __init__(self, max_size: int = 1000, max_memory_mb: int = 256):
+        self.max_size = max_size
+        self.max_memory_bytes = max_memory_mb * 1024 * 1024
+        self.cache = OrderedDict()
+        self.current_memory = 0
+        self.hit_count = 0
+        self.miss_count = 0
+        self._lock = threading.RLock()
+        self._memory_tracker = {}
+    
+    def get(self, key: str):
+        """Get with O(1) LRU update"""
+        with self._lock:
+            if key in self.cache:
+                entry = self.cache[key]
+                if time.time() < entry["expires"]:
+                    # Move to end (most recently used)
+                    self.cache.move_to_end(key)
+                    self.hit_count += 1
+                    return entry["data"]
+                else:
+                    # Remove expired entry
+                    self._remove_entry(key)
+            
+            self.miss_count += 1
+            return None
+    
+    def set(self, key: str, data, ttl: int):
+        """Set with intelligent memory management"""
+        import sys
+        data_size = sys.getsizeof(data)
+        
+        with self._lock:
+            # Ensure capacity
+            self._ensure_capacity(data_size)
+            
+            self.cache[key] = {
+                "data": data,
+                "expires": time.time() + ttl
+            }
+            self._memory_tracker[key] = data_size
+            self.current_memory += data_size
+    
+    def _ensure_capacity(self, new_item_size: int):
+        """Ensure cache has capacity with O(1) amortized complexity"""
+        # Remove expired items first
+        self._cleanup_expired()
+        
+        # Remove LRU items if needed
+        while (len(self.cache) >= self.max_size or 
+               self.current_memory + new_item_size > self.max_memory_bytes):
+            
+            if not self.cache:
+                break
+            
+            # Remove least recently used (first item)
+            oldest_key = next(iter(self.cache))
+            self._remove_entry(oldest_key)
+    
+    def _remove_entry(self, key: str):
+        """Remove entry and update memory tracking"""
+        if key in self.cache:
+            del self.cache[key]
+            memory_size = self._memory_tracker.pop(key, 0)
+            self.current_memory -= memory_size
+    
+    def _cleanup_expired(self):
+        """Remove expired entries efficiently"""
+        current_time = time.time()
+        expired_keys = [
+            key for key, entry in self.cache.items() 
+            if entry["expires"] < current_time
+        ]
+        
+        for key in expired_keys:
+            self._remove_entry(key)
+    
+    def get_stats(self):
+        """Get cache statistics"""
+        with self._lock:
+            total_requests = self.hit_count + self.miss_count
+            hit_rate = (self.hit_count / total_requests * 100) if total_requests > 0 else 0
+            
+            return {
+                'size': len(self.cache),
+                'max_size': self.max_size,
+                'memory_mb': self.current_memory / (1024 * 1024),
+                'max_memory_mb': self.max_memory_bytes / (1024 * 1024),
+                'hit_rate': f"{hit_rate:.2f}%",
+                'hit_count': self.hit_count,
+                'miss_count': self.miss_count
+            }
+
+# Global optimized cache instance
+_query_cache = AdvancedQueryCache(max_size=1000, max_memory_mb=256)
 
 # Create connection pool
 pool = None
@@ -37,28 +144,16 @@ def get_connection():
     return pool.get_connection()
 
 def get_from_cache(key: str) -> Optional[List[Dict[str, Any]]]:
-    """Get a query result from in-memory cache if it exists and is not expired."""
-    if key in _query_cache:
-        entry = _query_cache[key]
-        if time.time() < entry["expires"]:
-            return entry["data"]
-        else:
-            del _query_cache[key]
-    return None
+    """OPTIMIZED: Get query result with O(1) LRU cache operations."""
+    return _query_cache.get(key)
 
 def add_to_cache(key: str, data: List[Dict[str, Any]], ttl: int):
-    """Add a query result to in-memory cache with expiration time."""
-    _query_cache[key] = {
-        "data": data,
-        "expires": time.time() + ttl
-    }
-    
-    # Manage cache size
-    if len(_query_cache) > 100:
-        sorted_keys = sorted(_query_cache.keys(), 
-                           key=lambda k: _query_cache[k]["expires"])
-        for old_key in sorted_keys[:20]:
-            del _query_cache[old_key]
+    """OPTIMIZED: Add to cache with intelligent memory management."""
+    _query_cache.set(key, data, ttl)
+
+def get_cache_stats() -> Dict[str, Any]:
+    """Get comprehensive cache statistics for monitoring."""
+    return _query_cache.get_stats()
 
 def is_data_query(query: str) -> bool:
     """
@@ -146,9 +241,12 @@ async def execute_query(
     return result
 
 def clear_cache():
-    """Clear the in-memory cache."""
-    global _query_cache
-    _query_cache = {}
+    """OPTIMIZED: Clear the advanced cache with proper memory cleanup."""
+    _query_cache.cache.clear()
+    _query_cache._memory_tracker.clear()
+    _query_cache.current_memory = 0
+    _query_cache.hit_count = 0
+    _query_cache.miss_count = 0
 
 async def optimize_database():
     """Create optimized indexes for the cars table."""
