@@ -70,12 +70,40 @@ async def register(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
-    if get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
+    existing_user = get_user_by_email(db, user.email)
+    if existing_user:
+        if existing_user.is_email_verified:
+            # Email is already registered and verified
+            raise HTTPException(status_code=400, detail="Email already registered")
+        else:
+            # Email exists but not verified - regenerate OTP and resend verification
+            otp = generate_otp()
+            otp_expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_MINUTES)
+            
+            # Update the existing user with new OTP and potentially new password
+            existing_user.email_verification_otp = otp
+            existing_user.otp_expires_at = otp_expires_at
+            existing_user.hashed_password = get_password_hash(user.password)  # Update password
+            existing_user.is_admin = user.is_admin  # Update admin status if needed
+            
+            db.commit()
+            db.refresh(existing_user)
+            
+            # Send verification email in background
+            background_tasks.add_task(send_verification_email, user.email, otp, existing_user.username)
+            
+            logger.info(f"Existing unverified user registration attempt - OTP resent: email={user.email}")
+            return RegistrationResponse(
+                message="An account with this email already exists but is not verified. A new verification code has been sent to your email.",
+                email=user.email,
+                verification_required=True
+            )
+    
+    # Check if username is already taken
     if get_user_by_username(db, user.username):
         raise HTTPException(status_code=400, detail="Username already taken")
     
-    # Generate OTP and expiry time
+    # Generate OTP and expiry time for new user
     otp = generate_otp()
     otp_expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_MINUTES)
     
