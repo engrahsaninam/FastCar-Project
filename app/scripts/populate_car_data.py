@@ -24,50 +24,74 @@ EXTRAS = [
     "Alloy wheels (15\")", "Automatically dimming interior mirror", "Trailer hitch"
 ]
 
-def generate_dummy_data():
-    """Generate dummy data for a single car."""
-    co2 = f"{random.randint(100, 250)} g"
-    engine = f"{random.randint(1000, 3000)} cc"
-    body = random.choice(BODY_TYPES)
-    colour = random.choice(COLOURS)
-    features = {
-        "Comfort & Convenience": random.sample(COMFORT_FEATURES, random.randint(2, 5)),
-        "Safety & Security": random.sample(SAFETY_FEATURES, random.randint(2, 5)),
-        "Extras": random.sample(EXTRAS, random.randint(1, 3))
-    }
-    return {
-        "CO2_emissions": co2,
-        "engine_size": engine,
-        "body_type": body,
-        "colour": colour,
-        "features": json.dumps(features)
-    }
+def generate_batch_dummy_data(batch_size):
+    """Generate dummy data for a batch of cars efficiently."""
+    batch_data = []
+    for _ in range(batch_size):
+        co2 = f"{random.randint(100, 250)} g"
+        engine = f"{random.randint(1000, 3000)} cc"
+        body = random.choice(BODY_TYPES)
+        colour = random.choice(COLOURS)
+        features = {
+            "Comfort & Convenience": random.sample(COMFORT_FEATURES, random.randint(2, 5)),
+            "Safety & Security": random.sample(SAFETY_FEATURES, random.randint(2, 5)),
+            "Extras": random.sample(EXTRAS, random.randint(1, 3))
+        }
+        batch_data.append({
+            "CO2_emissions": co2,
+            "engine_size": engine,
+            "body_type": body,
+            "colour": colour,
+            "features": json.dumps(features)
+        })
+    return batch_data
 
 def populate_dummy_data():
-    """Populate dummy data for all cars in the cars table."""
-    logger.info("Starting dummy data population for cars table")
+    """Populate dummy data for all cars in the cars table with optimized bulk operations."""
+    logger.info("🚀 Starting optimized dummy data population for cars table")
     
     with engine.connect() as conn:
         # Check if new columns have data
         result = conn.execute(text("SELECT CO2_emissions FROM cars LIMIT 1")).fetchone()
         if result and result[0] is not None:
-            logger.info("New columns already populated, skipping dummy data insertion")
+            logger.info("✅ New columns already populated, skipping dummy data insertion")
             return
         
         # Get all car IDs
         car_ids = conn.execute(text("SELECT id FROM cars")).fetchall()
         if not car_ids:
-            logger.warning("No cars found in the cars table")
+            logger.warning("⚠️ No cars found in the cars table")
             return
         
-        logger.info(f"Populating dummy data for {len(car_ids)} cars")
-        # populate only first 100k cars in the cars table
+        # Limit to first 100k cars
         car_ids = car_ids[:100000]
-        batch_size = 1000
-        for i in range(0, len(car_ids), batch_size):
-            batch = car_ids[i:i + batch_size]
-            for car_id in batch:
-                data = generate_dummy_data()
+        total_cars = len(car_ids)
+        
+        logger.info(f"🔄 Populating dummy data for {total_cars:,} cars using optimized bulk operations")
+        
+        # Use larger batch size for better performance
+        batch_size = 5000  # Increased from 1000 to 5000
+        progress_log_interval = 25000  # Log every 25k instead of every 1k
+        
+        # Begin transaction for better performance
+        trans = conn.begin()
+        
+        try:
+            for i in range(0, total_cars, batch_size):
+                batch = car_ids[i:i + batch_size]
+                actual_batch_size = len(batch)
+                
+                # Pre-generate all data for this batch
+                batch_data = generate_batch_dummy_data(actual_batch_size)
+                
+                # Prepare bulk update using executemany for better performance
+                update_data = []
+                for j, car_id in enumerate(batch):
+                    data = batch_data[j]
+                    data["id"] = car_id[0]
+                    update_data.append(data)
+                
+                # Execute bulk update
                 conn.execute(
                     text("""
                         UPDATE cars
@@ -78,16 +102,23 @@ def populate_dummy_data():
                             features = :features
                         WHERE id = :id
                     """),
-                    {
-                        "id": car_id[0],
-                        "CO2_emissions": data["CO2_emissions"],
-                        "engine_size": data["engine_size"],
-                        "body_type": data["body_type"],
-                        "colour": data["colour"],
-                        "features": data["features"]
-                    }
+                    update_data
                 )
-            conn.commit()
-            logger.info(f"Populated dummy data for {i + len(batch)}/{len(car_ids)} cars")
+                
+                processed = i + actual_batch_size
+                
+                # Log progress less frequently
+                if processed % progress_log_interval == 0 or processed == total_cars:
+                    progress_pct = (processed / total_cars) * 100
+                    logger.info(f"📊 Progress: {processed:,}/{total_cars:,} cars ({progress_pct:.1f}%)")
+            
+            # Commit the transaction
+            trans.commit()
+            logger.info("✅ Dummy data population completed successfully!")
+            
+        except Exception as e:
+            trans.rollback()
+            logger.error(f"❌ Error during dummy data population: {str(e)}")
+            raise
     
-    logger.info("Dummy data population completed")
+    logger.info("🎉 Optimized dummy data population process finished!")
