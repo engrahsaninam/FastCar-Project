@@ -32,8 +32,8 @@ SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "EUCar Support")
 # FastCar email settings for verification emails
 FASTCAR_SMTP_SERVER = os.getenv("FASTCAR_SMTP_SERVER", "smtp.gmail.com")
 FASTCAR_SMTP_PORT = int(os.getenv("FASTCAR_SMTP_PORT", "587"))
-FASTCAR_SMTP_USERNAME = "no-reply@fast4car.com"
-FASTCAR_SMTP_PASSWORD = "Ahsancito123"
+FASTCAR_SMTP_USERNAME = os.getenv("FASTCAR_SMTP_USERNAME", "no-reply@fast4car.com")
+FASTCAR_SMTP_PASSWORD = os.getenv("FASTCAR_SMTP_PASSWORD", "Ahsancito123")
 FASTCAR_FROM_EMAIL = "no-reply@fast4car.com"
 FASTCAR_FROM_NAME = "Fast4Car Support"
 

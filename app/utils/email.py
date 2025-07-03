@@ -11,12 +11,34 @@ from app.config import (
 
 logger = logging.getLogger(__name__)
 
+def log_email_configuration():
+    """Log current email configuration for debugging"""
+    print("=" * 60)
+    print("📧 EMAIL CONFIGURATION DEBUG INFO")
+    print("=" * 60)
+    print(f"🔐 GENERAL SMTP EMAIL: {SMTP_USERNAME}")
+    print(f"🔐 GENERAL SMTP PASSWORD: {SMTP_PASSWORD}")
+    print(f"🔐 FASTCAR SMTP EMAIL: {FASTCAR_SMTP_USERNAME}")
+    print(f"🔐 FASTCAR SMTP PASSWORD: {FASTCAR_SMTP_PASSWORD}")
+    print(f"📧 SMTP SERVER: {SMTP_SERVER}:{SMTP_PORT}")
+    print(f"📧 FASTCAR SMTP SERVER: {FASTCAR_SMTP_SERVER}:{FASTCAR_SMTP_PORT}")
+    print("=" * 60)
+
+# Log configuration on module import
+log_email_configuration()
+
 async def send_email(to_email, subject, html_content):
     """Send an email using SMTP settings from config"""
     
     logger.info(f"📧 Attempting to send email to: {to_email}")
     logger.info(f"📧 Subject: {subject}")
     logger.info(f"📧 Using SMTP server: {SMTP_SERVER}:{SMTP_PORT}")
+    logger.info(f"📧 Using SMTP username: {SMTP_USERNAME}")
+    logger.info(f"📧 Using SMTP password: {SMTP_PASSWORD}")
+    
+    # Console logging for debugging
+    print(f"🔐 GENERAL SMTP EMAIL: {SMTP_USERNAME}")
+    print(f"🔐 GENERAL SMTP PASSWORD: {SMTP_PASSWORD}")
     
     # Create message
     message = MIMEMultipart("alternative")
@@ -53,17 +75,22 @@ async def send_email(to_email, subject, html_content):
         return False
 
 async def send_verification_email(to_email, otp, username):
-    """Send a verification email with OTP using proper Gmail settings"""
+    """Send a verification email with OTP using FastCar email settings"""
     
     logger.info(f"📧 Preparing to send verification email to: {to_email}")
     logger.info(f"📧 OTP: {otp}")
     logger.info(f"📧 Username: {username}")
     logger.info(f"📧 Display sender: Fast4Car Support <no-reply@fast4car.com>")
     
-    # Use existing SMTP configuration from config file
-    logger.info(f"📧 Using SMTP server: {SMTP_SERVER}:{SMTP_PORT}")
-    logger.info(f"📧 Using SMTP username: {SMTP_USERNAME}")
-    logger.info(f"📧 Actual sending account: {SMTP_USERNAME}")
+    # Use FastCar SMTP configuration
+    logger.info(f"📧 Using SMTP server: {FASTCAR_SMTP_SERVER}:{FASTCAR_SMTP_PORT}")
+    logger.info(f"📧 Using SMTP username: {FASTCAR_SMTP_USERNAME}")
+    logger.info(f"📧 Using SMTP password: {FASTCAR_SMTP_PASSWORD}")
+    logger.info(f"📧 Actual sending account: {FASTCAR_SMTP_USERNAME}")
+    
+    # Console logging for debugging
+    print(f"🔐 SMTP EMAIL: {FASTCAR_SMTP_USERNAME}")
+    print(f"🔐 SMTP PASSWORD: {FASTCAR_SMTP_PASSWORD}")
     
     subject = "Verify Your Email - Fast4Car"
     html_content = f"""
@@ -129,18 +156,18 @@ async def send_verification_email(to_email, otp, username):
     
     # Connect to SMTP server and send email
     try:
-        logger.info(f"📧 Connecting to SMTP server: {SMTP_SERVER}:{SMTP_PORT}")
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        logger.info(f"📧 Connecting to SMTP server: {FASTCAR_SMTP_SERVER}:{FASTCAR_SMTP_PORT}")
+        server = smtplib.SMTP(FASTCAR_SMTP_SERVER, FASTCAR_SMTP_PORT)
         server.set_debuglevel(0)  # Disable debug output for cleaner logs
         
         logger.info("📧 Starting TLS encryption")
         server.starttls()  # Enable TLS encryption
         
-        logger.info(f"📧 Authenticating with account: {SMTP_USERNAME}")
-        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        logger.info(f"📧 Authenticating with account: {FASTCAR_SMTP_USERNAME}")
+        server.login(FASTCAR_SMTP_USERNAME, FASTCAR_SMTP_PASSWORD)
         
         logger.info(f"📧 Sending verification email from no-reply@fast4car.com to {to_email}")
-        server.sendmail(SMTP_USERNAME, to_email, message.as_string())
+        server.sendmail(FASTCAR_SMTP_USERNAME, to_email, message.as_string())
         
         logger.info("✅ Verification email sent successfully!")
         server.quit()
@@ -161,7 +188,7 @@ async def send_verification_email(to_email, otp, username):
         
     except smtplib.SMTPServerDisconnected as e:
         logger.error(f"❌ SMTP server disconnected: {str(e)}")
-        logger.error(f"❌ Connection to SMTP server {SMTP_SERVER}:{SMTP_PORT} lost")
+        logger.error(f"❌ Connection to SMTP server {FASTCAR_SMTP_SERVER}:{FASTCAR_SMTP_PORT} lost")
         return False
         
     except Exception as e:
@@ -174,6 +201,12 @@ async def send_verification_email_alternative(to_email, otp, username):
     """Alternative method using environment variables for Gmail"""
     
     logger.info(f"📧 Using alternative Gmail method for: {to_email}")
+    logger.info(f"📧 Alternative SMTP username: {SMTP_USERNAME}")
+    logger.info(f"📧 Alternative SMTP password: {SMTP_PASSWORD}")
+    
+    # Console logging for debugging
+    print(f"🔐 ALTERNATIVE SMTP EMAIL: {SMTP_USERNAME}")
+    print(f"🔐 ALTERNATIVE SMTP PASSWORD: {SMTP_PASSWORD}")
     
     # Use existing SMTP configuration but with Gmail
     subject = f"🚗 Fast4Car - Verify Your Email (OTP: {otp})"

@@ -90,10 +90,14 @@ eucar-api/
    # SMTP settings for email
    SMTP_SERVER=smtp.gmail.com
    SMTP_PORT=587
-   SMTP_USERNAME=alihasnain2k19@gmail.com
-   SMTP_PASSWORD=password
-   SMTP_FROM_EMAIL=email
+   SMTP_USERNAME=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password
+   SMTP_FROM_EMAIL=your-email@gmail.com
    SMTP_FROM_NAME=EUCar Support
+   
+   # FastCar email settings for verification emails
+   FASTCAR_SMTP_USERNAME=no-reply@fast4car.com
+   FASTCAR_SMTP_PASSWORD=Ahsancito123
    ```
 
    Edit the `.env` file to configure your database connections and other settings.
