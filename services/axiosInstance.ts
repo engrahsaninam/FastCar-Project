@@ -1,7 +1,7 @@
 import axios from 'axios';
 // import useStore from '../store';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://15.237.243.191:8000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.fast4car.com/api';
 export const axiosInstance = axios.create({
     baseURL: BASE_URL,
     // withCredentials: true,
