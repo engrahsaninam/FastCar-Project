@@ -3,7 +3,7 @@ Optimized Cars API with high-performance database operations and intelligent cac
 Performance improvements: 80% faster response times, 95% less memory usage.
 """
 from fastapi import APIRouter, Query, HTTPException, Depends, Request, BackgroundTasks
-from app.api.auth import get_current_user
+from app.api.auth import get_current_user, get_optional_current_user
 from app.models.user import User
 from app.database.optimized_database import get_db_manager
 from app.utils.optimized_cache import cache_result
@@ -62,7 +62,7 @@ async def get_cars_optimized(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
 ):
     """
     Optimized car search endpoint with 80% performance improvement.
@@ -130,7 +130,7 @@ async def get_best_deals_optimized(
     model: Optional[str] = None,
     year: Optional[int] = None,
     vat: Optional[bool] = None,
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
 ):
     """
     Optimized best deals endpoint using single SQL query with window functions.

@@ -1,6 +1,6 @@
 # app/api/cars.py
 from fastapi import APIRouter, Query, HTTPException, Depends, Request
-from app.api.auth import get_current_user
+from app.api.auth import get_current_user, get_optional_current_user
 from app.models.user import User
 from app.models.car import Car
 from app.models.charges import AdditionalCharges
@@ -135,7 +135,7 @@ async def get_best_deals(
     model: Optional[str] = None,
     year: Optional[int] = None,
     vat: Optional[bool] = None,
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db)
 ):
     logger.info(f"[REQUEST] Fetching best deals - page={page}, limit={limit}, brand={brand}, model={model}, year={year}, vat={vat}")
@@ -336,7 +336,7 @@ async def get_cars(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db)
 ):
     logger.info(f"[REQUEST] Fetching cars - page={page}, limit={limit}, brand={brand}, model={model}, vat={vat}")
@@ -502,7 +502,7 @@ async def search_cars(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     remove_outliers: bool = True,
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db),
 ):
     logger.info(f"[REQUEST] Searching cars - page={page}, limit={limit}, brand={brand}, model={model}, vat={vat}")
