@@ -158,6 +158,8 @@ async def get_best_deals(
         filters.append(Car.model == model)
     if year:
         filters.append(Car.year == year)
+    
+    # No need to filter unavailable cars since they are deleted immediately
 
     # Adjust price for VAT in subquery
     price_column = Car.price if vat else Car.price_without_vat
@@ -349,7 +351,7 @@ async def get_cars(
     logger.info(f"[VAT] Using vat_rate={vat_rate}%")
 
     query = db.query(Car)
-    filters = []
+    filters = []  # No need to filter - unavailable cars are deleted immediately
 
     if brand:
         filters.append(Car.brand == brand)

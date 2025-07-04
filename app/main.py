@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
 # Import routers
-from app.api import cars, auth, users, filters, purchase, charges
+from app.api import cars, auth, users, filters, purchase, charges, admin_availability
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -50,6 +50,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(purchase.router, prefix="/api/purchase", tags=["purchase"])
 app.include_router(charges.router, prefix="/api/charges", tags=["charges"])
+app.include_router(admin_availability.router, prefix="/api", tags=["admin"])
 
 def update_total_prices(db: Session):
     """Update total_price for all cars based on current charges."""
@@ -181,6 +182,58 @@ async def refresh_materialized_views():
             db.close()
         await asyncio.sleep(86400)
 
+async def schedule_availability_checks():
+    """
+    Background scheduler for automated car availability checking
+    """
+    from app.utils.car_availability_checker import check_car_availability_batch, cleanup_permanently_unavailable_cars
+    
+    logger.info("Starting car availability checking scheduler")
+    
+    # Wait a bit after startup before starting checks
+    await asyncio.sleep(300)  # 5 minutes
+    
+    last_regular_check = 0
+    last_priority_check = 0
+    last_cleanup = 0
+    
+    while True:
+        try:
+            current_time = asyncio.get_event_loop().time()
+            
+            # Regular check every 24 hours (86400 seconds)
+            if current_time - last_regular_check >= 86400:  # 24 hours
+                logger.info("Starting scheduled regular availability check")
+                try:
+                    result = await check_car_availability_batch(max_cars=1000, priority_check=False)
+                    logger.info(f"Regular availability check completed: {result}")
+                    last_regular_check = current_time
+                except Exception as e:
+                    logger.error(f"Regular availability check failed: {e}")
+            
+            # Priority check every 6 hours (21600 seconds) for cars with previous failures
+            if current_time - last_priority_check >= 21600:  # 6 hours
+                logger.info("Starting scheduled priority availability check")
+                try:
+                    result = await check_car_availability_batch(max_cars=500, priority_check=True)
+                    logger.info(f"Priority availability check completed: {result}")
+                    last_priority_check = current_time
+                except Exception as e:
+                    logger.error(f"Priority availability check failed: {e}")
+            
+            # Cleanup is no longer needed since cars are deleted immediately
+            # Keep the timestamp updated for consistency
+            if current_time - last_cleanup >= 604800:  # 7 days
+                logger.info("Cleanup check: No cleanup needed - cars are deleted immediately when unavailable")
+                last_cleanup = current_time
+            
+            # Check every hour
+            await asyncio.sleep(3600)  # 1 hour
+            
+        except Exception as e:
+            logger.error(f"Error in availability checking scheduler: {e}")
+            await asyncio.sleep(3600)  # Wait an hour before retrying
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize application on startup."""
@@ -214,6 +267,9 @@ async def startup_event():
 
     # Start background task for materialized views
     asyncio.create_task(refresh_materialized_views())
+    
+    # Start background task for car availability checking
+    asyncio.create_task(schedule_availability_checks())
 
 @app.get("/")
 async def root():
