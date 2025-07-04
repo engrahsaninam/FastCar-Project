@@ -201,7 +201,10 @@ class MultiTierCache:
                 else:
                     self.l2_miss_count += 1
             except Exception as e:
-                logger.warning(f"Redis get error: {e}")
+                logger.warning(f"🔗 [CACHE] Redis L2 get failed: {e}")
+                logger.info("💾 [CACHE] Falling back to L1 cache only")
+                # Disable Redis client on repeated failures
+                self.redis_client = None
         
         return None
     
@@ -216,7 +219,10 @@ class MultiTierCache:
                 serialized = pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)
                 await self.redis_client.setex(key, ttl, serialized)
             except Exception as e:
-                logger.warning(f"Redis set error: {e}")
+                logger.warning(f"🔗 [CACHE] Redis L2 set failed: {e}")
+                logger.info("💾 [CACHE] Continuing with L1 cache only")
+                # Disable Redis client on repeated failures
+                self.redis_client = None
     
     def get_stats(self) -> Dict[str, Any]:
         """Get comprehensive cache statistics"""
@@ -310,16 +316,30 @@ _l1_cache = HyperOptimizedLRUCache(max_size=10000, max_memory_mb=512)
 _multi_tier_cache = None
 _cache_warmer = None
 
+logger.info("🚀 [CACHE] Hyper-optimized L1 cache initialized (10k items, 512MB)")
+
 def get_hyper_cache():
     """Get the global hyper-optimized cache instance"""
     global _multi_tier_cache
     if _multi_tier_cache is None:
+        redis_client = None
         try:
-            import redis
+            import redis.asyncio as redis
             redis_client = redis.from_url("redis://localhost:6379", decode_responses=False)
-            _multi_tier_cache = MultiTierCache(_l1_cache, redis_client)
+            logger.info("Redis async client created - L1+L2 cache enabled")
         except ImportError:
-            _multi_tier_cache = MultiTierCache(_l1_cache, None)
+            logger.warning("Redis package not available - using L1 cache only")
+            redis_client = None
+        except Exception as e:
+            logger.warning(f"Redis connection failed: {e} - using L1 cache only")
+            redis_client = None
+        
+        _multi_tier_cache = MultiTierCache(_l1_cache, redis_client)
+        
+        if redis_client:
+            logger.info("🔥 [CACHE] Multi-tier cache initialized with Redis L2 support")
+        else:
+            logger.info("💾 [CACHE] Single-tier cache initialized (L1 only)")
     
     return _multi_tier_cache
 
@@ -374,4 +394,43 @@ async def clear_cache():
         try:
             await cache.redis_client.flushdb()
         except Exception as e:
-            logger.warning(f"Redis clear error: {e}") 
+            logger.warning(f"🔗 [CACHE] Redis L2 clear failed: {e}")
+            # Disable Redis client on failure
+            cache.redis_client = None
+
+async def test_cache_connection():
+    """Test cache connection and functionality"""
+    try:
+        cache = get_hyper_cache()
+        test_key = "cache_test"
+        test_value = {"test": "data", "timestamp": time.time()}
+        
+        # Test L1 cache
+        cache.l1_cache.set(test_key, test_value, ttl=60)
+        result = cache.l1_cache.get(test_key)
+        
+        if result:
+            logger.info("✅ [CACHE] L1 cache test successful")
+        else:
+            logger.error("❌ [CACHE] L1 cache test failed")
+            return False
+        
+        # Test L2 cache (Redis) if available
+        if cache.redis_client:
+            try:
+                await cache.set(f"{test_key}_l2", test_value, ttl=60)
+                result_l2 = await cache.get(f"{test_key}_l2")
+                
+                if result_l2:
+                    logger.info("✅ [CACHE] L2 Redis cache test successful")
+                else:
+                    logger.warning("⚠️ [CACHE] L2 Redis cache test failed")
+                    
+            except Exception as e:
+                logger.warning(f"⚠️ [CACHE] L2 Redis cache test error: {e}")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ [CACHE] Cache connection test failed: {e}")
+        return False 

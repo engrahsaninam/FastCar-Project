@@ -188,14 +188,14 @@ async def check_car_availability_periodically():
     Background task to periodically check car availability.
     Runs every 6 hours and checks a subset of cars each time.
     """
-    logger.info("🔄 [SCHEDULER] Car availability checker scheduled - waiting 30 minutes before first run")
+    logger.info("🔄 [SCHEDULER] Car availability checker scheduled - waiting 5 minutes before first run")
     
     while True:
         try:
             # Wait 30 minutes before starting the first check (let the app fully initialize)
             if not hasattr(check_car_availability_periodically, '_first_run'):
-                logger.info("⏰ [SCHEDULER] Waiting 30 minutes for app initialization...")
-                await asyncio.sleep(1800)
+                logger.info("⏰ [SCHEDULER] Waiting 5 minutes for app initialization...")
+                await asyncio.sleep(300)
                 check_car_availability_periodically._first_run = True
                 logger.info("✅ [SCHEDULER] App initialization complete - starting first availability check")
             else:
@@ -252,6 +252,17 @@ async def startup_event():
     # Start background task for materialized views
     asyncio.create_task(refresh_materialized_views())
     
+    # Test cache connection
+    try:
+        from app.utils.hyper_optimized_cache import test_cache_connection
+        cache_test_result = await test_cache_connection()
+        if cache_test_result:
+            logger.info("✅ [STARTUP] Cache system operational")
+        else:
+            logger.warning("⚠️ [STARTUP] Cache system has issues - check Redis connection")
+    except Exception as e:
+        logger.warning(f"⚠️ [STARTUP] Cache test failed: {e}")
+
     # Start background task for car availability checking
     asyncio.create_task(check_car_availability_periodically())
     logger.info("🚀 [STARTUP] Car availability checker background task started")
