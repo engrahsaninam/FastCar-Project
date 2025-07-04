@@ -14,6 +14,7 @@ from app.models.car import Car
 from app.models.charges import AdditionalCharges
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
+from app.utils.car_availability_checker import check_and_update_car_availability
 
 # Import routers
 from app.api import cars, auth, users, filters, purchase, charges, admin_availability
@@ -50,7 +51,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(purchase.router, prefix="/api/purchase", tags=["purchase"])
 app.include_router(charges.router, prefix="/api/charges", tags=["charges"])
-app.include_router(admin_availability.router, prefix="/api", tags=["admin"])
+app.include_router(admin_availability.router, prefix="/api/admin/availability", tags=["admin-availability"])
 
 def update_total_prices(db: Session):
     """Update total_price for all cars based on current charges."""
@@ -155,7 +156,7 @@ async def refresh_materialized_views():
                     INSERT INTO avg_prices (brand, model, avg_price, group_count, last_updated)
                     SELECT brand, model, AVG(price), COUNT(*), DATETIME('now')
                     FROM cars
-                    WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL
+                    WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL AND status = 'available'
                     GROUP BY brand, model
                 """))
                 db.execute(text("""
@@ -163,8 +164,8 @@ async def refresh_materialized_views():
                     INSERT INTO car_filters (fuel, gear, country, body_type, colour)
                     SELECT DISTINCT fuel, gear, country, body_type, colour
                     FROM cars
-                    WHERE fuel IS NOT NULL OR gear IS NOT NULL OR country IS NOT NULL
-                        OR body_type IS NOT NULL OR colour IS NOT NULL
+                    WHERE (fuel IS NOT NULL OR gear IS NOT NULL OR country IS NOT NULL
+                        OR body_type IS NOT NULL OR colour IS NOT NULL) AND status = 'available'
                 """))
                 db.execute(text("""
                     DELETE FROM car_features;
@@ -172,7 +173,7 @@ async def refresh_materialized_views():
                     SELECT cars.id, json_each.value
                     FROM cars
                     CROSS JOIN json_each(cars.features)
-                    WHERE json_each.value IS NOT NULL
+                    WHERE json_each.value IS NOT NULL AND cars.status = 'available'
                 """))
                 db.commit()
                 logger.info("Refreshed materialized views")
@@ -182,57 +183,31 @@ async def refresh_materialized_views():
             db.close()
         await asyncio.sleep(86400)
 
-async def schedule_availability_checks():
+async def check_car_availability_periodically():
     """
-    Background scheduler for automated car availability checking
+    Background task to periodically check car availability.
+    Runs every 6 hours and checks a subset of cars each time.
     """
-    from app.utils.car_availability_checker import check_car_availability_batch, cleanup_permanently_unavailable_cars
-    
-    logger.info("Starting car availability checking scheduler")
-    
-    # Wait a bit after startup before starting checks
-    await asyncio.sleep(300)  # 5 minutes
-    
-    last_regular_check = 0
-    last_priority_check = 0
-    last_cleanup = 0
-    
     while True:
         try:
-            current_time = asyncio.get_event_loop().time()
+            # Wait 30 minutes before starting the first check (let the app fully initialize)
+            await asyncio.sleep(1800)
             
-            # Regular check every 24 hours (86400 seconds)
-            if current_time - last_regular_check >= 86400:  # 24 hours
-                logger.info("Starting scheduled regular availability check")
-                try:
-                    result = await check_car_availability_batch(max_cars=1000, priority_check=False)
-                    logger.info(f"Regular availability check completed: {result}")
-                    last_regular_check = current_time
-                except Exception as e:
-                    logger.error(f"Regular availability check failed: {e}")
+            logger.info("Starting periodic car availability check")
             
-            # Priority check every 6 hours (21600 seconds) for cars with previous failures
-            if current_time - last_priority_check >= 21600:  # 6 hours
-                logger.info("Starting scheduled priority availability check")
-                try:
-                    result = await check_car_availability_batch(max_cars=500, priority_check=True)
-                    logger.info(f"Priority availability check completed: {result}")
-                    last_priority_check = current_time
-                except Exception as e:
-                    logger.error(f"Priority availability check failed: {e}")
+            # Check availability for up to 5000 cars per run
+            await check_and_update_car_availability(
+                batch_size=500,  # Smaller batches for better performance
+                max_cars_per_run=5000  # Limit to avoid overloading
+            )
             
-            # Cleanup is no longer needed since cars are deleted immediately
-            # Keep the timestamp updated for consistency
-            if current_time - last_cleanup >= 604800:  # 7 days
-                logger.info("Cleanup check: No cleanup needed - cars are deleted immediately when unavailable")
-                last_cleanup = current_time
-            
-            # Check every hour
-            await asyncio.sleep(3600)  # 1 hour
+            logger.info("Periodic car availability check completed")
             
         except Exception as e:
-            logger.error(f"Error in availability checking scheduler: {e}")
-            await asyncio.sleep(3600)  # Wait an hour before retrying
+            logger.error(f"Periodic car availability check failed: {e}")
+        
+        # Sleep for 6 hours before next check
+        await asyncio.sleep(21600)
 
 @app.on_event("startup")
 async def startup_event():
@@ -269,7 +244,7 @@ async def startup_event():
     asyncio.create_task(refresh_materialized_views())
     
     # Start background task for car availability checking
-    asyncio.create_task(schedule_availability_checks())
+    asyncio.create_task(check_car_availability_periodically())
 
 @app.get("/")
 async def root():

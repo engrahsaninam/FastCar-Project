@@ -160,8 +160,6 @@ def apply_migrations():
                     ("idx_cars_body_type", "body_type"),
                     ("idx_cars_colour", "colour"),
                     ("idx_cars_price_without_vat", "price_without_vat"),
-                    ("idx_cars_is_available", "is_available"),
-                    ("idx_cars_last_checked", "last_checked"),
                 ]
                 for index_name, columns in indexes:
                     result = conn.execute(text(f"SELECT name FROM sqlite_master WHERE type='index' AND name='{index_name}'")).fetchall()
@@ -241,15 +239,6 @@ def apply_migrations():
                     """))
                     conn.execute(text("CREATE INDEX idx_car_features_feature ON car_features(feature)"))
                     logger.info("Successfully created and populated car_features table with index")
-
-                # Add availability tracking columns to cars table
-                if 'is_available' not in columns:
-                    logger.info("Adding availability tracking columns to cars table")
-                    conn.execute(text("ALTER TABLE cars ADD COLUMN is_available BOOLEAN DEFAULT 1"))
-                    conn.execute(text("ALTER TABLE cars ADD COLUMN last_checked DATETIME"))
-                    conn.execute(text("ALTER TABLE cars ADD COLUMN check_attempts INTEGER DEFAULT 0"))
-                    conn.execute(text("ALTER TABLE cars ADD COLUMN unavailable_since DATETIME"))
-                    logger.info("Successfully added availability tracking columns")
             except Exception as e:
                 logger.error(f"Migration failed: {str(e)}")
                 raise

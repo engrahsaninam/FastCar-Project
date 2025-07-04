@@ -19,11 +19,11 @@ def get_iqr_bounds(db: Session, column: str):
         SELECT
             (SELECT value FROM (
                 SELECT value, ntile(4) OVER (ORDER BY value) as quartile
-                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL)
+                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL AND status = 'available')
             ) WHERE quartile = 1 ORDER BY value DESC LIMIT 1) as q1,
             (SELECT value FROM (
                 SELECT value, ntile(4) OVER (ORDER BY value) as quartile
-                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL)
+                FROM (SELECT {column} as value FROM cars WHERE {column} IS NOT NULL AND status = 'available')
             ) WHERE quartile = 3 ORDER BY value LIMIT 1) as q3
     """)).fetchone()
     if result:
@@ -45,13 +45,13 @@ async def get_years_range(remove_outliers: bool = True, db: Session = Depends(ge
         result = db.execute(text("""
             SELECT MIN(year), MAX(year)
             FROM cars
-            WHERE year IS NOT NULL AND year BETWEEN :min_bound AND :max_bound
+            WHERE year IS NOT NULL AND year BETWEEN :min_bound AND :max_bound AND status = 'available'
         """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
         result = db.execute(text("""
             SELECT MIN(year), MAX(year)
             FROM cars
-            WHERE year IS NOT NULL
+            WHERE year IS NOT NULL AND status = 'available'
         """)).fetchone()
 
     if not result or result[0] is None:
@@ -76,13 +76,13 @@ async def get_price_range(remove_outliers: bool = True, db: Session = Depends(ge
         result = db.execute(text("""
             SELECT MIN(price), MAX(price)
             FROM cars
-            WHERE price IS NOT NULL AND price BETWEEN :min_bound AND :max_bound
+            WHERE price IS NOT NULL AND price BETWEEN :min_bound AND :max_bound AND status = 'available'
         """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
         result = db.execute(text("""
             SELECT MIN(price), MAX(price)
             FROM cars
-            WHERE price IS NOT NULL
+            WHERE price IS NOT NULL AND status = 'available'
         """)).fetchone()
 
     if not result or result[0] is None:
@@ -105,13 +105,13 @@ async def get_mileage_range(remove_outliers: bool = True, db: Session = Depends(
         result = db.execute(text("""
             SELECT MIN(mileage), MAX(mileage)
             FROM cars
-            WHERE mileage IS NOT NULL AND mileage BETWEEN :min_bound AND :max_bound
+            WHERE mileage IS NOT NULL AND mileage BETWEEN :min_bound AND :max_bound AND status = 'available'
         """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
         result = db.execute(text("""
             SELECT MIN(mileage), MAX(mileage)
             FROM cars
-            WHERE mileage IS NOT NULL
+            WHERE mileage IS NOT NULL AND status = 'available'
         """)).fetchone()
 
     if not result or result[0] is None:
@@ -173,13 +173,13 @@ async def get_power_range(remove_outliers: bool = True, db: Session = Depends(ge
         result = db.execute(text("""
             SELECT MIN(power), MAX(power)
             FROM cars
-            WHERE power IS NOT NULL AND power BETWEEN :min_bound AND :max_bound
+            WHERE power IS NOT NULL AND power BETWEEN :min_bound AND :max_bound AND status = 'available'
         """).bindparams(min_bound=min_bound, max_bound=max_bound)).fetchone()
     else:
         result = db.execute(text("""
             SELECT MIN(power), MAX(power)
             FROM cars
-            WHERE power IS NOT NULL
+            WHERE power IS NOT NULL AND status = 'available'
         """)).fetchone()
 
     if not result or result[0] is None:

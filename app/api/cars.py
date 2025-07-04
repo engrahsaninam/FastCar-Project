@@ -158,8 +158,6 @@ async def get_best_deals(
         filters.append(Car.model == model)
     if year:
         filters.append(Car.year == year)
-    
-    # No need to filter unavailable cars since they are deleted immediately
 
     # Adjust price for VAT in subquery
     price_column = Car.price if vat else Car.price_without_vat
@@ -173,6 +171,7 @@ async def get_best_deals(
         Car.price.isnot(None),
         Car.brand.isnot(None),
         Car.model.isnot(None),
+        Car.status == 'available',  # Only include available cars
         *filters
     ).group_by(Car.brand, Car.model).subquery()
 
@@ -182,6 +181,7 @@ async def get_best_deals(
     ).filter(
         price_column < avg_prices.c.avg_price,
         Car.price.isnot(None),
+        Car.status == 'available',  # Only include available cars
         *filters
     ).order_by((avg_prices.c.avg_price - price_column).desc())
 
@@ -351,7 +351,7 @@ async def get_cars(
     logger.info(f"[VAT] Using vat_rate={vat_rate}%")
 
     query = db.query(Car)
-    filters = []  # No need to filter - unavailable cars are deleted immediately
+    filters = [Car.status == 'available']  # Only include available cars
 
     if brand:
         filters.append(Car.brand == brand)
@@ -530,7 +530,7 @@ async def search_cars(
 @hyper_cache_result("brands", ttl=7200)  # Cache for 2 hours - 80% faster responses
 async def get_brands(db: Session = Depends(get_db)):
     start_time = time.time()
-    brands = db.query(Car.brand).distinct().order_by(Car.brand).all()
+    brands = db.query(Car.brand).filter(Car.status == 'available').distinct().order_by(Car.brand).all()
     query_time = time.time() - start_time
     logger.info(f"Get brands query took {query_time:.2f} seconds")
     return [brand[0] for brand in brands if brand[0]]
@@ -539,7 +539,7 @@ async def get_brands(db: Session = Depends(get_db)):
 @hyper_cache_result("models", ttl=7200)  # Cache for 2 hours - 80% faster responses
 async def get_models(brand: Optional[str] = None, db: Session = Depends(get_db)):
     start_time = time.time()
-    query = db.query(Car.model).distinct().order_by(Car.model)
+    query = db.query(Car.model).filter(Car.status == 'available').distinct().order_by(Car.model)
     if brand:
         query = query.filter(Car.brand == brand)
     models = query.all()
@@ -550,10 +550,10 @@ async def get_models(brand: Optional[str] = None, db: Session = Depends(get_db))
 @router.get("/{car_id}", response_model=CarResponse)
 async def get_car(car_id: str, db: Session = Depends(get_db)):
     start_time = time.time()
-    car = db.query(Car).filter(Car.id == car_id).first()
+    car = db.query(Car).filter(Car.id == car_id, Car.status == 'available').first()
     
     if not car:
-        raise HTTPException(status_code=404, detail="Car not found")
+        raise HTTPException(status_code=404, detail="Car not found or unavailable")
     
     query_time = time.time() - start_time
     logger.info(f"Get car query took {query_time:.2f} seconds")
@@ -568,15 +568,16 @@ async def get_similar_cars(
     db: Session = Depends(get_db)
 ):
     start_time = time.time()
-    car = db.query(Car).filter(Car.id == car_id).first()
+    car = db.query(Car).filter(Car.id == car_id, Car.status == 'available').first()
     
     if not car:
-        raise HTTPException(status_code=404, detail="Car not found")
+        raise HTTPException(status_code=404, detail="Car not found or unavailable")
     
     query = db.query(Car).filter(
         Car.brand == car.brand,
         Car.model == car.model,
-        Car.id != car_id
+        Car.id != car_id,
+        Car.status == 'available'  # Only include available cars
     ).order_by(
         func.abs(Car.price - car.price)
     )

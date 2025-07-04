@@ -1,5 +1,5 @@
 #app/models/car.py
-from sqlalchemy import Column, String, Float, Integer, JSON, Text, ForeignKey, DateTime, Boolean
+from sqlalchemy import Column, String, Float, Integer, JSON, Text, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from app.database.base import Base
 
@@ -29,13 +29,7 @@ class Car(Base):
     colour = Column(String, nullable=True)
     features = Column(JSON, nullable=True)
     total_price = Column(Float, nullable=True)  # Total price including charges
-    status = Column(String, default="available")  # available, sold, unavailable
-    
-    # New availability tracking fields
-    is_available = Column(Boolean, default=True, index=True)  # Quick availability check
-    last_checked = Column(DateTime, nullable=True)  # When URL was last checked
-    check_attempts = Column(Integer, default=0)  # Number of failed attempts
-    unavailable_since = Column(DateTime, nullable=True)  # When car became unavailable
+    status = Column(String, default="available")  # available, sold
     
 class SavedSearch(Base):
     __tablename__ = "saved_searches"
