@@ -87,6 +87,9 @@ async def trigger_manual_availability_check(
     Admin only endpoint.
     """
     try:
+        logger.info(f"🔧 [ADMIN] Manual availability check triggered by admin user {admin_user.id} ({admin_user.email})")
+        logger.info(f"🔧 [ADMIN] Parameters: batch_size={request.batch_size}, max_cars_per_run={request.max_cars_per_run}")
+        
         # Add the check to background tasks
         background_tasks.add_task(
             check_and_update_car_availability,
@@ -94,7 +97,7 @@ async def trigger_manual_availability_check(
             max_cars_per_run=request.max_cars_per_run
         )
         
-        logger.info(f"Manual availability check triggered by admin user {admin_user.id}")
+        logger.info(f"🚀 [ADMIN] Manual car availability check started in background")
         
         return {
             "message": "Car availability check started in background",
@@ -107,7 +110,7 @@ async def trigger_manual_availability_check(
         }
         
     except Exception as e:
-        logger.error(f"Failed to trigger manual availability check: {e}")
+        logger.error(f"💥 [ADMIN] Failed to trigger manual availability check: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to start check: {str(e)}")
 
 @router.post("/check/single")
@@ -121,12 +124,17 @@ async def check_single_car_availability(
     Admin only endpoint.
     """
     try:
+        logger.info(f"🔍 [ADMIN] Single car availability check requested by admin {admin_user.id}")
+        logger.info(f"🔍 [ADMIN] Car ID: {request.car_id}, URL: {request.car_url}")
+        
         # Test the car availability
         is_available = await test_single_car_availability(request.car_id, request.car_url)
         
         # Get current car status from database
         car = db.query(Car).filter(Car.id == request.car_id).first()
         current_status = car.status if car else "not_found"
+        
+        logger.info(f"🔍 [ADMIN] Single car check result: {request.car_id} - Available: {is_available}, DB Status: {current_status}")
         
         return {
             "car_id": request.car_id,
@@ -137,7 +145,7 @@ async def check_single_car_availability(
         }
         
     except Exception as e:
-        logger.error(f"Failed to check single car availability: {e}")
+        logger.error(f"💥 [ADMIN] Failed to check single car availability: {e}")
         raise HTTPException(status_code=500, detail=f"Check failed: {str(e)}")
 
 @router.get("/unavailable-cars")

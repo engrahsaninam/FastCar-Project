@@ -63,31 +63,39 @@ class CarAvailabilityChecker:
         Returns True if available, False if not available.
         """
         if not car_url or car_url.strip() == "":
-            logger.warning(f"Car {car_id} has empty URL")
+            logger.warning(f"[AVAILABILITY] Car {car_id} has empty URL - marking as unavailable")
             return False
         
         async with self.semaphore:
+            start_time = time.time()
             try:
                 # Add random delay to avoid overwhelming servers
                 await asyncio.sleep(random.uniform(0.05, self.request_delay))
                 
+                logger.debug(f"[AVAILABILITY] Checking car {car_id} at URL: {car_url}")
+                
                 async with self.session.head(car_url, allow_redirects=True) as response:
+                    check_time = time.time() - start_time
+                    
                     # Consider car available if we get any successful response
                     if response.status < 400:
-                        logger.debug(f"Car {car_id} is available (status: {response.status})")
+                        logger.info(f"[AVAILABILITY] ✅ Car {car_id} is AVAILABLE (status: {response.status}, time: {check_time:.2f}s)")
                         return True
                     else:
-                        logger.info(f"Car {car_id} is unavailable (status: {response.status})")
+                        logger.warning(f"[AVAILABILITY] ❌ Car {car_id} is UNAVAILABLE (status: {response.status}, time: {check_time:.2f}s)")
                         return False
                         
             except asyncio.TimeoutError:
-                logger.warning(f"Car {car_id} check timed out - marking as unavailable")
+                check_time = time.time() - start_time
+                logger.warning(f"[AVAILABILITY] ⏱️  Car {car_id} check TIMED OUT after {check_time:.2f}s - marking as unavailable")
                 return False
             except aiohttp.ClientError as e:
-                logger.warning(f"Car {car_id} check failed with client error: {e}")
+                check_time = time.time() - start_time
+                logger.warning(f"[AVAILABILITY] 🔗 Car {car_id} CLIENT ERROR after {check_time:.2f}s: {e}")
                 return False
             except Exception as e:
-                logger.error(f"Car {car_id} check failed with unexpected error: {e}")
+                check_time = time.time() - start_time
+                logger.error(f"[AVAILABILITY] 💥 Car {car_id} UNEXPECTED ERROR after {check_time:.2f}s: {e}")
                 return False
     
     async def check_batch_availability(self, cars: List[Dict[str, Any]]) -> Dict[str, bool]:
@@ -98,29 +106,44 @@ class CarAvailabilityChecker:
         if not cars:
             return {}
         
-        logger.info(f"Checking availability for {len(cars)} cars")
+        batch_start_time = time.time()
+        logger.info(f"[BATCH] 🚀 Starting availability check for {len(cars)} cars")
         
         # Create tasks for all cars
         tasks = []
-        for car in cars:
+        for i, car in enumerate(cars):
             task = self.check_car_availability(car['id'], car['url'])
             tasks.append((car['id'], task))
+            
+            # Log progress every 100 cars
+            if (i + 1) % 100 == 0:
+                logger.info(f"[BATCH] 📝 Created {i + 1}/{len(cars)} check tasks")
+        
+        logger.info(f"[BATCH] 🔄 Executing {len(tasks)} availability checks concurrently...")
         
         # Execute all tasks concurrently
         results = {}
         completed_tasks = await asyncio.gather(*[task for _, task in tasks], return_exceptions=True)
         
+        # Process results with detailed logging
+        error_count = 0
         for (car_id, _), result in zip(tasks, completed_tasks):
             if isinstance(result, Exception):
-                logger.error(f"Car {car_id} check failed: {result}")
+                logger.error(f"[BATCH] 💥 Car {car_id} check failed with exception: {result}")
                 results[car_id] = False
+                error_count += 1
             else:
                 results[car_id] = result
         
+        # Calculate and log statistics
         available_count = sum(1 for status in results.values() if status)
         unavailable_count = len(results) - available_count
+        batch_time = time.time() - batch_start_time
         
-        logger.info(f"Batch check completed: {available_count} available, {unavailable_count} unavailable")
+        logger.info(f"[BATCH] ✅ Batch check completed in {batch_time:.2f}s")
+        logger.info(f"[BATCH] 📊 Results: {available_count} available, {unavailable_count} unavailable, {error_count} errors")
+        logger.info(f"[BATCH] ⚡ Performance: {len(cars)/batch_time:.1f} cars/second")
+        
         return results
 
 async def update_car_availability_status(db: Session, availability_results: Dict[str, bool]):
@@ -131,8 +154,10 @@ async def update_car_availability_status(db: Session, availability_results: Dict
     unavailable_cars = [car_id for car_id, is_available in availability_results.items() if not is_available]
     
     if not unavailable_cars:
-        logger.info("No cars to mark as unavailable")
+        logger.info("[DATABASE] 📊 No cars to mark as unavailable - all cars are available!")
         return 0
+    
+    logger.info(f"[DATABASE] 🔄 Updating {len(unavailable_cars)} cars to unavailable status...")
     
     try:
         # Bulk update unavailable cars
@@ -148,11 +173,17 @@ async def update_car_availability_status(db: Session, availability_results: Dict
         
         db.commit()
         updated_count = result.rowcount
-        logger.info(f"Marked {updated_count} cars as unavailable")
+        
+        if updated_count > 0:
+            logger.warning(f"[DATABASE] ❌ Marked {updated_count} cars as unavailable")
+            logger.info(f"[DATABASE] 📝 Updated car IDs: {', '.join(unavailable_cars[:10])}{'...' if len(unavailable_cars) > 10 else ''}")
+        else:
+            logger.info(f"[DATABASE] ✅ No cars were updated (they were already marked as unavailable)")
+            
         return updated_count
         
     except Exception as e:
-        logger.error(f"Failed to update car availability status: {e}")
+        logger.error(f"[DATABASE] 💥 Failed to update car availability status: {e}")
         db.rollback()
         return 0
 
@@ -161,14 +192,25 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
     Main function to check and update car availability.
     Processes cars in batches for optimal performance.
     """
-    logger.info("Starting car availability check process")
-    start_time = time.time()
+    logger.info("🚀 [SYSTEM] Starting car availability check process")
+    system_start_time = time.time()
     
     db_gen = get_db()
     db = next(db_gen)
     
     try:
+        # Get total count of cars for statistics
+        total_cars_count = db.execute(text("SELECT COUNT(*) FROM cars")).scalar()
+        available_cars_count = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'available'")).scalar()
+        unavailable_cars_count = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'unavailable'")).scalar()
+        
+        logger.info(f"[SYSTEM] 📊 Database statistics:")
+        logger.info(f"[SYSTEM] 📊   Total cars: {total_cars_count}")
+        logger.info(f"[SYSTEM] 📊   Available cars: {available_cars_count}")
+        logger.info(f"[SYSTEM] 📊   Unavailable cars: {unavailable_cars_count}")
+        
         # Get cars that need availability check (currently marked as available)
+        logger.info(f"[SYSTEM] 🔍 Querying cars to check (limit: {max_cars_per_run})")
         cars_to_check = db.execute(text("""
             SELECT id, url 
             FROM cars 
@@ -180,20 +222,22 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
         """), {"max_cars": max_cars_per_run}).fetchall()
         
         if not cars_to_check:
-            logger.info("No cars found that need availability checking")
+            logger.info("[SYSTEM] ✅ No cars found that need availability checking - all cars are already processed!")
             return
         
-        logger.info(f"Found {len(cars_to_check)} cars to check")
+        logger.info(f"[SYSTEM] 🎯 Found {len(cars_to_check)} cars to check (batch size: {batch_size})")
         
         total_updated = 0
+        total_batches = (len(cars_to_check) + batch_size - 1) // batch_size
         
         # Process cars in batches
         async with CarAvailabilityChecker() as checker:
             for i in range(0, len(cars_to_check), batch_size):
+                batch_number = i // batch_size + 1
                 batch = cars_to_check[i:i + batch_size]
                 batch_cars = [{"id": car.id, "url": car.url} for car in batch]
                 
-                logger.info(f"Processing batch {i//batch_size + 1}: {len(batch_cars)} cars")
+                logger.info(f"[SYSTEM] 📦 Processing batch {batch_number}/{total_batches}: {len(batch_cars)} cars")
                 
                 # Check availability for this batch
                 availability_results = await checker.check_batch_availability(batch_cars)
@@ -204,14 +248,34 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
                 
                 # Log progress
                 progress = min(i + batch_size, len(cars_to_check))
-                logger.info(f"Progress: {progress}/{len(cars_to_check)} cars processed")
+                progress_percent = (progress / len(cars_to_check)) * 100
+                logger.info(f"[SYSTEM] 📈 Progress: {progress}/{len(cars_to_check)} cars processed ({progress_percent:.1f}%)")
+                
+                # Log batch summary
+                batch_available = sum(1 for status in availability_results.values() if status)
+                batch_unavailable = len(availability_results) - batch_available
+                logger.info(f"[SYSTEM] 📊 Batch {batch_number} summary: {batch_available} available, {batch_unavailable} unavailable")
         
-        elapsed_time = time.time() - start_time
-        logger.info(f"Car availability check completed in {elapsed_time:.2f} seconds")
-        logger.info(f"Total cars marked as unavailable: {total_updated}")
+        elapsed_time = time.time() - system_start_time
+        processed_per_second = len(cars_to_check) / elapsed_time if elapsed_time > 0 else 0
+        
+        logger.info(f"[SYSTEM] 🎉 Car availability check completed!")
+        logger.info(f"[SYSTEM] ⏱️  Total time: {elapsed_time:.2f} seconds")
+        logger.info(f"[SYSTEM] 📊 Total cars processed: {len(cars_to_check)}")
+        logger.info(f"[SYSTEM] ❌ Total cars marked as unavailable: {total_updated}")
+        logger.info(f"[SYSTEM] ⚡ Performance: {processed_per_second:.1f} cars/second")
+        
+        # Get final statistics
+        final_available = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'available'")).scalar()
+        final_unavailable = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'unavailable'")).scalar()
+        
+        logger.info(f"[SYSTEM] 📊 Final database state:")
+        logger.info(f"[SYSTEM] 📊   Available cars: {final_available}")
+        logger.info(f"[SYSTEM] 📊   Unavailable cars: {final_unavailable}")
         
     except Exception as e:
-        logger.error(f"Car availability check failed: {e}")
+        elapsed_time = time.time() - system_start_time
+        logger.error(f"[SYSTEM] 💥 Car availability check failed after {elapsed_time:.2f}s: {e}")
         raise
     finally:
         db.close()

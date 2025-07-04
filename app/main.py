@@ -188,12 +188,23 @@ async def check_car_availability_periodically():
     Background task to periodically check car availability.
     Runs every 6 hours and checks a subset of cars each time.
     """
+    logger.info("🔄 [SCHEDULER] Car availability checker scheduled - waiting 30 minutes before first run")
+    
     while True:
         try:
             # Wait 30 minutes before starting the first check (let the app fully initialize)
-            await asyncio.sleep(1800)
+            if not hasattr(check_car_availability_periodically, '_first_run'):
+                logger.info("⏰ [SCHEDULER] Waiting 30 minutes for app initialization...")
+                await asyncio.sleep(1800)
+                check_car_availability_periodically._first_run = True
+                logger.info("✅ [SCHEDULER] App initialization complete - starting first availability check")
+            else:
+                # Wait 6 hours between checks
+                logger.info("⏰ [SCHEDULER] Waiting 6 hours until next availability check...")
+                await asyncio.sleep(21600)  # 6 hours
+                logger.info("🔔 [SCHEDULER] 6 hours elapsed - starting next availability check")
             
-            logger.info("Starting periodic car availability check")
+            logger.info("🚀 [SCHEDULER] Triggering periodic car availability check")
             
             # Check availability for up to 5000 cars per run
             await check_and_update_car_availability(
@@ -201,13 +212,11 @@ async def check_car_availability_periodically():
                 max_cars_per_run=5000  # Limit to avoid overloading
             )
             
-            logger.info("Periodic car availability check completed")
+            logger.info("🎉 [SCHEDULER] Periodic car availability check completed successfully")
             
         except Exception as e:
-            logger.error(f"Periodic car availability check failed: {e}")
-        
-        # Sleep for 6 hours before next check
-        await asyncio.sleep(21600)
+            logger.error(f"💥 [SCHEDULER] Periodic car availability check failed: {e}")
+            logger.info("⏰ [SCHEDULER] Will retry in 6 hours")
 
 @app.on_event("startup")
 async def startup_event():
@@ -245,6 +254,7 @@ async def startup_event():
     
     # Start background task for car availability checking
     asyncio.create_task(check_car_availability_periodically())
+    logger.info("🚀 [STARTUP] Car availability checker background task started")
 
 @app.get("/")
 async def root():
