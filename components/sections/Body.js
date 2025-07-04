@@ -354,19 +354,18 @@ export const CarCard = ({ car }) => {
                         Very Good Price
                       </Text>
                     </HStack>
-                    <HStack>
-                      <Flex align="center" gap="1">
-                        <Text fontSize="md" color={textColor} fontWeight="bold" lineHeight="1">
-                          € {car.price.toLocaleString()}
-                        </Text>
-                        <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
-                          Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
-                        </Text>
-                      </Flex>
+                    <HStack> <Flex align="center" gap="1">
+                      <Text fontSize="xs" color={textColor} fontWeight="bold" lineHeight="1">
+                        € 5043
+                      </Text>
+                      <Text fontSize="xs" color={textColor} display="flex" alignItems="center" flexWrap="wrap" gap="1" mt="1">
+                        Cheaper than <LucideIcon icon={MapPin} boxSize="3" color={textColor} /> Spain!
+                      </Text>
+                    </Flex>
                     </HStack>
                   </VStack>
-                  <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]}>
-                    <Text fontSize={["xl", "xl", "2xl"]} fontWeight="bold" color={priceColor}>
+                  <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]} ml={["4","4","4"]}>
+                    <Text fontSize={["md", "md", "md"]} fontWeight="bold" color={priceColor}>
                       € {car.price.toLocaleString()}
                     </Text>
                     <Text fontSize="xs" color={textColor}>

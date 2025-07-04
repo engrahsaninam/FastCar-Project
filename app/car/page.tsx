@@ -728,7 +728,7 @@ export default function CarsDetails1() {
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	return (
 		<Layout footerStyle={1}>
-			<div>
+			<div className='bg-gray-100'>
 				<Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} isCentered>
 					<ModalOverlay />
 					<ModalContent>
@@ -1537,7 +1537,7 @@ export default function CarsDetails1() {
 									<div className="row g-4">
 										<div className="col-md-6">
 											<div className="card border-0 rounded-4 h-100">
-												<div className="position-relative">
+												<div className="position-relative ">
 													<img src={carData?.images[0]} className="card-img-top rounded-top-4" alt={carData?.brand} style={{ height: '200px', objectFit: 'cover' }} />
 													<div className="position-absolute top-0 start-0 m-3">
 														<span className="badge bg-primary text-white px-3 py-2">THIS CAR</span>
@@ -1747,7 +1747,8 @@ export default function CarsDetails1() {
 																	top: '-110px', // moved further up
 																	transform: 'translateX(-50%)',
 																	zIndex: 2,
-																	marginBottom: '50px'
+																	marginBottom: '50px',
+																	marginTop:"20px"
 																}}
 															>
 																<div className="mb-1 fw-bold">THIS CAR</div>

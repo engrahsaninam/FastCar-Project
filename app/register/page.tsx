@@ -24,8 +24,12 @@ import { useRouter } from "next/navigation";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { useTranslation } from 'react-i18next';
 
+
 export default function Register() {
 	const { t } = useTranslation();
+	const inputBg = useColorModeValue("gray.100", "gray.700");
+	const inputColor = useColorModeValue("gray.800", "white");
+
 	const bg = useColorModeValue("gray.50", "gray.900");
 	const cardBg = useColorModeValue("white", "gray.800");
 	const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -178,8 +182,8 @@ export default function Register() {
 									placeholder={t('auth.username')}
 									type="text"
 									variant="filled"
-									bg={useColorModeValue("gray.100", "gray.700")}
-									color={textColor}
+									bg={inputBg}
+									color={inputColor}
 								/>
 								<Input
 									name="email"
@@ -188,8 +192,8 @@ export default function Register() {
 									placeholder={t('auth.email')}
 									type="email"
 									variant="filled"
-									bg={useColorModeValue("gray.100", "gray.700")}
-									color={textColor}
+									bg={inputBg}
+									color={inputColor}
 								/>
 								<Input
 									name="password"
@@ -198,8 +202,8 @@ export default function Register() {
 									placeholder={t('auth.password')}
 									type="password"
 									variant="filled"
-									bg={useColorModeValue("gray.100", "gray.700")}
-									color={textColor}
+									bg={inputBg}
+									color={inputColor}
 								/>
 								<Input
 									name="confirm_password"
@@ -208,8 +212,8 @@ export default function Register() {
 									placeholder={t('auth.confirmPassword')}
 									type="password"
 									variant="filled"
-									bg={useColorModeValue("gray.100", "gray.700")}
-									color={textColor}
+									bg={inputBg}
+									color={inputColor}
 								/>
 								<Flex align="center">
 									<Checkbox
@@ -258,8 +262,8 @@ export default function Register() {
 									placeholder={t('auth.otp', 'OTP')}
 									type="text"
 									variant="filled"
-									bg={useColorModeValue("gray.100", "gray.700")}
-									color={textColor}
+									bg={inputBg}
+									color={inputColor}
 								/>
 								<Button
 									colorScheme="red"

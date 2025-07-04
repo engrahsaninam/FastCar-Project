@@ -109,7 +109,7 @@ export default function CarsList1() {
 
   return (
     <Layout footerStyle={1}>
-      <section className="background-body">
+      <section className="background-body bg-gray-100">
         <Container maxWidth={maxContentWidth} mx="auto">
           <Flex direction={{ base: 'column', md: 'row' }} className="" width="100%">
             {/* Filter sidebar - desktop */}
