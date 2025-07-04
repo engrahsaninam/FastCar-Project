@@ -37,6 +37,7 @@ export default function Register() {
 	const subTextColor = useColorModeValue("gray.500", "gray.400");
 	const btnBg = useColorModeValue("red.500", "red.400");
 	const btnColor = useColorModeValue("white", "gray.900");
+	const textBg = useColorModeValue("gray.100", "gray.700");
 	const { colorMode, toggleColorMode } = useColorMode();
 	const toast = useToast();
 	const router = useRouter();
@@ -158,7 +159,7 @@ export default function Register() {
 						<Box textAlign="center">
 							<Text
 								color={textColor}
-								bg={useColorModeValue("gray.100", "gray.700")}
+								bg={textBg}
 								px={4}
 								py={2}
 								fontWeight="bold"

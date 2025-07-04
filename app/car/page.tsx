@@ -390,7 +390,9 @@ export default function CarsDetails1() {
 					/>
 
 					<Flex justify="space-between" align="center" p={4} borderBottom="1px" borderColor={borderColor}>
-						<Text fontSize="lg" fontWeight="semibold" color={textColor}>{carData?.brand} {carData?.model}</Text>
+						<Text fontSize="lg" fontWeight="semibold" color={textColor}>
+							{carData?.brand} {carData?.model}
+						</Text>
 						<IconButton
 							variant="ghost"
 							icon={<Icon as={X} w={5} h={5} />}
@@ -824,6 +826,7 @@ export default function CarsDetails1() {
 												// mb={["1", "1", "0"]}
 												>
 													{carData?.brand} {carData?.model}
+													{carData?.power ? ` ${(carData.power * 0.7355).toFixed(0)} kW` : ''}
 												</Heading>
 												<Box mt={["1", "1", "0"]} className='light-mode'>
 													<Image
@@ -1554,7 +1557,7 @@ export default function CarsDetails1() {
 														fontFamily="inter"
 														_hover={{ color: "red.500" }}
 													// mb={["1", "1", "0"]}
-													>{carData?.brand} {carData?.model}</Heading>
+													>{carData?.[0]?.model } {carData?.power ? ` ${(carData?.power * 0.7355).toFixed(0)} kW` : ''}</Heading>
 													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
 														<Flex direction="row" gap={3} mb={1}>
 															<HStack spacing="1">
@@ -1659,7 +1662,7 @@ export default function CarsDetails1() {
 														letterSpacing="wide"
 														fontFamily="inter"
 														_hover={{ color: "red.500" }}
-													>{similarCars?.[0]?.brand} {similarCars?.[0]?.model || "Loading..."}</Heading>
+													>{similarCars?.[0]?.brand} {similarCars?.[0]?.model || "Loading..."} {similarCars?.power ? ` ${(similarCars?.power * 0.7355).toFixed(0)} kW` : ''}KW</Heading>
 													<Box mb={["2", "2", "1"]} ml="1" mt={4}>
 														<Flex direction="row" gap={3} mb={1}>
 															<HStack spacing="1">
@@ -1748,7 +1751,7 @@ export default function CarsDetails1() {
 																	transform: 'translateX(-50%)',
 																	zIndex: 2,
 																	marginBottom: '50px',
-																	marginTop:"20px"
+																	marginTop: "20px"
 																}}
 															>
 																<div className="mb-1 fw-bold">THIS CAR</div>

@@ -100,7 +100,7 @@ export const CarCard = ({ car }) => {
   const formattedMileage = car.mileage.toLocaleString();
 
   // Format power with kW
-  const formattedPower = `${car.power} kW`;
+  const formattedPower = `${car.power} hp`;
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
@@ -245,7 +245,11 @@ export const CarCard = ({ car }) => {
                     fontFamily="inter"
                     _hover={{ color: "red.500" }}
                   >
-                    {`${car.brand} ${car.model}`}
+                    {[
+                      car?.brand,
+                      car?.model,
+                      car?.power ? `${(car.power * 0.7355).toFixed(0)} kW` : null
+                    ].filter(Boolean).join(' ') || 'Car Details'}
                   </Heading>
                   <Box mt={["1", "1", "0"]} className='light-mode'>
                     <Image

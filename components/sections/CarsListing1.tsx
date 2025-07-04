@@ -337,7 +337,7 @@ export default function CarsListing1() {
 
 	return (
 		<>
-			<section className="section-box box-flights background-body bg-gray-100">
+			<section className="section-box box-flights background-body">
 				<div className="container">
 					<div className="row align-items-end">
 						<div className="col-md-9 wow fadeInUp">
@@ -414,6 +414,7 @@ export default function CarsListing1() {
 														p={["4", "4", "3"]}
 														flexDir="column"
 														justifyContent="space-between"
+														width="-webkit-fill-available"
 													// mt={["3", "3", "0"]}
 													>
 														<Box>
@@ -435,8 +436,11 @@ export default function CarsListing1() {
 																	_hover={{ color: "red.500" }}
 																// mb={["1", "1", "0"]}
 																>
-																	{[car?.brand, car?.modal].filter(Boolean).join(' ') || 'Car Details'}
-																</Heading>
+																	{[
+																		car?.brand,
+																		car?.model,
+																		car?.power ? `${(car.power * 0.7355).toFixed(0)} kW` : null
+																	].filter(Boolean).join(' ') || 'Car Details'}																</Heading>
 																{/* <Box mt={["1", "1", "0"]} className='light-mode'>
 																			<Image
 																				src={logo.src}
