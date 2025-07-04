@@ -19,6 +19,7 @@ import {
     getSimilarCars,
     getCharges,
     applyfinance,
+    submitInspection,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -220,4 +221,9 @@ export const useGetCharges = (id: string, zipcode?: string) =>
 export const useApplyFinance = () =>
     useMutation({
         mutationFn: (data: any) => applyfinance(data),
+    });
+
+export const useSubmitInspection = () =>
+    useMutation({
+        mutationFn: (data: any) => submitInspection(data),
     });

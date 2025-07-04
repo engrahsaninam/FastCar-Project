@@ -18,7 +18,7 @@ import { Sun, Moon } from "lucide-react";
 import { useColorMode } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Layout from "@/components/layout/Layout";
-import { useRegister } from "@/services/auth/useAuth";
+import { useRegister, useVerifyEmail } from "@/services/auth/useAuth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import GoogleSignIn from "@/components/GoogleSignIn";
@@ -44,8 +44,11 @@ export default function Register() {
 		confirm_password: "",
 		terms: false,
 	});
+	const [otpStep, setOtpStep] = useState(false);
+	const [otp, setOtp] = useState("");
 
 	const registerMutation = useRegister();
+	const verifyEmailMutation = useVerifyEmail();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value, type, checked } = e.target;
@@ -89,12 +92,35 @@ export default function Register() {
 				duration: 3000,
 				isClosable: true,
 			});
-			router.push("/login");
+			setOtpStep(true);
 		} catch (error: any) {
 			console.log(error)
 			toast({
 				title: t('auth.error'),
 				description: error.response?.data?.detail || t('auth.registrationFailed'),
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+	};
+
+	const handleOtpSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		try {
+			await verifyEmailMutation.mutateAsync({ otp, email: formData.email });
+			toast({
+				title: t('auth.success'),
+				description: t('auth.loginSuccess'),
+				status: "success",
+				duration: 3000,
+				isClosable: true,
+			});
+			router.push("/login");
+		} catch (error: any) {
+			toast({
+				title: t('auth.error'),
+				description: error.response?.data?.detail || t('auth.loginFailed'),
 				status: "error",
 				duration: 3000,
 				isClosable: true,
@@ -143,94 +169,126 @@ export default function Register() {
 								{t('auth.createAccount')}
 							</Heading>
 						</Box>
-						<VStack as="form" spacing={4} align="stretch" onSubmit={handleSubmit}>
-							<Input
-								name="username"
-								value={formData.username}
-								onChange={handleInputChange}
-								placeholder={t('auth.username')}
-								type="text"
-								variant="filled"
-								bg={useColorModeValue("gray.100", "gray.700")}
-								color={textColor}
-							/>
-							<Input
-								name="email"
-								value={formData.email}
-								onChange={handleInputChange}
-								placeholder={t('auth.email')}
-								type="email"
-								variant="filled"
-								bg={useColorModeValue("gray.100", "gray.700")}
-								color={textColor}
-							/>
-							<Input
-								name="password"
-								value={formData.password}
-								onChange={handleInputChange}
-								placeholder={t('auth.password')}
-								type="password"
-								variant="filled"
-								bg={useColorModeValue("gray.100", "gray.700")}
-								color={textColor}
-							/>
-							<Input
-								name="confirm_password"
-								value={formData.confirm_password}
-								onChange={handleInputChange}
-								placeholder={t('auth.confirmPassword')}
-								type="password"
-								variant="filled"
-								bg={useColorModeValue("gray.100", "gray.700")}
-								color={textColor}
-							/>
-							<Flex align="center">
-								<Checkbox
-									name="terms"
-									isChecked={formData.terms}
+						{!otpStep ? (
+							<VStack as="form" spacing={4} align="stretch" onSubmit={handleSubmit}>
+								<Input
+									name="username"
+									value={formData.username}
 									onChange={handleInputChange}
-									colorScheme=""
-									color={subTextColor}
-									mr={2}
-									border='gray'
+									placeholder={t('auth.username')}
+									type="text"
+									variant="filled"
+									bg={useColorModeValue("gray.100", "gray.700")}
+									color={textColor}
+								/>
+								<Input
+									name="email"
+									value={formData.email}
+									onChange={handleInputChange}
+									placeholder={t('auth.email')}
+									type="email"
+									variant="filled"
+									bg={useColorModeValue("gray.100", "gray.700")}
+									color={textColor}
+								/>
+								<Input
+									name="password"
+									value={formData.password}
+									onChange={handleInputChange}
+									placeholder={t('auth.password')}
+									type="password"
+									variant="filled"
+									bg={useColorModeValue("gray.100", "gray.700")}
+									color={textColor}
+								/>
+								<Input
+									name="confirm_password"
+									value={formData.confirm_password}
+									onChange={handleInputChange}
+									placeholder={t('auth.confirmPassword')}
+									type="password"
+									variant="filled"
+									bg={useColorModeValue("gray.100", "gray.700")}
+									color={textColor}
+								/>
+								<Flex align="center">
+									<Checkbox
+										name="terms"
+										isChecked={formData.terms}
+										onChange={handleInputChange}
+										colorScheme=""
+										color={subTextColor}
+										mr={2}
+										border='gray'
+									>
+										{t('auth.agreeToTerms')}
+									</Checkbox>
+								</Flex>
+								<Button
+									colorScheme="red"
+									bg={btnBg}
+									color={btnColor}
+									w="full"
+									type="submit"
+									isLoading={registerMutation.isPending}
+									rightIcon={
+										<svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+											<path
+												d="M8 15L15 8L8 1M15 8L1 8"
+												stroke="currentColor"
+												strokeWidth="1.5"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											/>
+										</svg>
+									}
 								>
-									{t('auth.agreeToTerms')}
-								</Checkbox>
-							</Flex>
-							<Button
-								colorScheme="red"
-								bg={btnBg}
-								color={btnColor}
-								w="full"
-								type="submit"
-								isLoading={registerMutation.isPending}
-								rightIcon={
-									<svg width={16} height={16} viewBox="0 0 16 16" fill="none">
-										<path
-											d="M8 15L15 8L8 1M15 8L1 8"
-											stroke="currentColor"
-											strokeWidth="1.5"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-										/>
-									</svg>
-								}
-							>
-								{t('auth.signUp')}
-							</Button>
-						</VStack>
-						<Text color={subTextColor} fontSize="md" textAlign="center">
-							{t('auth.orConnectWithSocial')}
-						</Text>
-						<HStack spacing={4} justify="center">
-							<GoogleSignIn />
-						</HStack>
-						<Text color={subTextColor} fontSize="sm" textAlign="center" mt={8}>
-							{t('auth.alreadyHaveAccount')}{" "}
-							<ChakraLink as={NextLink} href="/login" color={textColor}>
-								{t('auth.loginHere')}
-							</ChakraLink>
-						</Text>
+									{t('auth.signUp')}
+								</Button>
+							</VStack>
+						) : (
+							<VStack as="form" spacing={4} align="stretch" onSubmit={handleOtpSubmit}>
+								<Text color={textColor} fontWeight="bold" textAlign="center">
+									{t('auth.enterOtp', 'Enter the OTP sent to your email')}
+								</Text>
+								<Input
+									name="otp"
+									value={otp}
+									onChange={e => setOtp(e.target.value)}
+									placeholder={t('auth.otp', 'OTP')}
+									type="text"
+									variant="filled"
+									bg={useColorModeValue("gray.100", "gray.700")}
+									color={textColor}
+								/>
+								<Button
+									colorScheme="red"
+									bg={btnBg}
+									color={btnColor}
+									w="full"
+									type="submit"
+									isLoading={verifyEmailMutation.isPending}
+								>
+									{t('auth.submit', 'Submit')}
+								</Button>
+							</VStack>
+						)}
+						{!otpStep && (
+							<>
+								<Text color={subTextColor} fontSize="md" textAlign="center">
+									{t('auth.orConnectWithSocial')}
+								</Text>
+								<HStack spacing={4} justify="center">
+									<GoogleSignIn />
+								</HStack>
+								<Text color={subTextColor} fontSize="sm" textAlign="center" mt={8}>
+									{t('auth.alreadyHaveAccount')} {" "}
+									<ChakraLink as={NextLink} href="/login" color={textColor}>
+										{t('auth.loginHere')}
+									</ChakraLink>
+								</Text>
+							</>
+						)}
 					</VStack>
 				</Box>
 			</Flex>

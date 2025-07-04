@@ -7,7 +7,9 @@ export const apiRoutes = {
         resetPassword: "/auth/reset-password",
         forgotPassword: "/auth/forgot-password",
         signUpgoogle: "/auth/google-signup",
-        currentuser: '/users/me'
+        currentuser: '/users/me',
+        verifyEmail: '/auth/verify-email',
+
     },
 
     car: {
@@ -22,6 +24,9 @@ export const apiRoutes = {
         getCharges: (id: string, zipcode?: string) => zipcode ? `/charges?car_id=${id}&zipcode=${zipcode}` : `/charges?car_id=${id}`,
         financing: {
             apply: "/purchase/finance/apply"
+        },
+        inspection:{
+            submit:"/purchase/bank-transfer/submit"
         }
     },
     filters: {
@@ -38,5 +43,6 @@ export const apiRoutes = {
         features: "/filters/features",
        
     },
+    
     
 }

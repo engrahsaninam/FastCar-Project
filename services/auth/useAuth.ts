@@ -2,7 +2,7 @@
 // import { IAxiosError } from "axios";
 import { IAxiosError } from "./axiosError";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { currentuser, forgotPassword, login, resetPassword, signup, signupgoogle } from "./authService";
+import { currentuser, forgotPassword, login, resetPassword, signup, signupgoogle, verifyEmail } from "./authService";
 import { register } from "module";
 
 type LoginPayload = {
@@ -24,6 +24,10 @@ type ResetPassword = {
 }
 type GoogleSignUp={
     id_token:string
+}
+type VerifyEmail = {
+    otp: string,
+    email: string
 }
 export const useLogin = () => {
     return useMutation<any, IAxiosError, LoginPayload>({
@@ -67,4 +71,11 @@ export const useCurrentUser=()=>{
         queryFn: currentuser,
         
     });
+}
+export const useVerifyEmail = () => {
+    return useMutation<any, IAxiosError, VerifyEmail>(
+        {
+            mutationFn: (payload) => verifyEmail(payload.otp, payload.email)
+        }
+    )
 }

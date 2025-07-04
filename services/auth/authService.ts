@@ -48,3 +48,10 @@ export const currentuser = async () => {
     console.log("user in api",data)
     return data
 }
+export const verifyEmail = async (otp: string, email: string) => {
+    const { data } = await axiosInstance.post(apiRoutes.auth.verifyEmail, {
+        otp,
+        email
+    })
+    return data
+}

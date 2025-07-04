@@ -181,3 +181,7 @@ export const applyfinance = async (data: any) => {
     const response = await axiosInstance.post(apiRoutes.car.financing.apply, data)
     return response.data;
 }
+export const submitInspection = async (data: any) => {
+    const response = await axiosInstance.post(apiRoutes.car.inspection.submit, data)
+    return response.data;
+}

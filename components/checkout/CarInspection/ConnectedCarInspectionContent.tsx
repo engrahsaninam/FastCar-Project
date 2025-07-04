@@ -16,6 +16,8 @@ import {
     useBreakpointValue
 } from '@chakra-ui/react';
 import { ChevronDownIcon, InfoIcon } from '@chakra-ui/icons';
+import { useSubmitInspection } from "@/services/cars/useCars";
+import { useSearchParams } from 'next/navigation';
 
 interface ConnectedCarInspectionContentProps {
     onComplete: () => void;
@@ -80,6 +82,11 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
     const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [sameContactAddress, setSameContactAddress] = useState(true);
 
+    const submitInspection = useSubmitInspection();
+
+    const searchParams = useSearchParams();
+    const carId = searchParams?.get('carId');
+
     // Field status icon component
     const FieldIcon = ({ field }: { field: string }) => {
         if (!touched[field]) return null;
@@ -112,6 +119,34 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
 
     const handleAccountTypeChange = (type: string) => {
         setAccountType(type);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const payload = {
+            car_id: carId,
+            name: formData.name,
+            surname: formData.surname,
+            telephone_number: formData.telephone ? `+39${formData.telephone}` : '',
+            birth_date: formData.birthDate,
+            billing_address_street: formData.street,
+            billing_address_house_number: formData.houseNumber,
+            billing_address_postal_code: formData.postalCode,
+            billing_address_city: formData.city,
+            billing_address_country: formData.country,
+            is_company: accountType === 'company',
+            is_vat_payer: isVatPayer,
+            company_id: accountType === 'company' ? formData.companyId : '',
+            company_name: accountType === 'company' ? formData.companyName : '',
+        };
+
+        try {
+            await submitInspection.mutateAsync(payload);
+            onComplete();
+        } catch (error) {
+            // Show error message
+        }
     };
 
     return (
@@ -507,7 +542,7 @@ const ConnectedCarInspectionContent: React.FC<ConnectedCarInspectionContentProps
                                 shadow: "sm",
                                 transform: "translateY(1px)"
                             }}
-                            onClick={onComplete}
+                            onClick={handleSubmit}
                         >
                             Confirm the data
                         </Button>
