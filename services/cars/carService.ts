@@ -194,3 +194,18 @@ export const getInspectionSuccess = async (id: string) => {
     const response = await axiosInstance.get(apiRoutes.car.inspection.success(id));
     return response.data;
 }
+export const getLatestUserStatus = async (id: string) => {
+    const response = await axiosInstance.get(apiRoutes.car.delivery.status(id))
+    return response.data
+}
+export const getCheckoutStatus = async (purchaseid: string, financeId: string) => {
+    const response = await axiosInstance.post(apiRoutes.car.delivery.checkout, {
+        purchase_id: purchaseid,
+        finance_id: financeId
+    })
+    return response.data;
+}
+export const submitDeliveryInfor = async (data: any) => {
+    const response = await axiosInstance.post(apiRoutes.car.delivery.submit, data)
+    return response.data
+}

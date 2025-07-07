@@ -29,7 +29,12 @@ export const apiRoutes = {
             submit: "/purchase/bank-transfer/submit",
             create: (id: string) => `/purchase/checkout/${id}`,
             success: (id: string) => `/purchase/success-car-inspection?session_id=${id}`,
-        }
+        },
+        delivery: {
+            status: (id: string) => `/purchase/get-latest-user-context?car_id=${id}`,
+            submit: "/purchase/submit-delivery-info",
+            checkout:"/purchase/checkout-delivery",
+        },
     },
     filters: {
         fuel: '/filters/fuel-types',
