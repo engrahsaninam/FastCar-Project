@@ -20,6 +20,8 @@ import {
     getCharges,
     applyfinance,
     submitInspection,
+    createInspectionSession,
+    getInspectionSuccess,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -226,4 +228,17 @@ export const useApplyFinance = () =>
 export const useSubmitInspection = () =>
     useMutation({
         mutationFn: (data: any) => submitInspection(data),
+    });
+
+export const useCreateInspectionSession = () =>
+    useMutation({
+        mutationFn: (id: string) => createInspectionSession(id),
+    });
+export const useGetInspectionSuccess = (id: string) =>
+    useQuery({
+        queryKey: ["inspectionSuccess", id],
+        queryFn: () => getInspectionSuccess(id),
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
     });

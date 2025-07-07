@@ -185,3 +185,12 @@ export const submitInspection = async (data: any) => {
     const response = await axiosInstance.post(apiRoutes.car.inspection.submit, data)
     return response.data;
 }
+export const createInspectionSession = async (id: string) => {
+    const response = await axiosInstance.post(apiRoutes.car.inspection.create(id));
+    console.log("response from stripe", response.data)
+    return response.data;
+}
+export const getInspectionSuccess = async (id: string) => {
+    const response = await axiosInstance.get(apiRoutes.car.inspection.success(id));
+    return response.data;
+}

@@ -33,6 +33,9 @@ import {
     useBreakpointValue
 } from '@chakra-ui/react';
 import { Edit2, CreditCard, ChevronLeft, Lock, X } from 'lucide-react';
+import { cp } from 'fs';
+import { useCreateInspectionSession } from '@/services/cars/useCars';
+import { useSearchParams } from 'next/navigation';
 
 interface OrderSummaryContentProps {
     onComplete: () => void;
@@ -132,10 +135,32 @@ const OrderSummaryContent: React.FC<OrderSummaryContentProps> = ({
     const [expiryDate, setExpiryDate] = React.useState("MM/YY");
     const [cvv, setCvv] = React.useState("123");
     const [saveCard, setSaveCard] = React.useState(false);
+    const { mutate: createInspectionSession } = useCreateInspectionSession();
+    const searchParams = useSearchParams() ?? new URLSearchParams();
+    const carId = searchParams.get('carId');
 
     const handlePaymentSubmit = () => {
         onClose();
         onComplete();
+    };
+    const handleCreateInspectionSession = () => {
+        if (!carId) return;
+        createInspectionSession(carId, {
+            onSuccess: (data) => {
+                // data should contain the Stripe checkout URL
+                if (data && typeof data.checkout_url === 'string') {
+                    const match = data.checkout_url.match(/\/pay\/([^/?#]+)/);
+                    if (match && match[1]) {
+                        sessionStorage.setItem('stripeSessionId', match[1]);
+                    }
+                }
+                // console.log("response from stripe", data);
+                window.location.href = data.checkout_url;
+            },
+            onError: (error) => {
+                console.error(error);
+            }
+        });
     };
 
     return (
@@ -343,10 +368,12 @@ const OrderSummaryContent: React.FC<OrderSummaryContentProps> = ({
                             px={buttonPadding}
                             py={isMobile ? 5 : 6}
                             width={isMobile ? "100%" : "auto"}
-                            onClick={onOpen}
+                            // onClick={onOpen}
                             aria-label="Place binding order"
                             isDisabled={!termsAccepted}
                             _hover={{ bg: buttonHoverBgColor }}
+                            onClick={handleCreateInspectionSession}
+
                         >
                             Binding order
                         </Button>

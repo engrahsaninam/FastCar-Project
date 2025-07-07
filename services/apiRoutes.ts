@@ -25,8 +25,10 @@ export const apiRoutes = {
         financing: {
             apply: "/purchase/finance/apply"
         },
-        inspection:{
-            submit:"/purchase/bank-transfer/submit"
+        inspection: {
+            submit: "/purchase/bank-transfer/submit",
+            create: (id: string) => `/purchase/checkout/${id}`,
+            success: (id: string) => `/purchase/success-car-inspection?session_id=${id}`,
         }
     },
     filters: {
@@ -41,8 +43,8 @@ export const apiRoutes = {
         bodyTypes: "/filters/body-types",
         colors: "/filters/colours",
         features: "/filters/features",
-       
+
     },
-    
-    
+
+
 }
