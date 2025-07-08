@@ -687,7 +687,7 @@ async def checkout_success(
         db.commit()
 
         logger.info(f"Purchase completed for car {car_id} by user {user_id}")
-        return RedirectResponse(url="/purchase/complete")  # Adjust to frontend
+        return RedirectResponse(url="http://localhost:3000/success")  # Adjust to frontend
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
