@@ -148,42 +148,40 @@ class CarAvailabilityChecker:
 
 async def update_car_availability_status(db: Session, availability_results: Dict[str, bool]):
     """
-    Update car availability status in the database efficiently.
-    Uses bulk update for better performance.
+    Remove unavailable cars from the database.
+    Uses bulk delete for better performance.
     """
     unavailable_cars = [car_id for car_id, is_available in availability_results.items() if not is_available]
     
     if not unavailable_cars:
-        logger.info("[DATABASE] 📊 No cars to mark as unavailable - all cars are available!")
+        logger.info("[DATABASE] 📊 No cars to remove - all cars are available!")
         return 0
     
-    logger.info(f"[DATABASE] 🔄 Updating {len(unavailable_cars)} cars to unavailable status...")
+    logger.info(f"[DATABASE] 🔄 Removing {len(unavailable_cars)} unavailable cars...")
     
     try:
-        # Bulk update unavailable cars
+        # Bulk delete unavailable cars
         result = db.execute(
             text("""
-                UPDATE cars 
-                SET status = 'unavailable', 
-                    updated_at = CURRENT_TIMESTAMP 
-                WHERE id IN :car_ids AND status != 'unavailable'
+                DELETE FROM cars 
+                WHERE id IN :car_ids
             """),
             {"car_ids": tuple(unavailable_cars)}
         )
         
         db.commit()
-        updated_count = result.rowcount
+        deleted_count = result.rowcount
         
-        if updated_count > 0:
-            logger.warning(f"[DATABASE] ❌ Marked {updated_count} cars as unavailable")
-            logger.info(f"[DATABASE] 📝 Updated car IDs: {', '.join(unavailable_cars[:10])}{'...' if len(unavailable_cars) > 10 else ''}")
+        if deleted_count > 0:
+            logger.warning(f"[DATABASE] ❌ Removed {deleted_count} unavailable cars")
+            logger.info(f"[DATABASE] 📝 Deleted car IDs: {', '.join(unavailable_cars[:10])}{'...' if len(unavailable_cars) > 10 else ''}")
         else:
-            logger.info(f"[DATABASE] ✅ No cars were updated (they were already marked as unavailable)")
+            logger.info(f"[DATABASE] ✅ No cars were deleted (they were already removed)")
             
-        return updated_count
+        return deleted_count
         
     except Exception as e:
-        logger.error(f"[DATABASE] 💥 Failed to update car availability status: {e}")
+        logger.error(f"[DATABASE] 💥 Failed to remove unavailable cars: {e}")
         db.rollback()
         return 0
 
@@ -201,21 +199,18 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
     try:
         # Get total count of cars for statistics
         total_cars_count = db.execute(text("SELECT COUNT(*) FROM cars")).scalar()
-        available_cars_count = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'available'")).scalar()
-        unavailable_cars_count = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'unavailable'")).scalar()
+        cars_with_urls = db.execute(text("SELECT COUNT(*) FROM cars WHERE url IS NOT NULL AND url != ''")).scalar()
         
         logger.info(f"[SYSTEM] 📊 Database statistics:")
         logger.info(f"[SYSTEM] 📊   Total cars: {total_cars_count}")
-        logger.info(f"[SYSTEM] 📊   Available cars: {available_cars_count}")
-        logger.info(f"[SYSTEM] 📊   Unavailable cars: {unavailable_cars_count}")
+        logger.info(f"[SYSTEM] 📊   Cars with URLs: {cars_with_urls}")
         
-        # Get cars that need availability check (currently marked as available)
+        # Get cars that need availability check (all cars with valid URLs)
         logger.info(f"[SYSTEM] 🔍 Querying cars to check (limit: {max_cars_per_run})")
         cars_to_check = db.execute(text("""
             SELECT id, url 
             FROM cars 
-            WHERE status = 'available' 
-              AND url IS NOT NULL 
+            WHERE url IS NOT NULL 
               AND url != ''
             ORDER BY RANDOM()
             LIMIT :max_cars
@@ -242,9 +237,9 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
                 # Check availability for this batch
                 availability_results = await checker.check_batch_availability(batch_cars)
                 
-                # Update database with results
-                updated_count = await update_car_availability_status(db, availability_results)
-                total_updated += updated_count
+                # Remove unavailable cars from database
+                deleted_count = await update_car_availability_status(db, availability_results)
+                total_updated += deleted_count
                 
                 # Log progress
                 progress = min(i + batch_size, len(cars_to_check))
@@ -262,16 +257,16 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
         logger.info(f"[SYSTEM] 🎉 Car availability check completed!")
         logger.info(f"[SYSTEM] ⏱️  Total time: {elapsed_time:.2f} seconds")
         logger.info(f"[SYSTEM] 📊 Total cars processed: {len(cars_to_check)}")
-        logger.info(f"[SYSTEM] ❌ Total cars marked as unavailable: {total_updated}")
+        logger.info(f"[SYSTEM] ❌ Total cars removed: {total_updated}")
         logger.info(f"[SYSTEM] ⚡ Performance: {processed_per_second:.1f} cars/second")
         
         # Get final statistics
-        final_available = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'available'")).scalar()
-        final_unavailable = db.execute(text("SELECT COUNT(*) FROM cars WHERE status = 'unavailable'")).scalar()
+        final_total = db.execute(text("SELECT COUNT(*) FROM cars")).scalar()
+        final_with_urls = db.execute(text("SELECT COUNT(*) FROM cars WHERE url IS NOT NULL AND url != ''")).scalar()
         
         logger.info(f"[SYSTEM] 📊 Final database state:")
-        logger.info(f"[SYSTEM] 📊   Available cars: {final_available}")
-        logger.info(f"[SYSTEM] 📊   Unavailable cars: {final_unavailable}")
+        logger.info(f"[SYSTEM] 📊   Total cars: {final_total}")
+        logger.info(f"[SYSTEM] 📊   Cars with URLs: {final_with_urls}")
         
     except Exception as e:
         elapsed_time = time.time() - system_start_time
@@ -282,37 +277,19 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
 
 async def get_availability_stats(db: Session) -> Dict[str, Any]:
     """
-    Get statistics about car availability.
+    Get statistics about car database.
     """
     try:
-        result = db.execute(text("""
-            SELECT 
-                status,
-                COUNT(*) as count,
-                ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM cars), 2) as percentage
-            FROM cars 
-            GROUP BY status
-        """)).fetchall()
+        total_cars = db.execute(text("SELECT COUNT(*) FROM cars")).scalar()
+        cars_with_urls = db.execute(text("SELECT COUNT(*) FROM cars WHERE url IS NOT NULL AND url != ''")).scalar()
+        cars_without_urls = total_cars - cars_with_urls
         
         stats = {
-            "total_cars": 0,
-            "available": 0,
-            "unavailable": 0,
-            "other": 0,
-            "available_percentage": 0.0,
-            "unavailable_percentage": 0.0
+            "total_cars": total_cars,
+            "cars_with_urls": cars_with_urls,
+            "cars_without_urls": cars_without_urls,
+            "url_coverage_percentage": round((cars_with_urls / total_cars) * 100, 2) if total_cars > 0 else 0.0
         }
-        
-        for row in result:
-            stats["total_cars"] += row.count
-            if row.status == "available":
-                stats["available"] = row.count
-                stats["available_percentage"] = row.percentage
-            elif row.status == "unavailable":
-                stats["unavailable"] = row.count
-                stats["unavailable_percentage"] = row.percentage
-            else:
-                stats["other"] += row.count
         
         return stats
         
