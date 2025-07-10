@@ -22,6 +22,9 @@ import {
     submitInspection,
     createInspectionSession,
     getInspectionSuccess,
+    getLatestUserStatus,
+    getCheckoutStatus,
+    submitDeliveryInfor,
 } from "./carService";
 import axiosInstance from "../axiosInstance";
 import { apiRoutes } from "../apiRoutes";
@@ -242,3 +245,21 @@ export const useGetInspectionSuccess = (id: string) =>
         refetchOnReconnect: false,
         refetchOnMount: false,
     });
+export const useLatestUserStatus = (id: string) => {
+    return useQuery({
+        queryKey: ['latest-user-status', id],
+        queryFn: () => getLatestUserStatus(id),
+        enabled: !!id, // prevent firing if id is undefined/null
+    });
+};
+export const useCheckoutStatus = () => {
+    return useMutation({
+        mutationFn: ({ purchaseid, financeId }: { purchaseid: string, financeId: string }) =>
+            getCheckoutStatus(purchaseid, financeId),
+    });
+};
+export const useSubmitDeliveryInfo = () => {
+    return useMutation({
+        mutationFn: (data: any) => submitDeliveryInfor(data),
+    });
+};

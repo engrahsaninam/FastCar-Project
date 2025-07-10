@@ -23,7 +23,8 @@ export const apiRoutes = {
         similar: (id: string) => `/cars/${id}/similar`,
         getCharges: (id: string, zipcode?: string) => zipcode ? `/charges?car_id=${id}&zipcode=${zipcode}` : `/charges?car_id=${id}`,
         financing: {
-            apply: "/purchase/finance/apply"
+            apply: "/purchase/finance/apply",
+            details: (car_id: string) =>`/api/purchase/purchase-details-user?car_id=${car_id}`
         },
         inspection: {
             submit: "/purchase/bank-transfer/submit",
@@ -31,7 +32,7 @@ export const apiRoutes = {
             success: (id: string) => `/purchase/success-car-inspection?session_id=${id}`,
         },
         delivery: {
-            status: (id: string) => `/purchase/get-latest-user-context?car_id=${id}`,
+            status: (id: string)=> `/purchase/get-latest-user-context?car_id=${id}`,
             submit: "/purchase/submit-delivery-info",
             checkout:"/purchase/checkout-delivery",
         },

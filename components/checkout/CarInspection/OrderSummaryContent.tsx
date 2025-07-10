@@ -144,6 +144,7 @@ const OrderSummaryContent: React.FC<OrderSummaryContentProps> = ({
         onComplete();
     };
     const handleCreateInspectionSession = () => {
+        
         if (!carId) return;
         createInspectionSession(carId, {
             onSuccess: (data) => {
