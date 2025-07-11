@@ -407,7 +407,7 @@ async def get_cars(
                     .bindparams(feature=f'%{feature}%')
                 )
 
-    query = query.filter(*filters)
+    query = query.filter(*filters, Car.status.notlike(f"%sold%"))
     total = query.count()
 
     offset = (page - 1) * limit
@@ -548,7 +548,7 @@ async def get_models(brand: Optional[str] = None, db: Session = Depends(get_db))
 @router.get("/{car_id}", response_model=CarResponse)
 async def get_car(car_id: str, db: Session = Depends(get_db)):
     start_time = time.time()
-    car = db.query(Car).filter(Car.id == car_id).first()
+    car = db.query(Car).filter(Car.id == car_id, Car.status.notlike(f"%sold%")).first()
     
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")

@@ -1,6 +1,6 @@
 #app/api/purchase.py
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel, validator
@@ -363,7 +363,7 @@ async def submit_bank_transfer(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     
-    car = db.query(Car).filter(Car.id == data.car_id).first()
+    car = db.query(Car).filter(Car.id == data.car_id, Car.status.notlike(f"%sold%")).first()
     if not car:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Car not found")
     if car.status != "available":
@@ -595,7 +595,7 @@ async def create_checkout_session(
         raise HTTPException(status_code=401, detail="Authentication required")
 
     # Fetch car
-    car = db.query(Car).filter(Car.id == car_id).first()
+    car = db.query(Car).filter(Car.id == car_id, Car.status.notlike(f"%sold%")).first()
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
     if car.status != "available":
@@ -654,7 +654,7 @@ async def checkout_success(
             raise HTTPException(status_code=403, detail="Unauthorized")
 
         # Fetch car
-        car = db.query(Car).filter(Car.id == car_id).first()
+        car = db.query(Car).filter(Car.id == car_id, Car.status.notlike(f"%sold%")).first()
         if not car:
             raise HTTPException(status_code=404, detail="Car not found")
         if car.status != "available":
@@ -687,7 +687,13 @@ async def checkout_success(
         db.commit()
 
         logger.info(f"Purchase completed for car {car_id} by user {user_id}")
-        return RedirectResponse(url="http://localhost:3000/success")  # Adjust to frontend
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "Purchase successful",
+                "purchase_id": purchase.id
+            }
+        )
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -1189,14 +1195,17 @@ async def checkout_success_delivery(
 
         logger.info(f"[Purchase Success] Purchase #{purchase.id} completed for user {user_id} (finance={is_financed})")
 
-        return {
+        return JSONResponse(
+            status_code=200,
+            content={
             "message": "Purchase completed successfully.",
             "purchase_id": purchase.id,
             "car_id": car_id,
             "is_financed": is_financed,
             "total_price": purchase.total_price,
             "stripe_payment_id": session.payment_intent
-        }
+            }
+        )
 
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error: {str(e)}")
