@@ -1,4 +1,4 @@
-git import asyncio
+import asyncio
 import aiohttp
 import logging
 from typing import List, Dict, Any, Optional
@@ -160,13 +160,29 @@ async def update_car_availability_status(db: Session, availability_results: Dict
     logger.info(f"[DATABASE] 🔄 Removing {len(unavailable_cars)} unavailable cars...")
     
     try:
+        # Convert list to comma-separated string for SQL
+        car_ids_str = "'" + "','".join(unavailable_cars) + "'"
+        
+        # Get car details before deletion for logging
+        cars_to_delete = db.execute(
+            text(f"""
+                SELECT id, brand, model, price, url 
+                FROM cars 
+                WHERE id IN ({car_ids_str})
+            """)
+        ).fetchall()
+
+        # Log details of each car being deleted
+        for car in cars_to_delete:
+            logger.warning(f"[DELETE] 🚗 Car being removed: ID={car.id}, {car.brand} {car.model}, Price=${car.price:,.2f}")
+            logger.warning(f"[DELETE] 🔗 Unavailable URL: {car.url}")
+
         # Bulk delete unavailable cars
         result = db.execute(
-            text("""
+            text(f"""
                 DELETE FROM cars 
-                WHERE id IN :car_ids
-            """),
-            {"car_ids": tuple(unavailable_cars)}
+                WHERE id IN ({car_ids_str})
+            """)
         )
         
         db.commit()
@@ -174,7 +190,10 @@ async def update_car_availability_status(db: Session, availability_results: Dict
         
         if deleted_count > 0:
             logger.warning(f"[DATABASE] ❌ Removed {deleted_count} unavailable cars")
-            logger.info(f"[DATABASE] 📝 Deleted car IDs: {', '.join(unavailable_cars[:10])}{'...' if len(unavailable_cars) > 10 else ''}")
+            logger.warning(f"[DATABASE] 📊 Deletion summary:")
+            logger.warning(f"[DATABASE] 🔍 Cars checked: {len(unavailable_cars)}")
+            logger.warning(f"[DATABASE] ❌ Cars deleted: {deleted_count}")
+            logger.warning(f"[DATABASE] 📝 Deleted car IDs: {', '.join(unavailable_cars[:10])}{'...' if len(unavailable_cars) > 10 else ''}")
         else:
             logger.info(f"[DATABASE] ✅ No cars were deleted (they were already removed)")
             
