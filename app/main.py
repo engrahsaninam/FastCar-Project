@@ -186,33 +186,37 @@ async def refresh_materialized_views():
 async def check_car_availability_periodically():
     """
     Background task to periodically check car availability.
-    Runs every 6 hours and checks a subset of cars each time.
+    First run checks all cars, subsequent runs check 5000 cars every 6 hours.
     """
     logger.info("🔄 [SCHEDULER] Car availability checker scheduled - waiting 5 minutes before first run")
     
     while True:
         try:
-            # Wait 30 minutes before starting the first check (let the app fully initialize)
+            # Wait 5 minutes before starting the first check (let the app fully initialize)
             if not hasattr(check_car_availability_periodically, '_first_run'):
                 logger.info("⏰ [SCHEDULER] Waiting 5 minutes for app initialization...")
                 await asyncio.sleep(300)
                 check_car_availability_periodically._first_run = True
-                logger.info("✅ [SCHEDULER] App initialization complete - starting first availability check")
+                logger.info("✅ [SCHEDULER] App initialization complete - starting first availability check (checking all cars)")
+                
+                # First run - check all cars
+                await check_and_update_car_availability(
+                    batch_size=1000,  # Larger batch for first run
+                    max_cars_per_run=None  # No limit for first run
+                )
             else:
-                # Wait 6 hours between checks
+                # Wait 6 hours between subsequent checks
                 logger.info("⏰ [SCHEDULER] Waiting 6 hours until next availability check...")
                 await asyncio.sleep(21600)  # 6 hours
                 logger.info("🔔 [SCHEDULER] 6 hours elapsed - starting next availability check")
+                
+                # Subsequent runs - check 5000 cars
+                await check_and_update_car_availability(
+                    batch_size=500,  # Smaller batches for better performance
+                    max_cars_per_run=5000  # Limit to avoid overloading
+                )
             
-            logger.info("🚀 [SCHEDULER] Triggering periodic car availability check")
-            
-            # Check availability for up to 5000 cars per run
-            await check_and_update_car_availability(
-                batch_size=500,  # Smaller batches for better performance
-                max_cars_per_run=5000  # Limit to avoid overloading
-            )
-            
-            logger.info("🎉 [SCHEDULER] Periodic car availability check completed successfully")
+            logger.info("🚀 [SCHEDULER] Periodic car availability check completed")
             
         except Exception as e:
             logger.error(f"💥 [SCHEDULER] Periodic car availability check failed: {e}")

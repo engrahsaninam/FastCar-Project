@@ -1,4 +1,4 @@
-import asyncio
+git import asyncio
 import aiohttp
 import logging
 from typing import List, Dict, Any, Optional
@@ -206,15 +206,25 @@ async def check_and_update_car_availability(batch_size: int = 1000, max_cars_per
         logger.info(f"[SYSTEM] 📊   Cars with URLs: {cars_with_urls}")
         
         # Get cars that need availability check (all cars with valid URLs)
-        logger.info(f"[SYSTEM] 🔍 Querying cars to check (limit: {max_cars_per_run})")
-        cars_to_check = db.execute(text("""
-            SELECT id, url 
-            FROM cars 
-            WHERE url IS NOT NULL 
-              AND url != ''
-            ORDER BY RANDOM()
-            LIMIT :max_cars
-        """), {"max_cars": max_cars_per_run}).fetchall()
+        if max_cars_per_run is None:
+            logger.info("[SYSTEM] 🔍 Querying ALL cars to check")
+            cars_to_check = db.execute(text("""
+                SELECT id, url 
+                FROM cars 
+                WHERE url IS NOT NULL 
+                  AND url != ''
+                ORDER BY RANDOM()
+            """)).fetchall()
+        else:
+            logger.info(f"[SYSTEM] 🔍 Querying cars to check (limit: {max_cars_per_run})")
+            cars_to_check = db.execute(text("""
+                SELECT id, url 
+                FROM cars 
+                WHERE url IS NOT NULL 
+                  AND url != ''
+                ORDER BY RANDOM()
+                LIMIT :max_cars
+            """), {"max_cars": max_cars_per_run}).fetchall()
         
         if not cars_to_check:
             logger.info("[SYSTEM] ✅ No cars found that need availability checking - all cars are already processed!")
