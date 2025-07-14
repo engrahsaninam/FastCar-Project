@@ -817,7 +817,7 @@ export default function CarsDetails1() {
 												<Heading
 													as="h3"
 													ml='1'
-													fontSize={["lg", "lg", "xl"]}
+													fontSize={["2xl", "2xl", "2xl"]}
 													fontWeight="bold"
 													color={headingColor}
 													letterSpacing="wide"
@@ -930,19 +930,19 @@ export default function CarsDetails1() {
 										<div className="nav-scroll py-3  rounded" style={{ overflowX: "auto", whiteSpace: "nowrap", backgroundColor: bgColor }}>
 											<ul className="nav nav-pills px-1 nav-tabs-grid">
 												<li className="nav-item ">
-													<a onClick={() => setActiveTab('#details')} href="#details" className={` font-extrabold text-md md:text-lg nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.details')}</a>
+													<a onClick={() => setActiveTab('#details')} href="#details" className={` font-extrabold text-xs nav-link ${activeTab === 'details' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'details' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.details')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('features')} href="#features" className={`text-md md:text-lg nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.features')}</a>
+													<a onClick={() => setActiveTab('features')} href="#features" className={`text-xs nav-link ${activeTab === 'features' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'features' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.features')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('how-it-works')} href="#how-it-works" className={`text-md md:text-lg nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.howItWorks')}</a>
+													<a onClick={() => setActiveTab('how-it-works')} href="#how-it-works" className={`text-xs nav-link ${activeTab === 'how-it-works' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'how-it-works' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.howItWorks')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('price-map')} href="#price-map" className={`text-md md:text-lg nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.priceMap')}</a>
+													<a onClick={() => setActiveTab('price-map')} href="#price-map" className={`text-xs nav-link ${activeTab === 'price-map' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'price-map' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.priceMap')}</a>
 												</li>
 												<li className="nav-item">
-													<a onClick={() => setActiveTab('financing')} href="#financing" className={`text-md md:text-lg nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.financing')}</a>
+													<a onClick={() => setActiveTab('financing')} href="#financing" className={`text-xs nav-link ${activeTab === 'financing' ? 'text-white' : 'text-gray-900 dark:text-white'}`} style={activeTab === 'financing' ? { backgroundColor: "#E53E3E" } : {}}>{t('car.financing')}</a>
 												</li>
 											</ul>
 										</div>

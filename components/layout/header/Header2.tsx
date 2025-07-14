@@ -331,24 +331,18 @@ export default function Header2({ scroll, isMobileMenu, handleMobileMenu, handle
 									</Box>
 
 									{/* Theme Switch */}
-									<Box display={{ base: 'none', xl: 'flex' }} alignItems="center">
-										<div className="top-button-mode">
+									<Box display={{ base: 'none', xl: 'flex' }} px={3} alignItems="center" whiteSpace="nowrap">
+										<div className="top-button-mode" style={{ marginRight: '25px' }}>
 											<ThemeSwitch />
 										</div>
 									</Box>
 
 									{/* Mobile Menu Button */}
-									<Box display={{ base: 'block', xl: 'none' }} ml={2}>
-										<div
-											className={`burger-icon ${burgerIconClass}`}
-											onClick={handleMobileMenu}
-											style={{ display: 'flex', alignItems: 'center', height: '40px' }}
-										>
-											<span className="burger-icon-top" />
-											<span className="burger-icon-mid" />
-											<span className="burger-icon-bottom" />
-										</div>
-									</Box>
+									<div className={`burger-icon ${burgerIconClass}`} onClick={handleMobileMenu}>
+										<span className="burger-icon-top" />
+										<span className="burger-icon-mid" />
+										<span className="burger-icon-bottom" />
+									</div>
 								</div>
 							</Flex>
 						</div>

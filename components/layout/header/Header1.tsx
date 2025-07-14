@@ -225,7 +225,6 @@ export default function Header1({
 										marginRight={[10, 0, 0]}
 										fontWeight="medium"
 									/>
-
 									{isOpen && (
 										<Box
 											ref={dropdownRef}
@@ -274,7 +273,7 @@ export default function Header1({
 															display="flex"
 															alignItems="center"
 														>
-															{localStorage.getItem('i18nextLng') === 'en' ? 'En' : localStorage.getItem('i18nextLng') === 'es' ? 'Es' : 'De'} <ChevronDownIcon />
+															{localStorage.getItem('i18nextLng') === 'es' ? 'Es' : localStorage.getItem('i18nextLng') === 'es' ? 'Es' : 'De'} <ChevronDownIcon />
 														</MenuButton>
 														<MenuList>
 															<MenuItem onClick={() => changeLanguage('en')}>{localStorage.getItem('i18nextLng') === 'en' ? 'English' : 'English'}</MenuItem>

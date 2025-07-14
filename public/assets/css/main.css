@@ -6851,7 +6851,7 @@ label {
 	border-radius: 4px;
 	cursor: pointer;
 	transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
-	top: 10px;
+	/* top: 10px; */
 	right: 0px;
 	z-index: 999999;
 	display: none;
@@ -13274,9 +13274,7 @@ a.icon-socials:hover svg path {
 	.header-leftt {
 		display: none;
 	}
-	.burger-icon {
-		top: 10px;
-	}
+	
 
 	.box-grid-hotels .card-flight .card-facilities .list-tick-green li {
 		width: 50%;

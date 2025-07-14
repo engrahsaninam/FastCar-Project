@@ -169,6 +169,7 @@ export const CarCard = ({ car }) => {
 
                   {/* Navigation Arrows */}
                   <IconButton
+                    color="red"
                     position="absolute"
                     left="2"
                     top="50%"
@@ -189,6 +190,7 @@ export const CarCard = ({ car }) => {
                     aria-label="Previous image"
                   />
                   <IconButton
+                    color="red"
                     position="absolute"
                     right="2"
                     top="50%"
@@ -368,7 +370,7 @@ export const CarCard = ({ car }) => {
                     </Flex>
                     </HStack>
                   </VStack>
-                  <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]} ml={["4","4","4"]}>
+                  <Box borderRadius="md" textAlign={["right", "right", "right"]} mt={["2", "1", "3"]} ml={["4", "4", "4"]}>
                     <Text fontSize={["md", "md", "md"]} fontWeight="bold" color={priceColor}>
                       € {car.price.toLocaleString()}
                     </Text>
@@ -517,75 +519,90 @@ const VerifiedCarsHeader = ({ carData, currentPage, onPageChange }) => {
         </Box>
 
         {/* Sort and Pagination */}
-        <Flex alignItems="center" gap="3">
-          <HStack spacing="1" display={["none", "none", "flex"]}>
-            <IconButton
-              aria-label="Previous page"
-              icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
-              variant="ghost"
-              color={iconColor}
-              p="1"
-              size="sm"
-              isDisabled={currentPage === 1}
-              onClick={() => onPageChange(currentPage - 1)}
-            />
-            {Array.from({ length: Math.min(5, carData?.pages || 1) }, (_, i) => {
-              let pageNum;
-              if (i < 3) {
-                pageNum = i + 1;
-              } else if (i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1) {
-                pageNum = currentPage;
-              } else if (i === 4) {
-                pageNum = carData?.pages || 1;
-              }
 
-              if (!pageNum) return null;
-
-              return (
-                <React.Fragment key={pageNum}>
-                  {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
-                    <Text px="1" color={textColor}>...</Text>
-                  )}
-                  <Button
-                    w="6"
-                    h="6"
-                    borderRadius="md"
-                    bg={pageNum === currentPage ? paginationActiveBg : "transparent"}
-                    color={pageNum === currentPage ? paginationActiveColor : paginationInactiveColor}
-                    variant={pageNum === currentPage ? "solid" : "ghost"}
-                    _hover={{ bg: pageNum === currentPage ? paginationActiveBg : paginationHoverBg }}
-                    fontSize="xs"
-                    minW="6"
-                    p="0"
-                    onClick={() => onPageChange(pageNum)}
-                  >
-                    {pageNum}
-                  </Button>
-                  {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
-                    <Text px="1" color={textColor}>...</Text>
-                  )}
-                </React.Fragment>
-              );
-            })}
-            <IconButton
-              aria-label="Next page"
-              icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
-              variant="ghost"
-              color={iconColor}
-              p="1"
-              size="sm"
-              isDisabled={currentPage === (carData?.pages || 1)}
-              onClick={() => onPageChange(currentPage + 1)}
-            />
-          </HStack>
-        </Flex>
       </Flex>
     </Box>
   );
 };
+const CarPaginationHeader = ({ carData, currentPage, onPageChange }) => {
+  const headerBg = useColorModeValue("transparent", "transparent");
+  const headingColor = useColorModeValue("gray.900", "white");
+  const textColor = useColorModeValue("gray.600", "gray.400");
+  const selectBg = useColorModeValue("white", "#212121");
+  const selectBorderColor = useColorModeValue("gray.200", "#333333");
+  const selectTextColor = useColorModeValue("gray.700", "gray.300");
+  const paginationActiveBg = useColorModeValue("red.400", "red.500");
+  const paginationActiveColor = useColorModeValue("white", "white");
+  const paginationInactiveColor = useColorModeValue("gray.600", "gray.400");
+  const paginationHoverBg = useColorModeValue("gray.100", "#333333");
+  const iconColor = useColorModeValue("gray.400", "gray.500");
+  return (
+    <Flex alignItems="center" justify="flex-end" gap="3">
+      <HStack spacing="1" display={["flex", "flex", "flex"]}>
+        <IconButton
+          aria-label="Previous page"
+          icon={<LucideIcon icon={ChevronLeft} boxSize="4" />}
+          variant="ghost"
+          color={iconColor}
+          p="1"
+          size="sm"
+          isDisabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        />
+        {Array.from({ length: Math.min(5, carData?.pages || 1) }, (_, i) => {
+          let pageNum;
+          if (i < 3) {
+            pageNum = i + 1;
+          } else if (i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1) {
+            pageNum = currentPage;
+          } else if (i === 4) {
+            pageNum = carData?.pages || 1;
+          }
 
+          if (!pageNum) return null;
+
+          return (
+            <React.Fragment key={pageNum}>
+              {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
+                <Text px="1" color={textColor}>...</Text>
+              )}
+              <Button
+                w="6"
+                h="6"
+                borderRadius="md"
+                bg={pageNum === currentPage ? paginationActiveBg : "transparent"}
+                color={pageNum === currentPage ? paginationActiveColor : paginationInactiveColor}
+                variant={pageNum === currentPage ? "solid" : "ghost"}
+                _hover={{ bg: pageNum === currentPage ? paginationActiveBg : paginationHoverBg }}
+                fontSize="xs"
+                minW="6"
+                p="0"
+                onClick={() => onPageChange(pageNum)}
+              >
+                {pageNum}
+              </Button>
+              {i === 3 && currentPage > 3 && currentPage < (carData?.pages || 1) - 1 && (
+                <Text px="1" color={textColor}>...</Text>
+              )}
+            </React.Fragment>
+          );
+        })}
+        <IconButton
+          aria-label="Next page"
+          icon={<LucideIcon icon={ChevronRight} boxSize="4" />}
+          variant="ghost"
+          color={iconColor}
+          p="1"
+          size="sm"
+          isDisabled={currentPage === (carData?.pages || 1)}
+          onClick={() => onPageChange(currentPage + 1)}
+        />
+      </HStack>
+    </Flex>
+  )
+}
 // Car List Component
-const CarList = ({ carData, isLoading }) => {
+const CarList = ({ carData, isLoading, currentPage, handlePageChange }) => {
   const textColor = useColorModeValue("gray.600", "gray.400");
 
   if (isLoading) {
@@ -609,6 +626,11 @@ const CarList = ({ carData, isLoading }) => {
           Showing {carData?.data?.length || 0} of {carData?.total || 0} cars
         </Text>
       </Box>
+      <CarPaginationHeader
+        carData={carData}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </Box>
   );
 };
@@ -978,7 +1000,7 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
       <Flex flexDir="column" overflow="hidden" bg={["mobileBg", "mobileBg", "transparent"]}>
         {/* Filter Bar for Mobile */}
         <Flex
-          display={["flex", "flex", "none"]}
+          display={["flex", "flex", "flex"]}
           flexDir="column"
         >
           <Flex
@@ -1051,14 +1073,26 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
             </Box>
           </Flex>
           <Box>
+
             <VerifiedCarsHeader
               carData={carData}
               currentPage={currentPage}
               onPageChange={handlePageChange}
             />
             <Suspense fallback={<CarListSkeleton />}>
-              <CarList carData={carData} isLoading={isLoading} />
+              <CarList
+                carData={carData}
+                isLoading={isLoading}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
             </Suspense>
+
+            {/* <CarPaginationHeader
+              carData={carData}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            /> */}
           </Box>
         </Flex>
 
@@ -1135,8 +1169,9 @@ const BodyWithParams = ({ openMobileFilter, isFilterOpen, setIsFilterOpen }) => 
             onPageChange={handlePageChange}
           />
           <Suspense fallback={<CarListSkeleton />}>
-            <CarList carData={carData} isLoading={isLoading} />
+            <CarList carData={carData} isLoading={isLoading} currentPage={currentPage} onPageChange={handlePageChange}/>
           </Suspense>
+
         </Flex>
       </Flex>
     </Box>
