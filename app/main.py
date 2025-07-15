@@ -254,7 +254,7 @@ async def startup_event():
         logger.info("Application will continue with unoptimized MySQL database")
 
     # Start background task for materialized views
-    asyncio.create_task(refresh_materialized_views())
+    # asyncio.create_task(refresh_materialized_views())
     
     # Test cache connection
     try:

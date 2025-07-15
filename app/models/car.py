@@ -1,5 +1,6 @@
 #app/models/car.py
 from sqlalchemy import Column, String, Float, Integer, JSON, Text, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.base import Base
 
@@ -39,3 +40,19 @@ class SavedSearch(Base):
     name = Column(String, nullable=False)  # Custom name provided by user
     search_params = Column(String, nullable=False)  # JSON string of filters
     created_at = Column(DateTime, default=func.now())
+    
+class CarInspection(Base):
+    __tablename__ = "car_inspections"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    car_id = Column(String, ForeignKey("cars.id"))
+    status = Column(String, default="pending")  # pending, in_progress, completed
+    scheduled_date = Column(DateTime)
+    completed_at = Column(DateTime, nullable=True)
+    report_url = Column(Text, nullable=True)  # optional: S3/GCS/File URL
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now())
+
+    user = relationship("User")
+    car = relationship("Car")

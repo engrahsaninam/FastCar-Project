@@ -1,5 +1,5 @@
 #app/api/purchase.py
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File
 from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -10,11 +10,11 @@ from app.config import STRIPE_SECRET_KEY, DOMAIN
 from app.database.sqlite import get_db
 from app.api.auth import get_current_user
 from app.models.user import User
-from app.models.car import Car
+from app.models.car import Car, CarInspection
 from app.models.purchase import FinanceApplication, BankTransferInfo, Purchase, DeliveryInfo, PurchaseAddon, ServiceAddon
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["purchase"])
@@ -672,6 +672,14 @@ async def checkout_success(
         car.status = "sold"
         # db.commit()
         
+        inspection = CarInspection(
+            user_id=user_id,
+            car_id=car_id,
+            status="pending",
+            scheduled_date=datetime.utcnow() + timedelta(days=3)  # 3 business days approx.
+        )
+        db.add(inspection)
+        
         # Finalize other related user draft records
         db.query(BankTransferInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
         # db.query(DeliveryInfo).filter_by(user_id=user.id, status="in_progress").update({"status": "finalized"})
@@ -690,13 +698,73 @@ async def checkout_success(
         return JSONResponse(
             status_code=200,
             content={
-                "message": "Purchase successful",
-                "purchase_id": purchase.id
+                "message": "Purchase successful. Car inspection scheduled.",
+                "purchase_id": purchase.id,
+                "inspection_id":inspection.id,
+                "inspection_scheduled_for": inspection.scheduled_date.strftime("%Y-%m-%d"),
+                "check_back_on": inspection.scheduled_date.strftime("%Y-%m-%d"),
             }
         )
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/admin/inspection/{inspection_id}/complete")
+async def upload_inspection_report(
+    inspection_id: int,
+    report_file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    inspection = db.query(CarInspection).filter_by(id=inspection_id).first()
+    if not inspection:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+
+    reports_dir = os.path.join(os.getcwd(), "inspection_reports")
+
+    if not os.path.exists(reports_dir):
+        os.mkdir(reports_dir)
+    
+    # Save file locally or to cloud storage (e.g., S3)
+    filename = f"{inspection_id}_{report_file.filename}"
+    # save_path = f"/path/to/storage/{filename}"  # Adjust as needed
+    save_path = os.path.join(reports_dir, filename)
+
+    with open(save_path, "wb") as f:
+        f.write(await report_file.read())
+
+    # Update inspection record
+    inspection.status = "completed"
+    inspection.report_url = save_path  # or public URL if using cloud
+    inspection.completed_at = datetime.utcnow()
+    db.commit()
+
+    return {"message": "Inspection report uploaded successfully", "report_url": inspection.report_url}
+
+@router.get("/inspection/{car_id}")
+async def get_inspection_status(
+    car_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    inspection = db.query(CarInspection).filter_by(user_id=user.id, car_id=car_id).first()
+    if not inspection:
+        raise HTTPException(status_code=404, detail="No inspection found")
+
+    return {
+        "car_id": car_id,
+        "status": inspection.status,
+        "scheduled_date": inspection.scheduled_date.isoformat(),
+        "completed_at": inspection.completed_at.isoformat() if inspection.completed_at else None,
+        "report_url": inspection.report_url  # PDF path/URL
+    }
+
 
 @router.get("/cancel")
 async def checkout_cancel():

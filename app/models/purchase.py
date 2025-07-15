@@ -115,3 +115,5 @@ class PurchaseAddon(Base):
     addon_price = Column(Float, nullable=True)
     status = Column(String, default="in_progress")
     created_at = Column(DateTime, default=func.now())
+
+
