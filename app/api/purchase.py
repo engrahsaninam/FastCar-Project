@@ -709,6 +709,49 @@ async def checkout_success(
         logger.error(f"Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
+from typing import Optional
+from fastapi import Query
+
+@router.get("/admin/inspections/")
+async def get_inspections(
+    status: Optional[str] = Query(None, description="Filter by inspection status: pending or completed"),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    # Validate filter if provided
+    valid_statuses = ["pending", "completed", "rejected", "in_progress"]
+    if status and status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Allowed values: {valid_statuses}")
+
+    # Apply filtering
+    query = db.query(CarInspection)
+    if status:
+        query = query.filter(CarInspection.status == status)
+
+    inspections = query.order_by(CarInspection.created_at.desc()).all()
+    if not inspections:
+        raise HTTPException(status_code=404, detail="No inspections found")
+
+    # Serialize response
+    response = []
+    for i in inspections:
+        response.append({
+            "id": i.id,
+            "user_id": i.user_id,
+            "car_id": i.car_id,
+            "status": i.status,
+            "scheduled_date": i.scheduled_date.isoformat() if i.scheduled_date else None,
+            "completed_at": i.completed_at.isoformat() if i.completed_at else None,
+            "report_url": i.report_url,
+            "created_at": i.created_at.isoformat(),
+            "updated_at": i.updated_at.isoformat()
+        })
+
+    return {"inspections": response}
+
 @router.patch("/admin/inspection/{inspection_id}/complete")
 async def upload_inspection_report(
     inspection_id: int,
