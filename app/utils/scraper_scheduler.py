@@ -23,16 +23,13 @@ scraper_path = pathlib.Path(__file__).parent.parent.parent / "scraper"
 sys.path.append(str(scraper_path))
 
 try:
-    from common import db_mysql, settings
-    from common.logger import logger as scraper_logger
-    from scraper import autoscout24_scraper
-    from utils import image_downloader, image_task_handler
+    from app.utils.sqlite_scraper import scrape_and_save_cars
     SCRAPER_AVAILABLE = True
 except ImportError as e:
-    logging.warning(f"Scraper modules not available: {e}")
+    logging.warning(f"SQLite scraper modules not available: {e}")
     SCRAPER_AVAILABLE = False
 except Exception as e:
-    logging.warning(f"Scraper configuration error: {e}")
+    logging.warning(f"SQLite scraper configuration error: {e}")
     SCRAPER_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
@@ -171,7 +168,7 @@ class IntegratedCarScraperScheduler:
             logger.debug(f"🧹 Memory cleanup failed: {e}")
     
     def _scrape_cars_batch(self):
-        """Scrape a batch of cars"""
+        """Scrape a batch of cars directly to SQLite"""
         if not SCRAPER_AVAILABLE:
             return
             
@@ -180,93 +177,56 @@ class IntegratedCarScraperScheduler:
         self.total_runs += 1
         
         try:
-            logger.info(f"🔄 Starting car scraping batch at {self.last_run}")
+            logger.info(f"🔄 Starting SQLite car scraping batch at {self.last_run}")
             
             # Check system resources before starting
             if not self._check_system_resources():
                 logger.info("⏸️ Skipping scraper batch due to high system resource usage")
                 return
             
-            # Test database connection first
+            # Define brand-model combinations to scrape
+            brands_models = [
+                ("volkswagen", "golf"),
+                ("bmw", "3-series"),
+                ("audi", "a4"),
+                ("mercedes-benz", "c-class"),
+                ("ford", "focus"),
+                ("toyota", "corolla"),
+                ("honda", "civic"),
+                ("volkswagen", "passat"),
+                ("bmw", "5-series"),
+                ("audi", "a6")
+            ]
+            
+            # Limit the number of brand-model combinations based on batch size
+            max_brands = min(self.cars_per_batch // 10, len(brands_models))
+            selected_brands = brands_models[:max_brands]
+            
+            logger.info(f"📋 Scraping {len(selected_brands)} brand-model combinations")
+            
+            # Run the scraper asynchronously
+            import asyncio
             try:
-                test_sql = "SELECT 1"
-                test_result = db_mysql.query_by_sql(test_sql)
-                if test_result is None:
-                    logger.error("💥 Database connection failed - skipping this batch")
-                    self.failed_runs += 1
-                    return
-                logger.debug("✅ Database connection test successful")
-            except Exception as db_error:
-                logger.error(f"💥 Database connection error: {db_error}")
+                # Create new event loop for this thread
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                # Run the scraper
+                cars_scraped = loop.run_until_complete(
+                    scrape_and_save_cars(selected_brands, max_cars_per_brand=self.cars_per_batch // len(selected_brands))
+                )
+                
+                loop.close()
+                
+                run_time = time.time() - start_time
+                self.successful_runs += 1
+                
+                logger.info(f"✅ Completed SQLite car scraping batch at {datetime.now()} - Scraped {cars_scraped} cars in {run_time:.2f}s")
+                
+            except Exception as e:
+                logger.error(f"💥 Error in async scraping: {e}")
                 self.failed_runs += 1
-                return
-            
-            # Check if we have tasks to scrape
-            sql = f"""
-                SELECT COUNT(*) FROM tasks 
-                WHERE source = '{settings.SOURCE_AUTOSCOUT24}' 
-                AND status = {settings.STATUS_INIT}
-            """
-            result = db_mysql.query_by_sql(sql)
-            
-            if not result or result[0][0] == 0:
-                logger.info("📝 No pending tasks found. Generating new tasks...")
-                self._generate_tasks()
-            
-            # Get limited number of tasks for this batch
-            sql = f"""
-                SELECT id, source, context, unique_value, status, last_updated
-                FROM tasks 
-                WHERE source = '{settings.SOURCE_AUTOSCOUT24}' 
-                AND status = {settings.STATUS_INIT}
-                LIMIT {self.cars_per_batch}
-            """
-            tasks = db_mysql.query_by_sql(sql)
-            
-            if not tasks:
-                logger.info("📭 No tasks available for scraping")
-                return
                 
-            logger.info(f"📋 Found {len(tasks)} tasks to scrape in this batch")
-            
-            # Process each task with resource management
-            processed_count = 0
-            for i, task in enumerate(tasks):
-                if not self.running:
-                    break
-                    
-                # Add longer delay every 10 tasks to prevent overwhelming the system
-                if i > 0 and i % 10 == 0:
-                    logger.debug(f"⏸️  Taking a short break after {i} tasks to prevent system overload")
-                    time.sleep(5)  # 5 second break every 10 tasks
-                
-                try:
-                    task_id, source, context, unique_value, status, last_updated = task
-                    logger.debug(f"🔍 Processing task {task_id} ({i+1}/{len(tasks)})")
-                    
-                    # Scrape the car listing
-                    autoscout24_scraper.scrape_auto_scout24_listings(task)
-                    processed_count += 1
-                    
-                    # Small delay between requests to avoid rate limiting
-                    time.sleep(2)
-                    
-                except Exception as e:
-                    # Get task_id safely for error handling
-                    task_id = task[0] if task else "unknown"
-                    logger.error(f"💥 Error processing task {task_id}: {str(e)}")
-                    # Mark task as failed
-                    if task_id != "unknown":
-                        try:
-                            db_mysql.update_task(task_id, settings.STATUS_REQ_FAILED)
-                        except Exception as update_error:
-                            logger.error(f"💥 Failed to update task {task_id} status: {update_error}")
-                    
-            run_time = time.time() - start_time
-            self.successful_runs += 1
-            
-            logger.info(f"✅ Completed car scraping batch at {datetime.now()} - Processed {processed_count} tasks in {run_time:.2f}s")
-            
         except Exception as e:
             self.failed_runs += 1
             run_time = time.time() - start_time
@@ -274,32 +234,9 @@ class IntegratedCarScraperScheduler:
             logger.error(f"📋 Traceback: {traceback.format_exc()}")
             
     def _generate_tasks(self):
-        """Generate new scraping tasks if needed"""
-        if not SCRAPER_AVAILABLE:
-            return
-            
-        try:
-            logger.info("🔧 Generating new scraping tasks...")
-            
-            # Check if we have model tasks to create car tasks from
-            sql = f"""
-                SELECT COUNT(*) FROM model_tasks 
-                WHERE source = '{settings.SOURCE_AUTOSCOUT24}' 
-                AND status = {settings.STATUS_SUCCESS}
-            """
-            result = db_mysql.query_by_sql(sql)
-            
-            if result and result[0][0] > 0:
-                # Generate tasks from successful model tasks
-                autoscout24_scraper.build_auto_scout24_tasks()
-                logger.info("✅ Generated new tasks from model tasks")
-            else:
-                # Generate model tasks first
-                logger.info("🔧 No model tasks found. Generating model tasks first...")
-                autoscout24_scraper.scrape_all_auto_scout24_models()
-                
-        except Exception as e:
-            logger.error(f"💥 Error generating tasks: {str(e)}")
+        """Generate new scraping tasks if needed - Not used with SQLite scraper"""
+        logger.debug("🔧 Task generation not needed with SQLite scraper")
+        pass
             
     def set_batch_size(self, cars_per_batch: int):
         """Set the number of cars to scrape per batch"""
