@@ -19,6 +19,9 @@ from app.utils.car_availability_checker import check_and_update_car_availability
 # Import routers
 from app.api import cars, auth, users, filters, purchase, charges, admin_availability
 
+# Import scraper scheduler
+from app.utils.scraper_scheduler import start_scraper_scheduler, is_scraper_available
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
@@ -104,8 +107,12 @@ async def sync_mysql_to_sqlite(db: Session):
     WHERE price IS NOT NULL AND brand IS NOT NULL AND model IS NOT NULL
     LIMIT 300000
     """
-    cars = await execute_query(query, fetch=True, remove_outliers=False)
-    cars = cars[:100000]
+    cars_result = await execute_query(query, fetch=True, remove_outliers=False)
+    if isinstance(cars_result, list):
+        cars = cars_result[:100000]
+    else:
+        logger.error("Unexpected result type from execute_query")
+        return
     if not cars:
         logger.warning("No cars fetched from MySQL")
         return
@@ -270,6 +277,13 @@ async def startup_event():
     # Start background task for car availability checking
     asyncio.create_task(check_car_availability_periodically())
     logger.info("🚀 [STARTUP] Car availability checker background task started")
+
+    # Start background task for car scraper scheduler with minimal impact settings
+    if is_scraper_available():
+        asyncio.create_task(start_scraper_scheduler(cars_per_batch=25, interval_minutes=90))
+        logger.info("🕷️ [STARTUP] Car scraper scheduler background task started (ultra-minimal impact mode)")
+    else:
+        logger.warning("⚠️ [STARTUP] Car scraper scheduler not started - modules not available")
 
 @app.get("/")
 async def root():
