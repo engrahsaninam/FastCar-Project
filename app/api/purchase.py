@@ -808,6 +808,39 @@ async def get_inspection_status(
         "report_url": inspection.report_url  # PDF path/URL
     }
 
+# from fastapi.responses import FileResponse
+# from fastapi import Path
+
+# @router.get("/inspection/{car_id}/report", response_class=FileResponse)
+# async def get_inspection_report_file(
+#     car_id: str = Path(..., description="Car ID for which to fetch the inspection report"),
+#     user: User = Depends(get_current_user),
+#     db: Session = Depends(get_db)
+# ):
+#     print("user: ", user)
+#     if not user:
+#         raise HTTPException(status_code=401, detail="Unauthorized")
+
+#     inspection = db.query(CarInspection).filter_by(user_id=user.id, car_id=car_id).first()
+#     if not inspection:
+#         raise HTTPException(status_code=404, detail="Inspection not found")
+
+#     if inspection.status != "completed" or not inspection.report_url:
+#         raise HTTPException(status_code=400, detail="Inspection report not available yet")
+
+#     # Security: ensure path is under expected directory
+#     expected_base_dir = os.path.join(os.getcwd(), "inspection_reports")
+#     abs_path = os.path.abspath(inspection.report_url)
+#     if not abs_path.startswith(expected_base_dir):
+#         raise HTTPException(status_code=403, detail="Invalid report path")
+
+#     # Serve file
+#     return FileResponse(
+#         path=abs_path,
+#         filename=os.path.basename(abs_path),
+#         media_type="application/pdf",
+#         headers={"Content-Disposition": f'inline; filename="{os.path.basename(abs_path)}"'}
+#     )
 
 @router.get("/cancel")
 async def checkout_cancel():
@@ -1657,6 +1690,24 @@ async def get_purchase_details_user(
             created_at=info.created_at.isoformat()
         )
     ] if info else []
+    
+    # --- Inspection Info ---
+    inspection = db.query(CarInspection).filter_by(
+        user_id=user.id,
+        car_id=car_id
+    ).first()
+
+    inspection_info = dict(
+        id=inspection.id,
+        car_id=inspection.car_id,
+        status=inspection.status,
+        scheduled_date=inspection.scheduled_date.isoformat() if inspection.scheduled_date else None,
+        completed_at=inspection.completed_at.isoformat() if inspection.completed_at else None,
+        report_path=(
+            f"/{inspection.report_url.replace(os.getcwd(), '').lstrip('/')}"
+            if inspection.report_url else None
+        )
+    ) if inspection else {}
 
     # --- Delivery Info ---
     delivery = db.query(DeliveryInfo).filter(
@@ -1713,6 +1764,7 @@ async def get_purchase_details_user(
     return {
         "finance_applications": finance_applications,
         "bank_infos": all_bank_infos,
+        "inspection_info": inspection_info,
         "delivery_info": delivery_info,
         "service_addons": service_addons
     }
