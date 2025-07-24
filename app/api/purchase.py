@@ -760,7 +760,7 @@ async def upload_inspection_report(
     db: Session = Depends(get_db)
 ):
     if not user or not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        raise HTTPException(status_code=200, detail="Admin access required")
 
     inspection = db.query(CarInspection).filter_by(id=inspection_id).first()
     if not inspection:
