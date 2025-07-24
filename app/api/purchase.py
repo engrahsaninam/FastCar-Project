@@ -797,6 +797,7 @@ async def get_inspection_status(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     inspection = db.query(CarInspection).filter_by(user_id=user.id, car_id=car_id).first()
+    
     if not inspection:
         raise HTTPException(status_code=200, detail="No inspection found")
 
