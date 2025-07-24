@@ -798,7 +798,7 @@ async def get_inspection_status(
 
     inspection = db.query(CarInspection).filter_by(user_id=user.id, car_id=car_id).first()
     if not inspection:
-        raise HTTPException(status_code=404, detail="No inspection found")
+        raise HTTPException(status_code=200, detail="No inspection found")
 
     return {
         "car_id": car_id,
